@@ -1,0 +1,114 @@
+a{
+    color: #007bff;
+}
+/* Pantalla login */
+.bodystylelog {
+    background-color: #24a2e6; /* Fondo azul claro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.card {
+    width: 70%; /* Ancho de la tarjeta */
+    height: 70%;
+    max-height: 400px;
+    max-width: 700px; /* Máximo ancho permitido para la tarjeta */
+}
+.card-img-left {
+    width: 60%; /* Ancho de la imagen dentro de la card */
+    background: url('ruta/a/imagen-del-condominio.jpg') center center no-repeat;
+    background-size: cover; /* Para que la imagen cubra completamente el espacio asignado */
+}
+/* Estilos adicionales para el formulario */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+/*fin login*/
+
+/*Pantalla 404*/
+.bodystyle404 {
+    background-color: #012549; /* Color de fondo claro */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+.error-container {
+    text-align: center;
+    padding: 2rem;
+}
+.error-container h1 {
+    font-size: 120px;
+    line-height: 120px;
+    font-weight: bold;
+    color: #007bff; /* Color azul de Bootstrap */
+}
+.error-container p {
+    font-size: 24px;
+    margin-top: 20px;
+    color: #6c757d; /* Color gris de Bootstrap */
+}
+.btn-primary {
+    background-color: #007bff; /* Color azul de Bootstrap */
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+}
+.btn-primary:hover {
+    background-color: #0056b3; /* Color azul más oscuro para hover */
+}
+/*fin 404*/
+
+/*footer*/
+footer{
+    background-color: #012549;
+
+}
+footer a{
+    color: azure;
+}
+/*fin footer*/
+
+/*imagenes carrusel*/
+.carousel-container {
+    position: relative;
+    max-width: 50%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.carousel-slide img {
+    width: 100%;
+    display: none;
+}
+
+.carousel-slide img.active {
+    display: block;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 30px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    padding: 10px;
+}
+
+.carousel-control-prev {
+    left: 10px;
+}
+
+.carousel-control-next {
+    right: 10px;
+}
+/*fin carrusel*/
