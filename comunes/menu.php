@@ -10,13 +10,13 @@
       </ul>
       <ul class="navbar-nav">
       <li class="nav-item">
-          <a class="nav-link active" href="#">Inicio</a>
+          <a class="nav-link active" href="?p=dashboard">Inicio</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Modulo</a>
+          <a class="nav-link" href="?p=atletas">Atletas</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Modulo</a>
+          <a class="nav-link" href="#">Entrenadores</a>
         </li>
         
         <li class="nav-item dropdown">
