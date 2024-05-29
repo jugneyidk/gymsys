@@ -172,3 +172,39 @@ footer a{
     right: 10px;
 }
 /*fin carrusel*/
+
+/* Sidebar */
+#sidebar-wrapper {
+    min-height: 100vh;
+    margin-left: -15rem;
+    transition: margin 0.25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+    width: 15rem;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    padding-top: 20px;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: 0;
+}
+
+/* Navbar and page content styles */
+.navbar {
+    padding: 0.5rem 1rem;
+}
+
+.container-fluid {
+    padding: 20px;
+}
+
+/* Add styles for typography, tables, forms etc. */
