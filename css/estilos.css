@@ -1,14 +1,15 @@
+#card-acciones{
+    width: 100%; /* Ajusta el ancho al 100% del contenedor de columna */
+    max-width: 300px; /* Ancho máximo deseado */
+}
 a{
     color: #007bff;
 }
-.container {
+.mycontainer {
     max-width: 1200px; 
     padding: 20px; 
 }
-body, html {
-    height: 100%;
-    margin: 0;
-}
+
 .jumbotron {
     background-color: #fff; 
     padding: 40px;
