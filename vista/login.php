@@ -6,31 +6,28 @@
     <title>Login - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
 </head>
-<body class="bodystylelog">
-
-<div class="card login-card">
-    <div class="row no-gutters">
-        <div class="col-md-6 login-card-img"></div> <!-- Columna para la imagen -->
-        <div class="col-md-6">
-            <div class="card-body">
-                <h3 class="card-title text-center">Iniciar Sesión</h3>
-                <form action="tu-script-de-login.php" method="POST">
-                    <div class="form-group">
-                        <label for="username">Usuario</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Entrar</button>
-                    </div>
-                </form>
-            </div>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <h2 class="text-center">Iniciar Sesión</h2>
+            <form action="authenticate.php" method="POST">
+                <div class="form-group">
+                    <label for="username">Usuario:</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
+                <button type="button" class="btn btn-secondary btn-block" onclick="history.back();">Volver</button>
+            </form>
         </div>
+        <footer class="text-center mt-3">
+            <p>&copy; 2024 Gimnasio Eddy Suarez UPTAEB. Todos los derechos reservados.</p>
+        </footer>
     </div>
-</div>
-
+    <script src="jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

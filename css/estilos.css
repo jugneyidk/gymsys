@@ -31,61 +31,39 @@ a{
 }
 
 /* Pantalla login */
-.bodystylelog {
-    background-color: #54a6ff;
+.login-body {
+    background-color: #5facff;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
     padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
 }
 
 .login-card {
-    max-width: 450px;
-    width: 100%;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.login-card-img {
-    background: url('ruta/a/tu-imagen.jpg') no-repeat center center;
-    background-size: cover;
-}
-
-.card-body {
-    padding: 20px;
-}
-
-.form-group {
     margin-bottom: 15px;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
+.form-control {
+    margin-bottom: 10px;
 }
 
-.input[type="text"],
-.input[type="password"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.btn-block {
+    margin-top: 10px;
 }
 
-.btn-primary {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
+footer {
+    font-size: 0.8rem;
+    color: #ffffff;
 }
-
-.btn-primary:hover {
-    background-color: #0056b3;
-}
-
 
 /*fin login*/
 
