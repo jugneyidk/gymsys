@@ -15,20 +15,21 @@ Estado: medio (falta añadir detalles para que este terminada)
 </head>
 <body>
     <header>
-    <?php require_once("comunes/menu.php"); ?>
+        <?php require_once("comunes/menu.php"); ?>
     </header>
-    <main>
-    <!-- Sección de bienvenida -->
-  <div class="container mt-5">
-    <div class="jumbotron">
-      <h1 class="display-4">¡Bienvenido!</h1>
-      <p class="lead">Sistema de informacion del gimnasio de halterofilia de la UPTAEB.</p>
-      <hr class="my-4">
-      <p>Breve historia aqui.</p>
-      <a class="btn btn-primary btn-lg" href="?p=login" role="button">Iniciar sesion</a>
-    </div>
-  </div>
-<div class="row">
+    <main class="container mt-5">
+        <!-- Sección de bienvenida -->
+        <div class="jumbotron text-center">
+            <h1 class="display-4">¡Bienvenido al Gimnasio UPTAEB!</h1>
+            <p class="lead">El mejor lugar para fortalecer tu cuerpo y mente.</p>
+            <hr class="my-4">
+            <p>Únete a nosotros para explorar nuevas maneras de mantenerte en forma y saludable.</p>
+            <a class="btn btn-primary btn-lg" href="?p=login" role="button">Iniciar sesión</a>
+        </div>
+        <!-- Sección adicional, por ejemplo, servicios -->
+        <div class="row">
+          <!-- Sección de bienvenida -->
+<div class="col-md-5">
   <div class="carousel-container">
     <div class="carousel-slide">
         <img src="img/imagen1.jpg" alt="Imagen 1" class="active">
@@ -39,30 +40,28 @@ Estado: medio (falta añadir detalles para que este terminada)
     <button class="carousel-control-next" onclick="moveSlide(1)">&#10095;</button>
 </div>
 </div>
-
-  <!-- Sección de características -->
-  <div class="container mt-3">
-    <div class="row">
-      <div class="col-md-4">
-        <h2>item 1</h2>
-        <p> nosequeponeraqui</p>
-      </div>
-      <div class="col-md-4">
-        <h2>item 2</h2>
-        <p>nosequeponeraqui</p>
-      </div>
-      <div class="col-md-4">
-        <h2>item 3</h2>
-        <p> nosequeponeraqui</p>
-      </div>
-    </div>
-  </div>
+            <div class="col-md-2">
+                <h2>Servicios</h2>
+                <p>Ofrecemos entrenamiento personalizado, clases en grupo, y más.</p>
+                <p><a class="btn btn-secondary" href="#" role="button">Ver detalles »</a></p>
+            </div>
+            <div class="col-md-2">
+                <h2>Contacto</h2>
+                <p>¿Tienes preguntas? ¡No dudes en contactarnos!</p>
+                <p><a class="btn btn-secondary" href="#" role="button">Contactar »</a></p>
+            </div>
+            <div class="col-md-2">
+                <h2>Ubicación</h2>
+                <p>Visítanos en nuestra dirección física para más información.</p>
+                <p><a class="btn btn-secondary" href="#" role="button">Cómo llegar »</a></p>
+            </div>
+        </div>
     </main>
+    <br>
     <footer>
     <?php require_once("comunes/footer.php"); ?>
     </footer>
     <script src="js/landing.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    
 </body>
 </html>
