@@ -114,7 +114,7 @@
     <?php require_once("comunes/footer.php"); ?>
     </footer>
     
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
     <script>
         function resetForm() {
             document.querySelector('form').reset();

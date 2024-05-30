@@ -12,7 +12,7 @@
     <h1>404</h1>
     <p>Página no encontrada</p>
     <p>¡Oops! La página que estás buscando no existe. Puede que haya sido movida o eliminada.</p>
-    <a href="./" class="btn btn-primary">Volver a la página principal</a>
+    <a class="btn btn-primary" onclick="history.back();">Volver a la página principal</a>
 </div>
 
 </body>
