@@ -11,7 +11,7 @@
 
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="card">
                 <div class="card-header text-center">
                     <img src="ruta/a/la/foto.jpg" alt="Foto del Atleta" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">

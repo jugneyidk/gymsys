@@ -10,7 +10,7 @@
       <div class="col">
         <h5>Ayuda</h5>
         <ul class="list-unstyled">
-          <li><a href="#!">Preguntas Frecuentes</a></li>
+          <li><a href="?p=faq">Preguntas Frecuentes</a></li>
           <li><a href="#!">Soporte</a></li>
         </ul>
       </div>
