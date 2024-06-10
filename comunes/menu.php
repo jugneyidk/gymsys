@@ -19,7 +19,16 @@
           <a class="nav-link" href="?p=entrenadores">Entrenadores</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="?p=entrenadores">Asistencias</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="?p=eventos">Eventos/competencia</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?p=eventos">Status Wada</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?p=eventos">Marcas</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Modulo</a>
