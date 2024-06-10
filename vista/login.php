@@ -10,7 +10,7 @@
     <div class="login-container">
         <div class="login-card">
             <h2 class="text-center">Iniciar Sesión</h2>
-            <form action="authenticate.php" method="POST">
+            <form action="" method="POST">
                 <div class="form-group">
                     <label for="username">Usuario:</label>
                     <input type="text" class="form-control" id="username" name="username" required>
