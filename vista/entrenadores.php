@@ -8,53 +8,79 @@
 <body>
 <?php require_once("comunes/menu.php"); ?>
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-       
         <div class="row justify-content-center w-100">
-         
             <div class="card p-4 col-lg-8 col-md-10 mb-3">
                 <h2 class="card-title text-center mb-4">Inscripción de Entrenadores</h2>
-              
-                <form action="submit_entrenador.php" method="POST">
+                <form>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="nombres" class="form-label">Nombres:</label>
-                            <input type="text" class="form-control" id="nombres" name="nombres" required>
+                            <input type="text" class="form-control" id="nombres" name="nombres" >
+                            <div id="snombres" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="apellidos" class="form-label">Apellidos:</label>
-                            <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                            <input type="text" class="form-control" id="apellidos" name="apellidos" >
+                            <div id="sapellidos" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="cedula" class="form-label">Cédula:</label>
-                            <input type="text" class="form-control" id="cedula" name="cedula" required>
+                            <input type="text" class="form-control" id="cedula" name="cedula" >
+                            <div id="scedula" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
-                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+                            <label for="genero" class="form-label">Género:</label>
+                            <select class="form-control" id="genero" name="genero">
+                                <option>Masculino</option>
+                                <option>Femenino</option>
+                            </select>
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
+                            <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" >
+                            <div id="sfecha_nacimiento" class="invalid-feedback"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento:</label>
+                            <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" >
+                            <div id="slugarnacimiento" class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="estado_civil" class="form-label">Estado Civil:</label>
+                            <select class="form-control" id="estado_civil" name="estado_civil">
+                                <option>Soltero</option>
+                                <option>Casado</option>
+                                <option>Divorciado</option>
+                                <option>Viudo</option>
+                            </select>
+                        </div>
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label">Teléfono:</label>
                             <input type="tel" class="form-control" id="telefono" name="telefono" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="email" class="form-label">Correo Electrónico:</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div id="stelefono" class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="row">
+                        
                         <div class="col-md-6 mb-3">
-                            <label for="experiencia" class="form-label">Años de Experiencia:</label>
-                            <input type="number" class="form-control" id="experiencia" name="experiencia" required>
+                            <label for="correo" class="form-label">Correo Electrónico:</label>
+                            <input type="email" class="form-control" id="correo" name="correo" required>
+                            <div id="scorreo" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="especialidad" class="form-label">Especialidad:</label>
-                            <input type="text" class="form-control" id="especialidad" name="especialidad" required>
+                            <label for="grado_instruccion" class="form-label">Grado de Instrucción:</label>
+                            <input type="text" class="form-control" id="grado_instruccion" name="grado_instruccion" required>
+                            <div id="sgrado_instruccion" class="invalid-feedback"></div>
                         </div>
                     </div>
+                   
                     <button type="submit" class="btn btn-primary btn-block">Registrar Entrenador</button>
                 </form>
             </div>
@@ -81,12 +107,8 @@
     <footer>
     <?php require_once("comunes/footer.php"); ?>
     </footer>
-    
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script>
-        function resetForm() {
-            document.querySelector('form').reset();
-        }
-    </script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/entrenadores.js"></script>
 </body>
 </html>
