@@ -30,6 +30,9 @@
         <li class="nav-item">
           <a class="nav-link" href="?p=marcas">Marcas</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Modulo</a>
           <div class="dropdown-menu">

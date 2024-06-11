@@ -120,7 +120,7 @@
                 </form>
             </div>
             
-            <div class="card p-4 col-lg-3 col-md-4 mx-2" id="card-acciones">
+            <div class="card p-4 col-lg-3 col-md-2 mx-2" id="card-acciones">
                 <h4 class="card-title text-center mb-4">Acciones</h4>
                 <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Limpiar</button>
                 <button type="button" class="btn btn-info btn-block" data-bs-toggle="modal" data-bs-target="#modalAtletas">Consultar Atletas</button>
