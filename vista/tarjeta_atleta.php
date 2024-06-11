@@ -14,7 +14,7 @@
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header text-center">
-                    <img src="ruta/a/la/foto.jpg" alt="Foto del Atleta" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                    <img src="./img/atleta-foto.png" alt="Foto del Atleta" class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
                     <h3 class="mt-3">Nombre Completo del Atleta</h3>
                 </div>
                 <div class="card-body">
