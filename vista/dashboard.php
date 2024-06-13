@@ -43,10 +43,10 @@
         </div>
         <div class="col-md-3">
             <div class="card text-white bg-danger mb-3">
-                <div class="card-header"><i class="fas fa-cogs"></i> Configuraciones</div>
+                <div class="card-header"><i class="fas fa-cogs"></i> WADA</div>
                 <div class="card-body">
                     <h5 class="card-title">5</h5>
-                    <p class="card-text">Configuraciones pendientes.</p>
+                    <p class="card-text">WADAS pendientes.</p>
                 </div>
             </div>
         </div>
