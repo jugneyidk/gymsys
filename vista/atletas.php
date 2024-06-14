@@ -48,35 +48,34 @@
                             <div id="sfecha_nacimiento" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="edad" class="form-label">Edad:</label>
-                            <input type="number" class="form-control" id="edad" name="edad"  readonly>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
                             <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento:</label>
                             <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento" >
                             <div id="slugarnacimiento" class="invalid-feedback"></div>
                         </div>
+                            
+                            <input type="number" class="form-control" id="edad" name="edad"  readonly  style="display: none;">
+                        
+                    </div>
+                    <div class="row">
+                        
                         <div class="col-md-6 mb-3">
                             <label for="peso" class="form-label">Peso (kg):</label>
                             <input type="number" class="form-control" id="peso" name="peso" step="0.01" >
                             <div id="speso" class="invalid-feedback"></div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="altura" class="form-label">Altura (cm):</label>
                             <input type="number" class="form-control" id="altura" name="altura" step="0.01" >
                             <div id="saltura" class="invalid-feedback"></div>
                         </div>
+                    </div>
+                    <div class="row">
+                        
                         <div class="col-md-6 mb-3">
                             <label for="tipo_atleta" class="form-label">Tipo de Atleta:</label>
                             <input type="text" class="form-control" id="tipo_atleta" name="tipo_atleta" >
                             <div id="stipo_atleta" class="invalid-feedback"></div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="estado_civil" class="form-label">Estado Civil:</label>
                             <select class="form-control" id="estado_civil" name="estado_civil">
@@ -86,18 +85,22 @@
                                 <option>Viudo</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="row">
+                        
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label">Teléfono:</label>
                             <input type="tel" class="form-control" id="telefono" name="telefono" >
                             <div id="stelefono" class="invalid-feedback"></div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="correo" class="form-label">Correo:</label>
                             <input type="email" class="form-control" id="correo" name="correo" >
                             <div id="scorreo" class="invalid-feedback"></div>
                         </div>
+                    </div>
+                    <div class="row">
+                        
                         <div class="col-md-6 mb-3">
                             <label for="entrenador_asignado" class="form-label">Entrenador Asignado:</label>
                             <input type="text" class="form-control" id="entrenador_asignado" name="entrenador_asignado" >
@@ -136,7 +139,25 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Lista de atletas inscritos aquí.</p>
+                    <div class="table-responsive">
+					<table class="table table-striped table-hover" id="tablaatleta">
+						<thead>
+							<tr>
+								<th>Cedula</th>
+								<th>Entrenadores</th>
+								<th>Nombre</th>
+								<th>Apellidos</th>
+								<th>Tipo</th>
+								<th>Genero</th>
+								<th>Fecha nac</th>
+								<th >Accion</th>
+								
+							</tr>
+						</thead>
+						<tbody id="listado">
+						</tbody>
+					</table>
+				</div>
                     </div>
                 </div>
             </div>
@@ -149,5 +170,6 @@
     <script src="js/jquery.min.js"></script>
     <script src="js/atletas.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script>
 </body>
 </html>
