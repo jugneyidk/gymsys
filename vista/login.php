@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Sistema</title>
-    <?php require_once("comunes/linkcss.php"); ?>
+    <?php require_once ("comunes/linkcss.php"); ?>
 </head>
+
 <body class="login-body">
     <div class="login-container">
         <div class="login-card">
@@ -27,7 +29,8 @@
             <p>&copy; 2024 Gimnasio Eddy Suarez UPTAEB. Todos los derechos reservados.</p>
         </footer>
     </div>
-    <script src="jquery.min.js"></script>
+    <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

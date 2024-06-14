@@ -119,7 +119,7 @@ $(document).ready(function () {
           $("#snombres"),
           "Solo letras y espacios (1-50 caracteres)"
         );
-        break; 
+        break;
       case "apellidos":
         validarKeyUp(
           /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
@@ -144,7 +144,7 @@ $(document).ready(function () {
           "El formato del teléfono debe ser 04XXXXXXXXX"
         );
         break;
-       case "correo_electronico":
+      case "correo_electronico":
         validarKeyUp(
           /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
           $(this),
@@ -160,7 +160,7 @@ $(document).ready(function () {
           "El lugar de nacimiento no puede estar vacío"
         );
         break;
-        case "grado_instruccion":
+      case "grado_instruccion":
         validarKeyUp(
           /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
           $(this),
@@ -203,17 +203,43 @@ $(document).ready(function () {
         try {
           var lee = JSON.parse(respuesta);
           if (lee.devol == "listado_entrenador") {
+            console.log(lee.respuesta)
+            var listado_entrenador = "";
             if ($.fn.DataTable.isDataTable("#tablaentrenador")) {
               $("#tablaentrenador").DataTable().destroy();
             }
-            $("#listado").html(lee.mensaje);
+            lee.respuesta.forEach((entrenador) => {
+              listado_entrenador +=
+                "<tr><td class='align-middle'>" + entrenador.cedula + "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'>" + entrenador.nombre + "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'>" + entrenador.apellido + "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'>" + entrenador.genero + "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'>" +
+                entrenador.fecha_nacimiento +
+                "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'>" +
+                entrenador.correo_electronico +
+                "</td>";
+              listado_entrenador +=
+                "<td class='align-middle'><button class='btn btn-block btn-warning me-2'>Modificar</button><button class='btn btn-block btn-danger'>Eliminar</button></td>";
+              listado_entrenador += "</tr>";
+            });
+            $("#listado").html(listado_entrenador);
             if (!$.fn.DataTable.isDataTable("#tablaentrenador")) {
               $("#tablaentrenador").DataTable({
+                columnDefs: [
+                  { targets: [6], orderable: false, searchable: false },
+                ],
                 language: {
                   lengthMenu: "Mostrar _MENU_ por página",
-                  zeroRecords: "No se encontraron entrenadores",
+                  zeroRecords: "No se encontraron atletas",
                   info: "Mostrando página _PAGE_ de _PAGES_",
-                  infoEmpty: "No hay entrenadores disponibles",
+                  infoEmpty: "No hay atletas disponibles",
                   infoFiltered: "(filtrado de _MAX_ registros totales)",
                   search: "Buscar:",
                   paginate: {
@@ -224,12 +250,12 @@ $(document).ready(function () {
                   },
                 },
                 autoWidth: false,
-                order: [[1, "asc"]],
+                order: [[0, "desc"]],
               });
+            } else {
+              Swal.fire("Éxito", "Operación realizada con éxito", "success");
+              $("#f")[0].reset();
             }
-          } else {
-            Swal.fire("Éxito", "Operación realizada con éxito", "success");
-            $("#f")[0].reset();
           }
         } catch {
           Swal.fire("Error", "algo salio mal", "error");

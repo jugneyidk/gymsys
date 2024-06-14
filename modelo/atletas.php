@@ -125,25 +125,7 @@ class Atleta extends datos
             $consulta = "SELECT * FROM `atleta` ORDER BY cedula DESC";
             $con = $this->conexion->prepare($consulta);
             $con->execute();
-            $resultado = $con->fetchAll(PDO::FETCH_ASSOC);
-            
-            $respuesta = '';
-            if ($resultado) {
-                foreach ($resultado as $r) {
-                    $respuesta .= "<tr style='cursor:pointer' onclick='coloca(this);'>";
-                    
-                    $respuesta .= "<td class='align-middle'>{$r['cedula']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['id_entrenador']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['nombre']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['apellido']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['tipo_atleta']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['genero']}</td>";
-                    $respuesta .= "<td class='align-middle'>{$r['fecha_nacimiento']}</td>";
-                    $respuesta .= "<td class='align-middle'><button>modificar</button><button>Eliminar</button></td>";
-                    $respuesta .= "</tr>";
-                }
-            }
-            $resultado["mensaje"] = $respuesta;
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_atletas';
             $resultado["respuesta"] = $respuesta;

@@ -1,16 +1,14 @@
 <nav class="navbar navbar-expand-lg bg-info" data-bs-theme="dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="?p=landing">Gimnasio Eddy Suarez UPTAEB</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarColor01">
-      <ul class="navbar-nav me-auto">
-        
-      </ul>
+    <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
-      <li class="nav-item">
-          <a class="nav-link active" href="?p=dashboard">Inicio</a>
+        <li class="nav-item">
+          <a class="nav-link" href="?p=dashboard">Inicio</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="?p=atletas">Atletas</a>
@@ -27,11 +25,9 @@
         <li class="nav-item">
           <a class="nav-link" href="?p=wada">Status Wada</a>
         </li>
-        
         <li class="nav-item">
           <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
         </li>
-        
         <li class="nav-item">
           <a class="nav-link" href="?p=login">Iniciar sesion</a>
         </li>

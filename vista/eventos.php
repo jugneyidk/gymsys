@@ -13,14 +13,14 @@
     <div class="container align-items-top pt-3" style="min-height: 85vh;">
         <div class="row justify-content-start ">
             <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active"><a href="#">Evento</a></li>
-                            
-                        </ol>
-                    </nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="#">Evento</a></li>
+
+                </ol>
+            </nav>
             <div class="col-lg-9 col-md-5">
                 <div class="row">
-                    
+
 
                     <div class="col">
 
@@ -95,9 +95,10 @@
 
     <!--Modal de la competencia-->
     <!--Modal de la competencia-->
-    
 
-    <div class="modal fade" tabindex="-1" aria-hidden="true" role="dialog" id="modalEventOne" style="overflow-y: scroll;">
+
+    <div class="modal fade" tabindex="-1" aria-hidden="true" role="dialog" id="modalEventOne"
+        style="overflow-y: scroll;">
         <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -109,7 +110,8 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-3 d-flex justify-content-center">
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#offcanvasExample" id="btnParticipante">
+                                <button class="btn" data-bs-toggle="modal" data-bs-target="#offcanvasExample"
+                                    id="btnParticipante">
                                     <div class="card " style="width: 10rem;">
                                         <img src="img/atleta-foto.png" class="card-img-top img-thumbnail " alt="...">
                                         <div class="card-body">
@@ -163,28 +165,29 @@
     <!--Modal del atleta-->
 
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div>
-      Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div>
+                Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images,
+                lists, etc.
+            </div>
+            <div class="dropdown mt-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Dropdown button
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="dropdown mt-3">
-      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-        Dropdown button
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-      </ul>
-    </div>
-  </div>
-</div>
 
-<!---->
+    <!---->
 
     <div class="modal fade" id="ParticipanteJugney" style="display: none;" tabindex="-1"
         aria-labelledby="ParticipanteJugneylabel" aria-hidden="true" role="dialog">
@@ -348,8 +351,6 @@
     <footer>
         <?php require_once ("comunes/footer.php"); ?>
     </footer>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/eventos.js"></script>
     <script>
         function calculateTotals() {

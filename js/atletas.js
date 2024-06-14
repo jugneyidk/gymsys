@@ -272,12 +272,35 @@ $(document).ready(function () {
         try {
           var lee = JSON.parse(respuesta);
           if (lee.devol == "listado_atletas") {
+            var listado_atleta = "";
             if ($.fn.DataTable.isDataTable("#tablaatleta")) {
-              $("#tablahabitantes").DataTable().destroy();
+              $("#tablaatleta").DataTable().destroy();
             }
-            $("#listado").html(lee.mensaje);
+            lee.respuesta.forEach((atleta) => {
+              listado_atleta +=
+                "<tr><td class='align-middle'>" + atleta.cedula + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.id_entrenador + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.nombre + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.apellido + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.tipo_atleta + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.genero + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'>" + atleta.fecha_nacimiento + "</td>";
+              listado_atleta +=
+                "<td class='align-middle'><button class='btn btn-block btn-warning me-2'>Modificar</button><button class='btn btn-block btn-danger'>Eliminar</button></td>";
+              listado_atleta += "</tr>";
+            });
+            $("#listado").html(listado_atleta);
             if (!$.fn.DataTable.isDataTable("#tablaatleta")) {
               $("#tablaatleta").DataTable({
+                columnDefs: [
+                  { targets: [7], orderable: false, searchable: false },
+                ],
                 language: {
                   lengthMenu: "Mostrar _MENU_ por página",
                   zeroRecords: "No se encontraron atletas",
@@ -292,13 +315,13 @@ $(document).ready(function () {
                     previous: "Anterior",
                   },
                 },
-                autoWidth: false,
-                order: [[1, "asc"]],
-              });
+                autoWidth: true,
+                order: [[0, "desc"]],
+                });
+            } else {
+              Swal.fire("Éxito", "Operación realizada con éxito", "success");
+              $("#f")[0].reset();
             }
-          } else {
-            Swal.fire("Éxito", "Operación realizada con éxito", "success");
-            $("#f")[0].reset();
           }
         } catch {
           Swal.fire("Error", "algo salio mal", "error");

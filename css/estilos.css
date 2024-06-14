@@ -59,11 +59,6 @@ a{
 .form-control {
     margin-bottom: 10px;
 }
-
-.btn-block {
-    margin-top: 10px;
-}
-
 footer {
     font-size: 0.8rem;
     color: #ffffff;
@@ -187,8 +182,4 @@ footer a{
 
 .form-group {
     margin-bottom: 15px;
-}
-
-.btn-block {
-    margin-top: 20px;
 }

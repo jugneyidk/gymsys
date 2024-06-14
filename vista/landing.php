@@ -58,10 +58,7 @@ Estado: medio (falta añadir detalles para que este terminada)
         </div>
     </main>
     <br>
-    <footer>
     <?php require_once("comunes/footer.php"); ?>
-    </footer>
     <script src="js/landing.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

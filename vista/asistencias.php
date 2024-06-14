@@ -46,11 +46,7 @@
         </div>
     </div>
 </div>
-
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/asistencias.js"></script>
-<script src="js/sweetalert.js"></script>
 <script type="text/javascript" src="datatables/datatables.min.js"></script>
 </body>
 </html>
