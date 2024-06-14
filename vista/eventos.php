@@ -94,6 +94,7 @@
     </div>
 
     <!--Modal de la competencia-->
+    <!--Modal de la competencia-->
     
 
     <div class="modal fade" tabindex="-1" aria-hidden="true" role="dialog" id="modalEventOne" style="overflow-y: scroll;">
