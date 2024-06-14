@@ -63,7 +63,8 @@
             <div class="col-lg-3 col-md-4">
                 <div class="card p-4 mb-3 " id="">
                     <h4 class="card-title text-center mb-4">Acciones</h4>
-                    <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Limpiar</button>
+                    <button type="button" class="btn btn-secondary btn-block" >Limpiar</button>
+                    <button type="button" class="btn btn-info btn-block"  data-bs-toggle="modal" data-bs-target="#modalIncluir">Crear +</button>
                     <button type="button" class="btn btn-info btn-block" data-bs-toggle="modal"
                         data-bs-target="#modalEntrenadores">Consultar anteriores (solo vista)</button>
                 </div>
@@ -74,7 +75,164 @@
         </div>
     </div>
 
-    <!--Modal de la competencia-->
+    <!-- Modal Incluir-->
+
+    <div class="modal fade" id="modalIncluir" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Crear Evento</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <form method="POST" id="IncluirEvento" >
+                        <input autocomplete="off" type="text" class="form-control" name="accion" id="accion"
+                        style="display: none;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Tipo</label>
+                                        <select
+                                            class="form-select"
+                                            name="inpTipo"
+                                            id=""
+                                        >
+                                            <option selected>Seleccione Uno</option>
+                                            <option value="1">Interno</option>
+                                            <option value="2">Externo</option>
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Nombre</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="inpName"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Categoria</label>
+                                        <select
+                                            class="form-select"
+                                            name="inpCategoria"
+                                            id=""
+                                        >
+                                            <option selected>Seleccione Uno</option>
+                                            <option value="Liviano">Liviano</option>
+                                            <option value="Medio">Medio</option>
+                                            <option value="Pesado">Pesado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Subs</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="inpSubs"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                </div>
+                            </div>   
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Edad Minima</label>
+                                        <input
+                                            type="number"
+                                            class="form-control"
+                                            name="inpEdad"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                    
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Direccion de la competencia</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="inpDireccion"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Fecha de Apertura</label>
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            name="inpDateApertura"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                    
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label for="" class="form-label">Fecha de clausura</label>
+                                        <input
+                                            type="Date"
+                                            class="form-control"
+                                            name="inpDateClose"
+                                            id=""
+                                            aria-describedby="helpId"
+                                            placeholder=""
+                                        />
+                                        
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                                               
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" id="incluir" name="incluir" class="btn btn-primary">Crear Evento</button>
+                <input type="reset" class="btn btn-secondary" >limpiar</button>
+                
+            </div>
+            </form>    
+        </div>
+            
+        </div>
+        </div>
+
+
     <!--Modal de la competencia-->
 
 
@@ -104,9 +262,9 @@
                             <div class="col-2 d-flex justify-content-center">
                                 <button class="btn ">
                                     <div class="card" style="width: 10rem;">
-                                        <img src="img/atleta-foto.png" class="card-img-top img-thumbnail " alt="...">
+                                        <img src="" class="card-img-top img-thumbnail " alt="...">
                                         <div class="card-body">
-                                            <p class="card-text">Jugney Vargas</p>
+                                            <p class="card-text">Enny Torres</p>
                                         </div>
                                     </div>
                                 </button>
@@ -114,9 +272,9 @@
                             <div class="col-3 d-flex justify-content-center">
                                 <button class="btn">
                                     <div class="card" style="width: 10rem;">
-                                        <img src="img/atleta-foto.png" class="card-img-top img-thumbnail " alt="...">
+                                        <img src="" class="card-img-top img-thumbnail " alt="...">
                                         <div class="card-body">
-                                            <p class="card-text">Jugney Vargas</p>
+                                            <p class="card-text">Jesus Perez</p>
                                         </div>
                                     </div>
                                 </button>
@@ -145,30 +303,8 @@
 
     <!--Modal del atleta-->
 
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div>
-                Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images,
-                lists, etc.
-            </div>
-            <div class="dropdown mt-3">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    Dropdown button
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <!---->
+    
+    
 
     <div class="modal fade" id="ParticipanteJugney" style="display: none;" tabindex="-1"
         aria-labelledby="ParticipanteJugneylabel" aria-hidden="true" role="dialog">
