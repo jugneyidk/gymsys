@@ -24,7 +24,7 @@
 
                     <div class="col">
 
-                        <div class="card border-primary p-0" style="">
+                        <div class="card border-primary p-0">
                             <div class="card-header bg-primary"></div>
                             <div class="card-body">
                                 <h4 class="card-title text-info"><strong>Nacional Sub-15</strong></h4>
@@ -49,8 +49,8 @@
                                         20</em></blockquote>
                             </div>
                             <div class="card-footer bg-secondary">
-                                <a href="#" class="btn btn-outline-dark disabled">Ver</a> <a href="#"
-                                    class="btn btn-outline-dark disabled">Modificar</a>
+                                <a href="#" class="btn btn-outline-dark">Ver</a> <a href="#"
+                                    class="btn btn-outline-dark">Modificar</a>
                             </div>
                         </div>
 
