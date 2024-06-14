@@ -81,6 +81,12 @@ $(document).ready(function () {
       $("#slugarnacimiento"),
       "El lugar de nacimiento no puede estar vacío"
     );
+    esValido &= validarKeyUp(
+      /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+      $("#grado_instruccion"),
+      $("#slugarnacimiento"),
+      "El lugar de nacimiento no puede estar vacío"
+    );
     return esValido;
   }
 
