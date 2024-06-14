@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/all.min.css">
 </head>
 
-<body style="background-color: #f8f9fa;">
+<body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
 
     <div class="container mt-4">

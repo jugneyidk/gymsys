@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/all.min.css">
 </head>
 
-<body>
+<body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
 
     <div class="container mt-4">
@@ -104,9 +104,7 @@
             </div>
         </div>
     </div>
-    <footer>
-        <?php require_once ("comunes/footer.php"); ?>
-    </footer>
+    <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script src="js/wada.js"></script>
 </body>

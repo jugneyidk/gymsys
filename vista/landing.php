@@ -13,7 +13,7 @@ Estado: medio (falta añadir detalles para que este terminada)
     <title>Bienvenido!</title>
     <?php require_once("comunes/linkcss.php"); ?>
 </head>
-<body>
+<body class="d-flex flex-column vh-100">
     <header>
         <?php require_once("comunes/menu.php"); ?>
     </header>

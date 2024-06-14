@@ -8,7 +8,7 @@
     <?php require_once ("comunes/linkcss.php") ?>
 </head>
 
-<body>
+<body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
 
     <div class="container my-5">
@@ -49,10 +49,7 @@
             </div>
         </div>
     </div>
-
-    <footer>
-        <?php require_once ("comunes/footer.php"); ?>
-    </footer>
+    <?php require_once ("comunes/footer.php"); ?>
 </body>
 
 </html>

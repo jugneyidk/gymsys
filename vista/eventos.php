@@ -8,22 +8,13 @@
     <?php require_once ("comunes/linkcss.php") ?>
 </head>
 
-<body>
+<body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
-    <div class="container align-items-top pt-3" style="min-height: 85vh;">
+    <div class="container align-items-top pt-3">
         <div class="row justify-content-start ">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item active"><a href="#">Evento</a></li>
-
-                </ol>
-            </nav>
             <div class="col-lg-9 col-md-5">
                 <div class="row">
-
-
                     <div class="col">
-
                         <div class="card border-primary p-0">
                             <div class="card-header bg-primary"></div>
                             <div class="card-body">
@@ -37,10 +28,8 @@
                                     class="btn btn-outline-light">Modificar</a>
                             </div>
                         </div>
-
                     </div>
                     <div class="col">
-
                         <div class="card border-secondary p-0" style="">
                             <div class="card-header bg-secondary"></div>
                             <div class="card-body">
@@ -56,7 +45,6 @@
 
                     </div>
                     <div class="col">
-
                         <div class="card border-primary p-0" style="">
                             <div class="card-header bg-primary"></div>
                             <div class="card-body">
@@ -69,16 +57,9 @@
                                     class="btn btn-outline-light">Modificar</a>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
-
-
-
-
             </div>
-
             <div class="col-lg-3 col-md-4">
                 <div class="card p-4 mb-3 " id="">
                     <h4 class="card-title text-center mb-4">Acciones</h4>
@@ -344,13 +325,7 @@
             </div>
         </div>
     </div>
-
-
-
-
-    <footer>
-        <?php require_once ("comunes/footer.php"); ?>
-    </footer>
+    <?php require_once ("comunes/footer.php"); ?>
     <script src="js/eventos.js"></script>
     <script>
         function calculateTotals() {
