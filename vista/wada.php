@@ -24,7 +24,7 @@
                             <label for="atleta" class="form-label">Seleccionar Atleta:</label>
                             <select class="form-select" id="atleta" name="atleta" required>
                                 <option value="">Seleccione un atleta</option>
-                                <!-- Opciones de atletas aquí -->
+                                <option value = 'andre'>andre</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -103,8 +103,10 @@
 <footer>
     <?php require_once("comunes/footer.php"); ?>
 </footer>
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/sweetalert.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script>
 <script src="js/wada.js"></script>
 </body>
 </html>

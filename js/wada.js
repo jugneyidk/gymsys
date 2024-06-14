@@ -1,4 +1,10 @@
-$(document).ready(function() {
+$(document).ready(function () {
+    function carga_listado_wada() {
+        var datos = new FormData();
+        datos.append("accion", "listado_");
+        enviaAjax(datos);
+    }
+    //carga_listado_();
 
     function validarKeyPress(e, er) {
         var key = e.key;
@@ -19,53 +25,33 @@ $(document).ready(function() {
         }
     }
 
-    // Simular carga de atletas
-    var atletas = [
-        {id: 1, nombre: 'Juan Pérez'},
-        {id: 2, nombre: 'María Gómez'},
-        {id: 3, nombre: 'Carlos Ramírez'}
-    ];
-
-    var registrosWada = [];
-
-    atletas.forEach(function(atleta) {
-        var opcion = `<option value="${atleta.id}">${atleta.nombre}</option>`;
-        $('#atleta').append(opcion);
-    });
-
-    function actualizarEstadisticas() {
-        var totalCumplen = registrosWada.filter(registro => registro.status === 'cumple').length;
-        var totalNoCumplen = registrosWada.filter(registro => registro.status === 'no_cumple').length;
-        var totalAtletas = registrosWada.length;
-
-        $('#totalCumplen').text(totalCumplen);
-        $('#totalNoCumplen').text(totalNoCumplen);
-        $('#totalAtletas').text(totalAtletas);
+    function verificarCampoVacio(input, mensaje, textoError) {
+        if (input.val().trim() === '') {
+            input.removeClass('is-valid').addClass('is-invalid');
+            mensaje.text(textoError);
+            return false;
+        } else {
+            input.removeClass('is-invalid').addClass('is-valid');
+            mensaje.text('');
+            return true;
+        }
     }
 
-    function actualizarUltimosRegistros() {
-        $('#listaUltimosRegistros').empty();
-        registrosWada.slice(-5).forEach(function(registro) {
-            var item = `
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${registro.nombre} - ${registro.status}
-                    <span class="badge bg-primary rounded-pill">${registro.fecha}</span>
-                </li>`;
-            $('#listaUltimosRegistros').append(item);
-        });
+    function validarEnvio() {
+        var esValido = true;
+        esValido &= verificarCampoVacio($('#atleta'), $('#satleta'), 'Seleccione un atleta');
+        esValido &= verificarCampoVacio($('#status'), $('#sstatus'), 'Seleccione un status');
+        esValido &= verificarCampoVacio($('#inscrito'), $('#sinscrito'), 'Seleccione una fecha de inscripción');
+        esValido &= verificarCampoVacio($('#ultima_actualizacion'), $('#sultima_actualizacion'), 'Seleccione la última actualización');
+        esValido &= verificarCampoVacio($('#vencimiento'), $('#svencimiento'), 'Seleccione la fecha de vencimiento');
+        return esValido;
     }
 
-    $('#f').on('submit', function(e) {
-        e.preventDefault();
-    });
-
-    $("#incluir, #modificar, #eliminar").on("click", function() {
-        var action = $(this).attr("id");  
-       // (validarEnvio()) {  
-            $("#accion").val(action);  
-            var datos = new FormData($("#f")[0]);  
-            enviaAjax(datos);  
-       // }
+    $("#incluir").on("click", function() {
+        if (validarEnvio()) {
+            var datos = new FormData($("#f")[0]);
+            enviaAjax(datos);
+        }
     });
 
     function enviaAjax(datos) {
@@ -77,13 +63,43 @@ $(document).ready(function() {
             data: datos,
             processData: false,
             cache: false,
-            beforeSend: function () {
-             
-            },
+            beforeSend: function () {},
             timeout: 10000,
-            success: function (respuesta) {
-                Swal.fire("Éxito", "Operación realizada con éxito", "success");
-                $("#f")[0].reset();
+            success: function(respuesta){
+                try{
+                    var lee = JSON.parse(respuesta);
+                    if (lee.devol == 'listado_atletas') {
+                        if ($.fn.DataTable.isDataTable("#tablaatleta")) {
+                            $("#tablahabitantes").DataTable().destroy();
+                        }
+                        $("#listado").html(lee.mensaje);
+                        if (!$.fn.DataTable.isDataTable("#tablaatleta")) {
+                            $("#tablaatleta").DataTable({
+                                language: {
+                                    lengthMenu: "Mostrar _MENU_ por página",
+                                    zeroRecords: "No se encontraron atletas",
+                                    info: "Mostrando página _PAGE_ de _PAGES_",
+                                    infoEmpty: "No hay atletas disponibles",
+                                    infoFiltered: "(filtrado de _MAX_ registros totales)",
+                                    search: "Buscar:",
+                                    paginate: {
+                                        first: "Primera",
+                                        last: "Última",
+                                        next: "Siguiente",
+                                        previous: "Anterior",
+                                    },
+                                },
+                                autoWidth: false,
+                                order: [[1, "asc"]],
+                            });
+                        }
+                    } else {
+                        Swal.fire("Éxito", "Operación realizada con éxito", "success");
+                        $("#f")[0].reset();
+                    }
+                } catch {
+                    Swal.fire("Error", "algo salió mal", "error");
+                }
             },
             error: function (request, status, err) {
                 if (status === "timeout") {
@@ -92,10 +108,29 @@ $(document).ready(function() {
                     Swal.fire("Error", "Error al procesar la solicitud", "error");
                 }
             },
-            complete: function () {
-                
-            },
+            complete: function () {}
         });
     }
-
+    
+    $('input, select').on('keyup change', function() {
+        var id = $(this).attr('id');
+        switch(id) {
+            case 'atleta':
+                verificarCampoVacio($(this), $('#satleta'), 'Seleccione un atleta');
+                break;
+            case 'status':
+                verificarCampoVacio($(this), $('#sstatus'), 'Seleccione un status');
+                break;
+            case 'inscrito':
+                verificarCampoVacio($(this), $('#sinscrito'), 'Seleccione una fecha de inscripción');
+                break;
+            case 'ultima_actualizacion':
+                verificarCampoVacio($(this), $('#sultima_actualizacion'), 'Seleccione la última actualización');
+                break;
+            case 'vencimiento':
+                verificarCampoVacio($(this), $('#svencimiento'), 'Seleccione la fecha de vencimiento');
+                break;
+        }
+    });
 });
+

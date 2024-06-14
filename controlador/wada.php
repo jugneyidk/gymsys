@@ -1,10 +1,56 @@
 <?php
+// Verificar si el modelo existe
+if (!is_file("modelo/" . $p . ".php")) {
+    echo "No existe el modelo.";
+    exit;
+}
 
-  if(is_file("vista/".$p.".php")){
-	  require_once("vista/".$p.".php"); 
-  }
-  else{
-	  require_once("comunes/404.php"); 
-  }
+// Incluir el modelo
+require_once("modelo/" . $p . ".php");
 
+// Verificar si se envió un formulario por POST
+if (!empty($_POST)) {
+    // Crear una instancia de la clase del modelo
+    $o = new WADA(); // Asegúrate de que el nombre de la clase coincida con el nombre de tu modelo
+
+    // Obtener la acción desde el formulario
+    $accion = $_POST['accion'];
+
+    // Ejecutar la acción correspondiente
+    if ($accion == 'incluir') {
+        $respuesta = $o->incluir_wada(
+            $_POST['atleta'], 
+            $_POST['status'], 
+            $_POST['inscrito'],
+            $_POST['ultima_actualizacion'],
+            $_POST['vencimiento']
+        );
+        echo json_encode($respuesta);
+    } else if ($accion == 'listado_wada') {
+        $respuesta = $o->listado_wada();
+        echo json_encode($respuesta);
+    } else if ($accion == 'modificar') {
+        $respuesta = $o->modificar_wada(
+            $_POST['atleta'], 
+            $_POST['status'], 
+            $_POST['inscrito'],
+            $_POST['ultima_actualizacion'],
+            $_POST['vencimiento']
+        );
+        echo json_encode($respuesta);
+    } else if ($accion == 'eliminar') {
+        $respuesta = $o->eliminar_wada($_POST['id']);
+        echo json_encode($respuesta);
+    }
+
+    // Terminar la ejecución del script después de procesar la solicitud
+    exit;
+}
+
+// Verificar si la vista existe y cargarla
+if (is_file("vista/" . $p . ".php")) {
+    require_once("vista/" . $p . ".php");
+} else {
+    require_once("comunes/404.php");
+}
 ?>
