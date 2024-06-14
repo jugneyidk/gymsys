@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +13,8 @@
         <div class="row justify-content-center w-100">
             <div class="card p-4 col-lg-8 col-md-10 mb-3">
                 <h2 class="card-title text-center mb-4">Inscripción de Atletas</h2>
-                <form>
+                <form method="post" id = "f" autocomplete="off">
+                <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="nombres" class="form-label">Nombres:</label>
@@ -116,7 +117,7 @@
                             <div id="stelefono_representante" class="invalid-feedback"></div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Registrar Atleta</button>
+                    <button id="incluir" name = "incluir" class="btn btn-primary btn-block">Registrar Atleta</button>
                 </form>
             </div>
             

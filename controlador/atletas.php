@@ -1,10 +1,81 @@
 <?php
-
-  if(is_file("vista/".$p.".php")){
-	  require_once("vista/".$p.".php"); 
+if (!is_file("modelo/" . $p . ".php")) {
+  echo "Falta definir la clase " . $p;
+  exit;
+}
+require_once("modelo/" . $p . ".php");
+if (is_file("vista/" . $p . ".php")) {
+  $o = new Atleta();
+  //$permisos = $o->chequearpermisos();
+  if (!empty($_POST)) {
+    $accion = $_POST['accion'];
+    if ($accion == 'listado_habitantes') {
+      //$respuesta = $o->listadoAtleta();
+      //echo json_encode($respuesta);
+    }  elseif ($accion == 'incluir') {
+        $respuesta = $o->incluir(
+        $_POST['nombres'], 
+        $_POST['apellidos'], 
+        $_POST['cedula'], 
+        $_POST['genero'], 
+        $_POST['fecha_nacimiento'], 
+        $_POST['edad'], 
+        $_POST['lugar_nacimiento'], 
+        $_POST['peso'], 
+        $_POST['altura'], 
+        $_POST['tipo_atleta'], 
+        $_POST['estado_civil'], 
+        $_POST['telefono'], 
+        $_POST['correo'], 
+        $_POST['entrenador_asignado'], 
+        $_POST['nombre_representante'], 
+        $_POST['telefono_representante']);
+      echo json_encode($respuesta);
+    }
+    elseif ($accion == 'modificar') {
+      $respuesta = $o->modificar(
+        $_POST['nombres'], 
+        $_POST['apellidos'], 
+        $_POST['cedula'], 
+        $_POST['genero'], 
+        $_POST['fecha_nacimiento'], 
+        $_POST['edad'], 
+        $_POST['lugar_nacimiento'], 
+        $_POST['peso'], 
+        $_POST['altura'], 
+        $_POST['tipo_atleta'], 
+        $_POST['estado_civil'], 
+        $_POST['telefono'], 
+        $_POST['correo'], 
+        $_POST['entrenador_asignado'], 
+        $_POST['nombre_representante'], 
+        $_POST['telefono_representante']);
+      echo json_encode($respuesta);
+    }
+    elseif ($accion == 'eliminar') {
+      $respuesta = $o->eliminar($_POST['id']);
+      echo json_encode($respuesta);
+    }
+    exit;
   }
-  else{
-	  require_once("comunes/404.php"); 
-  }
+  require_once("vista/" . $p . ".php");
+} else {
+  echo "pagina en construccion";
+}
 
-?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

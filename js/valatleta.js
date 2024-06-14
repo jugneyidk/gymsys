@@ -1,6 +1,4 @@
-$(document).ready(function () {
-   
-
+$(document).ready(function() {
     function validarKeyPress(e, er) {
         var key = e.key;
         if (!er.test(key)) {
@@ -51,38 +49,9 @@ $(document).ready(function () {
         return edad;
     }
 
-    function enviaAjax(datos) {
-        $.ajax({
-            async: true,
-            url: '',
-            type: "POST",
-            contentType: false,
-            data: datos,
-            processData: false,
-            cache: false,
-            beforeSend: function () {
-             
-            },
-            timeout: 10000,
-            success: function (respuesta) {
-                Swal.fire("Éxito", "Operación realizada con éxito", "success");
-                $("#f")[0].reset();
-            },
-            error: function (request, status, err) {
-                if (status === "timeout") {
-                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                } else {
-                    Swal.fire("Error", "Error al procesar la solicitud", "error");
-                }
-            },
-            complete: function () {
-                
-            },
-        });
-    }
-
     function validarEnvio() {
         var esValido = true;
+
         esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#nombres'), $('#snombres'), 'Solo letras y espacios (1-50 caracteres)');
         esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#apellidos'), $('#sapellidos'), 'Solo letras y espacios (1-50 caracteres)');
         esValido &= validarKeyUp(/^\d{8,}$/, $('#cedula'), $('#scedula'), 'La cédula debe tener al menos 8 números');
@@ -97,18 +66,7 @@ $(document).ready(function () {
 
         return esValido;
     }
-    $("#f").on("submit", function(e){
-        e.preventDefault();
-    });
-    $("#incluir, #modificar, #eliminar").on("click", function() {
-        var action = $(this).attr("id");  
-       // (validarEnvio()) {  
-            $("#accion").val(action);  
-            var datos = new FormData($("#f")[0]);  
-            enviaAjax(datos);  
-       // }
-    });
-    
+
     $('input').on('keypress', function(e) {
         var id = $(this).attr('id');
         switch(id) {
@@ -170,15 +128,36 @@ $(document).ready(function () {
         }
     });
 
-      
-       $('#fecha_nacimiento').on('change', function() {
-        verificarFecha(); 
-        var edad = calcularEdad($(this).val());  
-        $('#edad').val(edad); 
+    $('#fecha_nacimiento').on('change', function() {
+        verificarFecha();
+        var edad = calcularEdad($(this).val());
+        $('#edad').val(edad);
         if (edad < 18) {
-            $('#representanteInfo').show(); 
+            $('#representanteInfo').show();
         } else {
-            $('#representanteInfo').hide(); 
+            $('#representanteInfo').hide();
+        }
+    });
+
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        if (validarEnvio()) {
+            $.ajax({
+                url: 'submit_atleta.php',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    alert('Atleta registrado exitosamente.');
+                    $('form').trigger('reset');
+                    $('.is-valid').removeClass('is-valid');
+                    $('.is-invalid').removeClass('is-invalid');
+                },
+                error: function() {
+                    alert('Error al registrar el atleta.');
+                }
+            });
+        } else {
+            alert('Por favor, corrija los errores en el formulario.');
         }
     });
 });
