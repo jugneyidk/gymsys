@@ -19,10 +19,10 @@
                 <input type="date" id="fechaAsistencia" class="form-control w-auto">
             </div>
             <div id="listaAsistencias">
-                <!-- Asistencias aquí pero no se poq no hay base de dato -->
+               
             </div>
         </div>
-    </div>
+    </div> 
     <div class="row justify-content-center mt-4">
         <div class="col-lg-10">
             <div id="formTomarAsistencia" style="display: none;">
@@ -37,7 +37,7 @@
                             </tr>
                         </thead>
                         <tbody id="listaAtletas">
-                            <!-- atletas aquí modefolekeee-->
+                           
                         </tbody>
                     </table>
                 </div>
@@ -50,5 +50,7 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.bundle.min.js"></script>
 <script src="js/asistencias.js"></script>
+<script src="js/sweetalert.js"></script>
+<script type="text/javascript" src="datatables/datatables.min.js"></script>
 </body>
 </html>

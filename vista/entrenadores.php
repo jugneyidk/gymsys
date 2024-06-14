@@ -98,17 +98,35 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Lista de entrenadores inscritos aquí.</p>
+                    <div class="table-responsive">
+					<table class="table table-striped table-hover" id="tablaentrenador">
+						<thead>
+							<tr>
+								<th>Cedula</th>
+            					<th>Nombre</th>
+								<th>Apellidos</th>
+								<th>Genero</th>
+								<th>Fecha nac</th>
+                                <th>Correo electronico</th>
+								<th>Accion</th>
+							</tr>
+						</thead>
+						<tbody id="listado">
+						</tbody>
+					</table>
+				</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
     <footer>
     <?php require_once("comunes/footer.php"); ?>
     </footer>
+    <script src="js/sweetalert.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/entrenadores.js"></script>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script>
 </body>
 </html>

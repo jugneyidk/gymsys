@@ -23,7 +23,7 @@ $(document).ready(function () {
             mensaje.text(textoError);
             return false;
         }
-    }
+    } 
 
     function verificarCampoVacio(input, mensaje, textoError) {
         if (input.val().trim() === '') {
@@ -47,12 +47,14 @@ $(document).ready(function () {
         return esValido;
     }
 
-    $("#incluir").on("click", function() {
+    $("#incluir, #modificar, #eliminar").on("click", function () {
+        var action = $(this).attr("id");
         if (validarEnvio()) {
-            var datos = new FormData($("#f")[0]);
-            enviaAjax(datos);
+          $("#accion").val(action);
+          var datos = new FormData($("#f")[0]);
+          enviaAjax(datos);
         }
-    });
+      });
 
     function enviaAjax(datos) {
         $.ajax({

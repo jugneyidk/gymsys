@@ -18,7 +18,7 @@
                     <h2>Registrar Mensualidad</h2>
                 </div>
                 <div class="card-body">
-                    <form id="f" action="" method="POST">
+                    <form id="f" method="POST">
                     <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
                         <div class="mb-3">
                             <label for="id_atleta" class="form-label">Atleta:</label>
@@ -28,8 +28,8 @@
                             <label for="tipo_mensualidad" class="form-label">Tipo de Mensualidad:</label>
                             <select class="form-select" id="tipo_mensualidad" name="tipo_mensualidad" required>
                                 <option value="">Seleccione el tipo</option>
-                                <option value="normal">Normal</option>
-                                <option value="especial">Especial</option>
+                                <option value="1">Normal</option>
+                                <option value="2">Especial</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -52,6 +52,9 @@
     </div>
 </div>
 <?php require_once("comunes/footer.php"); ?>
+<script src="js/sweetalert.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
