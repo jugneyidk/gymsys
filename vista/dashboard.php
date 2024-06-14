@@ -17,7 +17,7 @@
             <div class="row justify-content-center">
                 <div class="row mt-4">
                     <div class="col-6 col-md-3 d-flex align-items-stretch">
-                        <div class="card text-white bg-primary mb-3">
+                        <div class="card text-white bg-primary mb-3 w-100">
                             <div class="card-header"><i class="fas fa-users"></i> Atletas</div>
                             <div class="card-body">
                                 <h5 class="card-title">120</h5>
@@ -26,7 +26,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-md-3 d-flex align-items-stretch">
-                        <div class="card text-white bg-success mb-3">
+                        <div class="card text-white bg-success mb-3 w-100">
                             <div class="card-header"><i class="fas fa-user-friends"></i> Entrenadores</div>
                             <div class="card-body">
                                 <h5 class="card-title">15</h5>
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-md-3 d-flex align-items-stretch">
-                        <div class="card text-white bg-warning mb-3">
+                        <div class="card text-white bg-warning mb-3 w-100">
                             <div class="card-header"><i class="fas fa-chart-line"></i> Reportes</div>
                             <div class="card-body">
                                 <h5 class="card-title">35</h5>
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                     <div class="col-6 col-md-3 d-flex align-items-stretch">
-                        <div class="card text-white bg-danger mb-3">
+                        <div class="card text-white bg-danger mb-3 w-100">
                             <div class="card-header"><i class="fas fa-cogs"></i> WADA</div>
                             <div class="card-body">
                                 <h5 class="card-title">5</h5>
