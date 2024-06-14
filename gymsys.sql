@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-06-2024 a las 09:33:01
+-- Tiempo de generación: 14-06-2024 a las 15:21:16
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -58,6 +58,13 @@ CREATE TABLE `atleta` (
   `correo_electronico` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `atleta`
+--
+
+INSERT INTO `atleta` (`cedula`, `id_entrenador`, `nombre`, `apellido`, `tipo_atleta`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `peso`, `altura`, `telefono`, `correo_electronico`) VALUES
+('9613365', '5628625', 'Id fugit ipsum dolo', 'Rerum fugit at repr', 2, 'Femenino', '2010-11-11', 'Culpa consequatur D', 'Viudo', 90.00, 94.00, '04245452769', 'zybewupu@mailinator.com');
+
 -- --------------------------------------------------------
 
 --
@@ -100,7 +107,7 @@ CREATE TABLE `entrenador` (
 --
 
 INSERT INTO `entrenador` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`, `grado_instruccion`) VALUES
-('Labore pro', 'Omnis velit qui eu d', 'Voluptatem dolore ar', 'Masculino', '2001-09-13', 'Enim et cum nostrud ', 'Viudo', '+1 (588) 831-61', 'dofevy@mailinator.com', 'Deserunt consequatur');
+('5628625', 'Exercitation dolorem', 'Assumenda reiciendis', 'Femenino', '1990-09-01', 'Eiusmod consectetur', 'Viudo', '04577655314', 'samazysa@mailinator.com', 'Quasi ipsum veniam');
 
 -- --------------------------------------------------------
 
