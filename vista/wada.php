@@ -18,21 +18,21 @@
                     <h2>Registrar Status WADA</h2>
                 </div>
                 <div class="card-body">
-                    <form id="f">
+                    <form id="f" method="post" autocomplete="off">
                     <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
                         <div class="mb-3">
                             <label for="atleta" class="form-label">Seleccionar Atleta:</label>
                             <select class="form-select" id="atleta" name="atleta" required>
                                 <option value="">Seleccione un atleta</option>
-                                <option value = 'andre'>andre</option>
+                                <option value = 28>andre</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="status" class="form-label">Status WADA:</label>
                             <select class="form-select" id="status" name="status" required>
                                 <option value="">Seleccione el status</option>
-                                <option value="cumple">Cumple</option>
-                                <option value="no_cumple">No Cumple</option>
+                                <option value="1">Cumple</option>
+                                <option value="2">No Cumple</option>
                             </select>
                         </div>
                         <div class="mb-3">
