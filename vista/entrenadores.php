@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="genero" class="form-label">Género:</label>
-                            <select class="form-control" id="genero" name="genero">
+                            <select class="form-select" id="genero" name="genero">
                                 <option>Masculino</option>
                                 <option>Femenino</option>
                             </select>
@@ -54,7 +54,7 @@
                         
                         <div class="col-md-6 mb-3">
                             <label for="estado_civil" class="form-label">Estado Civil:</label>
-                            <select class="form-control" id="estado_civil" name="estado_civil">
+                            <select class="form-select" id="estado_civil" name="estado_civil">
                                 <option>Soltero</option>
                                 <option>Casado</option>
                                 <option>Divorciado</option>

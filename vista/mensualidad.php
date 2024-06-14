@@ -26,7 +26,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="tipo_mensualidad" class="form-label">Tipo de Mensualidad:</label>
-                            <select class="form-control" id="tipo_mensualidad" name="tipo_mensualidad" required>
+                            <select class="form-select" id="tipo_mensualidad" name="tipo_mensualidad" required>
                                 <option value="">Seleccione el tipo</option>
                                 <option value="normal">Normal</option>
                                 <option value="especial">Especial</option>
