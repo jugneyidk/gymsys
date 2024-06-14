@@ -21,7 +21,7 @@ if (!empty($_POST)) {
         $respuesta = $o->incluir_wada(
             $_POST['atleta'], 
             $_POST['status'], 
-            $_POST['inscrito'],
+            $_POST['inscrito'], 
             $_POST['ultima_actualizacion'],
             $_POST['vencimiento']
         );

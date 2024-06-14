@@ -24,7 +24,7 @@ class Entrenador extends datos
         $this->correo_electronico = $correo_electronico;
         $this->grado_instruccion = $grado_instruccion;
         return $this->incluir();
-    }
+    } 
 
     public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico)
     {
@@ -42,7 +42,7 @@ class Entrenador extends datos
 
     public function listado_entrenador()
     {
-        return $this->listado();
+        return $this->listado_entrenadores();
     }
 
     private function incluir()
@@ -100,15 +100,31 @@ class Entrenador extends datos
         }
         return $resultado;
     }
-    private function listado()
+    private function listado_entrenadores()
     {
         try {
-            $consulta = "SELECT * FROM `atleta` ORDER BY cedula DESC";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $consulta = "SELECT * FROM `entrenador` ORDER BY cedula DESC";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $resultado = $con->fetchAll(PDO::FETCH_ASSOC);
+            
+            $respuesta = '';
+            if ($resultado) {
+                foreach ($resultado as $r) {
+                    $respuesta .= "<tr style='cursor:pointer' onclick='coloca(this);'>";
+                    $respuesta .= "<td class='align-middle'>{$r['cedula']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['nombre']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['apellido']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['genero']}</td>"; 
+                    $respuesta .= "<td class='align-middle'>{$r['telefono']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['correo_electronico']}</td>";
+                    $respuesta .= "<td class='align-middle'><button>Modificar</button><button>Eliminar</button></td>";
+                    $respuesta .= "</tr>";
+                }
+            }
+            $resultado["mensaje"] = $respuesta;
             $resultado["ok"] = true;
-            $resultado["devol"] = 'listado_atletas';
+            $resultado["devol"] = 'listado_entrenador';
             $resultado["respuesta"] = $respuesta;
         } catch (Exception $e) {
             $resultado["ok"] = false;
@@ -116,6 +132,7 @@ class Entrenador extends datos
         }
         return $resultado;
     }
+    
     public function __get($propiedad)
     {
         return $this->$propiedad;

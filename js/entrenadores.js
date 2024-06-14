@@ -119,7 +119,7 @@ $(document).ready(function () {
           $("#snombres"),
           "Solo letras y espacios (1-50 caracteres)"
         );
-        break;
+        break; 
       case "apellidos":
         validarKeyUp(
           /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
@@ -202,8 +202,31 @@ $(document).ready(function () {
       success: function (respuesta) {
         try {
           var lee = JSON.parse(respuesta);
-          if (lee.devol == "listado_entrenadores") {
-            console.log(respuesta);
+          if (lee.devol == "listado_entrenador") {
+            if ($.fn.DataTable.isDataTable("#tablaentrenador")) {
+              $("#tablaentrenador").DataTable().destroy();
+            }
+            $("#listado").html(lee.mensaje);
+            if (!$.fn.DataTable.isDataTable("#tablaentrenador")) {
+              $("#tablaentrenador").DataTable({
+                language: {
+                  lengthMenu: "Mostrar _MENU_ por página",
+                  zeroRecords: "No se encontraron entrenadores",
+                  info: "Mostrando página _PAGE_ de _PAGES_",
+                  infoEmpty: "No hay entrenadores disponibles",
+                  infoFiltered: "(filtrado de _MAX_ registros totales)",
+                  search: "Buscar:",
+                  paginate: {
+                    first: "Primera",
+                    last: "Última",
+                    next: "Siguiente",
+                    previous: "Anterior",
+                  },
+                },
+                autoWidth: false,
+                order: [[1, "asc"]],
+              });
+            }
           } else {
             Swal.fire("Éxito", "Operación realizada con éxito", "success");
             $("#f")[0].reset();

@@ -45,7 +45,7 @@ class Mensualidad extends datos
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO mensualidad (id_atleta, tipo, cobro, pago, fecha) 
+            $consulta = "INSERT INTO mensualidades (id_atleta, tipo, cobro, pago, fecha) 
                          VALUES (:id_atleta, :tipo, :cobro, :pago, :fecha)";
             $valores = array(
                 ':id_atleta' => $this->id_atleta,
@@ -68,7 +68,7 @@ class Mensualidad extends datos
     private function listado()
     {
         try {
-            $consulta = "SELECT * FROM mensualidad ORDER BY id_mensualidad DESC";
+            $consulta = "SELECT * FROM mensualidades ORDER BY id_mensualidad DESC";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -84,7 +84,7 @@ class Mensualidad extends datos
     private function modificar()
     {
         try {
-            $consulta = "UPDATE mensualidad SET id_atleta = :id_atleta, tipo = :tipo, cobro = :cobro, pago = :pago, fecha = :fecha                          WHERE id_mensualidad = :id_mensualidad";
+            $consulta = "UPDATE mensualidades SET id_atleta = :id_atleta, tipo = :tipo, cobro = :cobro, pago = :pago, fecha = :fecha                          WHERE id_mensualidad = :id_mensualidad";
             $valores = array(
                 ':id_mensualidad' => $this->id_mensualidad,
                 ':id_atleta' => $this->id_atleta,

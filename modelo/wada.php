@@ -19,7 +19,7 @@ class WADA extends datos // Nombre de la clase del modelo
         $this->vencimiento = $vencimiento;
         return $this->incluir();
     }
-
+ 
     public function listado_wada() // Función pública que hace set a los atributos y llama a la función privada
     {
         return $this->listado();

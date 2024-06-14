@@ -39,13 +39,18 @@ $(document).ready(function () {
         esValido &= verificarCampoVacio($('#fecha'), $('#sfecha'), 'La fecha es obligatoria');
         return esValido;
     }
+    $("f").on("submit", function(e){
+        e.preventDefault();
+    })
 
-    $("#incluir").on("click", function() {
-        if (validarEnvio()) {
-            var datos = new FormData($("#f")[0]);
-            enviaAjax(datos);
-        }
-    });
+    $("#incluir, #modificar, #eliminar").on("click", function () {
+    var action = $(this).attr("id");
+    if (validarEnvio()) {
+      $("#accion").val(action);
+      var datos = new FormData($("#f")[0]);
+      enviaAjax(datos);
+    }
+  });
 
     function enviaAjax(datos) {
         $.ajax({

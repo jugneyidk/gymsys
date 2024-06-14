@@ -107,7 +107,7 @@ $(document).ready(function() {
              
             },
             timeout: 10000,
-            success: function (respuesta) {
+            success: function (respuesta) { 
                 Swal.fire("Éxito", "Operación realizada con éxito", "success");
                 $("#f")[0].reset();
             },
