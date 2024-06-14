@@ -23,7 +23,6 @@ $(document).ready(function () {
       return false;
     }
   }
-
   function verificarFecha() {
     var fecha = $("#fecha_nacimiento").val();
     if (!fecha) {
@@ -43,18 +42,6 @@ $(document).ready(function () {
       return true;
     }
   }
-
-  function calcularEdad(fechaNacimiento) {
-    var hoy = new Date();
-    var fechaNac = new Date(fechaNacimiento);
-    var edad = hoy.getFullYear() - fechaNac.getFullYear();
-    var mes = hoy.getMonth() - fechaNac.getMonth();
-    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-      edad--;
-    }
-    return edad;
-  }
-
   function validarEnvio() {
     var esValido = true;
     esValido &= validarKeyUp(
@@ -70,10 +57,10 @@ $(document).ready(function () {
       "Solo letras y espacios (1-50 caracteres)"
     );
     esValido &= validarKeyUp(
-      /^\d{8,}$/,
+      /^[0-9]{7,}$/,
       $("#cedula"),
       $("#scedula"),
-      "La cédula debe tener al menos 8 números"
+      "La cédula debe tener al menos 7 números"
     );
     esValido &= validarKeyUp(
       /^04\d{9}$/,
@@ -82,28 +69,10 @@ $(document).ready(function () {
       "El formato del teléfono debe ser 04XXXXXXXXX"
     );
     esValido &= validarKeyUp(
-      /^04\d{9}$/,
-      $("#telefono_representante"),
-      $("#stelefono_representante"),
-      "El formato del teléfono debe ser 04XXXXXXXXX"
-    );
-    esValido &= validarKeyUp(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      $("#correo"),
+      $("#correo_electronico"),
       $("#scorreo"),
       "Correo inválido"
-    );
-    esValido &= validarKeyUp(
-      /^\d+(\.\d{1,2})?$/,
-      $("#peso"),
-      $("#speso"),
-      "Solo números y puntos decimales"
-    );
-    esValido &= validarKeyUp(
-      /^\d+(\.\d{1,2})?$/,
-      $("#altura"),
-      $("#saltura"),
-      "Solo números y puntos decimales"
     );
     esValido &= verificarFecha();
     esValido &= validarKeyUp(
@@ -112,7 +81,6 @@ $(document).ready(function () {
       $("#slugarnacimiento"),
       "El lugar de nacimiento no puede estar vacío"
     );
-
     return esValido;
   }
 
@@ -127,15 +95,10 @@ $(document).ready(function () {
       case "cedula":
       case "edad":
       case "telefono":
-      case "telefono_representante":
-        validarKeyPress(e, /^\d*$/);
-        break;
       case "correo":
         validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
         break;
-      case "peso":
-      case "altura":
-        validarKeyPress(e, /^\d*\.?\d*$/);
+      default:
         break;
     }
   });
@@ -161,10 +124,10 @@ $(document).ready(function () {
         break;
       case "cedula":
         validarKeyUp(
-          /^\d{8,}$/,
+          /^[0-9]{8,}$/,
           $(this),
           $("#scedula"),
-          "La cédula debe tener al menos 8 números"
+          "La cédula debe tener al menos 7 números"
         );
         break;
       case "telefono":
@@ -175,15 +138,7 @@ $(document).ready(function () {
           "El formato del teléfono debe ser 04XXXXXXXXX"
         );
         break;
-      case "telefono_representante":
-        validarKeyUp(
-          /^04\d{9}$/,
-          $(this),
-          $("#stelefono_representante"),
-          "El formato del teléfono debe ser 04XXXXXXXXX"
-        );
-        break;
-      case "correo":
+       case "correo_electronico":
         validarKeyUp(
           /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
           $(this),
@@ -196,6 +151,14 @@ $(document).ready(function () {
           /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
           $(this),
           $("#slugarnacimiento"),
+          "El lugar de nacimiento no puede estar vacío"
+        );
+        break;
+        case "grado_instruccion":
+        validarKeyUp(
+          /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+          $(this),
+          $("#sgrado_instruccion"),
           "El lugar de nacimiento no puede estar vacío"
         );
         break;
@@ -212,11 +175,11 @@ $(document).ready(function () {
 
   $("#incluir, #modificar, #eliminar").on("click", function () {
     var accion = $(this).attr("id");
-    // if (validarEnvio()) {
+    if (validarEnvio()) {
       var datos = new FormData($("#f")[0]);
-      datos.append("accion", accion)
+      datos.append("accion", accion);
       enviaAjax(datos);
-    // }
+    }
   });
 
   function enviaAjax(datos) {

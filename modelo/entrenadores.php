@@ -48,13 +48,13 @@ class Entrenador extends datos
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO entrenador (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico, grado_instruccion) 
-                         VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico, :grado_instruccion)";
+            $consulta = "INSERT INTO entrenador (cedula, nombres, apellidos, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico, grado_instruccion) 
+                         VALUES (:cedula, :nombres, :apellidos, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico, :grado_instruccion)";
 
             $valores = array(
                 ':cedula' => $this->cedula,
-                ':nombre' => $this->nombres,
-                ':apellido' => $this->apellidos,
+                ':nombres' => $this->nombres,
+                ':apellidos' => $this->apellidos,
                 ':genero' => $this->genero,
                 ':fecha_nacimiento' => $this->fecha_nacimiento,
                 ':lugar_nacimiento' => $this->lugar_nacimiento,
@@ -77,12 +77,12 @@ class Entrenador extends datos
     private function modificar()
     {
         try {
-            $consulta = "UPDATE entrenador SET cedula = :cedula, nombre = :nombre, apellido = :apellido, genero = :genero, fecha_nacimiento = :fecha_nacimiento, lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, telefono = :telefono, correo_electronico = :correo_electronico, grado_instruccion = :grado_instruccion WHERE cedula = :cedula";
+            $consulta = "UPDATE entrenador SET cedula = :cedula, nombres = :nombres, apellidos = :apellidos, genero = :genero, fecha_nacimiento = :fecha_nacimiento, lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, telefono = :telefono, correo_electronico = :correo_electronico, grado_instruccion = :grado_instruccion WHERE cedula = :cedula";
 
             $valores = array(
                 ':cedula' => $this->cedula,
-                ':nombre' => $this->nombres,
-                ':apellido' => $this->apellidos,
+                ':nombres' => $this->nombres,
+                ':apellidos' => $this->apellidos,
                 ':genero' => $this->genero,
                 ':fecha_nacimiento' => $this->fecha_nacimiento,
                 ':lugar_nacimiento' => $this->lugar_nacimiento,
