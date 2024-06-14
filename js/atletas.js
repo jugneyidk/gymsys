@@ -66,7 +66,7 @@ $(document).ready(function () {
         esValido &= validarKeyUp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $('#correo'), $('#scorreo'), 'Correo inválido');
         esValido &= validarKeyUp(/^\d+(\.\d{1,2})?$/, $('#peso'), $('#speso'), 'Solo números y puntos decimales');
         esValido &= validarKeyUp(/^\d+(\.\d{1,2})?$/, $('#altura'), $('#saltura'), 'Solo números y puntos decimales');
-        //esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#entrenador_asignado'), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
+        esValido &= validarKeyUp(/^04\d{9}$/, $('#entrenador_asignado'), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
         esValido &= verificarFecha();
         esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/, $('#lugar_nacimiento'), $('#slugarnacimiento'), 'El lugar de nacimiento no puede estar vacío');
 
@@ -79,11 +79,12 @@ $(document).ready(function () {
         switch(id) {
             case 'nombres':
             case 'apellidos':
-            //case 'entrenador_asignado':
+            
             case 'lugar_nacimiento':
                 validarKeyPress(e, /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/);
                 break;
             case 'cedula':
+                case 'entrenador_asignado':
             case 'edad':
             case 'telefono':
             case 'telefono_representante':
@@ -126,9 +127,9 @@ $(document).ready(function () {
             case 'altura':
                 validarKeyUp(/^\d+(\.\d{1,2})?$/, $(this), $('#saltura'), 'Solo números y puntos decimales');
                 break;
-           /* case 'entrenador_asignado':
-                validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $(this), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
-                break;*/
+            case 'entrenador_asignado':
+               validarKeyUp(/^\d{8,}$/, $(this), $('#scedula'), 'La cédula debe tener al menos 8 números');
+                break;
             case 'lugar_nacimiento':
                 validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/, $(this), $('#slugarnacimiento'), 'El lugar de nacimiento no puede estar vacío');
                 break;
@@ -178,7 +179,30 @@ $(document).ready(function () {
                 try{
                     var lee = JSON.parse(respuesta);
                     if (lee.devol == 'listado_atletas') {
-                        console.log(respuesta);
+                        if ($.fn.DataTable.isDataTable("#tablaatleta")) {
+                            $("#tablahabitantes").DataTable().destroy();
+                          }
+                          $("#listado").html(lee.mensaje);
+                          if (!$.fn.DataTable.isDataTable("#tablaatleta")) {
+                            $("#tablaatleta").DataTable({
+                              language: {
+                                lengthMenu: "Mostrar _MENU_ por página",
+                                zeroRecords: "No se encontraron atletas",
+                                info: "Mostrando página _PAGE_ de _PAGES_",
+                                infoEmpty: "No hay atletas disponibles",
+                                infoFiltered: "(filtrado de _MAX_ registros totales)",
+                                search: "Buscar:",
+                                paginate: {
+                                  first: "Primera",
+                                  last: "Última",
+                                  next: "Siguiente",
+                                  previous: "Anterior",
+                                }, 
+                              },
+                              autoWidth: false,
+                              order: [[1, "asc"]],
+                            });
+                          }
                     } else{
                         Swal.fire("Éxito", "Operación realizada con éxito", "success");
                 $("#f")[0].reset();

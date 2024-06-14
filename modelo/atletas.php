@@ -57,7 +57,7 @@ class Atleta extends datos
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO atleta (cedula, id_entrenador, nombre, apellido, tipo_atleta, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, peso, altura, telefono, correo) 
+            $consulta = "INSERT INTO atleta (cedula, id_entrenador, nombre, apellido, tipo_atleta, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, peso, altura, telefono, correo_electronico) 
                          VALUES (:cedula, :id_entrenador, :nombre, :apellido, :tipo_atleta, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :peso, :altura, :telefono, :correo)";
 
             $valores = array(
@@ -90,7 +90,7 @@ class Atleta extends datos
     {
         try {
             $consulta = "UPDATE atleta SET id_entrenador = :id_entrenador, nombre = :nombre, apellido = :apellido, tipo_atleta = :tipo_atleta, genero = :genero, fecha_nacimiento = :fecha_nacimiento, 
-                         lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, peso = :peso, altura = :altura, telefono = :telefono, correo = :correo 
+                         lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, peso = :peso, altura = :altura, telefono = :telefono, correo_electronico = :correo 
                          WHERE cedula = :cedula";
 
             $valores = array(
@@ -123,9 +123,27 @@ class Atleta extends datos
     {
         try {
             $consulta = "SELECT * FROM `atleta` ORDER BY cedula DESC";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $resultado = $con->fetchAll(PDO::FETCH_ASSOC);
+            
+            $respuesta = '';
+            if ($resultado) {
+                foreach ($resultado as $r) {
+                    $respuesta .= "<tr style='cursor:pointer' onclick='coloca(this);'>";
+                    
+                    $respuesta .= "<td class='align-middle'>{$r['cedula']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['id_entrenador']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['nombre']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['apellido']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['tipo_atleta']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['genero']}</td>";
+                    $respuesta .= "<td class='align-middle'>{$r['fecha_nacimiento']}</td>";
+                    $respuesta .= "<td class='align-middle'><button>modificar</button><button>Eliminar</button></td>";
+                    $respuesta .= "</tr>";
+                }
+            }
+            $resultado["mensaje"] = $respuesta;
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_atletas';
             $resultado["respuesta"] = $respuesta;
@@ -135,6 +153,7 @@ class Atleta extends datos
         }
         return $resultado;
     }
+    
 
     public function __get($propiedad)
     {
