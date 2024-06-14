@@ -18,7 +18,8 @@
                     <h2>Registrar Status WADA</h2>
                 </div>
                 <div class="card-body">
-                    <form id="wadaForm">
+                    <form id="f">
+                    <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
                         <div class="mb-3">
                             <label for="atleta" class="form-label">Seleccionar Atleta:</label>
                             <select class="form-select" id="atleta" name="atleta" required>
@@ -46,7 +47,7 @@
                             <label for="vencimiento" class="form-label">Vencimiento:</label>
                             <input type="date" class="form-control" id="vencimiento" name="vencimiento" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="button" class="btn btn-primary" id="incluir">Registrar</button>
                     </form>
                     <div id="mensaje" class="mt-3"></div>
                 </div>

@@ -1,6 +1,11 @@
 $(document).ready(function () {
    
-
+    function carga_listado_atleta() {
+        var datos = new FormData();
+        datos.append("accion", "listado_atleta");
+        enviaAjax(datos);
+      }
+      carga_listado_atleta();
     function validarKeyPress(e, er) {
         var key = e.key;
         if (!er.test(key)) {
@@ -51,36 +56,6 @@ $(document).ready(function () {
         return edad;
     }
 
-    function enviaAjax(datos) {
-        $.ajax({
-            async: true,
-            url: '',
-            type: "POST",
-            contentType: false,
-            data: datos,
-            processData: false,
-            cache: false,
-            beforeSend: function () {
-             
-            },
-            timeout: 10000,
-            success: function (respuesta) {
-                Swal.fire("Éxito", "Operación realizada con éxito", "success");
-                $("#f")[0].reset();
-            },
-            error: function (request, status, err) {
-                if (status === "timeout") {
-                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                } else {
-                    Swal.fire("Error", "Error al procesar la solicitud", "error");
-                }
-            },
-            complete: function () {
-                
-            },
-        });
-    }
-
     function validarEnvio() {
         var esValido = true;
         esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#nombres'), $('#snombres'), 'Solo letras y espacios (1-50 caracteres)');
@@ -91,30 +66,20 @@ $(document).ready(function () {
         esValido &= validarKeyUp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, $('#correo'), $('#scorreo'), 'Correo inválido');
         esValido &= validarKeyUp(/^\d+(\.\d{1,2})?$/, $('#peso'), $('#speso'), 'Solo números y puntos decimales');
         esValido &= validarKeyUp(/^\d+(\.\d{1,2})?$/, $('#altura'), $('#saltura'), 'Solo números y puntos decimales');
-        esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#entrenador_asignado'), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
+        //esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $('#entrenador_asignado'), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
         esValido &= verificarFecha();
         esValido &= validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/, $('#lugar_nacimiento'), $('#slugarnacimiento'), 'El lugar de nacimiento no puede estar vacío');
 
         return esValido;
     }
-    $("#f").on("submit", function(e){
-        e.preventDefault();
-    });
-    $("#incluir, #modificar, #eliminar").on("click", function() {
-        var action = $(this).attr("id");  
-       // (validarEnvio()) {  
-            $("#accion").val(action);  
-            var datos = new FormData($("#f")[0]);  
-            enviaAjax(datos);  
-       // }
-    });
+    
     
     $('input').on('keypress', function(e) {
         var id = $(this).attr('id');
         switch(id) {
             case 'nombres':
             case 'apellidos':
-            case 'entrenador_asignado':
+            //case 'entrenador_asignado':
             case 'lugar_nacimiento':
                 validarKeyPress(e, /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/);
                 break;
@@ -161,16 +126,15 @@ $(document).ready(function () {
             case 'altura':
                 validarKeyUp(/^\d+(\.\d{1,2})?$/, $(this), $('#saltura'), 'Solo números y puntos decimales');
                 break;
-            case 'entrenador_asignado':
+           /* case 'entrenador_asignado':
                 validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, $(this), $('#sentrenador_asignado'), 'Solo letras y espacios (1-50 caracteres)');
-                break;
+                break;*/
             case 'lugar_nacimiento':
                 validarKeyUp(/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/, $(this), $('#slugarnacimiento'), 'El lugar de nacimiento no puede estar vacío');
                 break;
         }
     });
 
-      
        $('#fecha_nacimiento').on('change', function() {
         verificarFecha(); 
         var edad = calcularEdad($(this).val());  
@@ -181,4 +145,60 @@ $(document).ready(function () {
             $('#representanteInfo').hide(); 
         }
     });
+
+
+
+
+    $("#f").on("submit", function(e){
+        e.preventDefault();
+    });
+    $("#incluir, #modificar, #eliminar").on("click", function() {
+        var action = $(this).attr("id");  
+       if(validarEnvio()){  
+            $("#accion").val(action);  
+            var datos = new FormData($("#f")[0]);  
+            enviaAjax(datos);  
+        }
+    });
+
+    function enviaAjax(datos) {
+        $.ajax({
+            async: true,
+            url: '',
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            beforeSend: function () {
+             
+            },
+            timeout: 10000,
+            success: function(respuesta){
+                try{
+                    var lee = JSON.parse(respuesta);
+                    if (lee.devol == 'listado_atletas') {
+                        console.log(respuesta);
+                    } else{
+                        Swal.fire("Éxito", "Operación realizada con éxito", "success");
+                $("#f")[0].reset();
+                    }
+
+                }catch{
+                    Swal.fire("Error", "algo salio mal", "error");
+                }
+            },
+            error: function (request, status, err) {
+                if (status === "timeout") {
+                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
+                } else {
+                    Swal.fire("Error", "Error al procesar la solicitud", "error");
+                }
+            },
+            complete: function () {
+                
+            },
+        });
+    }
+    
 });

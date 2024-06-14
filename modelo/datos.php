@@ -3,7 +3,7 @@ class datos
 {
     // DATOS DE LA DB
     private $ip = "localhost";
-    private $bd = "gymsysbd";
+    private $bd = "gymsys";
     private $usuario = "root";
     private $contrasena = "";
     // FUNCION PARA ESTABLECER CONEXION

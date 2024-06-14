@@ -18,7 +18,8 @@
                     <h2>Registrar Mensualidad</h2>
                 </div>
                 <div class="card-body">
-                    <form id="mensualidadForm" action="" method="POST">
+                    <form id="f" action="" method="POST">
+                    <input autocomplete="off" type="text" class="form-control" name="accion" id="accion" style="display: none;">
                         <div class="mb-3">
                             <label for="id_atleta" class="form-label">Atleta:</label>
                             <input type="text" class="form-control" id="id_atleta" name="id_atleta" required>
@@ -43,7 +44,7 @@
                             <label for="fecha" class="form-label">Fecha:</label>
                             <input type="date" class="form-control" id="fecha" name="fecha" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                        <button type="button" class="btn btn-primary w-100" id= "incluir" name = "incluir">Registrar</button>
                     </form>
                 </div>
             </div>

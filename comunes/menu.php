@@ -27,22 +27,11 @@
         <li class="nav-item">
           <a class="nav-link" href="?p=wada">Status Wada</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="?p=marcas">Marcas</a>
-        </li>
+        
         <li class="nav-item">
           <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Modulo</a>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">Accion</a>
-            <a class="dropdown-item" href="#">Accion</a>
-            <a class="dropdown-item" href="#">Accion</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#">Accion separada</a>
-          </div>
-        </li>
+        
         <li class="nav-item">
           <a class="nav-link" href="?p=login">Iniciar sesion</a>
         </li>

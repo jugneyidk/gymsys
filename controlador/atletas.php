@@ -9,17 +9,16 @@ if (is_file("vista/" . $p . ".php")) {
   //$permisos = $o->chequearpermisos();
   if (!empty($_POST)) {
     $accion = $_POST['accion'];
-    if ($accion == 'listado_habitantes') {
-      //$respuesta = $o->listadoAtleta();
-      //echo json_encode($respuesta);
+    if ($accion == 'listado_atleta') {
+      $respuesta = $o->listado_atleta();
+      echo json_encode($respuesta);
     }  elseif ($accion == 'incluir') {
-        $respuesta = $o->incluir(
+        $respuesta = $o->incluir_atleta(
         $_POST['nombres'], 
         $_POST['apellidos'], 
         $_POST['cedula'], 
         $_POST['genero'], 
         $_POST['fecha_nacimiento'], 
-        $_POST['edad'], 
         $_POST['lugar_nacimiento'], 
         $_POST['peso'], 
         $_POST['altura'], 
@@ -27,19 +26,16 @@ if (is_file("vista/" . $p . ".php")) {
         $_POST['estado_civil'], 
         $_POST['telefono'], 
         $_POST['correo'], 
-        $_POST['entrenador_asignado'], 
-        $_POST['nombre_representante'], 
-        $_POST['telefono_representante']);
+        $_POST['entrenador_asignado']);
       echo json_encode($respuesta);
     }
     elseif ($accion == 'modificar') {
-      $respuesta = $o->modificar(
+      $respuesta = $o->modificar_atleta(
         $_POST['nombres'], 
-        $_POST['apellidos'], 
+        $_POST['apellidos'],  
         $_POST['cedula'], 
         $_POST['genero'], 
         $_POST['fecha_nacimiento'], 
-        $_POST['edad'], 
         $_POST['lugar_nacimiento'], 
         $_POST['peso'], 
         $_POST['altura'], 
@@ -47,13 +43,12 @@ if (is_file("vista/" . $p . ".php")) {
         $_POST['estado_civil'], 
         $_POST['telefono'], 
         $_POST['correo'], 
-        $_POST['entrenador_asignado'], 
-        $_POST['nombre_representante'], 
-        $_POST['telefono_representante']);
+        $_POST['entrenador_asignado']
+        );
       echo json_encode($respuesta);
     }
     elseif ($accion == 'eliminar') {
-      $respuesta = $o->eliminar($_POST['id']);
+      $respuesta = $o->eliminar($_POST['cedula']);
       echo json_encode($respuesta);
     }
     exit;
@@ -63,6 +58,8 @@ if (is_file("vista/" . $p . ".php")) {
   echo "pagina en construccion";
 }
 
+/*$_POST['nombre_representante'], 
+        $_POST['telefono_representante']*/
 
 
 

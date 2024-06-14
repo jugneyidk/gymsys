@@ -145,6 +145,7 @@
     <footer>
     <?php require_once("comunes/footer.php"); ?>
     </footer>
+    <script src="js/sweetalert.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/atletas.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>

@@ -1,4 +1,5 @@
-$(document).ready(function() {
+$(document).ready(function () {
+   
 
     function validarKeyPress(e, er) {
         var key = e.key;
@@ -19,46 +20,9 @@ $(document).ready(function() {
         }
     }
 
-    // Simular carga de atletas
-    var atletas = [
-        {id: 1, nombre: 'Juan Pérez'},
-        {id: 2, nombre: 'María Gómez'},
-        {id: 3, nombre: 'Carlos Ramírez'}
-    ];
-
-    var registrosWada = [];
-
-    atletas.forEach(function(atleta) {
-        var opcion = `<option value="${atleta.id}">${atleta.nombre}</option>`;
-        $('#atleta').append(opcion);
-    });
-
-    function actualizarEstadisticas() {
-        var totalCumplen = registrosWada.filter(registro => registro.status === 'cumple').length;
-        var totalNoCumplen = registrosWada.filter(registro => registro.status === 'no_cumple').length;
-        var totalAtletas = registrosWada.length;
-
-        $('#totalCumplen').text(totalCumplen);
-        $('#totalNoCumplen').text(totalNoCumplen);
-        $('#totalAtletas').text(totalAtletas);
-    }
-
-    function actualizarUltimosRegistros() {
-        $('#listaUltimosRegistros').empty();
-        registrosWada.slice(-5).forEach(function(registro) {
-            var item = `
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${registro.nombre} - ${registro.status}
-                    <span class="badge bg-primary rounded-pill">${registro.fecha}</span>
-                </li>`;
-            $('#listaUltimosRegistros').append(item);
-        });
-    }
-
-    $('#f').on('submit', function(e) {
+    $("#f").on("submit", function(e){
         e.preventDefault();
     });
-
     $("#incluir, #modificar, #eliminar").on("click", function() {
         var action = $(this).attr("id");  
        // (validarEnvio()) {  
@@ -97,5 +61,4 @@ $(document).ready(function() {
             },
         });
     }
-
 });

@@ -20,6 +20,27 @@ $(document).ready(function () {
         return valido;
     }
 
+    
+
+ 
+    function validarEnvio() {
+        let valid = true;
+        return valid;
+    }
+    $("#f").on("submit", function(e){
+        e.preventDefault();
+    })
+    $("#incluir, #modificar, #eliminar").on("click", function() {
+        var action = $(this).attr("id");  
+       // (validarEnvio()) {  
+            $("#accion").val(action);  
+            var datos = new FormData($("#f")[0]);  
+            enviaAjax(datos);  
+       // }
+    });
+
+
+
     function enviaAjax(datos) {
         $.ajax({
             async: true,
@@ -49,21 +70,4 @@ $(document).ready(function () {
             },
         });
     }
-
- 
-    function validarEnvio() {
-        let valid = true;
-        return valid;
-    }
-    $("#f").on("submit", function(e){
-        e.preventDefault();
-    })
-    $("#incluir, #modificar, #eliminar").on("click", function() {
-        var action = $(this).attr("id");  
-       // (validarEnvio()) {  
-            $("#accion").val(action);  
-            var datos = new FormData($("#f")[0]);  
-            enviaAjax(datos);  
-       // }
-    });
 });
