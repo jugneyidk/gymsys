@@ -11,7 +11,7 @@
         <div class="row justify-content-center w-100">
             <div class="card p-4 col-lg-8 col-md-10 mb-3">
                 <h2 class="card-title text-center mb-4">Inscripción de Entrenadores</h2>
-                <form>
+                <form method="post" id="f" autocomplete="off">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="nombres" class="form-label">Nombres:</label>
@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label">Teléfono:</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                            <input type="tel" class="form-control" id="telefono" name="telefono">
                             <div id="stelefono" class="invalid-feedback"></div>
                         </div>
                     </div>
@@ -71,17 +71,17 @@
                         
                         <div class="col-md-6 mb-3">
                             <label for="correo" class="form-label">Correo Electrónico:</label>
-                            <input type="email" class="form-control" id="correo" name="correo" required>
+                            <input type="email" class="form-control" id="correo_electronico" name="correo_electronico">
                             <div id="scorreo" class="invalid-feedback"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="grado_instruccion" class="form-label">Grado de Instrucción:</label>
-                            <input type="text" class="form-control" id="grado_instruccion" name="grado_instruccion" required>
+                            <input type="text" class="form-control" id="grado_instruccion" name="grado_instruccion">
                             <div id="sgrado_instruccion" class="invalid-feedback"></div>
                         </div>
                     </div>
                    
-                    <button type="submit" class="btn btn-primary btn-block">Registrar Entrenador</button>
+                    <button id="incluir" name="incluir" type="button" class="btn btn-primary btn-block">Registrar Entrenador</button>
                 </form>
             </div>
             <div class="card p-4 col-lg-3 col-md-4 mx-2" id="card-acciones">

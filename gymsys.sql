@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-06-2024 a las 04:02:23
+-- Tiempo de generación: 14-06-2024 a las 09:33:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -55,7 +55,7 @@ CREATE TABLE `atleta` (
   `peso` decimal(6,2) NOT NULL,
   `altura` decimal(6,2) NOT NULL,
   `telefono` varchar(15) NOT NULL,
-  `correo` varchar(50) NOT NULL
+  `correo_electronico` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -91,9 +91,16 @@ CREATE TABLE `entrenador` (
   `lugar_nacimiento` varchar(50) NOT NULL,
   `estado_civil` varchar(50) NOT NULL,
   `telefono` varchar(15) NOT NULL,
-  `correo` varchar(50) NOT NULL,
+  `correo_electronico` varchar(50) NOT NULL,
   `grado_instruccion` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `entrenador`
+--
+
+INSERT INTO `entrenador` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`, `grado_instruccion`) VALUES
+('Labore pro', 'Omnis velit qui eu d', 'Voluptatem dolore ar', 'Masculino', '2001-09-13', 'Enim et cum nostrud ', 'Viudo', '+1 (588) 831-61', 'dofevy@mailinator.com', 'Deserunt consequatur');
 
 -- --------------------------------------------------------
 
@@ -122,6 +129,19 @@ CREATE TABLE `mensualidades` (
   `tipo` int(2) NOT NULL,
   `pago` decimal(20,2) NOT NULL,
   `cobro` int(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `representantes`
+--
+
+CREATE TABLE `representantes` (
+  `id_atleta` varchar(10) NOT NULL,
+  `nombre_completo` varchar(100) NOT NULL,
+  `cedula` varchar(10) NOT NULL,
+  `telefono` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -222,6 +242,12 @@ ALTER TABLE `mensualidades`
   ADD KEY `id_atleta` (`id_atleta`);
 
 --
+-- Indices de la tabla `representantes`
+--
+ALTER TABLE `representantes`
+  ADD PRIMARY KEY (`id_atleta`);
+
+--
 -- Indices de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
@@ -283,50 +309,51 @@ ALTER TABLE `roles`
 -- Filtros para la tabla `asistencias`
 --
 ALTER TABLE `asistencias`
-  ADD CONSTRAINT `asistencias_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `asistencias_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `atleta`
 --
 ALTER TABLE `atleta`
-  ADD CONSTRAINT `atleta_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `marcas` (`id_atleta`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `atleta_ibfk_1` FOREIGN KEY (`id_entrenador`) REFERENCES `entrenador` (`cedula`) ON UPDATE CASCADE;
 
 --
--- Filtros para la tabla `competencia`
+-- Filtros para la tabla `marcas`
 --
-ALTER TABLE `competencia`
-  ADD CONSTRAINT `competencia_ibfk_1` FOREIGN KEY (`id_competencia`) REFERENCES `resultado_competencia` (`id_competencia`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `entrenador`
---
-ALTER TABLE `entrenador`
-  ADD CONSTRAINT `entrenador_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `atleta` (`id_entrenador`) ON UPDATE CASCADE;
+ALTER TABLE `marcas`
+  ADD CONSTRAINT `marcas_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `mensualidades`
 --
 ALTER TABLE `mensualidades`
-  ADD CONSTRAINT `mensualidades_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `mensualidades_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `representantes`
+--
+ALTER TABLE `representantes`
+  ADD CONSTRAINT `representantes_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
-  ADD CONSTRAINT `resultado_competencia_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `resultado_competencia_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `resultado_competencia_ibfk_2` FOREIGN KEY (`id_competencia`) REFERENCES `competencia` (`id_competencia`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `usuarios_roles`
 --
 ALTER TABLE `usuarios_roles`
-  ADD CONSTRAINT `usuarios_roles_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `usuarios_roles_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `entrenador` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `usuarios_roles_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `entrenador` (`cedula`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuarios_roles_ibfk_2` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `wada`
 --
 ALTER TABLE `wada`
-  ADD CONSTRAINT `wada_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `wada_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
