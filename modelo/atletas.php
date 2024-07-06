@@ -85,7 +85,30 @@ class Atleta extends datos
         }
         return $resultado;
     }
-
+    
+    public function obtener_atleta($cedula) {
+        try {
+            $consulta = "SELECT * FROM atleta WHERE cedula = :cedula";
+            $valores = array(':cedula' => $cedula);
+    
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $atleta = $respuesta->fetch(PDO::FETCH_ASSOC);
+            
+            if ($atleta) {
+                $resultado["ok"] = true;
+                $resultado["atleta"] = $atleta;
+            } else {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No se encontró el atleta";
+            }
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+    
     private function modificar()
     {
         try {
