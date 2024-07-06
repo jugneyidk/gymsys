@@ -145,7 +145,7 @@ class Atleta extends datos
     public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
-        return $this;
+        return $this; 
     }
 }
 ?>

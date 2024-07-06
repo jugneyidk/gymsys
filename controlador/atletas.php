@@ -8,7 +8,7 @@ if (is_file("vista/" . $p . ".php")) {
   $o = new Atleta();
   //$permisos = $o->chequearpermisos();
   if (!empty($_POST)) {
-    $accion = $_POST['accion'];
+    $accion = $_POST['accion']; 
     if ($accion == 'listado_atleta') {
       $respuesta = $o->listado_atleta();
       echo json_encode($respuesta);

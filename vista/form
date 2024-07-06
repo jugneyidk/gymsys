@@ -1,0 +1,60 @@
+ <div class="modal fade" id="modalAtletas" tabindex="-1" aria-labelledby="modalAtletasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAtletasLabel">Atletas Inscritos</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaatleta">
+                                <thead>
+                                    <tr>
+                                        <th>Cedula</th>
+                                        <th>Entrenador</th>
+                                        <th>Nombre</th>
+                                        <th>Apellidos</th>
+                                        <th>Tipo</th>
+                                        <th>Genero</th>
+                                        <th>Fecha nac</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listado">
+                                </tbody>
+                            </table> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalAtletas" tabindex="-1" aria-labelledby="modalAtletasLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAtletasLabel">Atletas Inscritos</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaatleta">
+                                <thead>
+                                    <tr>
+                                        <th>Cedula</th>
+                                        <th>Entrenador</th>
+                                        <th>Nombre</th>
+                                        <th>Apellidos</th>
+                                        <th>Tipo</th>
+                                        <th>Genero</th>
+                                        <th>Fecha nac</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listado">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
