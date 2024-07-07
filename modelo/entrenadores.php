@@ -1,14 +1,14 @@
 <?php
-require_once ('modelo/datos.php');
+require_once('modelo/datos.php');
 
 class Entrenador extends datos
 {
     private $conexion;
-    private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion;
+    private $id_entrenador, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion;
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // inicia la conexion a la db
+        $this->conexion = $this->conecta(); // conex
     }
 
     public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion)
@@ -24,9 +24,9 @@ class Entrenador extends datos
         $this->correo_electronico = $correo_electronico;
         $this->grado_instruccion = $grado_instruccion;
         return $this->incluir();
-    } 
+    }
 
-    public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico)
+    public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion)
     {
         $this->nombres = $nombres;
         $this->apellidos = $apellidos;
@@ -37,12 +37,49 @@ class Entrenador extends datos
         $this->estado_civil = $estado_civil;
         $this->telefono = $telefono;
         $this->correo_electronico = $correo_electronico;
+        $this->grado_instruccion = $grado_instruccion;
         return $this->modificar();
+    }
+
+    public function obtener_entrenador($cedula)
+    {
+        try {
+            $consulta = "SELECT * FROM entrenador WHERE cedula = :cedula";
+            $valores = array(':cedula' => $cedula);
+
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $entrenador = $respuesta->fetch(PDO::FETCH_ASSOC);
+            
+            if ($entrenador) {
+                $resultado["ok"] = true;
+                $resultado["entrenador"] = $entrenador;
+            } else {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No se encontró el entrenador";
+            }
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
     }
 
     public function listado_entrenador()
     {
-        return $this->listado_entrenadores();
+        try {
+            $consulta = "SELECT * FROM entrenador ORDER BY cedula DESC";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["devol"] = 'listado_entrenadores';
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
     }
 
     private function incluir()
@@ -77,7 +114,8 @@ class Entrenador extends datos
     private function modificar()
     {
         try {
-            $consulta = "UPDATE entrenador SET cedula = :cedula, nombres = :nombres, apellidos = :apellidos, genero = :genero, fecha_nacimiento = :fecha_nacimiento, lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, telefono = :telefono, correo_electronico = :correo_electronico, grado_instruccion = :grado_instruccion WHERE cedula = :cedula";
+            $consulta = "UPDATE entrenador SET nombres = :nombres, apellidos = :apellidos, genero = :genero, fecha_nacimiento = :fecha_nacimiento, lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, telefono = :telefono, correo_electronico = :correo_electronico, grado_instruccion = :grado_instruccion 
+                         WHERE cedula = :cedula";
 
             $valores = array(
                 ':cedula' => $this->cedula,
@@ -91,6 +129,7 @@ class Entrenador extends datos
                 ':correo_electronico' => $this->correo_electronico,
                 ':grado_instruccion' => $this->grado_instruccion
             );
+
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $resultado["ok"] = true;
@@ -100,30 +139,16 @@ class Entrenador extends datos
         }
         return $resultado;
     }
-    private function listado_entrenadores()
-    {
-        try {
-            $consulta = "SELECT * FROM `entrenador` ORDER BY cedula DESC";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["devol"] = 'listado_entrenador';
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
-    }
-    
+
     public function __get($propiedad)
     {
         return $this->$propiedad;
     }
+
     public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
         return $this;
     }
 }
+?>

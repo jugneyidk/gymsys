@@ -18,9 +18,7 @@
                     </button>
                 </div>
                 <div class="p-4 shadow">
-                    <!-- Encabezado del card -->
-                    
-                    <!-- Contenido del card -->
+                  
                     <div class="p-4">
                         <h2 class="text-center mb-4">Atletas Inscritos</h2>
                         <div class="table-responsive">
@@ -38,7 +36,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="listado">
-                                    <!-- Aquí se agregarán dinámicamente los atletas inscritos -->
+                                   
                                 </tbody>
                             </table>
                         </div>
