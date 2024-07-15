@@ -1,22 +1,22 @@
 <?php
 
-	if(is_file('modelo/atletas.php')){
-		require_once('modelo/atletas.php');
+	if(is_file('modelo/resEvento.php')){
+		require_once('modelo/resEvento.php');
 	}else{
 		$respuesta[mensaje]="error";
 		return $respuesta;
 	}
 
-	class eventos extends atleta{
+	class Eventos extends ResEvento{
 
 		private $idCompetencia;			//id_competencia;							
 		private $tipo_competencia;		//tipo_competencia;								
-		private $nombre;							//nombre;			
-		private $categoria;						//categoria;				
-		private $subs;									//subs;	
-		private $lugar_competencia;	//lugar_competencia;									
-		private $fecha_inicio;					//fecha_inicio;					
-		private $fecha_fin;							//fecha_fin;			
+		private $nombre;				//nombre;			
+		private $categoria;				//categoria;				
+		private $subs;					//subs;	
+		private $lugar_competencia;		//lugar_competencia;									
+		private $fecha_inicio;			//fecha_inicio;					
+		private $fecha_fin;				//fecha_fin;			
 
 		// Metodo Get's//
 
@@ -181,9 +181,11 @@
 
 			try{
 				$sql = "DELETE FROM competencia	WHERE id_competencia = :id_competencia";
+				$datos = array(
+					':id_competencia' => $this->idCompetencia);
 				$con = parent::conectar();
 				$res = $con->prepare($sql);
-				$res->execute();
+				$res->execute($datos);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
 				$resultado["ok"] =false;
@@ -191,6 +193,136 @@
 			}
 			return $resultado;
 		}	
+
+		//metodos de Subs
+
+		public function metodosSubs($method,$values)
+		{
+			if(is_file('modelo/eventosSubs.php')){
+				require_once('modelo/eventosSubs.php');
+			}else{
+				$respuesta[mensaje]="error";
+				return $respuesta;
+			} 
+			$objSubs = new Subs();
+			switch ($method) {
+				case 'Get':
+					$datos = $objSubs->getAll();
+					return $datos;
+					break;
+				
+				case 'Set':
+					$datos = $objSubs->setAll($values);
+					break;
+
+				case 'insertar':
+					$datos = $objSubs->insertar();
+					return $datos;
+					break;
+
+				case 'consultar':
+					$datos = $objSubs->consultar();
+					return $datos;
+					break;
+
+				case 'modificar':
+					$datos = $objSubs->modificar();
+					return $datos;
+					break;
+
+				case 'eliminar':
+					$datos = $objSubs->eliminar();
+					return $datos;
+					break;	
+			}
+		}
+
+		//metodo Categoria
+
+		public function metodosCategoria($method,$values)
+		{
+			if(is_file('modelo/eventosCategoria.php')){
+				require_once('modelo/eventosCategoria.php');
+			}else{
+				$respuesta[mensaje]="error";
+				return $respuesta;
+			} 
+			$objCategoria = new Categorias();
+			switch ($method) {
+				case 'Get':
+					$datos = $objCategoria->getAll();
+					return $datos;
+					break;
+				
+				case 'Set':
+					$datos = $objCategoria->setAll($values);
+					break;
+
+				case 'insertar':
+					$datos = $objCategoria->insertar();
+					return $datos;
+					break;
+
+				case 'consultar':
+					$datos = $objCategoria->consultar();
+					return $datos;
+					break;
+
+				case 'modificar':
+					$datos = $objCategoria->modificar();
+					return $datos;
+					break;
+
+				case 'eliminar':
+					$datos = $objCategoria->eliminar();
+					return $datos;
+					break;	
+			}
+		}
+
+		//metodos TipoCompetencia
+
+
+		public function metodosTipo($method,$values)
+		{
+			if(is_file('modelo/eventosTipo.php')){
+				require_once('modelo/eventosTipo.php');
+			}else{
+				$respuesta[mensaje]="error";
+				return $respuesta;
+			} 
+			$objTipo = new Tipo();
+			switch ($method) {
+				case 'Get':
+					$datos = $objTipo->getAll();
+					return $datos;
+					break;
+				
+				case 'Set':
+					$datos = $objTipo->setAll($values);
+					break;
+
+				case 'insertar':
+					$datos = $objTipo->insertar();
+					return $datos;
+					break;
+
+				case 'consultar':
+					$datos = $objTipo->consultar();
+					return $datos;
+					break;
+
+				case 'modificar':
+					$datos = $objTipo->modificar();
+					return $datos;
+					break;
+
+				case 'eliminar':
+					$datos = $objTipo->eliminar();
+					return $datos;
+					break;	
+			}
+		}
 
 
 	}
