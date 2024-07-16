@@ -14,9 +14,13 @@
 		private $nombre;				//nombre;			
 		private $categoria;				//categoria;				
 		private $subs;					//subs;	
-		private $lugar_competencia;		//lugar_competencia;									
+		private $lugar_competencia;		//lugar_competencia;
 		private $fecha_inicio;			//fecha_inicio;					
 		private $fecha_fin;				//fecha_fin;			
+
+		public function __construct(){
+			parent::__construct();
+		}
 
 		// Metodo Get's//
 
@@ -79,16 +83,25 @@
 			try{
 				$sql = "SELECT * FROM competencia ;";
 				$con = parent::conecta();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 				$res = $con->query($sql);
 				$res = $res->fetchAll(PDO::FETCH_ASSOC);
+				foreach ($res as $key => $value) {
+					$this->idCompetencia = $key["id_competencia"];
+					$this->tipo_competencia = $key["tipo_competencia"];
+					$this->nombre = $key["nombre"];
+					$this->categoria = $key["categoria"];
+					$this->subs = $key["subs"];
+					$this->lugar_competencia = $key["lugar_competencia"];
+					$this->fecha_inicio = $key["fecha_inicio"];
+					$this->fecha_fin = $key["fecha_fin"];
+				}
 				$resultado["ok"]=true;
 				$resultado["respuesta"]=$res;
 			}catch(Exception $e){
 				$resultado["ok"]= false;
 				$resultado["respuesta"]=$e;
 			}
-			return $respuesta;
+			return $resultado;
 
 		}
 

@@ -4,7 +4,7 @@
 		require_once('modelo/atletas.php');
 	}else{
 		$respuesta[mensaje]="error";
-		return $respuesta;
+		return $respuesta;}
 	
 
 	class ResEvento extends Atleta
@@ -20,6 +20,10 @@
 		private	$medallaEnvion;		//medallaEnvion
 		private $medallaTotal;		//medallaTotal
 		private $total;				//total
+
+		public function __construct(){
+			parent::__construct();
+		}
 
 		// Get's
 
@@ -42,21 +46,21 @@
 
 		// Set's
 
-		public funtion set_idCompetencia($value)
+		public function set_idCompetencia($value)
 		{	$this->idCompetencia = $value;	}
-		public funtion set_idAtleta($value)
+		public function set_idAtleta($value)
 		{	$this->idAtleta = $value;	}
-		public funtion set_arranque($value)
+		public function set_arranque($value)
 		{	$this->arranque = $value;	}
-		public funtion set_envion($value)
+		public function set_envion($value)
 		{	$this->envion = $value;	}
-		public funtion set_medallaArranque($value)
+		public function set_medallaArranque($value)
 		{	$this->medallaArranque = $value;	}
-		public funtion set_medallaEnvion($value)
+		public function set_medallaEnvion($value)
 		{	$this->medallaEnvion = $value;	}
-		public funtion set_medallaTotal($value)
+		public function set_medallaTotal($value)
 		{	$this->medallaTotal = $value;	}
-		public funtion set_total($value)
+		public function set_total($value)
 		{	$this->total = $value;	}
 
 		// insertar
@@ -75,14 +79,14 @@
 				:total;
 				";
 				$valores = array(
-					':id_competencia' = $this->idCompetencia ,
-					':id_atleta' = $this->idAtleta ,
-					':arranque' = $this->arranque ,
-					':envion' = $this->envion ,
-					':medalla_arranque' = $this->medallaArranque ,
-					':medalla_envion' = $this->medallaEnvion ,
-					':medalla_total' = $this->medallaTotal ,
-					':total' = $this->total
+					':id_competencia' => $this->idCompetencia ,
+					':id_atleta' => $this->idAtleta ,
+					':arranque' => $this->arranque ,
+					':envion' => $this->envion ,
+					':medalla_arranque' => $this->medallaArranque ,
+					':medalla_envion' => $this->medallaEnvion ,
+					':medalla_total' => $this->medallaTotal ,
+					':total' => $this->total
 				);
 				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 				$res = $con->prepare($sql);
@@ -93,7 +97,7 @@
 				$resultado["mensaje"] = $e;
 			}
 			return $resultado;
-			}
+			
 
 		}
 
@@ -164,7 +168,7 @@
 				$sql = "DELETE FROM resultado_competencia WHERE id_competencia = :idCompetencia AND id_atleta = :idAtleta";
 				$datos = array(
 					':idCompetencia' => $this->idCompetencia,
-					':idAtleta' => $this->idAtleta;
+					':idAtleta' => $this->idAtleta
 				);
 				$con = parent::conectar();
 				$res = $con->prepare($sql);
@@ -176,6 +180,8 @@
 			}
 			return $resultado;
 		}
+
+		
 
 	}
 
