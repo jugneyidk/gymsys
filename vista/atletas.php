@@ -143,7 +143,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" id="incluir" class="btn btn-primary btn-block">Registrar Atleta</button>
+                            <button type="button" id="btnIncluir" class="btn btn-primary btn-block">Registrar Atleta</button>
                         </form>
                     </div>
                 </div>
@@ -159,97 +159,84 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form method="post" id="f2" autocomplete="off">
-                            <input type="hidden" name="accion" id="accion_modificar" value="modificar">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="nombres_modificar" class="form-label">Nombres:</label>
-                                    <input type="text" class="form-control" id="nombres_modificar" name="nombres_modificar">
-                                    <div id="snombres_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="apellidos_modificar" class="form-label">Apellidos:</label>
-                                    <input type="text" class="form-control" id="apellidos_modificar" name="apellidos_modificar">
-                                    <div id="sapellidos_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="cedula_modificar" class="form-label">Cédula:</label>
-                                    <input type="text" class="form-control" id="cedula_modificar" name="cedula_modificar">
-                                    <div id="scedula_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="genero_modificar" class="form-label">Género:</label>
-                                    <select class="form-select" id="genero_modificar" name="genero_modificar">
-                                        <option>Masculino</option>
-                                        <option>Femenino</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="fecha_nacimiento_modificar" class="form-label">Fecha de Nacimiento:</label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento_modificar" name="fecha_nacimiento_modificar">
-                                    <div id="sfecha_nacimiento_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="lugar_nacimiento_modificar" class="form-label">Lugar de Nacimiento:</label>
-                                    <input type="text" class="form-control" id="lugar_nacimiento_modificar" name="lugar_nacimiento_modificar">
-                                    <div id="slugarnacimiento_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="peso_modificar" class="form-label">Peso (kg):</label>
-                                    <input type="number" class="form-control" id="peso_modificar" name="peso_modificar" step="0.01">
-                                    <div id="speso_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="altura_modificar" class="form-label">Altura (cm):</label>
-                                    <input type="number" class="form-control" id="altura_modificar" name="altura_modificar" step="0.01">
-                                    <div id="saltura_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="tipo_atleta_modificar" class="form-label">Tipo de Atleta:</label>
-                                    <input type="text" class="form-control" id="tipo_atleta_modificar" name="tipo_atleta_modificar">
-                                    <div id="stipo_atleta_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="estado_civil_modificar" class="form-label">Estado Civil:</label>
-                                    <select class="form-select" id="estado_civil_modificar" name="estado_civil_modificar">
-                                        <option>Soltero</option>
-                                        <option>Casado</option>
-                                        <option>Divorciado</option>
-                                        <option>Viudo</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono_modificar" class="form-label">Teléfono:</label>
-                                    <input type="tel" class="form-control" id="telefono_modificar" name="telefono_modificar">
-                                    <div id="stelefono_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="correo_modificar" class="form-label">Correo:</label>
-                                    <input type="email" class="form-control" id="correo_modificar" name="correo_modificar">
-                                    <div id="scorreo_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="entrenador_asignado_modificar" class="form-label">Entrenador Asignado:</label>
-                                    <input type="text" class="form-control" id="entrenador_asignado_modificar" name="entrenador_asignado_modificar">
-                                    <div id="sentrenador_asignado_modificar" class="invalid-feedback"></div>
-                                </div>
-                                <input type="number" class="form-control" id="edad_modificar" name="edad_modificar" readonly style="display: none;">
-                                <!-- Campos adicionales para el representante, ocultos inicialmente -->
-                                <div id="representanteInfo_modificar" class="row" style="display:none;">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="nombre_representante_modificar" class="form-label">Nombre del Representante:</label>
-                                        <input type="text" class="form-control" id="nombre_representante_modificar" name="nombre_representante_modificar">
-                                        <div id="snombre_representante_modificar" class="invalid-feedback"></div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="telefono_representante_modificar" class="form-label">Teléfono del Representante:</label>
-                                        <input type="tel" class="form-control" id="telefono_representante_modificar" name="telefono_representante_modificar">
-                                        <div id="stelefono_representante_modificar" class="invalid-feedback"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar Atleta</button>
-                        </form>
+                    <form method="post" id="f2" autocomplete="off">
+    <input type="hidden" name="accion" id="accion_modificar" value="modificar">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="nombres_modificar" class="form-label">Nombres:</label>
+            <input type="text" class="form-control" id="nombres_modificar" name="nombres_modificar">
+            <div id="snombres_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="apellidos_modificar" class="form-label">Apellidos:</label>
+            <input type="text" class="form-control" id="apellidos_modificar" name="apellidos_modificar">
+            <div id="sapellidos_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="cedula_modificar" class="form-label">Cédula:</label>
+            <input type="text" class="form-control" id="cedula_modificar" name="cedula_modificar">
+            <div id="scedula_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="genero_modificar" class="form-label">Género:</label>
+            <select class="form-select" id="genero_modificar" name="genero_modificar">
+                <option>Masculino</option>
+                <option>Femenino</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="fecha_nacimiento_modificar" class="form-label">Fecha de Nacimiento:</label>
+            <input type="date" class="form-control" id="fecha_nacimiento_modificar" name="fecha_nacimiento_modificar">
+            <div id="sfecha_nacimiento_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="lugar_nacimiento_modificar" class="form-label">Lugar de Nacimiento:</label>
+            <input type="text" class="form-control" id="lugar_nacimiento_modificar" name="lugar_nacimiento_modificar">
+            <div id="slugarnacimiento_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="peso_modificar" class="form-label">Peso (kg):</label>
+            <input type="number" class="form-control" id="peso_modificar" name="peso_modificar" step="0.01">
+            <div id="speso_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="altura_modificar" class="form-label">Altura (cm):</label>
+            <input type="number" class="form-control" id="altura_modificar" name="altura_modificar" step="0.01">
+            <div id="saltura_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="tipo_atleta_modificar" class="form-label">Tipo de Atleta:</label>
+            <input type="text" class="form-control" id="tipo_atleta_modificar" name="tipo_atleta_modificar">
+            <div id="stipo_atleta_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="estado_civil_modificar" class="form-label">Estado Civil:</label>
+            <select class="form-select" id="estado_civil_modificar" name="estado_civil_modificar">
+                <option>Soltero</option>
+                <option>Casado</option>
+                <option>Divorciado</option>
+                <option>Viudo</option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="telefono_modificar" class="form-label">Teléfono:</label>
+            <input type="tel" class="form-control" id="telefono_modificar" name="telefono_modificar">
+            <div id="stelefono_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="correo_modificar" class="form-label">Correo:</label>
+            <input type="email" class="form-control" id="correo_modificar" name="correo_modificar">
+            <div id="scorreo_modificar" class="invalid-feedback"></div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="entrenador_asignado_modificar" class="form-label">Entrenador Asignado:</label>
+            <input type="text" class="form-control" id="entrenador_asignado_modificar" name="entrenador_asignado_modificar">
+            <div id="sentrenador_asignado_modificar" class="invalid-feedback"></div>
+        </div>
+    </div>
+    <button type="button" id="btnModificar" class="btn btn-primary btn-block">Modificar Atleta</button>
+</form>
+
                     </div>
                 </div>
             </div>

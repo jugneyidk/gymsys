@@ -11,7 +11,7 @@ require_once("modelo/" . $p . ".php");
 // Verificar si se envió un formulario por POST
 if (!empty($_POST)) {
     // Crear una instancia de la clase del modelo
-    $o = new WADA(); // Asegúrate de que el nombre de la clase coincida con el nombre de tu modelo
+    $o = new WADA();
 
     // Obtener la acción desde el formulario
     $accion = $_POST['accion'];
@@ -19,9 +19,9 @@ if (!empty($_POST)) {
     // Ejecutar la acción correspondiente
     if ($accion == 'incluir') {
         $respuesta = $o->incluir_wada(
-            $_POST['atleta'], 
-            $_POST['status'], 
-            $_POST['inscrito'], 
+            $_POST['atleta'],
+            $_POST['status'],
+            $_POST['inscrito'],
             $_POST['ultima_actualizacion'],
             $_POST['vencimiento']
         );
@@ -31,15 +31,18 @@ if (!empty($_POST)) {
         echo json_encode($respuesta);
     } else if ($accion == 'modificar') {
         $respuesta = $o->modificar_wada(
-            $_POST['atleta'], 
-            $_POST['status'], 
+            $_POST['atleta'],
+            $_POST['status'],
             $_POST['inscrito'],
             $_POST['ultima_actualizacion'],
             $_POST['vencimiento']
         );
         echo json_encode($respuesta);
+    } else if ($accion == 'obtener_wada') {
+        $respuesta = $o->obtener_wada($_POST['atleta']);
+        echo json_encode($respuesta);
     } else if ($accion == 'eliminar') {
-        $respuesta = $o->eliminar_wada($_POST['id']);
+        $respuesta = $o->eliminar_wada($_POST['atleta']);
         echo json_encode($respuesta);
     }
 

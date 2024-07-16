@@ -1,5 +1,5 @@
 <?php
-require_once ('modelo/datos.php');
+require_once('modelo/datos.php');
 
 class WADA extends datos // Nombre de la clase del modelo
 {
@@ -19,59 +19,134 @@ class WADA extends datos // Nombre de la clase del modelo
         $this->vencimiento = $vencimiento;
         return $this->incluir();
     }
- 
-    public function listado_wada() // Función pública que hace set a los atributos y llama a la función privada
+
+    public function modificar_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento)
+    {
+        $this->id_atleta = $id_atleta;
+        $this->estado = $estado;
+        $this->inscrito = $inscrito;
+        $this->ultima_actualizacion = $ultima_actualizacion;
+        $this->vencimiento = $vencimiento;
+        return $this->modificar();
+    }
+
+    public function obtener_wada($id_atleta)
+    {
+        $this->id_atleta = $id_atleta;
+        return $this->obtener();
+    }
+
+    public function eliminar_wada($id_atleta)
+    {
+        $this->id_atleta = $id_atleta;
+        return $this->eliminar();
+    }
+
+    private function incluir()
+    {
+        try {
+            $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
+                         VALUES (:id_atleta, :estado, :inscrito, :ultima_actualizacion, :vencimiento)";
+            $valores = array(
+                ':id_atleta' => $this->id_atleta,
+                ':estado' => $this->estado,
+                ':inscrito' => $this->inscrito,
+                ':ultima_actualizacion' => $this->ultima_actualizacion,
+                ':vencimiento' => $this->vencimiento
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function modificar()
+    {
+        try {
+            $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento 
+                         WHERE id_atleta = :id_atleta";
+            $valores = array(
+                ':id_atleta' => $this->id_atleta,
+                ':estado' => $this->estado,
+                ':inscrito' => $this->inscrito,
+                ':ultima_actualizacion' => $this->ultima_actualizacion,
+                ':vencimiento' => $this->vencimiento
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function obtener()
+    {
+        try {
+            $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([':id_atleta' => $this->id_atleta]);
+            $respuesta = $respuesta->fetch(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["wada"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function eliminar()
+    {
+        try {
+            $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([':id_atleta' => $this->id_atleta]);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    public function listado_wada()
     {
         return $this->listado();
     }
 
-    private function incluir() // Función privada para incluir datos en la base de datos
+    private function listado()
     {
         try {
-            $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
-                         VALUES (:id_atleta, :estado, :inscrito, :ultima_actualizacion, :vencimiento)"; // Consulta SQL parametrizada
-            $valores = array(
-                ':id_atleta' => $this->id_atleta, 
-                ':estado' => $this->estado, 
-                ':inscrito' => $this->inscrito, 
-                ':ultima_actualizacion' => $this->ultima_actualizacion, 
-                ':vencimiento' => $this->vencimiento
-            ); // Arreglo con los parámetros que se enviarán en la consulta
-            $respuesta = $this->conexion->prepare($consulta); // Se prepara la consulta
-            $respuesta->execute($valores); // Se ejecuta la consulta preparada y se pasan los valores a la función execute
-            $resultado["ok"] = true; // Se retorna OK true para saber en el js que la consulta salió bien
-        } catch (Exception $e) {
-            $resultado["ok"] = false; // Se retorna OK false para saber en el js que la consulta salió mal
-            $resultado["mensaje"] = $e->getMessage(); // Se retorna el mensaje de error
-        }
-        return $resultado; // Se retorna el resultado
-    }
-
-    private function listado() // Función privada para listar datos de la base de datos
-    {
-        try {
-            $consulta = "SELECT * FROM wada ORDER BY id DESC"; // Consulta SQL parametrizada
-            $respuesta = $this->conexion->prepare($consulta); // Se prepara la consulta
-            $respuesta->execute(); // Se ejecuta la consulta preparada
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC); // Se hace un FETCH ALL para traer todos los registros que coincidan
-            $resultado["ok"] = true; // Se retorna OK true para saber en el js que la consulta salió bien
+            $consulta = "SELECT * FROM wada ORDER BY id_atleta DESC";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
         } catch (Exception $e) {
-            $resultado["ok"] = false; // Se retorna OK false para saber en el js que la consulta salió mal
-            $resultado["mensaje"] = $e->getMessage(); // Se retorna el mensaje de error
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
         }
-        return $resultado; // Se retorna el resultado
+        return $resultado;
     }
 
-    public function __get($propiedad) // Función mágica para get
+    public function __get($propiedad)
     {
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor) // Función mágica para set
+    public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
         return $this;
     }
 }
+
 ?>
