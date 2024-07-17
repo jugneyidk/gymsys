@@ -41,6 +41,9 @@ if (!empty($_POST)) {
     } elseif ($_POST["accion"] == "listado_entrenadores") {
         $response = $o->listado_entrenador();
         echo json_encode($response);
+    } elseif ($_POST["accion"] == "eliminar") {
+        $response = $o->eliminar_entrenador($_POST["cedula"]);
+        echo json_encode($response);
     }
     exit;
 }
@@ -50,4 +53,6 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     require_once("comunes/404.php");
 }
+
+
 ?>

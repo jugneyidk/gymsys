@@ -44,7 +44,22 @@ class Entrenador extends datos
     public function obtener_entrenador($cedula)
     {
         try {
-            $consulta = "SELECT * FROM entrenador WHERE cedula = :cedula";
+            $consulta = "
+                SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.genero, 
+                    u.fecha_nacimiento, 
+                    u.lugar_nacimiento, 
+                    u.estado_civil, 
+                    u.telefono, 
+                    u.correo_electronico, 
+                    e.grado_instruccion
+                FROM entrenador e
+                INNER JOIN usuarios u ON e.cedula = u.cedula
+                WHERE u.cedula = :cedula
+            ";
             $valores = array(':cedula' => $cedula);
 
             $respuesta = $this->conexion->prepare($consulta);
@@ -68,7 +83,22 @@ class Entrenador extends datos
     public function listado_entrenador()
     {
         try {
-            $consulta = "SELECT * FROM entrenador ORDER BY cedula DESC";
+            $consulta = "
+                SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.genero, 
+                    u.fecha_nacimiento, 
+                    u.lugar_nacimiento, 
+                    u.estado_civil, 
+                    u.telefono, 
+                    u.correo_electronico, 
+                    e.grado_instruccion 
+                FROM entrenador e
+                INNER JOIN usuarios u ON e.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
             $con = $this->conexion->prepare($consulta);
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
@@ -82,24 +112,15 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    private function incluir()
+    public function eliminar($cedula)
     {
         try {
-            $consulta = "INSERT INTO entrenador (cedula, nombres, apellidos, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico, grado_instruccion) 
-                         VALUES (:cedula, :nombres, :apellidos, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico, :grado_instruccion)";
-
-            $valores = array(
-                ':cedula' => $this->cedula,
-                ':nombres' => $this->nombres,
-                ':apellidos' => $this->apellidos,
-                ':genero' => $this->genero,
-                ':fecha_nacimiento' => $this->fecha_nacimiento,
-                ':lugar_nacimiento' => $this->lugar_nacimiento,
-                ':estado_civil' => $this->estado_civil,
-                ':telefono' => $this->telefono,
-                ':correo_electronico' => $this->correo_electronico,
-                ':grado_instruccion' => $this->grado_instruccion
-            );
+            $consulta = "
+                DELETE FROM entrenador WHERE cedula = :cedula;
+                DELETE FROM usuarios WHERE cedula = :cedula;
+                DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
+            ";
+            $valores = array(':cedula' => $cedula);
 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
@@ -111,29 +132,103 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    private function modificar()
+    
+
+    private function incluir()
     {
         try {
-            $consulta = "UPDATE entrenador SET nombres = :nombres, apellidos = :apellidos, genero = :genero, fecha_nacimiento = :fecha_nacimiento, lugar_nacimiento = :lugar_nacimiento, estado_civil = :estado_civil, telefono = :telefono, correo_electronico = :correo_electronico, grado_instruccion = :grado_instruccion 
-                         WHERE cedula = :cedula";
+            $this->conexion->beginTransaction();
+
+            $password = $this->nombres . $this->cedula;
+            $id_rol = 1;
+            $token = 0;
+
+            $consulta = "
+                INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+                VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
+                
+                INSERT INTO entrenador (cedula, grado_instruccion)
+                VALUES (:cedula, :grado_instruccion);
+
+                INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
+                VALUES (:cedula, :id_rol, :password, :token);
+            ";
 
             $valores = array(
                 ':cedula' => $this->cedula,
-                ':nombres' => $this->nombres,
-                ':apellidos' => $this->apellidos,
+                ':nombre' => $this->nombres,
+                ':apellido' => $this->apellidos,
                 ':genero' => $this->genero,
                 ':fecha_nacimiento' => $this->fecha_nacimiento,
                 ':lugar_nacimiento' => $this->lugar_nacimiento,
                 ':estado_civil' => $this->estado_civil,
                 ':telefono' => $this->telefono,
-                ':correo_electronico' => $this->correo_electronico,
+                ':correo' => $this->correo_electronico,
+                ':grado_instruccion' => $this->grado_instruccion,
+                ':id_rol' => $id_rol,
+                ':password' => $password,
+                ':token' => $token
+            );
+
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $respuesta->closeCursor(); 
+
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function modificar()
+    {
+        try {
+            $this->conexion->beginTransaction();
+
+            $consulta = "
+                UPDATE usuarios 
+                SET 
+                    nombre = :nombre, 
+                    apellido = :apellido, 
+                    genero = :genero, 
+                    fecha_nacimiento = :fecha_nacimiento, 
+                    lugar_nacimiento = :lugar_nacimiento, 
+                    estado_civil = :estado_civil, 
+                    telefono = :telefono, 
+                    correo_electronico = :correo 
+                WHERE cedula = :cedula;
+        
+                UPDATE entrenador 
+                SET 
+                    grado_instruccion = :grado_instruccion
+                WHERE cedula = :cedula;
+            ";
+
+            $valores = array(
+                ':cedula' => $this->cedula,
+                ':nombre' => $this->nombres,
+                ':apellido' => $this->apellidos,
+                ':genero' => $this->genero,
+                ':fecha_nacimiento' => $this->fecha_nacimiento,
+                ':lugar_nacimiento' => $this->lugar_nacimiento,
+                ':estado_civil' => $this->estado_civil,
+                ':telefono' => $this->telefono,
+                ':correo' => $this->correo_electronico,
                 ':grado_instruccion' => $this->grado_instruccion
             );
 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
+
+            $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (Exception $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
@@ -151,4 +246,6 @@ class Entrenador extends datos
         return $this;
     }
 }
-?>
+
+    ?>
+    

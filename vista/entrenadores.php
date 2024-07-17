@@ -192,7 +192,7 @@
                             <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar Entrenador</button>
                         </form>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
