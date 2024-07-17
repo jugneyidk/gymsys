@@ -160,7 +160,7 @@
                     </div>
                     <div class="modal-body">
                     <form method="post" id="f2" autocomplete="off">
-    <input type="hidden" name="accion" id="accion_modificar" value="modificar">
+    <input type="hidden" name="accion" id="accion" value="modificar">
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="nombres_modificar" class="form-label">Nombres:</label>

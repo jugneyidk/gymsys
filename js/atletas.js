@@ -60,60 +60,64 @@ $(document).ready(function () {
     function validarEnvio(formId) {
         var esValido = true;
         var form = $(formId);
+
+      
+        var sufijo = formId === "#f2" ? "_modificar" : "";
+
         esValido &= validarKeyUp(
             /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-            form.find("#nombres"),
-            form.find("#snombres"),
+            form.find("#nombres" + sufijo),
+            form.find("#snombres" + sufijo),
             "Solo letras y espacios (1-50 caracteres)"
         );
         esValido &= validarKeyUp(
             /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-            form.find("#apellidos"),
-            form.find("#sapellidos"),
+            form.find("#apellidos" + sufijo),
+            form.find("#sapellidos" + sufijo),
             "Solo letras y espacios (1-50 caracteres)"
         );
         esValido &= validarKeyUp(
             /^\d{7,9}$/,
-            form.find("#cedula"),
-            form.find("#scedula"),
+            form.find("#cedula" + sufijo),
+            form.find("#scedula" + sufijo),
             "La cédula debe tener al menos 7 números"
         );
         esValido &= validarKeyUp(
             /^04\d{9}$/,
-            form.find("#telefono"),
-            form.find("#stelefono"),
+            form.find("#telefono" + sufijo),
+            form.find("#stelefono" + sufijo),
             "El formato del teléfono debe ser 04XXXXXXXXX"
         );
         esValido &= validarKeyUp(
             /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            form.find("#correo"),
-            form.find("#scorreo"),
+            form.find("#correo" + sufijo),
+            form.find("#scorreo" + sufijo),
             "Correo inválido"
         );
         esValido &= validarKeyUp(
             /^\d+(\.\d{1,2})?$/,
-            form.find("#peso"),
-            form.find("#speso"),
+            form.find("#peso" + sufijo),
+            form.find("#speso" + sufijo),
             "Solo números y puntos decimales"
         );
         esValido &= validarKeyUp(
             /^\d+(\.\d{1,2})?$/,
-            form.find("#altura"),
-            form.find("#saltura"),
+            form.find("#altura" + sufijo),
+            form.find("#saltura" + sufijo),
             "Solo números y puntos decimales"
         );
         esValido &= validarKeyUp(
             /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-            form.find("#lugar_nacimiento"),
-            form.find("#slugarnacimiento"),
+            form.find("#lugar_nacimiento" + sufijo),
+            form.find("#slugarnacimiento" + sufijo),
             "El lugar de nacimiento no puede estar vacío"
         );
-        esValido &= verificarFecha(form.find("#fecha_nacimiento"), form.find("#sfecha_nacimiento"));
+        esValido &= verificarFecha(form.find("#fecha_nacimiento" + sufijo), form.find("#sfecha_nacimiento" + sufijo));
 
         return esValido;
     }
 
-    $('#btnIncluir', 'btnModificar').on('click', function(event) {
+    $('#btnIncluir', '#btnModificar').on('click', function(event) {
         event.preventDefault();
     });
 
@@ -124,7 +128,6 @@ $(document).ready(function () {
         }
     });
 
-    
     $("#btnModificar").on("click", function () {
         if (validarEnvio("#f2")) {
             var datos = new FormData($("#f2")[0]);
@@ -167,7 +170,7 @@ $(document).ready(function () {
                             listado_atleta +=
                                 "<td class='align-middle'>" + atleta.fecha_nacimiento + "</td>";
                             listado_atleta +=
-                                "<td class='align-middle'><button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosAtleta(" + JSON.stringify(atleta.cedula) + ")'>Modificar</button><button class='btn btn-block btn-danger' onclick='eliminarAtleta(" + atleta.cedula + ")'>Eliminar</button></td>";
+                                "<td class='align-middle'><button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosAtleta(" + JSON.stringify(atleta.cedula) + ")'>Modificar</button><button class='btn btn-block btn-danger' onclick='eliminarAtleta(" + JSON.stringify(atleta.cedula) + ")'>Eliminar</button></td>";
                             listado_atleta += "</tr>";
                         });
                         $("#listado").html(listado_atleta);
@@ -196,7 +199,7 @@ $(document).ready(function () {
                     } else if (lee.ok) {
                         Swal.fire("Éxito", "Operación realizada con éxito", "success");
                         carga_listado_atleta();
-                        // Cerrar los modales
+                      
                         $('#modalInscripcion').modal('hide');
                         $('#modalModificar').modal('hide');
                     } else {
@@ -249,7 +252,6 @@ $(document).ready(function () {
                         $("#f2 #correo_modificar").val(atleta.correo_electronico);
                         $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
 
-                        // Mostrar el modal de modificación
                         $("#modalModificar").modal('show');
                     } else {
                         Swal.fire("Error", lee.mensaje, "error");
@@ -279,7 +281,38 @@ $(document).ready(function () {
                 var datos = new FormData();
                 datos.append("accion", "eliminar");
                 datos.append("cedula", cedula);
-                enviaAjax(datos);
+                $.ajax({
+                    async: true,
+                    url: "",
+                    type: "POST",
+                    contentType: false,
+                    data: datos,
+                    processData: false,
+                    cache: false,
+                    beforeSend: function () { },
+                    timeout: 10000,
+                    success: function (respuesta) {
+                        try {
+                            var lee = JSON.parse(respuesta);
+                            if (lee.ok) {
+                                Swal.fire("Eliminado!", "El atleta ha sido eliminado.", "success");
+                                carga_listado_atleta();
+                            } else {
+                                Swal.fire("Error", lee.mensaje, "error");
+                            }
+                        } catch {
+                            Swal.fire("Error", "Algo salió mal", "error");
+                        }
+                    },
+                    error: function (request, status, err) {
+                        if (status === "timeout") {
+                            Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
+                        } else {
+                            Swal.fire("Error", "Error al procesar la solicitud", "error");
+                        }
+                    },
+                    complete: function () { },
+                });
             }
         })
     }
@@ -287,6 +320,11 @@ $(document).ready(function () {
     $("#tablaatleta").on("click", ".btn-warning", function() {
         var cedula = $(this).closest("tr").find("td:first").text();
         cargarDatosAtleta(cedula);
+    });
+
+    $("#tablaatleta").on("click", ".btn-danger", function() {
+        var cedula = $(this).closest("tr").find("td:first").text();
+        eliminarAtleta(cedula);
     });
 
     $("input").on("keypress", function (e) {
@@ -327,85 +365,78 @@ $(document).ready(function () {
 
     $("input").on("keyup", function () {
         var id = $(this).attr("id");
+        var formId = $(this).closest("form").attr("id");
+        var sufijo = formId === "f2" ? "_modificar" : "";
         switch (id) {
-            case "nombres":
-            case "nombres_modificar":
+            case "nombres" + sufijo:
                 validarKeyUp(
                     /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
                     $(this),
-                    $("#snombres"),
+                    $("#snombres" + sufijo),
                     "Solo letras y espacios (1-50 caracteres)"
                 );
                 break;
-            case "apellidos":
-            case "apellidos_modificar":
+            case "apellidos" + sufijo:
                 validarKeyUp(
                     /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
                     $(this),
-                    $("#sapellidos"),
+                    $("#sapellidos" + sufijo),
                     "Solo letras y espacios (1-50 caracteres)"
                 );
                 break;
-            case "cedula":
-            case "cedula_modificar":
+            case "cedula" + sufijo:
                 validarKeyUp(
                     /^\d{7,9}$/,
                     $(this),
-                    $("#scedula"),
+                    $("#scedula" + sufijo),
                     "La cédula debe tener al menos 7 números"
                 );
                 break;
-            case "telefono":
-            case "telefono_modificar":
+            case "telefono" + sufijo:
                 validarKeyUp(
                     /^04\d{9}$/,
                     $(this),
-                    $("#stelefono"),
+                    $("#stelefono" + sufijo),
                     "El formato del teléfono debe ser 04XXXXXXXXX"
                 );
                 break;
-            case "telefono_representante":
-            case "telefono_representante_modificar":
+            case "telefono_representante" + sufijo:
                 validarKeyUp(
                     /^04\d{9}$/,
                     $(this),
-                    $("#stelefono_representante"),
+                    $("#stelefono_representante" + sufijo),
                     "El formato del teléfono debe ser 04XXXXXXXXX"
                 );
                 break;
-            case "correo":
-            case "correo_modificar":
+            case "correo" + sufijo:
                 validarKeyUp(
                     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                     $(this),
-                    $("#scorreo"),
+                    $("#scorreo" + sufijo),
                     "Correo inválido"
                 );
                 break;
-            case "peso":
-            case "peso_modificar":
+            case "peso" + sufijo:
                 validarKeyUp(
                     /^\d+(\.\d{1,2})?$/,
                     $(this),
-                    $("#speso"),
+                    $("#speso" + sufijo),
                     "Solo números y puntos decimales"
                 );
                 break;
-            case "altura":
-            case "altura_modificar":
+            case "altura" + sufijo:
                 validarKeyUp(
                     /^\d+(\.\d{1,2})?$/,
                     $(this),
-                    $("#saltura"),
+                    $("#saltura" + sufijo),
                     "Solo números y puntos decimales"
                 );
                 break;
-            case "lugar_nacimiento":
-            case "lugar_nacimiento_modificar":
+            case "lugar_nacimiento" + sufijo:
                 validarKeyUp(
                     /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
                     $(this),
-                    $("#slugarnacimiento"),
+                    $("#slugarnacimiento" + sufijo),
                     "El lugar de nacimiento no puede estar vacío"
                 );
                 break;
@@ -414,13 +445,14 @@ $(document).ready(function () {
 
     $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
         var form = $(this).closest("form");
-        verificarFecha($(this), form.find("#sfecha_nacimiento"));
+        var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
+        verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
         var edad = calcularEdad($(this).val());
-        form.find("#edad").val(edad);
+        form.find("#edad" + sufijo).val(edad);
         if (edad < 18) {
-            form.find("#representanteInfo").show();
+            form.find("#representanteInfo" + sufijo).show();
         } else {
-            form.find("#representanteInfo").hide();
+            form.find("#representanteInfo" + sufijo).hide();
         }
     });
 });

@@ -2,9 +2,9 @@
 if (!is_file("modelo/" . $p . ".php")) {
     echo "Falta definir la clase " . $p;
     exit;
-  }
-  require_once("modelo/" . $p . ".php");
-  if (is_file("vista/" . $p . ".php")) {
+}
+require_once("modelo/" . $p . ".php");
+if (is_file("vista/" . $p . ".php")) {
     $o = new Atleta();
     if (!empty($_POST)) {
         $accion = $_POST['accion']; 
@@ -46,7 +46,7 @@ if (!is_file("modelo/" . $p . ".php")) {
             );
             echo json_encode($respuesta);
         } elseif ($accion == 'eliminar') {
-            $respuesta = $o->eliminar($_POST['cedula']);
+            $respuesta = $o->eliminar_atleta($_POST['cedula']);
             echo json_encode($respuesta);
         } elseif ($accion == 'obtener_atleta') {
             $respuesta = $o->obtener_atleta($_POST['cedula']);
@@ -55,8 +55,7 @@ if (!is_file("modelo/" . $p . ".php")) {
         exit;
     }
     require_once("vista/" . $p . ".php");
-  } else {
+} else {
     echo "pagina en construccion";
-  }
-  
+}
 ?>
