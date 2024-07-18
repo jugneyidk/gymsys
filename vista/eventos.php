@@ -10,7 +10,7 @@
 
 <body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
-    <div class="container align-items-top pt-3">
+    <!--<div class="container align-items-top pt-3">
         <div class="row justify-content-start ">
             <div class="col-lg-9 col-md-5">
                 <div class="row">
@@ -70,10 +70,165 @@
                 </div>
             </div>
 
-
+        
 
         </div>
     </div>
+-->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col">
+                <p class="display-5 mt-2 text-info">Eventos</p>
+                <nav class="navbar navbar-expand-lg border rounded bg-body-tertiary mt-2">
+                    <div class="container-fluid">
+                        <a href="#" class="navbar-brand btn btn-primary">Opciones</a>
+                        <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li class="nav-item">
+                                    <a href="#" class="nav-link btn btn-outline-primary" aria-current="model">Registrar</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="" class="nav-link">Consultar Anteriores</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="" class="nav-link">Eliminar</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+        <div class="row">
+            <p class="lead mt-2"><strong>Eventos activos<strong></p>
+            <!--definir los campos a consultar (div.col)-->
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card border-primary">
+                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>Evento Activo</strong></small></div>
+                            
+                    <div class="row g-0">
+                        <div class="col-md-5 bg-secondary border-end border-primary">
+                            <img src="" alt="" class="img-fluid rounded-start" >
+                        </div>
+                        <div class="col-md-7">
+                            <div class="card-body">
+                                <div class="card-title lead text-primary"><strong>Evento Activo</strong></div>
+                                <p class="card-text lead m-0"><small>Fecha: 19/07 al 21/07</small></p>
+                                <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
+                                <p class="card-text lead m-0"><small>Participantes: 20</small></p>
+                                <button class="btn btn-sm btn-secondary">opciones</button>
+                            </div>
+                            <div class="card-footer my-1 border-primary">
+                                <div class="btn-group visible">
+                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoVer">Ver</button>
+                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoInscribir">Inscribir</button>
+                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card border-info">
+                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-info text-white"><small><strong>Evento En Espera</strong></small></div>
+                    <div class="card-body">
+                        <div class="card-title lead text-primary"><strong>Evento en Espera</strong></div>
+                        <p class="card-text lead m-0"><small>Fecha: 19/08 al 21/08</small></p>
+                        <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
+                        <p class="card-text lead m-0"><small>Participantes: 5</small></p>
+                        <button class="btn btn-sm btn-secondary">opciones</button>
+                    </div>
+                    <div class="card-footer my-1 border-primary">
+                        <div class="btn-group visible">
+                            <button class="btn btn-outline-primary btn-sm">Ver</button>
+                            <button class="btn btn-outline-primary btn-sm">Inscribir</button>
+                            <button class="btn btn-outline-primary btn-sm">Modificar</button>
+                        </div>
+                        <div class="btn-group invisible">
+                            <button class="btn btn-outline-primary btn-sm">Calificar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card border-info">
+                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-info text-white"><small><strong>Evento inactiva</strong></small></div>
+                    <div class="card-body">
+                        <div class="card-title lead text-primary"><strong>Evento Inactiva</strong></div>
+                        <p class="card-text lead m-0"><small>Fecha: 19/10 al 21/10</small></p>
+                        <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
+                        <p class="card-text lead m-0"><small>Participantes: 0</small></p>
+                        <button class="btn btn-sm btn-secondary">opciones</button>
+                    </div>
+                    <div class="card-footer my-1 border-primary">
+                        <div class="btn-group visible">
+                            <button class="btn btn-outline-primary btn-sm">Ver</button>
+                            <button class="btn btn-outline-primary btn-sm">Preinscribir</button>
+                            <button class="btn btn-outline-primary btn-sm">Modificar</button>
+                        </div>
+                        <div class="btn-group invisible">
+                            <button class="btn btn-outline-primary btn-sm">Calificar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--
+
+
+
+-->
+
+    
+    <div class="modal modal-xl " id="modalEventoActivoVer" aria-hidden="true" aria-labelledby="modalEventoActivoVer" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Evento Activo</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-target="#ModalEventoParticipante" data-bs-toggle="modal">BOTON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal modal-xl" id="ModalEventoParticipante" aria-hidden="true" aria-labelledby="ModalEventoParticipante" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Segundo Modal</h1>
+                    <button class="btn-close" data-bs-target="#modalEventoActivoVer" data-bs-toggle="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Segundo Modal
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-target="#modalEventoActivoVer" data-bs-toggle="modal">Regresar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!--
+
+
+
+-->
+
+
 
     <!-- Modal Incluir-->
 

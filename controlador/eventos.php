@@ -68,7 +68,7 @@
       }
         $objEvento = new Eventos();
         $res = $objEvento->consultaGeneral();
-        print_r($res);
+        
         if(is_file("vista/".$p.".php")){
           require_once("vista/".$p.".php"); 
         }
