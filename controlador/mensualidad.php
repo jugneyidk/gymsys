@@ -7,33 +7,24 @@ if (!is_file("modelo/" . $p . ".php")) {
 require_once("modelo/" . $p . ".php");
 
 if (!empty($_POST)) {
-    $o = new Mensualidad(); // Nombre de la clase del modelo
+    $o = new Mensualidad(); 
     $accion = $_POST['accion'];
 
     if ($accion == 'incluir') {
         $respuesta = $o->incluir_mensualidad(
             $_POST['id_atleta'], 
-            $_POST['tipo_mensualidad'], 
-            $_POST['cobro'], 
-            $_POST['pago'], 
+            $_POST['monto'], 
             $_POST['fecha']
         );
         echo json_encode($respuesta);
-    } else if ($accion == 'listado_mensualidad') {
-        $respuesta = $o->listado_mensualidad();
+    } elseif ($accion == 'listado_mensualidades') {
+        $respuesta = $o->listado_mensualidades();
         echo json_encode($respuesta);
-    } else if ($accion == 'modificar') {
-        $respuesta = $o->modificar_mensualidad(
-            $_POST['id_mensualidad'],
-            $_POST['id_atleta'], 
-            $_POST['tipo_mensualidad'], 
-            $_POST['cobro'], 
-            $_POST['pago'], 
-            $_POST['fecha']
-        );
+    } elseif ($accion == 'listado_deudores') {
+        $respuesta = $o->listado_deudores();
         echo json_encode($respuesta);
-    } else if ($accion == 'eliminar') {
-        $respuesta = $o->eliminar_mensualidad($_POST['id_mensualidad']);
+    } elseif ($accion == 'listado_atletas') {
+        $respuesta = $o->listado_atletas();
         echo json_encode($respuesta);
     }
     exit;

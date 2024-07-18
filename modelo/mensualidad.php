@@ -3,75 +3,34 @@ require_once('modelo/datos.php');
 
 class Mensualidad extends datos
 {
-    private $conexion, $id_mensualidad, $id_atleta, $tipo, $cobro, $pago, $fecha;
+    private $conexion, $id_atleta, $monto, $fecha;
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // Inicia la conexión a la DB
+        $this->conexion = $this->conecta(); 
     }
 
-    public function incluir_mensualidad($id_atleta, $tipo, $cobro, $pago, $fecha)
+    public function incluir_mensualidad($id_atleta, $monto, $fecha)
     {
         $this->id_atleta = $id_atleta;
-        $this->tipo = $tipo;
-        $this->cobro = $cobro;
-        $this->pago = $pago;
+        $this->monto = $monto;
         $this->fecha = $fecha;
         return $this->incluir();
     }
 
-    public function listado_mensualidad()
-    {
-        return $this->listado();
-    }
-
-    public function modificar_mensualidad($id_mensualidad, $id_atleta, $tipo, $cobro, $pago, $fecha)
-    {
-        $this->id_mensualidad = $id_mensualidad;
-        $this->id_atleta = $id_atleta;
-        $this->tipo = $tipo;
-        $this->cobro = $cobro;
-        $this->pago = $pago;
-        $this->fecha = $fecha;
-        return $this->modificar();
-    }
-
-    public function eliminar_mensualidad($id_mensualidad)
-    {
-        $this->id_mensualidad = $id_mensualidad;
-        return $this->eliminar();
-    }
-
-    private function incluir()
+    public function listado_mensualidades()
     {
         try {
-            $consulta = "INSERT INTO mensualidades (id_atleta, tipo, cobro, pago, fecha) 
-                         VALUES (:id_atleta, :tipo, :cobro, :pago, :fecha)";
-            $valores = array(
-                ':id_atleta' => $this->id_atleta,
-                ':tipo' => $this->tipo,
-                ':cobro' => $this->cobro,
-                ':pago' => $this->pago,
-                ':fecha' => $this->fecha
-            );
-
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
-    }
-
-    private function listado()
-    {
-        try {
-            $consulta = "SELECT * FROM mensualidades ORDER BY id_mensualidad DESC";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha
+                FROM mensualidades m
+                INNER JOIN atleta a ON m.id_atleta = a.cedula
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY m.fecha DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
         } catch (Exception $e) {
@@ -81,16 +40,57 @@ class Mensualidad extends datos
         return $resultado;
     }
 
-    private function modificar()
+    public function listado_deudores()
     {
         try {
-            $consulta = "UPDATE mensualidades SET id_atleta = :id_atleta, tipo = :tipo, cobro = :cobro, pago = :pago, fecha = :fecha                          WHERE id_mensualidad = :id_mensualidad";
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta
+                WHERE m.id_atleta IS NULL OR m.fecha < DATE_FORMAT(NOW() ,'%Y-%m-01')
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    public function listado_atletas()
+    {
+        try {
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function incluir()
+    {
+        try {
+            $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha) 
+                         VALUES (:id_atleta, :monto, :fecha)";
             $valores = array(
-                ':id_mensualidad' => $this->id_mensualidad,
                 ':id_atleta' => $this->id_atleta,
-                ':tipo' => $this->tipo,
-                ':cobro' => $this->cobro,
-                ':pago' => $this->pago,
+                ':monto' => $this->monto,
                 ':fecha' => $this->fecha
             );
 
@@ -103,34 +103,5 @@ class Mensualidad extends datos
         }
         return $resultado;
     }
-
-    private function eliminar()
-    {
-        try {
-            $consulta = "DELETE FROM mensualidad WHERE id_mensualidad = :id_mensualidad";
-            $valores = array(':id_mensualidad' => $this->id_mensualidad);
-
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
-    }
-
-    public function __get($propiedad)
-    {
-        return $this->$propiedad;
-    }
-
-    public function __set($propiedad, $valor)
-    {
-        $this->$propiedad = $valor;
-        return $this;
-    }
 }
 ?>
-
-                        

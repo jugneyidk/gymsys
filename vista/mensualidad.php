@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,56 +7,94 @@
     <?php require_once ("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="css/all.min.css">
 </head>
-
 <body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
 
     <div class="container mt-4">
         <div class="row justify-content-center">
-            <div class="col-lg-6">
+        <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2>Deudores</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaDeudores">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Cédula</th>
+                                        <th>Tipo</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listadoDeudores">
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header text-center">
                         <h2>Registrar Mensualidad</h2>
                     </div>
                     <div class="card-body">
-                        <form id="f" method="POST">
-                            <input autocomplete="off" type="text" class="form-control" name="accion" id="accion"
-                                style="display: none;">
+                        <form id="formPago" method="POST">
+                            <input autocomplete="off" type="hidden" name="accion" id="accion" value="incluir">
                             <div class="mb-3">
-                                <label for="id_atleta" class="form-label">Atleta:</label>
-                                <input type="text" class="form-control" id="id_atleta" name="id_atleta" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tipo_mensualidad" class="form-label">Tipo de Mensualidad:</label>
-                                <select class="form-select" id="tipo_mensualidad" name="tipo_mensualidad" required>
-                                    <option value="">Seleccione el tipo</option>
-                                    <option value="1">Normal</option>
-                                    <option value="2">Especial</option>
+                                <label for="atleta" class="form-label">Atleta:</label>
+                                <select class="form-select" id="atleta" name="id_atleta" required>
+                                    <!-- Aquí se llenarán dinámicamente los atletas -->
                                 </select>
+                                <div id="satleta" class="invalid-feedback"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="cobro" class="form-label">Cobro:</label>
-                                <input type="number" class="form-control" id="cobro" name="cobro" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="pago" class="form-label">Pago:</label>
-                                <input type="number" class="form-control" id="pago" name="pago" required>
+                                <label for="monto" class="form-label">Monto:</label>
+                                <input type="number" class="form-control" id="monto" name="monto" required>
+                                <div id="smonto" class="invalid-feedback"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="fecha" class="form-label">Fecha:</label>
                                 <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                <div id="sfecha" class="invalid-feedback"></div>
                             </div>
-                            <button type="button" class="btn btn-primary w-100" id="incluir"
-                                name="incluir">Registrar</button>
+                            <button type="button" class="btn btn-primary w-100" id="registrarPago" name="registrarPago">Registrar Pago</button>
                         </form>
                     </div>
                 </div>
             </div>
+            
+            <div class="card mt-4">
+                    <div class="card-header text-center">
+                        <h2>Pagos Registrados</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaPagosRegistrados">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Cédula</th>
+                                        <th>Tipo</th>
+                                        <th>Monto</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listadoPagosRegistrados">
+                                   
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
     <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script src="js/mensualidad.js"></script>
 </body>
-
 </html>
