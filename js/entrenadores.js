@@ -153,7 +153,7 @@ $(document).ready(function () {
                             listado_entrenador +=
                                 "<td class='align-middle'>" + entrenador.correo_electronico + "</td>";
                             listado_entrenador +=
-                                "<td class='align-middle'><button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosEntrenador(" + JSON.stringify(entrenador.cedula) + ")'>Modificar</button><button class='btn btn-block btn-danger' onclick='eliminarEntrenador(" + entrenador.cedula + ")'>Eliminar</button></td>";
+                                "<td class='align-middle'><button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosEntrenador(" + JSON.stringify(entrenador.cedula) + ")'>Modificar</button><button class='btn btn-block btn-danger' onclick='eliminarEntrenador(" + JSON.stringify(entrenador.cedula) + ")'>Eliminar</button></td>";
                             listado_entrenador += "</tr>";
                         });
                         $("#listado").html(listado_entrenador);
@@ -223,4 +223,184 @@ $(document).ready(function () {
                         var entrenador = lee.entrenador;
                         $("#f2 #nombres_modificar").val(entrenador.nombre);
                         $("#f2 #apellidos_modificar").val(entrenador.apellido);
-                       
+                        $("#f2 #cedula_modificar").val(entrenador.cedula);
+                        $("#f2 #genero_modificar").val(entrenador.genero);
+                        $("#f2 #fecha_nacimiento_modificar").val(entrenador.fecha_nacimiento);
+                        $("#f2 #lugar_nacimiento_modificar").val(entrenador.lugar_nacimiento);
+                        $("#f2 #estado_civil_modificar").val(entrenador.estado_civil);
+                        $("#f2 #telefono_modificar").val(entrenador.telefono);
+                        $("#f2 #correo_modificar").val(entrenador.correo_electronico);
+                        $("#f2 #grado_instruccion_modificar").val(entrenador.grado_instruccion);
+
+                        // Mostrar el modal de modificación
+                        $("#modalModificar").modal('show');
+                    } else {
+                        Swal.fire("Error", lee.mensaje, "error");
+                    }
+                } catch {
+                    Swal.fire("Error", "Algo salió mal", "error");
+                }
+            },
+            error: function (request, status, err) {
+                Swal.fire("Error", "Error al procesar la solicitud", "error");
+            }
+        });
+    }
+
+    function eliminarEntrenador(cedula) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var datos = new FormData();
+                datos.append("accion", "eliminar");
+                datos.append("cedula", cedula);
+
+                $.ajax({
+                    async: true,
+                    url: "",
+                    type: "POST",
+                    contentType: false,
+                    data: datos,
+                    processData: false,
+                    cache: false,
+                    success: function (respuesta) {
+                        try {
+                            var lee = JSON.parse(respuesta);
+                            if (lee.ok) {
+                                Swal.fire("Éxito", "El entrenador ha sido eliminado", "success");
+                                carga_listado_entrenadores();
+                            } else {
+                                Swal.fire("Error", lee.mensaje, "error");
+                            }
+                        } catch {
+                            Swal.fire("Error", "Algo salió mal", "error");
+                        }
+                    },
+                    error: function (request, status, err) {
+                        Swal.fire("Error", "Error al procesar la solicitud", "error");
+                    }
+                });
+            }
+        });
+    }
+
+    $("#tablaentrenador").on("click", ".btn-warning", function () {
+        var cedula = $(this).closest("tr").find("td:first").text();
+        cargarDatosEntrenador(cedula);
+    });
+    $("#tablaentrenador").on("click", ".btn-danger", function() {
+        var cedula = $(this).closest("tr").find("td:first").text();
+        eliminarEntrenador(cedula);
+    });
+    $("input").on("keypress", function (e) {
+        var id = $(this).attr("id");
+        switch (id) {
+            case "nombres":
+            case "apellidos":
+            case "lugar_nacimiento":
+            case "grado_instruccion":
+            case "nombres_modificar":
+            case "apellidos_modificar":
+            case "lugar_nacimiento_modificar":
+            case "grado_instruccion_modificar":
+                validarKeyPress(e, /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/);
+                break;
+            case "cedula":
+            case "cedula_modificar":
+            case "telefono":
+            case "telefono_modificar":
+                validarKeyPress(e, /^\d*$/);
+                break;
+            case "correo":
+            case "correo_modificar":
+                validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
+                break;
+        }
+    });
+
+    $("input").on("keyup", function () {
+        var id = $(this).attr("id");
+        var formId = $(this).closest("form").attr("id");
+        var sufijo = formId === "f2" ? "_modificar" : "";
+        switch (id) {
+            case "nombres" + sufijo:
+                validarKeyUp(
+                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+                    $(this),
+                    $("#snombres" + sufijo),
+                    "Solo letras y espacios (1-50 caracteres)"
+                );
+                break;
+            case "apellidos" + sufijo:
+                validarKeyUp(
+                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+                    $(this),
+                    $("#sapellidos" + sufijo),
+                    "Solo letras y espacios (1-50 caracteres)"
+                );
+                break;
+            case "cedula" + sufijo:
+                validarKeyUp(
+                    /^\d{7,9}$/,
+                    $(this),
+                    $("#scedula" + sufijo),
+                    "La cédula debe tener al menos 7 números"
+                );
+                break;
+            case "telefono" + sufijo:
+                validarKeyUp(
+                    /^04\d{9}$/,
+                    $(this),
+                    $("#stelefono" + sufijo),
+                    "El formato del teléfono debe ser 04XXXXXXXXX"
+                );
+                break;
+            case "correo" + sufijo:
+                validarKeyUp(
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    $(this),
+                    $("#scorreo" + sufijo),
+                    "Correo inválido"
+                );
+                break;
+            case "lugar_nacimiento" + sufijo:
+                validarKeyUp(
+                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+                    $(this),
+                    $("#slugarnacimiento" + sufijo),
+                    "El lugar de nacimiento no puede estar vacío"
+                );
+                break;
+            case "grado_instruccion" + sufijo:
+                validarKeyUp(
+                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+                    $(this),
+                    $("#sgrado_instruccion" + sufijo),
+                    "El grado de instrucción no puede estar vacío"
+                );
+                break;
+        }
+    });
+
+    $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
+        var form = $(this).closest("form");
+        var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
+        verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
+        var edad = calcularEdad($(this).val());
+        form.find("#edad" + sufijo).val(edad);
+        if (edad < 18) {
+            form.find("#representanteInfo" + sufijo).show();
+        } else {
+            form.find("#representanteInfo" + sufijo).hide();
+        }
+    });
+});
+

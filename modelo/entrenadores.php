@@ -112,7 +112,7 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    public function eliminar($cedula)
+    public function eliminar_entrenador($cedula)
     {
         try {
             $consulta = "
