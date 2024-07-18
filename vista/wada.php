@@ -6,24 +6,47 @@
     <title>Registrar Status WADA - Sistema</title>
     <?php require_once ("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="css/all.min.css">
+    <style>
+        .table-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .card-custom {
+            margin: 20px 0;
+        }
+
+        .header-custom {
+            background-color: #17a2b8;
+            color: white;
+            padding: 10px;
+            font-size: 1.2em;
+        }
+
+        .modal-xl {
+            max-width: 90%;
+        }
+
+        .btn-large {
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
-    <div class="container-lg d-flex justify-content-center align-items-center">
-        <div class="row justify-content-center w-100">
-            <div class="col-12 col-md-8 col-lg-9">
-                <div class="p-4 shadow">
-                    <!-- Encabezado del card -->
-                    <div class="card-header d-flex justify-content-between align-items-center bg-info text-white">
+    <div class="container-lg">
+        <div class="row">
+            <div class="col-10 col-lg-8">
+                <div class="card shadow card-custom">
+                    <div class="card-header header-custom d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Gestionar WADA</h2>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
                             Registrar+
                         </button>
                     </div>
-                    <!-- Contenido del card -->
                     <div class="p-4">
                         <h2 class="text-center mb-4">Atletas Registrados en WADA</h2>
-                        <div class="table-responsive">
+                        <div class="table-wrapper">
                             <table class="table table-striped table-hover" id="tablaWada">
                                 <thead>
                                     <tr>
@@ -35,16 +58,35 @@
                                         <th>Acción</th>
                                     </tr>
                                 </thead>
-                                <tbody id="listado">
-                                    <!-- Aquí se agregarán dinámicamente los registros WADA -->
-                                </tbody>
+                                <tbody id="listado"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                <div class="card shadow card-custom">
+                    <div class="card-header header-custom">
+                        <h3>Próximos a Vencer</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="table-wrapper">
+                            <table class="table table-striped table-hover" id="tablaProximosVencer">
+                                <thead>
+                                    <tr>
+                                        <th>Atleta</th>
+                                        <th>Cedula</th>
+                                        <th>Vencimiento</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal de Inscripción -->
         <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -59,7 +101,6 @@
                                 <label for="atleta" class="form-label">Seleccionar Atleta:</label>
                                 <select class="form-select" id="atleta" name="atleta" required>
                                     <option value="">Seleccione un atleta</option>
-                                    <!-- Aquí se llenarán dinámicamente los atletas -->
                                 </select>
                                 <div id="satleta" class="invalid-feedback"></div>
                             </div>
@@ -87,13 +128,12 @@
                                 <input type="date" class="form-control" id="vencimiento" name="vencimiento" required>
                                 <div id="svencimiento" class="invalid-feedback"></div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Registrar</button>
+                            <button type="submit" class="btn btn-primary btn-large btn-block">Registrar</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Modal de Modificación -->
         <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -108,7 +148,6 @@
                                 <label for="atleta_modificar" class="form-label">Seleccionar Atleta:</label>
                                 <select class="form-select" id="atleta_modificar" name="atleta_modificar" required>
                                     <option value="">Seleccione un atleta</option>
-                                    <!-- Aquí se llenarán dinámicamente los atletas -->
                                 </select>
                                 <div id="satleta_modificar" class="invalid-feedback"></div>
                             </div>
@@ -136,7 +175,7 @@
                                 <input type="date" class="form-control" id="vencimiento_modificar" name="vencimiento_modificar" required>
                                 <div id="svencimiento_modificar" class="invalid-feedback"></div>
                             </div>
-                            <button type="submit" class="btn btn-primary btn-block">Modificar</button>
+                            <button type="submit" class="btn btn-primary btn-large btn-block">Modificar</button>
                         </form>
                     </div>
                 </div>
@@ -145,6 +184,7 @@
     </div>
     <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
+   
     <script src="js/wada.js"></script>
 </body>
 </html>

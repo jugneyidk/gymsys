@@ -1,16 +1,16 @@
 <?php
 require_once('modelo/datos.php');
 
-class WADA extends datos // Nombre de la clase del modelo
+class WADA extends datos
 {
-    private $conexion, $id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento; // Todas las variables que se usarán que vienen del formulario (no tocar la conexión)
-    
+    private $conexion, $id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento;
+
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // Inicia la conexión a la DB
+        $this->conexion = $this->conecta();
     }
 
-    public function incluir_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento) // Función pública que hace set a los atributos y llama a la función privada
+    public function incluir_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento)
     {
         $this->id_atleta = $id_atleta;
         $this->estado = $estado;
@@ -137,6 +137,56 @@ class WADA extends datos // Nombre de la clase del modelo
         return $resultado;
     }
 
+    public function listado_atletas()
+    {
+        try {
+            $consulta = "
+                SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.genero, 
+                    u.fecha_nacimiento, 
+                    u.lugar_nacimiento, 
+                    u.estado_civil, 
+                    u.telefono, 
+                    u.correo_electronico, 
+                    a.tipo_atleta, 
+                    a.peso, 
+                    a.altura, 
+                    a.entrenador 
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["devol"] = 'listado_atletas';
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    public function obtener_proximos_vencer() {
+        try {
+            $consulta = "SELECT * FROM wada WHERE vencimiento <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) ORDER BY vencimiento ASC";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $registros = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $registros;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
     public function __get($propiedad)
     {
         return $this->$propiedad;
@@ -148,5 +198,4 @@ class WADA extends datos // Nombre de la clase del modelo
         return $this;
     }
 }
-
 ?>

@@ -1,141 +1,113 @@
 $(document).ready(function () {
+    carga_listado_wada();
+    cargaProximosVencer();
+
     function carga_listado_wada() {
         var datos = new FormData();
         datos.append("accion", "listado_wada");
-        enviaAjax(datos);
+        enviaAjax(datos, actualizarTablaWada);
     }
-    carga_listado_wada();
 
-    function validarKeyPress(e, er) {
-        var key = e.key;
-        if (!er.test(key)) {
-            e.preventDefault();
+    function enviaAjax(datos, callback) {
+        $.ajax({
+            async: true,
+            url: '',
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                var lee = JSON.parse(respuesta);
+                if (lee.ok) {
+                    callback(lee.respuesta);
+                } else {
+                    Swal.fire("Error", lee.mensaje, "error");
+                }
+            },
+            error: function (xhr, status, error) {
+                Swal.fire("Error", "Hubo un problema con la petición: " + error, "error");
+            }
+        });
+    }
+
+    function actualizarTablaWada(data) {
+        var html = "";
+        data.forEach(function (registro) {
+            html += `<tr>
+                        <td>${registro.nombre} ${registro.apellido}</td>
+                        <td>${registro.estado === '1' ? 'Cumple' : 'No Cumple'}</td>
+                        <td>${registro.inscrito}</td>
+                        <td>${registro.ultima_actualizacion}</td>
+                        <td>${registro.vencimiento}</td>
+                        <td>
+                            <button onclick="editarWada('${registro.cedula}')" class="btn btn-warning">Editar</button>
+                            <button onclick="eliminarWada('${registro.cedula}')" class="btn btn-danger">Eliminar</button>
+                        </td>
+                    </tr>`;
+        });
+        $('#tablaWada tbody').html(html);
+
+        if ($.fn.DataTable.isDataTable("#tablaWada")) {
+            $('#tablaWada').DataTable().clear().destroy();
         }
+        $('#tablaWada').DataTable();
     }
 
-    function validarKeyUp(er, input, mensaje, textoError) {
-        if (er.test(input.val())) {
-            input.removeClass('is-invalid').addClass('is-valid');
-            mensaje.text('');
-            return true;
-        } else {
-            input.removeClass('is-valid').addClass('is-invalid');
-            mensaje.text(textoError);
-            return false;
+    function actualizarTablaProximosVencer(data) {
+        var html = "";
+        data.forEach(function (registro) {
+            html += `<tr>
+                        <td>${registro.nombre} ${registro.apellido}</td>
+                        <td>${registro.cedula}</td>
+                        <td>${registro.vencimiento}</td>
+                        <td>
+                            <button onclick="editarWada('${registro.cedula}')" class="btn btn-warning">Actualizar</button>
+                        </td>
+                    </tr>`;
+        });
+        $('#tablaProximosVencer tbody').html(html);
+
+        if ($.fn.DataTable.isDataTable("#tablaProximosVencer")) {
+            $('#tablaProximosVencer').DataTable().clear().destroy();
         }
+        $('#tablaProximosVencer').DataTable();
     }
 
-    function verificarCampoVacio(input, mensaje, textoError) {
-        if (input.val().trim() === '') {
-            input.removeClass('is-valid').addClass('is-invalid');
-            mensaje.text(textoError);
-            return false;
-        } else {
-            input.removeClass('is-invalid').addClass('is-valid');
-            mensaje.text('');
-            return true;
-        }
+    function cargaProximosVencer() {
+        var datos = new FormData();
+        datos.append("accion", "obtener_proximos_vencer");
+        enviaAjax(datos, actualizarTablaProximosVencer);
     }
 
-    function validarEnvio() {
-        var esValido = true;
-        esValido &= verificarCampoVacio($('#atleta'), $('#satleta'), 'Seleccione un atleta');
-        esValido &= verificarCampoVacio($('#status'), $('#sstatus'), 'Seleccione un status');
-        esValido &= verificarCampoVacio($('#inscrito'), $('#sinscrito'), 'Seleccione una fecha de inscripción');
-        esValido &= verificarCampoVacio($('#ultima_actualizacion'), $('#sultima_actualizacion'), 'Seleccione la última actualización');
-        esValido &= verificarCampoVacio($('#vencimiento'), $('#svencimiento'), 'Seleccione la fecha de vencimiento');
-        return esValido;
-    }
-
-    $("#incluir, #modificar, #eliminar").on("click", function () {
-        var action = $(this).attr("id");
-        if (validarEnvio()) {
-            $("#accion").val(action);
-            var datos = new FormData($("#f1")[0]);
-            enviaAjax(datos);
-        }
+    $("#f1").submit(function (e) {
+        e.preventDefault();
+        var datos = new FormData(this);
+        datos.append("accion", "incluir");
+        enviaAjax(datos, function() {
+            Swal.fire("Éxito", "Registro añadido correctamente", "success");
+            $('#modalInscripcion').modal('hide');
+            carga_listado_wada();
+            cargaProximosVencer();
+        });
     });
 
-    function enviaAjax(datos) {
-        $.ajax({
-            async: true,
-            url: '',
-            type: "POST",
-            contentType: false,
-            data: datos,
-            processData: false,
-            cache: false,
-            beforeSend: function () {},
-            timeout: 10000,
-            success: function (respuesta) {
-                try {
-                    var lee = JSON.parse(respuesta);
-                    if (lee.devol == 'listado_wada') {
-                        if ($.fn.DataTable.isDataTable("#tablaWada")) {
-                            $("#tablaWada").DataTable().destroy();
-                        }
-                        let listado_wada = "";
-                        lee.respuesta.forEach((registro) => {
-                            listado_wada += `
-                                <tr>
-                                    <td class='align-middle'>${registro.id_atleta}</td>
-                                    <td class='align-middle'>${registro.estado == 1 ? 'Cumple' : 'No Cumple'}</td>
-                                    <td class='align-middle'>${registro.inscrito}</td>
-                                    <td class='align-middle'>${registro.ultima_actualizacion}</td>
-                                    <td class='align-middle'>${registro.vencimiento}</td>
-                                    <td class='align-middle'>
-                                        <button class='btn btn-block btn-warning me-2' onclick="obtenerWada('${registro.id_atleta}')">Modificar</button>
-                                        <button class='btn btn-block btn-danger' onclick="eliminarWada('${registro.id_atleta}')">Eliminar</button>
-                                    </td>
-                                </tr>`;
-                        });
-                        $("#listado").html(listado_wada);
-                        if (!$.fn.DataTable.isDataTable("#tablaWada")) {
-                            $("#tablaWada").DataTable({
-                                columnDefs: [
-                                    { targets: [5], orderable: false, searchable: false },
-                                ],
-                                language: {
-                                    lengthMenu: "Mostrar _MENU_ por página",
-                                    zeroRecords: "No se encontraron registros",
-                                    info: "Mostrando página _PAGE_ de _PAGES_",
-                                    infoEmpty: "No hay registros disponibles",
-                                    infoFiltered: "(filtrado de _MAX_ registros totales)",
-                                    search: "Buscar:",
-                                    paginate: {
-                                        first: "Primera",
-                                        last: "Última",
-                                        next: "Siguiente",
-                                        previous: "Anterior",
-                                    },
-                                },
-                                autoWidth: false,
-                                order: [[0, "desc"]],
-                            });
-                        }
-                    } else {
-                        Swal.fire("Éxito", "Operación realizada con éxito", "success");
-                        $("#f1")[0].reset();
-                    }
-                } catch {
-                    Swal.fire("Error", "Algo salió mal", "error");
-                }
-            },
-            error: function (request, status, err) {
-                if (status === "timeout") {
-                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                } else {
-                    Swal.fire("Error", "Error al procesar la solicitud", "error");
-                }
-            },
-            complete: function () {}
+    $("#f2").submit(function (e) {
+        e.preventDefault();
+        var datos = new FormData(this);
+        datos.append("accion", "modificar");
+        enviaAjax(datos, function() {
+            Swal.fire("Éxito", "Registro modificado correctamente", "success");
+            $('#modalModificar').modal('hide');
+            carga_listado_wada();
+            cargaProximosVencer();
         });
-    }
+    });
 
-    function obtenerWada(id_atleta) {
+    window.editarWada = function(cedula) {
         var datos = new FormData();
         datos.append("accion", "obtener_wada");
-        datos.append("atleta", id_atleta);
+        datos.append("atleta", cedula);
         $.ajax({
             async: true,
             url: '',
@@ -144,38 +116,27 @@ $(document).ready(function () {
             data: datos,
             processData: false,
             cache: false,
-            beforeSend: function () {},
-            timeout: 10000,
             success: function (respuesta) {
-                try {
-                    var lee = JSON.parse(respuesta);
-                    if (lee.ok) {
-                        var wada = lee.wada;
-                        $("#atleta_modificar").val(wada.id_atleta);
-                        $("#status_modificar").val(wada.estado);
-                        $("#inscrito_modificar").val(wada.inscrito);
-                        $("#ultima_actualizacion_modificar").val(wada.ultima_actualizacion);
-                        $("#vencimiento_modificar").val(wada.vencimiento);
-                        $("#modalModificar").modal("show");
-                    } else {
-                        Swal.fire("Error", lee.mensaje, "error");
-                    }
-                } catch {
-                    Swal.fire("Error", "Algo salió mal", "error");
+                var lee = JSON.parse(respuesta);
+                if (lee.ok) {
+                    var wada = lee.wada;
+                    $("#atleta_modificar").val(wada.cedula);
+                    $("#status_modificar").val(wada.estado);
+                    $("#inscrito_modificar").val(wada.inscrito);
+                    $("#ultima_actualizacion_modificar").val(wada.ultima_actualizacion);
+                    $("#vencimiento_modificar").val(wada.vencimiento);
+                    $("#modalModificar").modal("show");
+                } else {
+                    Swal.fire("Error", lee.mensaje, "error");
                 }
             },
             error: function (request, status, err) {
-                if (status === "timeout") {
-                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                } else {
-                    Swal.fire("Error", "Error al procesar la solicitud", "error");
-                }
-            },
-            complete: function () {}
+                Swal.fire("Error", "Error al procesar la solicitud", "error");
+            }
         });
-    }
+    };
 
-    function eliminarWada(id_atleta) {
+    window.eliminarWada = function(cedula) {
         Swal.fire({
             title: "¿Estás seguro?",
             text: "No podrás revertir esto",
@@ -188,61 +149,45 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 var datos = new FormData();
                 datos.append("accion", "eliminar");
-                datos.append("atleta", id_atleta);
-                $.ajax({
-                    async: true,
-                    url: '',
-                    type: "POST",
-                    contentType: false,
-                    data: datos,
-                    processData: false,
-                    cache: false,
-                    beforeSend: function () {},
-                    timeout: 10000,
-                    success: function (respuesta) {
-                        try {
-                            var lee = JSON.parse(respuesta);
-                            if (lee.ok) {
-                                Swal.fire("Eliminado", "El registro ha sido eliminado", "success");
-                                carga_listado_wada();
-                            } else {
-                                Swal.fire("Error", lee.mensaje, "error");
-                            }
-                        } catch {
-                            Swal.fire("Error", "Algo salió mal", "error");
-                        }
-                    },
-                    error: function (request, status, err) {
-                        if (status === "timeout") {
-                            Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                        } else {
-                            Swal.fire("Error", "Error al procesar la solicitud", "error");
-                        }
-                    },
-                    complete: function () {}
+                datos.append("atleta", cedula);
+                enviaAjax(datos, function() {
+                    Swal.fire("Eliminado", "El registro ha sido eliminado", "success");
+                    carga_listado_wada();
+                    cargaProximosVencer();
                 });
+            }
+        });
+    };
+
+    function carga_atletas() {
+        var datos = new FormData();
+        datos.append("accion", "listado_atletas");
+        $.ajax({
+            async: true,
+            url: '',
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                var lee = JSON.parse(respuesta);
+                if (lee.ok) {
+                    var opciones = "<option value=''>Seleccione un atleta</option>";
+                    lee.respuesta.forEach(function (atleta) {
+                        opciones += `<option value='${atleta.cedula}'>${atleta.nombre} ${atleta.apellido}</option>`;
+                    });
+                    $("#atleta").html(opciones);
+                    $("#atleta_modificar").html(opciones);
+                } else {
+                    Swal.fire("Error", lee.mensaje, "error");
+                }
+            },
+            error: function (request, status, err) {
+                Swal.fire("Error", "Error al procesar la solicitud", "error");
             }
         });
     }
 
-    $('input, select').on('keyup change', function() {
-        var id = $(this).attr('id');
-        switch(id) {
-            case 'atleta':
-                verificarCampoVacio($(this), $('#satleta'), 'Seleccione un atleta');
-                break;
-            case 'status':
-                verificarCampoVacio($(this), $('#sstatus'), 'Seleccione un status');
-                break;
-            case 'inscrito':
-                verificarCampoVacio($(this), $('#sinscrito'), 'Seleccione una fecha de inscripción');
-                break;
-            case 'ultima_actualizacion':
-                verificarCampoVacio($(this), $('#sultima_actualizacion'), 'Seleccione la última actualización');
-                break;
-            case 'vencimiento':
-                verificarCampoVacio($(this), $('#svencimiento'), 'Seleccione la fecha de vencimiento');
-                break;
-        }
-    });
+    carga_atletas();
 });

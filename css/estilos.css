@@ -170,3 +170,45 @@ footer a{
     width: 100%;
     margin-top: 10px;
 }
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-header h2 {
+        margin-bottom: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 1rem;
+    }
+}
+.table-wrapper {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.card-custom {
+    margin: 20px 0;
+}
+
+.header-custom {
+    background-color: #17a2b8;
+    color: white;
+    padding: 10px;
+    font-size: 1.2em;
+}
+
+.modal-xl {
+    max-width: 90%;
+}
+
+.btn-large {
+    font-size: 1.2em;
+}
