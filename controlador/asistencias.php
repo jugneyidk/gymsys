@@ -1,35 +1,29 @@
 <?php
 if (!is_file("modelo/" . $p . ".php")) {
-    echo "No existe el modelo.";
+    echo "Falta definir la clase " . $p;
     exit;
 }
-
 require_once("modelo/" . $p . ".php");
 
-if (!empty($_POST)) {
-    $o = new Asistencia();
-    $accion = $_POST['accion'];
-
-    if ($accion == 'crear') {
-        $respuesta = $o->crear_asistencia($_POST['fecha']);
-        echo json_encode($respuesta);
-    } elseif ($accion == 'listado') {
-        $respuesta = $o->listado_asistencias();
-        echo json_encode($respuesta);
-    } elseif ($accion == 'guardar') {
-        $asistencias = json_decode($_POST['asistencias'], true);
-        $respuesta = $o->guardar_asistencia($_POST['fecha'], $asistencias);
-        echo json_encode($respuesta);
-    } elseif ($accion == 'listar_atletas') {
-        $respuesta = $o->listar_atletas();
-        echo json_encode($respuesta);
-    }
-    exit;
-}
-
 if (is_file("vista/" . $p . ".php")) {
+    $o = new Asistencia();
+    if (!empty($_POST)) {
+        $accion = $_POST['accion'];
+        if ($accion == 'obtener_atletas') {
+            $respuesta = $o->obtener_atletas();
+            echo json_encode($respuesta);
+        } elseif ($accion == 'guardar_asistencias') {
+            $respuesta = $o->guardar_asistencias($_POST['fecha'], $_POST['asistencias']);
+            echo json_encode($respuesta);
+        } elseif ($accion == 'obtener_asistencias') {
+            $respuesta = $o->obtener_asistencias($_POST['fecha']);
+            echo json_encode($respuesta);
+        }
+        exit;
+    }
     require_once("vista/" . $p . ".php");
 } else {
-    require_once("comunes/404.php");
+    echo "pagina en construccion";
 }
+
 ?>

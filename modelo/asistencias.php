@@ -1,41 +1,32 @@
 <?php
-require_once('modelo/datos.php');
+require_once ('modelo/datos.php');
 
 class Asistencia extends datos
 {
-    private $conexion, $fecha, $atletas_asistencia;
+    private $conexion;
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // Inicia la conexión a la DB
+        $this->conexion = $this->conecta(); 
     }
 
-    public function crear_asistencia($fecha)
-    {
-        $this->fecha = $fecha;
-        return $this->incluir();
-    }
-
-    public function guardar_asistencia($fecha, $asistencias)
-    {
-        $this->fecha = $fecha;
-        $this->atletas_asistencia = $asistencias;
-        return $this->guardar();
-    }
-
-    public function listado_asistencias()
-    {
-        return $this->listado();
-    }
-
-    public function listar_atletas()
+    public function obtener_atletas()
     {
         try {
-            $consulta = "SELECT cedula, nombre, apellido FROM usuarios WHERE cedula IN (SELECT cedula FROM atleta)";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
+            $consulta = "
+                SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["atletas"] = $respuesta;
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -43,45 +34,27 @@ class Asistencia extends datos
         return $resultado;
     }
 
-    private function incluir()
-    {
-        try {
-            // Inserción de asistencia con datos iniciales
-            $consulta = "INSERT INTO asistencias (id_atleta, fecha, asistio, comentario) VALUES ('', :fecha, 0, '')";
-            $valores = array(':fecha' => $this->fecha);
-
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
-    }
-
-    private function guardar()
+    public function guardar_asistencias($fecha, $asistencias)
     {
         try {
             $this->conexion->beginTransaction();
-
-            // Eliminar asistencias existentes para la fecha dada
-            $consultaEliminar = "DELETE FROM asistencias WHERE fecha = :fecha";
-            $valoresEliminar = array(':fecha' => $this->fecha);
-            $respuestaEliminar = $this->conexion->prepare($consultaEliminar);
-            $respuestaEliminar->execute($valoresEliminar);
+            
+            // Eliminar asistencias previas del día
+            $consulta = "DELETE FROM asistencias WHERE fecha = :fecha";
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->execute([':fecha' => $fecha]);
 
             // Insertar nuevas asistencias
-            $consultaInsertar = "INSERT INTO asistencias (id_atleta, fecha, asistio, comentario) VALUES (:id_atleta, :fecha, :asistio, :comentario)";
-            $respuestaInsertar = $this->conexion->prepare($consultaInsertar);
+            $consulta = "INSERT INTO asistencias (id_atleta, asistio, fecha, comentario) VALUES (:id_atleta, :asistio, :fecha, :comentario)";
+            $stmt = $this->conexion->prepare($consulta);
 
-            foreach ($this->atletas_asistencia as $asistencia) {
-                $respuestaInsertar->execute(array(
+            foreach ($asistencias as $asistencia) {
+                $stmt->execute([
                     ':id_atleta' => $asistencia['id_atleta'],
-                    ':fecha' => $this->fecha,
                     ':asistio' => $asistencia['asistio'],
+                    ':fecha' => $fecha,
                     ':comentario' => $asistencia['comentario']
-                ));
+                ]);
             }
 
             $this->conexion->commit();
@@ -94,15 +67,25 @@ class Asistencia extends datos
         return $resultado;
     }
 
-    private function listado()
+    public function obtener_asistencias($fecha)
     {
         try {
-            $consulta = "SELECT fecha, COUNT(id_atleta) as total_asistentes FROM asistencias GROUP BY fecha ORDER BY fecha DESC";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $consulta = "
+                SELECT 
+                    a.id_atleta, 
+                    u.nombre, 
+                    u.apellido, 
+                    a.asistio, 
+                    a.comentario 
+                FROM asistencias a
+                INNER JOIN usuarios u ON a.id_atleta = u.cedula
+                WHERE a.fecha = :fecha
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute([':fecha' => $fecha]);
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
+            $resultado["asistencias"] = $respuesta;
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();

@@ -1,126 +1,137 @@
-$(document).ready(function() {
-    function enviarAjax(datos, successCallback) {
+$(document).ready(function () {
+    function cargarListadoAtletas() {
+        var datos = new FormData();
+        datos.append('accion', 'obtener_atletas');
+        enviaAjax(datos, function (respuesta) {
+            if (respuesta.ok) {
+                var listado = '';
+                respuesta.atletas.forEach(function (atleta) {
+                    listado += `
+                        <tr>
+                            <td>${atleta.cedula}</td>
+                            <td>${atleta.nombre}</td>
+                            <td>${atleta.apellido}</td>
+                            <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" /></td>
+                            <td><input type="text" class="form-control" data-id="${atleta.cedula}" /></td>
+                        </tr>
+                    `;
+                });
+                $('#listadoAsistencias').html(listado);
+                $('#tablaAsistencias').DataTable({
+                    language: {
+                        lengthMenu: "Mostrar _MENU_ por página",
+                        zeroRecords: "No se encontraron registros",
+                        info: "Mostrando página _PAGE_ de _PAGES_",
+                        infoEmpty: "No hay registros disponibles",
+                        infoFiltered: "(filtrado de _MAX_ registros totales)",
+                        search: "Buscar:",
+                        paginate: {
+                            first: "Primera",
+                            last: "Última",
+                            next: "Siguiente",
+                            previous: "Anterior",
+                        },
+                    },
+                    autoWidth: true,
+                    order: [[0, "desc"]],
+                    dom: '<"top"f>rt<"bottom"lp><"clear">',
+                });
+            }
+        });
+    }
+
+    function enviarAsistencias() {
+        var fecha = $('#fechaAsistencia').val();
+        if (!fecha) {
+            Swal.fire("Error", "Debe seleccionar una fecha", "error");
+            return;
+        }
+
+        var asistencias = [];
+        $('#listadoAsistencias tr').each(function () {
+            var id = $(this).find('input[type="checkbox"]').data('id');
+            var asistio = $(this).find('input[type="checkbox"]').is(':checked') ? 1 : 0;
+            var comentario = $(this).find('input[type="text"]').val();
+
+            asistencias.push({
+                id_atleta: id,
+                asistio: asistio,
+                comentario: comentario
+            });
+        });
+
+        var datos = new FormData();
+        datos.append('accion', 'guardar_asistencias');
+        datos.append('fecha', fecha);
+        datos.append('asistencias', JSON.stringify(asistencias));
+
+        enviaAjax(datos, function (respuesta) {
+            if (respuesta.ok) {
+                Swal.fire("Éxito", "Asistencias guardadas correctamente", "success");
+            } else {
+                Swal.fire("Error", respuesta.mensaje, "error");
+            }
+        });
+    }
+
+    function obtenerAsistencias(fecha) {
+        var datos = new FormData();
+        datos.append('accion', 'obtener_asistencias');
+        datos.append('fecha', fecha);
+
+        enviaAjax(datos, function (respuesta) {
+            if (respuesta.ok) {
+                $('#listadoAsistencias tr').each(function () {
+                    var id = $(this).find('input[type="checkbox"]').data('id');
+                    var asistencia = respuesta.asistencias.find(function (asistencia) {
+                        return asistencia.id_atleta === id;
+                    });
+
+                    if (asistencia) {
+                        $(this).find('input[type="checkbox"]').prop('checked', asistencia.asistio == 1);
+                        $(this).find('input[type="text"]').val(asistencia.comentario);
+                    } else {
+                        $(this).find('input[type="checkbox"]').prop('checked', false);
+                        $(this).find('input[type="text"]').val('');
+                    }
+                });
+            } else {
+                Swal.fire("Error", respuesta.mensaje, "error");
+            }
+        });
+    }
+
+    function enviaAjax(datos, callback) {
         $.ajax({
             async: true,
-            url: '',
+            url: "",
             type: "POST",
             contentType: false,
             data: datos,
             processData: false,
             cache: false,
-            success: function(respuesta) {
-                var lee = JSON.parse(respuesta);
-                if (lee.ok) {
-                    successCallback(lee);
-                } else {
-                    Swal.fire("Error", lee.mensaje, "error");
+            success: function (respuesta) {
+                try {
+                    var parsed = JSON.parse(respuesta);
+                    callback(parsed);
+                } catch (error) {
+                    Swal.fire("Error", "Algo salió mal", "error");
                 }
             },
-            error: function(request, status, err) {
+            error: function (request, status, err) {
                 Swal.fire("Error", "Error al procesar la solicitud", "error");
             }
         });
     }
 
-    $('#crearAsistenciaBtn').click(function() {
-        var fecha = $('#fechaAsistencia').val();
-        if (fecha) {
-            var datos = new FormData();
-            datos.append("accion", "crear");
-            datos.append("fecha", fecha);
-
-            enviarAjax(datos, function(lee) {
-                Swal.fire("Éxito", "Asistencia creada exitosamente.", "success");
-                var nuevaTarjeta = `
-                    <div class="card mb-3">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">${fecha}</h5>
-                                <p class="card-text">Estado: <span class="badge bg-warning">Pendiente</span></p>
-                            </div>
-                            <button class="btn btn-success btn-tomar-asistencia" data-fecha="${fecha}">Tomar asistencia</button>
-                        </div>
-                    </div>`;
-                $('#listaAsistencias').append(nuevaTarjeta);
-            });
-        } else {
-            Swal.fire("Advertencia", "Por favor, selecciona una fecha.", "warning");
-        }
+    $('#btnGuardarAsistencias').on('click', function () {
+        enviarAsistencias();
     });
 
-    $('#listaAsistencias').on('click', '.btn-tomar-asistencia', function() {
-        var fecha = $(this).data('fecha');
-        $('#fechaAsistenciaLabel').text(fecha);
-        $('#formularioAsistencia').show();
-
-        var datos = new FormData();
-        datos.append("accion", "listar_atletas");
-
-        enviarAjax(datos, function(lee) {
-            $('#listaAtletas').empty();
-            lee.respuesta.forEach(function(atleta) {
-                var fila = `
-                    <tr>
-                        <td>${atleta.cedula}</td>
-                        <td>${atleta.nombre}</td>
-                        <td>${atleta.apellido}</td>
-                        <td>
-                            <input type="checkbox" class="form-check-input asistencia-checkbox" data-id="${atleta.cedula}">
-                        </td>
-                        <td>
-                            <input type="text" class="form-control comentario-input" data-id="${atleta.cedula}" placeholder="Comentario">
-                        </td>
-                    </tr>`;
-                $('#listaAtletas').append(fila);
-            });
-        });
+    $('#fechaAsistencia').on('change', function () {
+        var fecha = $(this).val();
+        obtenerAsistencias(fecha);
     });
 
-    $('#guardarAsistenciaBtn').click(function() {
-        var asistencias = [];
-        $('#listaAtletas tr').each(function() {
-            var cedula = $(this).find('.asistencia-checkbox').data('id');
-            var asistio = $(this).find('.asistencia-checkbox').is(':checked') ? 1 : 0;
-            var comentario = $(this).find('.comentario-input').val();
-            asistencias.push({ id_atleta: cedula, asistio: asistio, comentario: comentario });
-        });
-
-        var fecha = $('#fechaAsistenciaLabel').text();
-        var datos = new FormData();
-        datos.append("accion", "guardar");
-        datos.append("fecha", fecha);
-        datos.append("asistencias", JSON.stringify(asistencias));
-
-        enviarAjax(datos, function() {
-            Swal.fire("Éxito", "Asistencia guardada exitosamente.", "success");
-            $('#formularioAsistencia').hide();
-            cargarListadoAsistencias();
-        });
-    });
-
-    function cargarListadoAsistencias() {
-        var datos = new FormData();
-        datos.append("accion", "listado");
-
-        enviarAjax(datos, function(lee) {
-            $('#listaAsistencias').empty();
-            lee.respuesta.forEach(function(asistencia) {
-                var estado = asistencia.total_asistentes > 0 ? "Completado" : "Pendiente";
-                var estadoBadge = estado === "Completado" ? "bg-success" : "bg-warning";
-                var tarjeta = `
-                    <div class="card mb-3">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="card-title">${asistencia.fecha}</h5>
-                                <p class="card-text">Estado: <span class="badge ${estadoBadge}">${estado}</span></p>
-                            </div>
-                            <button class="btn btn-success btn-tomar-asistencia" data-fecha="${asistencia.fecha}">Tomar asistencia</button>
-                        </div>
-                    </div>`;
-                $('#listaAsistencias').append(tarjeta);
-            });
-        });
-    }
-
-    cargarListadoAsistencias();
+    cargarListadoAtletas();
 });

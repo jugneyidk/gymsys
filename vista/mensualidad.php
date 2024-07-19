@@ -14,7 +14,7 @@
         <div class="row justify-content-center">
         <div class="col-lg-8">
                 <div class="card">
-                    <div class="card-header text-center">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h2>Deudores</h2>
                     </div>
                     <div class="card-body">
@@ -39,7 +39,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="card">
-                    <div class="card-header text-center">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h2>Registrar Mensualidad</h2>
                     </div>
                     <div class="card-body">
@@ -68,8 +68,8 @@
                 </div>
             </div>
             
-            <div class="card mt-4">
-                    <div class="card-header text-center">
+            <div class="card mt-6">
+                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
                         <h2>Pagos Registrados</h2>
                     </div>
                     <div class="card-body">
@@ -91,6 +91,7 @@
                         </div>
                     </div>
                 </div>
+                <br>
         </div>
     </div>
     <?php require_once ("comunes/footer.php"); ?>
