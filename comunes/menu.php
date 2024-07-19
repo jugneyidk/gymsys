@@ -33,10 +33,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="?p=wada">Status Wada</a>
-          </li>
-          
+          </li>          
           <li class="nav-item">
             <a class="nav-link" href="?p=reportes">Reportes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="?p=bitacora">Bitacora</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="?p=cerrarsesion">Salir</a>

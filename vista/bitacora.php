@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bitacora - Sistema</title>
+        <?php require_once("comunes/linkcss.php"); ?>
+</head>
+
+<body class="d-flex flex-column vh-100">
+        <?php require_once("comunes/menu.php"); ?>
+        <div class="container-lg d-flex justify-content-center align-items-center">
+                <div class="row justify-content-center w-100">
+                        <div class="col-12 col-md-8 col-lg-9">
+                                <div class="card-header d-flex justify-content-between align-items-center bg-info text-white">
+                                        <h2 class="mb-0">Bitacora</h2>
+                                </div>
+                                <div class="p-4 shadow">
+                                        <div class="p-4">
+                                                <h2 class="text-center mb-4">Bitacora</h2>
+                                                <div class="table-responsive">
+                                                        <table class="table table-striped table-hover" id="tablabitacora">
+                                                                <thead>
+                                                                        <tr>
+                                                                                <th>Usuario</th>
+                                                                                <th>Accion</th>
+                                                                                <th>Fecha</th>
+                                                                                <th>Usuario Modificado</th>
+                                                                                <th>Valor Cambiado</th>
+                                                                        </tr>
+                                                                </thead>
+                                                                <tbody id="listado">
+
+                                                                </tbody>
+                                                        </table>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+        <?php require_once("comunes/footer.php"); ?>
+        <script type="text/javascript" src="datatables/datatables.min.js"></script>
+        <script src="js/bitacora.js"></script>
+</body>
+
+</html>

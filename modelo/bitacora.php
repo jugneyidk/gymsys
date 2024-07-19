@@ -20,7 +20,7 @@ class Bitacora extends datos
         }        
         return $this->incluir();
     }
-    public function listar_biatcora()
+    public function listado_bitacora()
     {
         return $this->listado();
     }
@@ -41,10 +41,9 @@ class Bitacora extends datos
     private function listado()
     {
         try {
-            $consulta = "SELECT * FROM `wada` WHERE id_atleta=:id_atleta";
+            $consulta = "SELECT * FROM `bitacora` ORDER BY id_accion DESC";
             $respuesta = $this->conexion->prepare($consulta);
-            // $valores = array(':id_atleta' => $formulario["id_atleta"]); // en este caso con valores si se va a seleccionar una sola fila
-            $respuesta->execute(); // se ejecuta la consulta PREPARADA y se pasa los VALORES en caso que tenga a la funcion execute
+            $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;

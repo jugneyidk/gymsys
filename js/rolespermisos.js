@@ -133,37 +133,6 @@ $(document).ready(function () {
             dom: '<"top"f>rt<"bottom"lp><"clear">',
         });
     }
-
-    function llenarFormularioModificar(atleta) {
-        $("#f2 #nombres_modificar").val(atleta.nombre);
-        $("#f2 #apellidos_modificar").val(atleta.apellido);
-        $("#f2 #cedula_modificar").val(atleta.cedula);
-        $("#f2 #genero_modificar").val(atleta.genero);
-        $("#f2 #fecha_nacimiento_modificar").val(atleta.fecha_nacimiento);
-        $("#f2 #lugar_nacimiento_modificar").val(atleta.lugar_nacimiento);
-        $("#f2 #peso_modificar").val(atleta.peso);
-        $("#f2 #altura_modificar").val(atleta.altura);
-        $("#f2 #tipo_atleta_modificar").val(atleta.tipo_atleta);
-        $("#f2 #estado_civil_modificar").val(atleta.estado_civil);
-        $("#f2 #telefono_modificar").val(atleta.telefono);
-        $("#f2 #correo_modificar").val(atleta.correo_electronico);
-        $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
-
-        // Resetea y deshabilita el campo de contraseña
-        $("#f2 #modificar_contraseña").prop('checked', false);
-        $("#f2 #password_modificar").prop('disabled', true).val("");
-    }
-
-    $("#tablaatleta").on("click", ".btn-warning", function() {
-        const cedula = $(this).closest("tr").find("td:first").text();
-        cargarDatosAtleta(cedula);
-    });
-
-    $("#tablaatleta").on("click", ".btn-danger", function() {
-        const cedula = $(this).closest("tr").find("td:first").text();
-        eliminarAtleta(cedula);
-    });
-
     $("input").on("keypress", function (e) {
         const id = $(this).attr("id");
         const regexMap = {
