@@ -85,7 +85,9 @@
 				$con = parent::conecta();
 				$res = $con->query($sql);
 				$res = $res->fetchAll(PDO::FETCH_ASSOC);
-				foreach ($res as $key => $value) {
+				if(isset($res["id_competencia"]))
+					{
+					foreach ($res as $key => $value) {
 					$this->idCompetencia = $key["id_competencia"];
 					$this->tipo_competencia = $key["tipo_competencia"];
 					$this->nombre = $key["nombre"];
@@ -94,6 +96,8 @@
 					$this->lugar_competencia = $key["lugar_competencia"];
 					$this->fecha_inicio = $key["fecha_inicio"];
 					$this->fecha_fin = $key["fecha_fin"];
+					}
+				
 				}
 				$resultado["ok"]=true;
 				$resultado["respuesta"]=$res;

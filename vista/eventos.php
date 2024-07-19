@@ -78,23 +78,23 @@
     <div class="container mb-5">
         <div class="row">
             <div class="col">
-                <p class="display-5 mt-2 text-info">Eventos</p>
-                <nav class="navbar navbar-expand-lg border rounded bg-body-tertiary mt-2">
+                <p class="mt-2 lead fs-1 text-info"><strong>Eventos</strong></p>
+                <nav class="navbar navbar-expand-lg border rounded bg-info mt-2">
                     <div class="container-fluid">
-                        <a href="#" class="navbar-brand btn btn-primary">Opciones</a>
+                        <a href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></a>
                         <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <a href="#" class="nav-link btn btn-outline-primary" aria-current="model">Registrar</a>
+                                    <button class="nav-link btn btn-outline-light mx-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link">Consultar Anteriores</a>
+                                    <a href="" class="nav-link btn btn-outline-light mx-2"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link">Eliminar</a>
+                                    <a href="" class="nav-link btn btn-outline-light mx-2">Eliminar</a>
                                 </li>
                             </ul>
                         </div>
@@ -103,7 +103,7 @@
             </div>
         </div>
         <div class="row">
-            <p class="lead mt-2"><strong>Eventos activos<strong></p>
+            <p class="lead mt-2"><strong>Eventos activos</strong></p>
             <!--definir los campos a consultar (div.col)-->
         </div>
         <div class="row">
@@ -186,6 +186,250 @@
 
 
 -->
+    
+    <!-- Modal Registrar Evento -->
+
+    <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
+        <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Registrar Evento</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="#" class="form-control" id="registrarEvento">
+                    <div class="modal-body mx-5">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="in_cedula" class="form-label">Cedula</label>
+                                <input type="text" class="form-control form-control-sm" name="cedula" id="in_cedula">
+                            </div>
+                            <div class="col-6">
+                                
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Op</th>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </select>
+                        </div>
+                    </div>                    
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                    <input type="reset" class="btn btn-warning" value="Limpiar">
+                    <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fin -->
+
+    <!-- Modal Consulta Anteriores Evento -->
+
+
+    <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true" aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Consulta anteriores</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col my-3 mx-2">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                        <th scope="col">Op</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Fin -->
+
+    <!-- Modal Consulta Esp-->
+
+    <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Consulta anterioresSS</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col my-3 mx-2">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                        <th scope="col">Op</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fin -->
+    
+    
+    <!--  Modal Registrar Evento  -->
+
+    <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Registrar Evento</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="" id="fRegistrarEvento" method="post" action=#>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col">
+                                <label for="in_nombre" class="form-label">Nombre del Evento</label>
+                                <input type="text" class="form-control form-control-sm" id="in_nombre" name="in_name">
+                                <label for="in_ubicacion" class="form-label">Ubicación</label>
+                                <input type="text" class="form-control form-control-sm" id="in_ubicacion" name="in_ubicacion">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="in_date_start" class="form-label">Fecha de Apertura</label>
+                                        <input type="date" id="in_date_start" class="form-control form-control-sm" name="in_date_start">
+                                    </div>
+                                    <div class="col">
+                                        <label for="in_date_end" class="form-label">Fecha de Clausura</label>
+                                        <input type="date" if="in_date_end" class="form-control form-control-sm" name="in_date_end">
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="col">
+                                <label for="in_categoria" class="form-label">Categoria</label>
+                                <select id="in_categoria" name="in_categoria" class="form-select form-control form-select-sm">
+                                    <option selected>Seleccione una</option>
+                                    <option data-bs-target="#ModalRegistrarCategoria" data-bs-toggle="modal" value="">Registrar categoria</option>
+                                </select>
+                                <label for="in_subs" class="form-label">Subs</label>
+                                <select id="in_subs" name="in_subs" class="form-select form-control form-select-sm">
+                                    <option selected>Seleccione una</option>
+                                    <option data-bs-target="#ModalRegistrarSubs" data-bs-toggle="modal" value="">Registrar Subs</option>
+                                </select>
+                                <label for="in_categoria" class="form-label">Tipo</label>
+                                <select id="in_tipo" class="form-select form-control form-select-sm">
+                                    <option selected>Seleccione una</option>
+                                    <option data-bs-target="#ModalRegistrarTipo" data-bs-toggle="modal" value="">Registrar tipo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Registrar">
+                        <input type="reset" class="btn btn-warning" value="Limpiar">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     
     <div class="modal modal-xl " id="modalEventoActivoVer" aria-hidden="true" aria-labelledby="modalEventoActivoVer" tabindex="-1">
@@ -221,6 +465,125 @@
             </div>
         </div>
     </div>
+
+<!-- Modal Registrar Categoria -->
+
+    <div class="modal" id="ModalRegistrarCategoria" aria-hidden="true" aria-labelledby="ModalRegistrarCategoria" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Registrar Categoria</h1>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="registrarCategoria" method="post" action=#>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="in_desc" class="form-label">Descripcion</label>
+                            <input type="text" class="form-control form-control-sm" id="in_desc" name="in_desc">
+
+                            <label for="in_peso_minimo" class="form-label">Peso minimo</label>
+                            <input type="text" class="form-control form-control-sm" id="in_peso_minimo" name="in_peso_minimo">
+
+                            <label for="in_peso_maximo" class="form-label">Peso maximo</label>
+                            <input type="text" class="form-control form-control-sm" id="in_peso_minimo" name="in_peso_minimo">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Registrar Subs -->
+
+    <div class="modal" id="ModalRegistrarSubs" aria-hidden="true" aria-labelledby="ModalRegistrarSubs" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Registrar Subs</h1>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="registrarCategoria needs-validation" method="post" action=# novalidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="in_desc" class="form-label">Descripcion</label>
+                            <input type="text" class="form-control form-control-sm" id="in_desc" name="in_desc">
+                            <div class="valid-feedback">
+                                Todo bien
+                            </div>
+                            <div class="invalid-feedback">
+                                Solo puede usar letras y numeros
+                            </div>
+                            <label for="in_edad_minima" class="form-label">Edad minima</label>
+                            <div class="input-group flex-nowrap mb-3">    
+                                <input type="text" class="form-control form-control-sm"  aria-label="in_edad_minima" aria-describedby="addon" id="in_peso_minimo" name="in_peso_minimo">
+                                <span class="input-group-text" id="addon">Años</span>  
+                            </div>
+                            <div class="valid-feedback">
+                                Todo bien
+                            </div>
+                            <div class="invalid-feedback">
+                                Solo puede usar numeros
+                            </div>
+                            <label for="in_edad_maxima" class="form-label">Edad maxima</label>
+                            <div class="input-group flex-nowrap mb-3">
+                                <input type="text" class="form-control form-control-sm" aria-label="in_edad_minima" aria-describedby="addon" id="in_peso_minimo" name="in_peso_minimo">
+                                <span class="input-group-text">Años</span>
+                            </div>
+                            <div class="valid-feedback">
+                                Todo bien
+                            </div>
+                            <div class="invalid-feedback">
+                                Solo puede usar numeros
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal Registrar Tipo -->
+
+    <div class="modal" id="ModalRegistrarTipo" aria-hidden="true" aria-labelledby="ModalRegistrarTipo" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Registrar Tipo</h1>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="registrarCategoria" method="post" action=#>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <label for="in_desc" class="form-label">Descripcion</label>
+                            <input type="text" class="form-control form-control-sm" id="in_desc" name="in_desc">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 <!--
 
