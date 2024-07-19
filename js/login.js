@@ -4,10 +4,70 @@ $(document).ready(function () {
   });
   $("#submit").on("click", function () {
     var datos = new FormData($("#login")[0]);
-    datos.append("accion", "login");
-    enviaAjax(datos);
+    if (validarEnvio()) {
+      datos.append("accion", "login");
+      enviaAjax(datos);
+    }
+  });
+  $("#id_usuario").on("keyup", function () {
+    validarKeyUp(
+      /^\d{7,9}$/,
+      $(this),
+      $("#susuario"),
+      "La cedula no es valida ej.(12345678)"
+    );
+  });
+
+  $("#password").on("keypress", function (e) {
+    validarKeyPress(e, /^[a-zA-Z0-9@._-]$/);
+  });
+
+  $("#password").on("keyup", function () {
+    validarKeyUp(
+      /^[a-zA-Z0-9@._-]{6,20}$/,
+      $(this),
+      $("#spassword"),
+      "Debe ingresar entre 6 y 20 caracteres"
+    );
   });
 });
+
+function validarEnvio() {
+  var esValido = true;
+  esValido &= validarKeyUp(
+    /^\d{7,9}$/,
+    $("#id_usuario"),
+    $("#susuario"),
+    "La cedula no es valida ej.(12345678)"
+  );
+  esValido &= validarKeyUp(
+    /^[a-zA-Z0-9@._-]{6,20}$/,
+    $("#password"),
+    $("#spassword"),
+    "Debe ingresar entre 6 y 20 caracteres"
+  );
+  return esValido;
+}
+
+function validarKeyPress(e, er) {
+  var key = e.key;
+  if (!er.test(key)) {
+    e.preventDefault();
+  }
+}
+
+function validarKeyUp(er, input, mensaje, textoError) {
+  if (er.test(input.val())) {
+    input.removeClass("is-invalid").addClass("is-valid");
+    mensaje.text("");
+    return true;
+  } else {
+    input.removeClass("is-valid").addClass("is-invalid");
+    mensaje.text(textoError);
+    return false;
+  }
+}
+
 function muestraMensaje(titulo, mensaje, icono) {
   Swal.fire({
     title: titulo,

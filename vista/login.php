@@ -17,6 +17,7 @@
                     <div class="form-group">
                         <label for="id_usuario">Usuario:</label>
                         <input type="text" class="form-control" id="id_usuario" name="id_usuario" required>
+                        <div id="susuario" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
@@ -26,6 +27,7 @@
                                     mi contraseña</a></small>
                         </div>
                         <input type="password" class="form-control" id="password" name="password" required>
+                        <div id="spassword" class="invalid-feedback"></div>
                     </div>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary rounded-2" id="submit">Ingresar</button>
