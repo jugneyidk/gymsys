@@ -37,6 +37,7 @@ class Asistencia extends datos
     public function guardar_asistencias($fecha, $asistencias)
     {
         try {
+            $asistencias = json_decode($asistencias, true); // Decodificar JSON en array
             $this->conexion->beginTransaction();
             
             // Eliminar asistencias previas del día

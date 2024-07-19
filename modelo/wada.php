@@ -42,7 +42,12 @@ class WADA extends datos
         return $this->eliminar();
     }
 
-    private function incluir()
+    public function listado_wada() 
+    {
+        return $this->listado();
+    }
+
+    private function incluir() 
     {
         try {
             $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
@@ -64,7 +69,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function modificar()
+    private function modificar() 
     {
         try {
             $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento 
@@ -86,7 +91,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function obtener()
+    private function obtener() 
     {
         try {
             $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
@@ -102,7 +107,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function eliminar()
+    private function eliminar() 
     {
         try {
             $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
@@ -114,11 +119,6 @@ class WADA extends datos
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
-    }
-
-    public function listado_wada()
-    {
-        return $this->listado();
     }
 
     private function listado()
@@ -187,12 +187,12 @@ class WADA extends datos
         return $resultado;
     }
 
-    public function __get($propiedad)
+    public function __get($propiedad) 
     {
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor)
+    public function __set($propiedad, $valor) 
     {
         $this->$propiedad = $valor;
         return $this;

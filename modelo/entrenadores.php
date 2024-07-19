@@ -8,7 +8,7 @@ class Entrenador extends datos
 
     public function __construct()
     {
-        $this->conexion = $this->conecta();
+        $this->conexion = $this->conecta(); 
     }
 
     public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
@@ -84,34 +84,7 @@ class Entrenador extends datos
 
     public function listado_entrenador()
     {
-        try {
-            $consulta = "
-                SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                    u.correo_electronico, 
-                    e.grado_instruccion 
-                FROM entrenador e
-                INNER JOIN usuarios u ON e.cedula = u.cedula
-                ORDER BY u.cedula DESC
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["devol"] = 'listado_entrenadores';
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        return $this->listado();
     }
 
     public function eliminar_entrenador($cedula)
@@ -126,6 +99,8 @@ class Entrenador extends datos
 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
+
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $resultado["ok"] = false;
@@ -134,56 +109,54 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    private function incluir()
-{
-    try {
-        $this->conexion->beginTransaction();
+    private function incluir() 
+    {
+        try {
+            $this->conexion->beginTransaction();
 
-        $password = $this->nombres . $this->cedula;
-        $id_rol = 1;  
-        $token = 0;
+            $id_rol = 1;  
+            $token = 0;
 
-        $consulta = "
-            INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
-            VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
-            
-            INSERT INTO entrenador (cedula, grado_instruccion)
-            VALUES (:cedula, :grado_instruccion);
+            $consulta = "
+                INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+                VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
+                
+                INSERT INTO entrenador (cedula, grado_instruccion)
+                VALUES (:cedula, :grado_instruccion);
 
-            INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
-            VALUES (:cedula, :id_rol, :password, :token);
-        ";
+                INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
+                VALUES (:cedula, :id_rol, :password, :token);
+            ";
 
-        $valores = array(
-            ':cedula' => $this->cedula,
-            ':nombre' => $this->nombres,
-            ':apellido' => $this->apellidos,
-            ':genero' => $this->genero,
-            ':fecha_nacimiento' => $this->fecha_nacimiento,
-            ':lugar_nacimiento' => $this->lugar_nacimiento,
-            ':estado_civil' => $this->estado_civil,
-            ':telefono' => $this->telefono,
-            ':correo' => $this->correo_electronico,
-            ':grado_instruccion' => $this->grado_instruccion,
-            ':id_rol' => $id_rol,
-            ':password' => $password,
-            ':token' => $token
-        );
+            $valores = array(
+                ':cedula' => $this->cedula,
+                ':nombre' => $this->nombres,
+                ':apellido' => $this->apellidos,
+                ':genero' => $this->genero,
+                ':fecha_nacimiento' => $this->fecha_nacimiento,
+                ':lugar_nacimiento' => $this->lugar_nacimiento,
+                ':estado_civil' => $this->estado_civil,
+                ':telefono' => $this->telefono,
+                ':correo' => $this->correo_electronico,
+                ':grado_instruccion' => $this->grado_instruccion,
+                ':id_rol' => $id_rol,
+                ':password' => $this->password,
+                ':token' => $token
+            );
 
-        $respuesta = $this->conexion->prepare($consulta);
-        $respuesta->execute($valores);
-        $respuesta->closeCursor(); 
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $respuesta->closeCursor(); 
 
-        $this->conexion->commit();
-        $resultado["ok"] = true;
-    } catch (Exception $e) {
-        $this->conexion->rollBack();
-        $resultado["ok"] = false;
-        $resultado["mensaje"] = $e->getMessage();
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
     }
-    return $resultado;
-}
-
 
     private function modificar()
     {
@@ -252,16 +225,48 @@ class Entrenador extends datos
         return $resultado;
     }
 
+    private function listado()
+    {
+        try {
+            $consulta = "
+                SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.genero, 
+                    u.fecha_nacimiento, 
+                    u.lugar_nacimiento, 
+                    u.estado_civil, 
+                    u.telefono, 
+                                       u.correo_electronico, 
+                    e.grado_instruccion 
+                FROM entrenador e
+                INNER JOIN usuarios u ON e.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["devol"] = 'listado_entrenadores';
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
     public function __get($propiedad)
     {
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor)
+    public function __set($propiedad, $valor) 
     {
         $this->$propiedad = $valor;
         return $this;
     }
 }
-
 ?>
+

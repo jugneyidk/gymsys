@@ -1,7 +1,7 @@
 <?php
 require_once('modelo/datos.php');
 
-class Mensualidad extends datos
+class Mensualidad extends datos 
 {
     private $conexion, $id_atleta, $monto, $fecha;
 
@@ -18,69 +18,19 @@ class Mensualidad extends datos
         return $this->incluir();
     }
 
-    public function listado_mensualidades()
+    public function listado_mensualidades() 
     {
-        try {
-            $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha
-                FROM mensualidades m
-                INNER JOIN atleta a ON m.id_atleta = a.cedula
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                ORDER BY m.fecha DESC
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        return $this->listado();
     }
 
-    public function listado_deudores()
+    public function listado_deudores() 
     {
-        try {
-            $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta
-                WHERE m.id_atleta IS NULL OR m.fecha < DATE_FORMAT(NOW() ,'%Y-%m-01')
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        return $this->listado_deudores_privado();
     }
 
-    public function listado_atletas()
+    public function listado_atletas() 
     {
-        try {
-            $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                ORDER BY u.cedula DESC
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        return $this->listado_atletas_privado();
     }
 
     private function incluir()
@@ -102,6 +52,82 @@ class Mensualidad extends datos
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
+    }
+
+    private function listado() 
+    {
+        try {
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha
+                FROM mensualidades m
+                INNER JOIN atleta a ON m.id_atleta = a.cedula
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY m.fecha DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function listado_deudores_privado()
+    {
+        try {
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta
+                WHERE m.id_atleta IS NULL OR m.fecha < DATE_FORMAT(NOW() ,'%Y-%m-01')
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    private function listado_atletas_privado() 
+    {
+        try {
+            $consulta = "
+                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                ORDER BY u.cedula DESC
+            ";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute();
+            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
+    public function __get($propiedad) 
+    {
+        return $this->$propiedad;
+    }
+
+    public function __set($propiedad, $valor) 
+    {
+        $this->$propiedad = $valor;
+        return $this;
     }
 }
 ?>

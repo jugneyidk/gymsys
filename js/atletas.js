@@ -1,56 +1,42 @@
 $(document).ready(function () {
-    function carga_listado_atleta() {
-        var datos = new FormData();
+    function cargaListadoAtleta() {
+        const datos = new FormData();
         datos.append("accion", "listado_atleta");
         enviaAjax(datos);
     }
 
-    carga_listado_atleta();
+    cargaListadoAtleta();
 
-    function validarKeyPress(e, er) {
-        var key = e.key;
-        if (!er.test(key)) {
+    function validarKeyPress(e, regex) {
+        if (!regex.test(e.key)) {
             e.preventDefault();
         }
     }
 
-    function validarKeyUp(er, input, mensaje, textoError) {
-        if (er.test(input.val())) {
-            input.removeClass("is-invalid").addClass("is-valid");
-            mensaje.text("");
-            return true;
-        } else {
-            input.removeClass("is-valid").addClass("is-invalid");
-            mensaje.text(textoError);
-            return false;
-        }
+    function validarKeyUp(regex, input, mensaje, textoError) {
+        const isValid = regex.test(input.val());
+        input.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
+        mensaje.text(isValid ? "" : textoError);
+        return isValid;
     }
 
     function verificarFecha(fechaInput, mensaje) {
-        var fecha = fechaInput.val();
-        if (!fecha) {
-            fechaInput.removeClass("is-valid").addClass("is-invalid");
-            mensaje.text("La fecha de nacimiento es obligatoria");
-            return false;
-        }
-        var hoy = new Date();
-        var fechaNac = new Date(fecha);
-        if (fechaNac > hoy) {
-            fechaInput.removeClass("is-valid").addClass("is-invalid");
-            mensaje.text("La fecha debe ser anterior al día actual");
-            return false;
-        } else {
-            fechaInput.removeClass("is-invalid").addClass("is-valid");
-            mensaje.text("");
-            return true;
-        }
+        const fecha = fechaInput.val();
+        const hoy = new Date();
+        const fechaNac = new Date(fecha);
+        const isValid = fecha && fechaNac <= hoy;
+
+        fechaInput.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
+        mensaje.text(isValid ? "" : (fecha ? "La fecha debe ser anterior al día actual" : "La fecha de nacimiento es obligatoria"));
+        return isValid;
     }
 
     function calcularEdad(fechaNacimiento) {
-        var hoy = new Date();
-        var fechaNac = new Date(fechaNacimiento);
-        var edad = hoy.getFullYear() - fechaNac.getFullYear();
-        var mes = hoy.getMonth() - fechaNac.getMonth();
+        const hoy = new Date();
+        const fechaNac = new Date(fechaNacimiento);
+        let edad = hoy.getFullYear() - fechaNac.getFullYear();
+        const mes = hoy.getMonth() - fechaNac.getMonth();
+
         if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
             edad--;
         }
@@ -58,98 +44,59 @@ $(document).ready(function () {
     }
 
     function validarEnvio(formId) {
-        var esValido = true;
-        var form = $(formId);
+        let esValido = true;
+        const form = $(formId);
+        const sufijo = formId === "#f2" ? "_modificar" : "";
 
-        var sufijo = formId === "#f2" ? "_modificar" : "";
+        const validaciones = [
+            { regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, id: "nombres", errorMsg: "Solo letras y espacios (1-50 caracteres)" },
+            { regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/, id: "apellidos", errorMsg: "Solo letras y espacios (1-50 caracteres)" },
+            { regex: /^\d{7,9}$/, id: "cedula", errorMsg: "La cédula debe tener al menos 7 números" },
+            { regex: /^04\d{9}$/, id: "telefono", errorMsg: "El formato del teléfono debe ser 04XXXXXXXXX" },
+            { regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, id: "correo", errorMsg: "Correo inválido" },
+            { regex: /^\d+(\.\d{1,2})?$/, id: "peso", errorMsg: "Solo números y puntos decimales" },
+            { regex: /^\d+(\.\d{1,2})?$/, id: "altura", errorMsg: "Solo números y puntos decimales" },
+            { regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/, id: "lugar_nacimiento", errorMsg: "El lugar de nacimiento no puede estar vacío" }
+        ];
 
-        esValido &= validarKeyUp(
-            /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-            form.find("#nombres" + sufijo),
-            form.find("#snombres" + sufijo),
-            "Solo letras y espacios (1-50 caracteres)"
-        );
-        esValido &= validarKeyUp(
-            /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-            form.find("#apellidos" + sufijo),
-            form.find("#sapellidos" + sufijo),
-            "Solo letras y espacios (1-50 caracteres)"
-        );
-        esValido &= validarKeyUp(
-            /^\d{7,9}$/,
-            form.find("#cedula" + sufijo),
-            form.find("#scedula" + sufijo),
-            "La cédula debe tener al menos 7 números"
-        );
-        esValido &= validarKeyUp(
-            /^04\d{9}$/,
-            form.find("#telefono" + sufijo),
-            form.find("#stelefono" + sufijo),
-            "El formato del teléfono debe ser 04XXXXXXXXX"
-        );
-        esValido &= validarKeyUp(
-            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-            form.find("#correo" + sufijo),
-            form.find("#scorreo" + sufijo),
-            "Correo inválido"
-        );
-        esValido &= validarKeyUp(
-            /^\d+(\.\d{1,2})?$/,
-            form.find("#peso" + sufijo),
-            form.find("#speso" + sufijo),
-            "Solo números y puntos decimales"
-        );
-        esValido &= validarKeyUp(
-            /^\d+(\.\d{1,2})?$/,
-            form.find("#altura" + sufijo),
-            form.find("#saltura" + sufijo),
-            "Solo números y puntos decimales"
-        );
+        validaciones.forEach(({ regex, id, errorMsg }) => {
+            esValido &= validarKeyUp(regex, form.find(`#${id}${sufijo}`), form.find(`#s${id}${sufijo}`), errorMsg);
+        });
 
         if (form.find("#modificar_contraseña").is(":checked")) {
             esValido &= validarKeyUp(
                 /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
-                form.find("#password" + sufijo),
-                form.find("#spassword" + sufijo),
+                form.find(`#password${sufijo}`),
+                form.find(`#spassword${sufijo}`),
                 "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
             );
         }
 
-        esValido &= validarKeyUp(
-            /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-            form.find("#lugar_nacimiento" + sufijo),
-            form.find("#slugarnacimiento" + sufijo),
-            "El lugar de nacimiento no puede estar vacío"
-        );
-        esValido &= verificarFecha(form.find("#fecha_nacimiento" + sufijo), form.find("#sfecha_nacimiento" + sufijo));
+        esValido &= verificarFecha(form.find(`#fecha_nacimiento${sufijo}`), form.find(`#sfecha_nacimiento${sufijo}`));
 
         return esValido;
     }
 
-    $('#btnIncluir', '#btnModificar').on('click', function(event) {
+    $('#btnIncluir, #btnModificar').on('click', function (event) {
         event.preventDefault();
     });
 
     $("#btnIncluir").on("click", function () {
         if (validarEnvio("#f1")) {
-            var datos = new FormData($("#f1")[0]);
+            const datos = new FormData($("#f1")[0]);
             enviaAjax(datos);
         }
     });
 
     $("#btnModificar").on("click", function () {
         if (validarEnvio("#f2")) {
-            var datos = new FormData($("#f2")[0]);
+            const datos = new FormData($("#f2")[0]);
             enviaAjax(datos);
         }
     });
 
-    $("#modificar_contraseña").on("change", function() {
-        if ($(this).is(":checked")) {
-            $("#password_modificar").prop("disabled", false);
-        } else {
-            $("#password_modificar").prop("disabled", true).val("");
-        }
+    $("#modificar_contraseña").on("change", function () {
+        $("#password_modificar").prop("disabled", !$(this).is(":checked")).val("");
     });
 
     function enviaAjax(datos) {
@@ -165,58 +112,12 @@ $(document).ready(function () {
             timeout: 10000,
             success: function (respuesta) {
                 try {
-                    var lee = JSON.parse(respuesta);
+                    const lee = JSON.parse(respuesta);
                     if (lee.devol === "listado_atletas") {
-                        var listado_atleta = "";
-                        if ($.fn.DataTable.isDataTable("#tablaatleta")) {
-                            $("#tablaatleta").DataTable().destroy();
-                        }
-                        lee.respuesta.forEach((atleta) => {
-                            listado_atleta +=
-                                "<tr><td class='align-middle'>" + atleta.cedula + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.entrenador + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.nombre + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.apellido + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.tipo_atleta + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.genero + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'>" + atleta.fecha_nacimiento + "</td>";
-                            listado_atleta +=
-                                "<td class='align-middle'><button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosAtleta(" + JSON.stringify(atleta.cedula) + ")'>Modificar</button><button class='btn btn-block btn-danger' onclick='eliminarAtleta(" + JSON.stringify(atleta.cedula) + ")'>Eliminar</button></td>";
-                            listado_atleta += "</tr>";
-                        });
-                        $("#listado").html(listado_atleta);
-                        $("#tablaatleta").DataTable({
-                            columnDefs: [
-                                { targets: [7], orderable: false, searchable: false },
-                            ],
-                            language: {
-                                lengthMenu: "Mostrar _MENU_ por página",
-                                zeroRecords: "No se encontraron atletas",
-                                info: "Mostrando página _PAGE_ de _PAGES_",
-                                infoEmpty: "No hay atletas disponibles",
-                                infoFiltered: "(filtrado de _MAX_ registros totales)",
-                                search: "Buscar:",
-                                paginate: {
-                                    first: "Primera",
-                                    last: "Última",
-                                    next: "Siguiente",
-                                    previous: "Anterior",
-                                },
-                            },
-                            autoWidth: true,
-                            order: [[0, "desc"]],
-                            dom: '<"top"f>rt<"bottom"lp><"clear">',
-                        });
+                        actualizarListadoAtletas(lee.respuesta);
                     } else if (lee.ok) {
                         Swal.fire("Éxito", "Operación realizada con éxito", "success");
-                        carga_listado_atleta();
-                      
+                        cargaListadoAtleta();
                         $('#modalModificar').modal('hide');
                     } else {
                         Swal.fire("Error", lee.mensaje, "error");
@@ -226,18 +127,64 @@ $(document).ready(function () {
                 }
             },
             error: function (request, status, err) {
-                if (status === "timeout") {
-                    Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                } else {
-                    Swal.fire("Error", "Error al procesar la solicitud", "error");
-                }
+                const errorMsg = status === "timeout" ? "Servidor ocupado, Intente de nuevo" : "Error al procesar la solicitud";
+                Swal.fire("Error", errorMsg, "error");
             },
             complete: function () { },
         });
     }
 
+    function actualizarListadoAtletas(atletas) {
+        let listadoAtleta = "";
+        if ($.fn.DataTable.isDataTable("#tablaatleta")) {
+            $("#tablaatleta").DataTable().destroy();
+        }
+
+        atletas.forEach(atleta => {
+            listadoAtleta += `
+                <tr>
+                    <td class='align-middle'>${atleta.cedula}</td>
+                    <td class='align-middle'>${atleta.entrenador}</td>
+                    <td class='align-middle'>${atleta.nombre}</td>
+                    <td class='align-middle'>${atleta.apellido}</td>
+                    <td class='align-middle'>${atleta.tipo_atleta}</td>
+                    <td class='align-middle'>${atleta.genero}</td>
+                    <td class='align-middle'>${atleta.fecha_nacimiento}</td>
+                    <td class='align-middle'>
+                        <button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar' onclick='cargarDatosAtleta(${JSON.stringify(atleta.cedula)})'>Modificar</button>
+                        <button class='btn btn-block btn-danger' onclick='eliminarAtleta(${JSON.stringify(atleta.cedula)})'>Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        $("#listado").html(listadoAtleta);
+        $("#tablaatleta").DataTable({
+            columnDefs: [
+                { targets: [7], orderable: false, searchable: false },
+            ],
+            language: {
+                lengthMenu: "Mostrar _MENU_ por página",
+                zeroRecords: "No se encontraron atletas",
+                info: "Mostrando página _PAGE_ de _PAGES_",
+                infoEmpty: "No hay atletas disponibles",
+                infoFiltered: "(filtrado de _MAX_ registros totales)",
+                search: "Buscar:",
+                paginate: {
+                    first: "Primera",
+                    last: "Última",
+                    next: "Siguiente",
+                    previous: "Anterior",
+                },
+            },
+            autoWidth: true,
+            order: [[0, "desc"]],
+            dom: '<"top"f>rt<"bottom"lp><"clear">',
+        });
+    }
+
     function cargarDatosAtleta(cedula) {
-        var datos = new FormData();
+        const datos = new FormData();
         datos.append("accion", "obtener_atleta");
         datos.append("cedula", cedula);
 
@@ -251,27 +198,9 @@ $(document).ready(function () {
             cache: false,
             success: function (respuesta) {
                 try {
-                    var lee = JSON.parse(respuesta);
+                    const lee = JSON.parse(respuesta);
                     if (lee.ok) {
-                        var atleta = lee.atleta;
-                        $("#f2 #nombres_modificar").val(atleta.nombre);
-                        $("#f2 #apellidos_modificar").val(atleta.apellido);
-                        $("#f2 #cedula_modificar").val(atleta.cedula);
-                        $("#f2 #genero_modificar").val(atleta.genero);
-                        $("#f2 #fecha_nacimiento_modificar").val(atleta.fecha_nacimiento);
-                        $("#f2 #lugar_nacimiento_modificar").val(atleta.lugar_nacimiento);
-                        $("#f2 #peso_modificar").val(atleta.peso);
-                        $("#f2 #altura_modificar").val(atleta.altura);
-                        $("#f2 #tipo_atleta_modificar").val(atleta.tipo_atleta);
-                        $("#f2 #estado_civil_modificar").val(atleta.estado_civil);
-                        $("#f2 #telefono_modificar").val(atleta.telefono);
-                        $("#f2 #correo_modificar").val(atleta.correo_electronico);
-                        $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
-
-                        // Resetea y deshabilita el campo de contraseña
-                        $("#f2 #modificar_contraseña").prop('checked', false);
-                        $("#f2 #password_modificar").prop('disabled', true).val("");
-
+                        llenarFormularioModificar(lee.atleta);
                         $("#modalModificar").modal('show');
                     } else {
                         Swal.fire("Error", lee.mensaje, "error");
@@ -280,10 +209,30 @@ $(document).ready(function () {
                     Swal.fire("Error", "Algo salió mal", "error");
                 }
             },
-            error: function (request, status, err) {
+            error: function () {
                 Swal.fire("Error", "Error al procesar la solicitud", "error");
             }
         });
+    }
+
+    function llenarFormularioModificar(atleta) {
+        $("#f2 #nombres_modificar").val(atleta.nombre);
+        $("#f2 #apellidos_modificar").val(atleta.apellido);
+        $("#f2 #cedula_modificar").val(atleta.cedula);
+        $("#f2 #genero_modificar").val(atleta.genero);
+        $("#f2 #fecha_nacimiento_modificar").val(atleta.fecha_nacimiento);
+        $("#f2 #lugar_nacimiento_modificar").val(atleta.lugar_nacimiento);
+        $("#f2 #peso_modificar").val(atleta.peso);
+        $("#f2 #altura_modificar").val(atleta.altura);
+        $("#f2 #tipo_atleta_modificar").val(atleta.tipo_atleta);
+        $("#f2 #estado_civil_modificar").val(atleta.estado_civil);
+        $("#f2 #telefono_modificar").val(atleta.telefono);
+        $("#f2 #correo_modificar").val(atleta.correo_electronico);
+        $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
+
+        // Resetea y deshabilita el campo de contraseña
+        $("#f2 #modificar_contraseña").prop('checked', false);
+        $("#f2 #password_modificar").prop('disabled', true).val("");
     }
 
     function eliminarAtleta(cedula) {
@@ -298,9 +247,10 @@ $(document).ready(function () {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                var datos = new FormData();
+                const datos = new FormData();
                 datos.append("accion", "eliminar");
                 datos.append("cedula", cedula);
+
                 $.ajax({
                     async: true,
                     url: "",
@@ -313,10 +263,10 @@ $(document).ready(function () {
                     timeout: 10000,
                     success: function (respuesta) {
                         try {
-                            var lee = JSON.parse(respuesta);
+                            const lee = JSON.parse(respuesta);
                             if (lee.ok) {
                                 Swal.fire("Eliminado!", "El atleta ha sido eliminado.", "success");
-                                carga_listado_atleta();
+                                cargaListadoAtleta();
                             } else {
                                 Swal.fire("Error", lee.mensaje, "error");
                             }
@@ -325,167 +275,102 @@ $(document).ready(function () {
                         }
                     },
                     error: function (request, status, err) {
-                        if (status === "timeout") {
-                            Swal.fire("Servidor ocupado", "Intente de nuevo", "error");
-                        } else {
-                            Swal.fire("Error", "Error al procesar la solicitud", "error");
-                        }
+                        const errorMsg = status === "timeout" ? "Servidor ocupado, Intente de nuevo" : "Error al procesar la solicitud";
+                        Swal.fire("Error", errorMsg, "error");
                     },
                     complete: function () { },
                 });
             }
-        })
+        });
     }
 
     $("#tablaatleta").on("click", ".btn-warning", function() {
-        var cedula = $(this).closest("tr").find("td:first").text();
+        const cedula = $(this).closest("tr").find("td:first").text();
         cargarDatosAtleta(cedula);
     });
 
     $("#tablaatleta").on("click", ".btn-danger", function() {
-        var cedula = $(this).closest("tr").find("td:first").text();
+        const cedula = $(this).closest("tr").find("td:first").text();
         eliminarAtleta(cedula);
     });
 
     $("input").on("keypress", function (e) {
-        var id = $(this).attr("id");
-        switch (id) {
-            case "nombres":
-            case "apellidos":
-            case "lugar_nacimiento":
-            case "nombres_modificar":
-            case "apellidos_modificar":
-            case "lugar_nacimiento_modificar":
-                validarKeyPress(e, /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/);
-                break;
-            case "cedula":
-            case "entrenador_asignado":
-            case "edad":
-            case "telefono":
-            case "telefono_representante":
-            case "cedula_modificar":
-            case "entrenador_asignado_modificar":
-            case "edad_modificar":
-            case "telefono_modificar":
-            case "telefono_representante_modificar":
-                validarKeyPress(e, /^\d*$/);
-                break;
-            case "correo":
-            case "correo_modificar":
-                validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
-                break;
-            case "peso":
-            case "altura":
-            case "peso_modificar":
-            case "altura_modificar":
-                validarKeyPress(e, /^\d*\.?\d*$/);
-                break;
-            case "password":
-            case "password_modificar":
-                validarKeyPress(e, /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/);
-                break;
+        const id = $(this).attr("id");
+        const regexMap = {
+            "nombres": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "apellidos": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "lugar_nacimiento": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "nombres_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "apellidos_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "lugar_nacimiento_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+            "cedula": /^\d*$/,
+            "entrenador_asignado": /^\d*$/,
+            "edad": /^\d*$/,
+            "telefono": /^\d*$/,
+            "telefono_representante": /^\d*$/,
+            "cedula_modificar": /^\d*$/,
+            "entrenador_asignado_modificar": /^\d*$/,
+            "edad_modificar": /^\d*$/,
+            "telefono_modificar": /^\d*$/,
+            "telefono_representante_modificar": /^\d*$/,
+            "correo": /^[a-zA-Z0-9@._-]*$/,
+            "correo_modificar": /^[a-zA-Z0-9@._-]*$/,
+            "peso": /^\d*\.?\d*$/,
+            "altura": /^\d*\.?\d*$/,
+            "peso_modificar": /^\d*\.?\d*$/,
+            "altura_modificar": /^\d*\.?\d*$/,
+            "password": /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+            "password_modificar": /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/
+        };
+
+        if (regexMap[id]) {
+            validarKeyPress(e, regexMap[id]);
         }
     });
 
     $("input").on("keyup", function () {
-        var id = $(this).attr("id");
-        var formId = $(this).closest("form").attr("id");
-        var sufijo = formId === "f2" ? "_modificar" : "";
-        switch (id) {
-            case "nombres" + sufijo:
-                validarKeyUp(
-                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-                    $(this),
-                    $("#snombres" + sufijo),
-                    "Solo letras y espacios (1-50 caracteres)"
-                );
-                break;
-            case "apellidos" + sufijo:
-                validarKeyUp(
-                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-                    $(this),
-                    $("#sapellidos" + sufijo),
-                    "Solo letras y espacios (1-50 caracteres)"
-                );
-                break;
-            case "cedula" + sufijo:
-                validarKeyUp(
-                    /^\d{7,9}$/,
-                    $(this),
-                    $("#scedula" + sufijo),
-                    "La cédula debe tener al menos 7 números"
-                );
-                break;
-            case "telefono" + sufijo:
-                validarKeyUp(
-                    /^04\d{9}$/,
-                    $(this),
-                    $("#stelefono" + sufijo),
-                    "El formato del teléfono debe ser 04XXXXXXXXX"
-                );
-                break;
-            case "telefono_representante" + sufijo:
-                validarKeyUp(
-                    /^04\d{9}$/,
-                    $(this),
-                    $("#stelefono_representante" + sufijo),
-                    "El formato del teléfono debe ser 04XXXXXXXXX"
-                );
-                break;
-            case "correo" + sufijo:
-                validarKeyUp(
-                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    $(this),
-                    $("#scorreo" + sufijo),
-                    "Correo inválido"
-                );
-                break;
-            case "peso" + sufijo:
-                validarKeyUp(
-                    /^\d+(\.\d{1,2})?$/,
-                    $(this),
-                    $("#speso" + sufijo),
-                    "Solo números y puntos decimales"
-                );
-                break;
-            case "altura" + sufijo:
-                validarKeyUp(
-                    /^\d+(\.\d{1,2})?$/,
-                    $(this),
-                    $("#saltura" + sufijo),
-                    "Solo números y puntos decimales"
-                );
-                break;
-            case "lugar_nacimiento" + sufijo:
-                validarKeyUp(
-                    /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-                    $(this),
-                    $("#slugarnacimiento" + sufijo),
-                    "El lugar de nacimiento no puede estar vacío"
-                );
-                break;
-                case "password" + sufijo:
-                    validarKeyUp(
-                        /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
-                        $(this),
-                        $("#spassword" + sufijo),
-                        "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
-                    );
-                    break;
-            }
-        });
-    
-        $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
-            var form = $(this).closest("form");
-            var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
-            verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
-            var edad = calcularEdad($(this).val());
-            form.find("#edad" + sufijo).val(edad);
-            if (edad < 18) {
-                form.find("#representanteInfo" + sufijo).show();
-            } else {
-                form.find("#representanteInfo" + sufijo).hide();
-            }
-        });
+        const id = $(this).attr("id");
+        const formId = $(this).closest("form").attr("id");
+        const sufijo = formId === "f2" ? "_modificar" : "";
+        const regexMap = {
+            "nombres": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            "apellidos": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            "cedula": /^\d{7,9}$/,
+            "telefono": /^04\d{9}$/,
+            "telefono_representante": /^04\d{9}$/,
+            "correo": /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            "peso": /^\d+(\.\d{1,2})?$/,
+            "altura": /^\d+(\.\d{1,2})?$/,
+            "lugar_nacimiento": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+            "password": /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+            "nombres_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            "apellidos_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            "cedula_modificar": /^\d{7,9}$/,
+            "telefono_modificar": /^04\d{9}$/,
+            "telefono_representante_modificar": /^04\d{9}$/,
+            "correo_modificar": /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            "peso_modificar": /^\d+(\.\d{1,2})?$/,
+            "altura_modificar": /^\d+(\.\d{1,2})?$/,
+            "lugar_nacimiento_modificar": /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+            "password_modificar": /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/
+        };
+
+        if (regexMap[id.replace(sufijo, "")]) {
+            validarKeyUp(
+                regexMap[id.replace(sufijo, "")],
+                $(this),
+                $(`#s${id}`),
+                $(`#${id.replace(sufijo, "")}_error`).text()
+            );
+        }
     });
-    
+
+    $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
+        const form = $(this).closest("form");
+        const sufijo = form.attr("id") === "f2" ? "_modificar" : "";
+        verificarFecha($(this), form.find(`#sfecha_nacimiento${sufijo}`));
+        const edad = calcularEdad($(this).val());
+        form.find(`#edad${sufijo}`).val(edad);
+        form.find(`#representanteInfo${sufijo}`).toggle(edad < 18);
+    });
+});
