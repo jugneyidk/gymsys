@@ -10,71 +10,6 @@
 
 <body class="d-flex flex-column vh-100">
     <?php require_once ("comunes/menu.php"); ?>
-    <!--<div class="container align-items-top pt-3">
-        <div class="row justify-content-start ">
-            <div class="col-lg-9 col-md-5">
-                <div class="row">
-                    <div class="col">
-                        <div class="card border-primary p-0">
-                            <div class="card-header bg-primary"></div>
-                            <div class="card-body">
-                                <h4 class="card-title text-info"><strong>Nacional Sub-15</strong></h4>
-                                <blockquote class="card-text"><em>Fecha: 15-10-23</br>Hora: 10:00 am</br>Participantes:
-                                        20</em></blockquote>
-                            </div>
-                            <div class="card-footer bg-primary">
-                                <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
-                                    data-bs-target="#modalEventOne" id="btnEvento">Ver</button> <a href="#"
-                                    class="btn btn-outline-light">Modificar</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card border-secondary p-0" style="">
-                            <div class="card-header bg-secondary"></div>
-                            <div class="card-body">
-                                <h4 class="card-title text-secondary"><strong>Nacional Sub-15</strong></h4>
-                                <blockquote class="card-text"><em>Fecha: 15-10-23</br>Hora: 10:00 am</br>Participantes:
-                                        20</em></blockquote>
-                            </div>
-                            <div class="card-footer bg-secondary">
-                                <a href="#" class="btn btn-outline-dark">Ver</a> <a href="#"
-                                    class="btn btn-outline-dark">Modificar</a>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="col">
-                        <div class="card border-primary p-0" style="">
-                            <div class="card-header bg-primary"></div>
-                            <div class="card-body">
-                                <h4 class="card-title text-info"><strong>Nacional Sub-15</strong></h4>
-                                <blockquote class="card-text"><em>Fecha: 15-10-23</br>Hora: 10:00 am</br>Participantes:
-                                        20</em></blockquote>
-                            </div>
-                            <div class="card-footer bg-primary">
-                                <a href="#" class="btn btn-outline-light">Ver</a> <a href="#"
-                                    class="btn btn-outline-light">Modificar</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-4">
-                <div class="card p-4 mb-3 " id="">
-                    <h4 class="card-title text-center mb-4">Acciones</h4>
-                    <button type="button" class="btn btn-secondary btn-block" >Limpiar</button>
-                    <button type="button" class="btn btn-info btn-block"  data-bs-toggle="modal" data-bs-target="#modalIncluir">Crear +</button>
-                    <button type="button" class="btn btn-info btn-block" data-bs-toggle="modal"
-                        data-bs-target="#modalEntrenadores">Consultar anteriores (solo vista)</button>
-                </div>
-            </div>
-
-        
-
-        </div>
-    </div>
--->
     <div class="container mb-5">
         <div class="row">
             <div class="col">
@@ -126,7 +61,7 @@
                             <div class="card-footer my-1 border-primary">
                                 <div class="btn-group visible">
                                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoVer">Ver</button>
-                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoInscribir">Inscribir</button>
+                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento">Inscribir</button>
                                     <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
                                 </div>
                             </div>
@@ -188,12 +123,12 @@
 -->
     
     <!-- Modal Registrar Evento -->
-
+    
     <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
         <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Registrar Evento</h1>
+                    <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
                     <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post" action="#" class="form-control" id="registrarEvento">
@@ -253,7 +188,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Fin -->
 
     <!-- Modal Consulta Anteriores Evento -->
@@ -376,7 +311,7 @@
     <!--  Modal Registrar Evento  -->
 
     <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Registrar Evento</h1>
@@ -385,7 +320,6 @@
                 <form class="" id="fRegistrarEvento" method="post" action=#>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col">
                             <div class="col">
                                 <label for="in_nombre" class="form-label">Nombre del Evento</label>
                                 <input type="text" class="form-control form-control-sm" id="in_nombre" name="in_name">
@@ -408,29 +342,30 @@
                                 
                             </div>
                             <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="in_categoria" class="form-label">Categoria</label>
-                                <select id="in_categoria" name="in_categoria" class="form-select form-control form-select-sm">
-                                    <option selected>Seleccione una</option>
-                                    <option data-bs-target="#ModalRegistrarCategoria" data-bs-toggle="modal" value="">Registrar categoria</option>
-                                </select>
-                                <div class="invalid-feedback">Categoría es obligatoria</div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="in_categoria" class="form-label">Categoria</label>
+                                    <select id="in_categoria" name="in_categoria" class="form-select form-control form-select-sm">
+                                        <option selected>Seleccione una</option>
+                                        <!--Datos a consultar-->
+                                        <option data-bs-target="#modalRegistrarCategoria" data-bs-toggle="modal" value="">Registrar categoria</option>
+                                    </select>
+                                    <div class="invalid-feedback">Categoría es obligatoria</div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                <label for="in_subs" class="form-label">Subs</label>
-                                <select id="in_subs" name="in_subs" class="form-select form-control form-select-sm">
-                                    <option selected>Seleccione una</option>
-                                    <option data-bs-target="#ModalRegistrarSubs" data-bs-toggle="modal" value="">Registrar Subs</option>
-                                </select>
-                                <div class="invalid-feedback">Subs es obligatorio</div>
+                                    <label for="in_subs" class="form-label">Subs</label>
+                                    <select id="in_subs" name="in_subs" class="form-select form-control form-select-sm">
+                                        <option selected>Seleccione una</option>
+                                        <option data-bs-target="#modalRegistrarSubs" data-bs-toggle="modal" value="">Registrar Subs</option>
+                                    </select>
+                                    <div class="invalid-feedback">Subs es obligatorio</div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                <label for="in_categoria" class="form-label">Tipo</label>
-                                <select id="in_tipo" class="form-select form-control form-select-sm">
-                                    <option selected>Seleccione una</option>
-                                    <option data-bs-target="#ModalRegistrarTipo" data-bs-toggle="modal" value="">Registrar tipo</option>
-                                </select>
-                                <div class="invalid-feedback">Tipo es obligatorio</div>
+                                    <div class="col-md-4 mb-3">
+                                    <label for="in_categoria" class="form-label">Tipo</label>
+                                    <select id="in_tipo" class="form-select form-control form-select-sm">
+                                        <option selected>Seleccione una</option>
+                                        <option data-bs-target="#modalRegistrarTipo" data-bs-toggle="modal" value="">Registrar tipo</option>
+                                    </select>
+                                    <div class="invalid-feedback">Tipo es obligatorio</div>
                                 </div>
                             </div>
                         </div>
@@ -445,7 +380,8 @@
         </div>
     </div>
 
-    
+    <!--
+
     <div class="modal modal-xl " id="modalEventoActivoVer" aria-hidden="true" aria-labelledby="modalEventoActivoVer" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -479,10 +415,11 @@
             </div>
         </div>
     </div>
+-->
 
 <!-- Modal Registrar Categoria -->
 
-    <div class="modal" id="ModalRegistrarCategoria" aria-hidden="true" aria-labelledby="ModalRegistrarCategoria" tabindex="-1">
+    <div class="modal" id="modalRegistrarCategoria" aria-hidden="true" aria-labelledby="modalRegistrarCategoria" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -516,7 +453,7 @@
 
 <!-- Modal Registrar Subs -->
 
-    <div class="modal" id="ModalRegistrarSubs" aria-hidden="true" aria-labelledby="ModalRegistrarSubs" tabindex="-1">
+    <div class="modal" id="modalRegistrarSubs" aria-hidden="true" aria-labelledby="modalRegistrarSubs" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -572,7 +509,7 @@
 
 <!-- Modal Registrar Tipo -->
 
-    <div class="modal" id="ModalRegistrarTipo" aria-hidden="true" aria-labelledby="ModalRegistrarTipo" tabindex="-1">
+    <div class="modal" id="modalRegistrarTipo" aria-hidden="true" aria-labelledby="modalRegistrarTipo" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -608,7 +545,7 @@
 
 
     <!-- Modal Incluir-->
-
+    <!--
     <div class="modal fade" id="modalIncluir" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
@@ -763,7 +700,7 @@
             
         </div>
         </div>
-
+    -->
 
     <!--Modal de la competencia-->
 
@@ -994,6 +931,7 @@
         </div>
     </div>
     <?php require_once ("comunes/footer.php"); ?>
+    <!--
     <script src="js/eventos.js"></script>
     <script>
         function calculateTotals() {
@@ -1013,7 +951,7 @@
         document.querySelectorAll('input[type="number"]').forEach(input => {
             input.addEventListener('change', calculateTotals);
         });
-    </script>
+    </script>-->
 </body>
 
 </html>
