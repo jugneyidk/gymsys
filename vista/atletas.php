@@ -142,6 +142,12 @@
                                         <div id="stelefono_representante" class="invalid-feedback"></div>
                                     </div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Contraseña:</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <div id="spassword" class="invalid-feedback"></div>
+                                </div>
+
                             </div>
                             <button type="button" id="btnIncluir" class="btn btn-primary btn-block">Registrar Atleta</button>
                         </form>
@@ -233,6 +239,21 @@
             <input type="text" class="form-control" id="entrenador_asignado_modificar" name="entrenador_asignado_modificar">
             <div id="sentrenador_asignado_modificar" class="invalid-feedback"></div>
         </div>
+        <div class="col-md-6 mb-3">
+    <label for="password_modificar" class="form-label">Contraseña:</label>
+    <input type="password" class="form-control" id="password_modificar" name="password_modificar" disabled>
+    <div id="spassword_modificar" class="invalid-feedback"></div>
+</div>
+<div class="col-md-6 mb-3">
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="modificar_contraseña" name="modificar_contraseña">
+        <label class="form-check-label" for="modificar_contraseña">
+            ¿Modificar contraseña?
+        </label>
+    </div>
+</div>
+
+
     </div>
     <button type="button" id="btnModificar" class="btn btn-primary btn-block">Modificar Atleta</button>
 </form>

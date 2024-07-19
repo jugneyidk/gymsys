@@ -25,10 +25,13 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['estado_civil'], 
                 $_POST['telefono'], 
                 $_POST['correo'], 
-                $_POST['entrenador_asignado']
+                $_POST['entrenador_asignado'],
+                $_POST['password']
             );
             echo json_encode($respuesta);
         } elseif ($accion == 'modificar') {
+            $modificar_contraseña = isset($_POST['modificar_contraseña']) && $_POST['modificar_contraseña'] === 'on';
+            $password_modificar = $modificar_contraseña ? $_POST['password_modificar'] : null;
             $respuesta = $o->modificar_atleta(
                 $_POST['nombres_modificar'], 
                 $_POST['apellidos_modificar'], 
@@ -42,7 +45,9 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['estado_civil_modificar'], 
                 $_POST['telefono_modificar'], 
                 $_POST['correo_modificar'], 
-                $_POST['entrenador_asignado_modificar']
+                $_POST['entrenador_asignado_modificar'],
+                $modificar_contraseña,
+                $password_modificar
             );
             echo json_encode($respuesta);
         } elseif ($accion == 'eliminar') {
@@ -58,4 +63,5 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     echo "pagina en construccion";
 }
+
 ?>

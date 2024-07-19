@@ -61,7 +61,6 @@ $(document).ready(function () {
         var esValido = true;
         var form = $(formId);
 
-      
         var sufijo = formId === "#f2" ? "_modificar" : "";
 
         esValido &= validarKeyUp(
@@ -106,6 +105,16 @@ $(document).ready(function () {
             form.find("#saltura" + sufijo),
             "Solo números y puntos decimales"
         );
+
+        if (form.find("#modificar_contraseña").is(":checked")) {
+            esValido &= validarKeyUp(
+                /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+                form.find("#password" + sufijo),
+                form.find("#spassword" + sufijo),
+                "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
+            );
+        }
+
         esValido &= validarKeyUp(
             /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
             form.find("#lugar_nacimiento" + sufijo),
@@ -132,6 +141,14 @@ $(document).ready(function () {
         if (validarEnvio("#f2")) {
             var datos = new FormData($("#f2")[0]);
             enviaAjax(datos);
+        }
+    });
+
+    $("#modificar_contraseña").on("change", function() {
+        if ($(this).is(":checked")) {
+            $("#password_modificar").prop("disabled", false);
+        } else {
+            $("#password_modificar").prop("disabled", true).val("");
         }
     });
 
@@ -200,12 +217,11 @@ $(document).ready(function () {
                         Swal.fire("Éxito", "Operación realizada con éxito", "success");
                         carga_listado_atleta();
                       
-                        $('#modalInscripcion').modal('hide');
                         $('#modalModificar').modal('hide');
                     } else {
                         Swal.fire("Error", lee.mensaje, "error");
                     }
-                } catch {
+                } catch (error) {
                     Swal.fire("Error", "Algo salió mal", "error");
                 }
             },
@@ -252,11 +268,15 @@ $(document).ready(function () {
                         $("#f2 #correo_modificar").val(atleta.correo_electronico);
                         $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
 
+                        // Resetea y deshabilita el campo de contraseña
+                        $("#f2 #modificar_contraseña").prop('checked', false);
+                        $("#f2 #password_modificar").prop('disabled', true).val("");
+
                         $("#modalModificar").modal('show');
                     } else {
                         Swal.fire("Error", lee.mensaje, "error");
                     }
-                } catch {
+                } catch (error) {
                     Swal.fire("Error", "Algo salió mal", "error");
                 }
             },
@@ -300,7 +320,7 @@ $(document).ready(function () {
                             } else {
                                 Swal.fire("Error", lee.mensaje, "error");
                             }
-                        } catch {
+                        } catch (error) {
                             Swal.fire("Error", "Algo salió mal", "error");
                         }
                     },
@@ -359,6 +379,10 @@ $(document).ready(function () {
             case "peso_modificar":
             case "altura_modificar":
                 validarKeyPress(e, /^\d*\.?\d*$/);
+                break;
+            case "password":
+            case "password_modificar":
+                validarKeyPress(e, /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/);
                 break;
         }
     });
@@ -440,19 +464,28 @@ $(document).ready(function () {
                     "El lugar de nacimiento no puede estar vacío"
                 );
                 break;
-        }
+                case "password" + sufijo:
+                    validarKeyUp(
+                        /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+                        $(this),
+                        $("#spassword" + sufijo),
+                        "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
+                    );
+                    break;
+            }
+        });
+    
+        $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
+            var form = $(this).closest("form");
+            var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
+            verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
+            var edad = calcularEdad($(this).val());
+            form.find("#edad" + sufijo).val(edad);
+            if (edad < 18) {
+                form.find("#representanteInfo" + sufijo).show();
+            } else {
+                form.find("#representanteInfo" + sufijo).hide();
+            }
+        });
     });
-
-    $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
-        var form = $(this).closest("form");
-        var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
-        verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
-        var edad = calcularEdad($(this).val());
-        form.find("#edad" + sufijo).val(edad);
-        if (edad < 18) {
-            form.find("#representanteInfo" + sufijo).show();
-        } else {
-            form.find("#representanteInfo" + sufijo).hide();
-        }
-    });
-});
+    
