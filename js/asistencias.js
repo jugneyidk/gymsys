@@ -81,10 +81,16 @@ $(document).ready(function () {
 
         enviaAjax(datos, function (respuesta) {
             if (respuesta.ok) {
+                var fechaSeleccionada = new Date(fecha);
+                var fechaActual = new Date();
+                var unDia = 24 * 60 * 60 * 1000; // Un día en milisegundos
+
+                var deshabilitar = (fechaActual - fechaSeleccionada) > unDia;
+
                 $('#listadoAsistencias tr').each(function () {
                     var id = $(this).find('input[type="checkbox"]').data('id');
                     var asistencia = respuesta.asistencias.find(function (asistencia) {
-                        return asistencia.id_atleta === id;
+                        return asistencia.id_atleta == id;
                     });
 
                     if (asistencia) {
@@ -93,6 +99,11 @@ $(document).ready(function () {
                     } else {
                         $(this).find('input[type="checkbox"]').prop('checked', false);
                         $(this).find('input[type="text"]').val('');
+                    }
+
+                    if (deshabilitar) {
+                        $(this).find('input[type="checkbox"]').prop('disabled', true);
+                        $(this).find('input[type="text"]').prop('disabled', true);
                     }
                 });
             } else {

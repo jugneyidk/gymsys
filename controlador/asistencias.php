@@ -26,4 +26,5 @@ if (is_file("vista/" . $p . ".php")) {
     echo "pagina en construccion";
 }
 
+
 ?>
