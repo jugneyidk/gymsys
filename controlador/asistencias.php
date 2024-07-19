@@ -13,11 +13,15 @@ if (!empty($_POST)) {
     if ($accion == 'crear') {
         $respuesta = $o->crear_asistencia($_POST['fecha']);
         echo json_encode($respuesta);
-    } else if ($accion == 'listado') {
+    } elseif ($accion == 'listado') {
         $respuesta = $o->listado_asistencias();
         echo json_encode($respuesta);
-    } else if ($accion == 'guardar') {
-        $respuesta = $o->guardar_asistencia($_POST['fecha'], $_POST['asistencias']);
+    } elseif ($accion == 'guardar') {
+        $asistencias = json_decode($_POST['asistencias'], true);
+        $respuesta = $o->guardar_asistencia($_POST['fecha'], $asistencias);
+        echo json_encode($respuesta);
+    } elseif ($accion == 'listar_atletas') {
+        $respuesta = $o->listar_atletas();
         echo json_encode($respuesta);
     }
     exit;

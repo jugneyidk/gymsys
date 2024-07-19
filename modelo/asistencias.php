@@ -28,10 +28,26 @@ class Asistencia extends datos
         return $this->listado();
     }
 
+    public function listar_atletas()
+    {
+        try {
+            $consulta = "SELECT cedula, nombre, apellido FROM usuarios WHERE cedula IN (SELECT cedula FROM atleta)";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO asistencias (fecha) VALUES (:fecha)";
+            // Inserción de asistencia con datos iniciales
+            $consulta = "INSERT INTO asistencias (id_atleta, fecha, asistio, comentario) VALUES ('', :fecha, 0, '')";
             $valores = array(':fecha' => $this->fecha);
 
             $respuesta = $this->conexion->prepare($consulta);
@@ -48,16 +64,24 @@ class Asistencia extends datos
     {
         try {
             $this->conexion->beginTransaction();
-            $consulta = "DELETE FROM asistencias WHERE fecha = :fecha";
-            $valores = array(':fecha' => $this->fecha);
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
 
-            $consulta = "INSERT INTO asistencias (fecha, id_atleta) VALUES (:fecha, :id_atleta)";
-            $respuesta = $this->conexion->prepare($consulta);
+            // Eliminar asistencias existentes para la fecha dada
+            $consultaEliminar = "DELETE FROM asistencias WHERE fecha = :fecha";
+            $valoresEliminar = array(':fecha' => $this->fecha);
+            $respuestaEliminar = $this->conexion->prepare($consultaEliminar);
+            $respuestaEliminar->execute($valoresEliminar);
+
+            // Insertar nuevas asistencias
+            $consultaInsertar = "INSERT INTO asistencias (id_atleta, fecha, asistio, comentario) VALUES (:id_atleta, :fecha, :asistio, :comentario)";
+            $respuestaInsertar = $this->conexion->prepare($consultaInsertar);
 
             foreach ($this->atletas_asistencia as $asistencia) {
-                $respuesta->execute(array(':fecha' => $this->fecha, ':id_atleta' => $asistencia));
+                $respuestaInsertar->execute(array(
+                    ':id_atleta' => $asistencia['id_atleta'],
+                    ':fecha' => $this->fecha,
+                    ':asistio' => $asistencia['asistio'],
+                    ':comentario' => $asistencia['comentario']
+                ));
             }
 
             $this->conexion->commit();

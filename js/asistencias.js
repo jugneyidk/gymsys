@@ -30,6 +30,7 @@ $(document).ready(function() {
             datos.append("fecha", fecha);
 
             enviarAjax(datos, function(lee) {
+                Swal.fire("Éxito", "Asistencia creada exitosamente.", "success");
                 var nuevaTarjeta = `
                     <div class="card mb-3">
                         <div class="card-body d-flex justify-content-between align-items-center">
@@ -43,14 +44,14 @@ $(document).ready(function() {
                 $('#listaAsistencias').append(nuevaTarjeta);
             });
         } else {
-            alert('Por favor, selecciona una fecha.');
+            Swal.fire("Advertencia", "Por favor, selecciona una fecha.", "warning");
         }
     });
 
     $('#listaAsistencias').on('click', '.btn-tomar-asistencia', function() {
         var fecha = $(this).data('fecha');
         $('#fechaAsistenciaLabel').text(fecha);
-        $('#formTomarAsistencia').show();
+        $('#formularioAsistencia').show();
 
         var datos = new FormData();
         datos.append("accion", "listar_atletas");
@@ -60,10 +61,14 @@ $(document).ready(function() {
             lee.respuesta.forEach(function(atleta) {
                 var fila = `
                     <tr>
+                        <td>${atleta.cedula}</td>
                         <td>${atleta.nombre}</td>
                         <td>${atleta.apellido}</td>
                         <td>
-                            <input type="checkbox" class="form-check-input" data-id="${atleta.id}">
+                            <input type="checkbox" class="form-check-input asistencia-checkbox" data-id="${atleta.cedula}">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control comentario-input" data-id="${atleta.cedula}" placeholder="Comentario">
                         </td>
                     </tr>`;
                 $('#listaAtletas').append(fila);
@@ -73,8 +78,11 @@ $(document).ready(function() {
 
     $('#guardarAsistenciaBtn').click(function() {
         var asistencias = [];
-        $('#listaAtletas input:checked').each(function() {
-            asistencias.push($(this).data('id'));
+        $('#listaAtletas tr').each(function() {
+            var cedula = $(this).find('.asistencia-checkbox').data('id');
+            var asistio = $(this).find('.asistencia-checkbox').is(':checked') ? 1 : 0;
+            var comentario = $(this).find('.comentario-input').val();
+            asistencias.push({ id_atleta: cedula, asistio: asistio, comentario: comentario });
         });
 
         var fecha = $('#fechaAsistenciaLabel').text();
@@ -85,7 +93,8 @@ $(document).ready(function() {
 
         enviarAjax(datos, function() {
             Swal.fire("Éxito", "Asistencia guardada exitosamente.", "success");
-            $('#formTomarAsistencia').hide();
+            $('#formularioAsistencia').hide();
+            cargarListadoAsistencias();
         });
     });
 
@@ -96,12 +105,14 @@ $(document).ready(function() {
         enviarAjax(datos, function(lee) {
             $('#listaAsistencias').empty();
             lee.respuesta.forEach(function(asistencia) {
+                var estado = asistencia.total_asistentes > 0 ? "Completado" : "Pendiente";
+                var estadoBadge = estado === "Completado" ? "bg-success" : "bg-warning";
                 var tarjeta = `
                     <div class="card mb-3">
                         <div class="card-body d-flex justify-content-between align-items-center">
                             <div>
                                 <h5 class="card-title">${asistencia.fecha}</h5>
-                                <p class="card-text">Estado: <span class="badge bg-success">Completado</span></p>
+                                <p class="card-text">Estado: <span class="badge ${estadoBadge}">${estado}</span></p>
                             </div>
                             <button class="btn btn-success btn-tomar-asistencia" data-fecha="${asistencia.fecha}">Tomar asistencia</button>
                         </div>
@@ -111,6 +122,5 @@ $(document).ready(function() {
         });
     }
 
-    // Cargar el listado de asistencias al cargar la página
     cargarListadoAsistencias();
 });

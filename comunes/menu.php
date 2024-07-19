@@ -29,10 +29,14 @@
             <a class="nav-link" href="?p=eventos">Eventos/competencia</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="?p=wada">Status Wada</a>
+            <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
+            <a class="nav-link" href="?p=wada">Status Wada</a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="?p=reportes">Reportes</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="?p=cerrarsesion">Salir</a>
