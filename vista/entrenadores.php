@@ -11,14 +11,13 @@
     <div class="container-lg d-flex justify-content-center align-items-center">
         <div class="row justify-content-center w-100">
             <div class="col-12 col-md-8 col-lg-9">
-            <div class="card-header d-flex justify-content-between align-items-center bg-info text-white w-100">
-                        <h2 class="mb-0">Gestionar Entrenadores</h2>
-                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
-                            Registrar+
-                        </button>
-                    </div>
+                <div class="card-header d-flex justify-content-between align-items-center bg-info text-white w-100">
+                    <h2 class="mb-0">Gestionar Entrenadores</h2>
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
+                        Registrar+
+                    </button>
+                </div>
                 <div class="p-4 shadow">
-                   
                     <div class="p-4">
                         <h2 class="text-center mb-4">Entrenadores Inscritos</h2>
                         <div class="table-responsive">
@@ -35,7 +34,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="listado">
-                                  
+                                    <!-- Aquí se listan los entrenadores -->
                                 </tbody>
                             </table>
                         </div>
@@ -112,6 +111,11 @@
                                     <input type="text" class="form-control" id="grado_instruccion" name="grado_instruccion">
                                     <div id="sgrado_instruccion" class="invalid-feedback"></div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Contraseña:</label>
+                                    <input type="password" class="form-control" id="password" name="password">
+                                    <div id="spassword" class="invalid-feedback"></div>
+                                </div>
                             </div>
                             <button type="submit" id="incluir" class="btn btn-primary btn-block">Registrar Entrenador</button>
                         </form>
@@ -122,7 +126,7 @@
 
         <!-- Modal de Modificación -->
         <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalModificarLabel">Modificar Entrenador</h5>
@@ -188,11 +192,23 @@
                                     <input type="text" class="form-control" id="grado_instruccion_modificar" name="grado_instruccion_modificar">
                                     <div id="sgrado_instruccion_modificar" class="invalid-feedback"></div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="modificar_contraseña" name="modificar_contraseña">
+                                        <label class="form-check-label" for="modificar_contraseña">Modificar contraseña</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password_modificar" class="form-label">Nueva Contraseña:</label>
+                                    <input type="password" class="form-control" id="password_modificar" name="password_modificar" disabled>
+                                    <div id="spassword_modificar" class="invalid-feedback"></div>
+                                </div>
+                                
                             </div>
                             <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar Entrenador</button>
                         </form>
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     </div>

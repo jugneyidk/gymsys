@@ -6,7 +6,7 @@ if (!is_file("modelo/" . $p . ".php")) {
 require_once("modelo/" . $p . ".php");
 
 if (!empty($_POST)) {
-    $o = new Entrenador(); // se pone el nombre de la clase del modelo
+    $o = new Entrenador();
     if ($_POST["accion"] == "incluir") {
         $response = $o->incluir_entrenador(
             $_POST["nombres"],
@@ -18,10 +18,12 @@ if (!empty($_POST)) {
             $_POST["estado_civil"],
             $_POST["telefono"],
             $_POST["correo"],
-            $_POST["grado_instruccion"]
+            $_POST["grado_instruccion"],
+            $_POST["password"]
         );
         echo json_encode($response);
     } elseif ($_POST["accion"] == "modificar") {
+        $password = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password_modificar"] : null;
         $response = $o->modificar_entrenador(
             $_POST["nombres_modificar"],
             $_POST["apellidos_modificar"],
@@ -32,7 +34,8 @@ if (!empty($_POST)) {
             $_POST["estado_civil_modificar"],
             $_POST["telefono_modificar"],
             $_POST["correo_modificar"],
-            $_POST["grado_instruccion_modificar"]
+            $_POST["grado_instruccion_modificar"],
+            $password
         );
         echo json_encode($response);
     } elseif ($_POST["accion"] == "obtener_entrenador") {
@@ -53,6 +56,5 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     require_once("comunes/404.php");
 }
-
 
 ?>

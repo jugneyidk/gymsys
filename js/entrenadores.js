@@ -107,13 +107,21 @@ $(document).ready(function () {
             "El grado de instrucción no puede estar vacío"
         );
 
+        if (formId === "#f2" && $("#modificar_contraseña").is(":checked")) {
+            esValido &= validarKeyUp(
+                /^[a-zA-Z0-9@._-]{6,20}$/,
+                form.find("#password_modificar"),
+                form.find("#spassword_modificar"),
+                "La contraseña debe tener entre 6 y 20 caracteres"
+            );
+        }
+
         return esValido;
     }
 
     $("#f1, #f2").on("submit", function (e) {
         e.preventDefault();
         var formId = $(this).attr('id');
-        var action = $(this).find('input[name="accion"]').val();
         if (validarEnvio("#" + formId)) {
             var datos = new FormData($(this)[0]);
             enviaAjax(datos);
@@ -231,6 +239,8 @@ $(document).ready(function () {
                         $("#f2 #telefono_modificar").val(entrenador.telefono);
                         $("#f2 #correo_modificar").val(entrenador.correo_electronico);
                         $("#f2 #grado_instruccion_modificar").val(entrenador.grado_instruccion);
+                        $("#f2 #password_modificar").val("");
+                        $("#modificar_contraseña").prop("checked", false);
 
                         // Mostrar el modal de modificación
                         $("#modalModificar").modal('show');
@@ -292,14 +302,16 @@ $(document).ready(function () {
         });
     }
 
-    $("#tablaentrenador").on("click", ".btn-warning", function () {
-        var cedula = $(this).closest("tr").find("td:first").text();
-        cargarDatosEntrenador(cedula);
+    $("#modificar_contraseña").on("change", function () {
+        if ($(this).is(":checked")) {
+            $("#password_modificar").prop("disabled", false);
+        } else {
+            $("#password_modificar").prop("disabled", true).val("");
+            $("#password_modificar").removeClass("is-valid is-invalid");
+            $("#spassword_modificar").text("");
+        }
     });
-    $("#tablaentrenador").on("click", ".btn-danger", function() {
-        var cedula = $(this).closest("tr").find("td:first").text();
-        eliminarEntrenador(cedula);
-    });
+
     $("input").on("keypress", function (e) {
         var id = $(this).attr("id");
         switch (id) {
@@ -321,6 +333,9 @@ $(document).ready(function () {
                 break;
             case "correo":
             case "correo_modificar":
+                validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
+                break;
+            case "password_modificar":
                 validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
                 break;
         }
@@ -387,6 +402,16 @@ $(document).ready(function () {
                     "El grado de instrucción no puede estar vacío"
                 );
                 break;
+            case "password_modificar":
+                if ($("#modificar_contraseña").is(":checked")) {
+                    validarKeyUp(
+                        /^[a-zA-Z0-9@._-]{6,20}$/,
+                        $(this),
+                        $("#spassword_modificar"),
+                        "La contraseña debe tener entre 6 y 20 caracteres"
+                    );
+                }
+                break;
         }
     });
 
@@ -402,5 +427,14 @@ $(document).ready(function () {
             form.find("#representanteInfo" + sufijo).hide();
         }
     });
-});
 
+    $("#tablaentrenador").on("click", ".btn-warning", function () {
+        var cedula = $(this).closest("tr").find("td:first").text();
+        cargarDatosEntrenador(cedula);
+    });
+
+    $("#tablaentrenador").on("click", ".btn-danger", function () {
+        var cedula = $(this).closest("tr").find("td:first").text();
+        eliminarEntrenador(cedula);
+    });
+});

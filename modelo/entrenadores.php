@@ -4,14 +4,14 @@ require_once('modelo/datos.php');
 class Entrenador extends datos
 {
     private $conexion;
-    private $id_entrenador, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion;
+    private $id_entrenador, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password;
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // conex
+        $this->conexion = $this->conecta();
     }
 
-    public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion)
+    public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
     {
         $this->nombres = $nombres;
         $this->apellidos = $apellidos;
@@ -23,10 +23,11 @@ class Entrenador extends datos
         $this->telefono = $telefono;
         $this->correo_electronico = $correo_electronico;
         $this->grado_instruccion = $grado_instruccion;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
         return $this->incluir();
     }
 
-    public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion)
+    public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
     {
         $this->nombres = $nombres;
         $this->apellidos = $apellidos;
@@ -38,6 +39,7 @@ class Entrenador extends datos
         $this->telefono = $telefono;
         $this->correo_electronico = $correo_electronico;
         $this->grado_instruccion = $grado_instruccion;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
         return $this->modificar();
     }
 
@@ -132,57 +134,56 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    
-
     private function incluir()
-    {
-        try {
-            $this->conexion->beginTransaction();
+{
+    try {
+        $this->conexion->beginTransaction();
 
-            $password = $this->nombres . $this->cedula;
-            $id_rol = 1;
-            $token = 0;
+        $password = $this->nombres . $this->cedula;
+        $id_rol = 1;  
+        $token = 0;
 
-            $consulta = "
-                INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
-                VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
-                
-                INSERT INTO entrenador (cedula, grado_instruccion)
-                VALUES (:cedula, :grado_instruccion);
+        $consulta = "
+            INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+            VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
+            
+            INSERT INTO entrenador (cedula, grado_instruccion)
+            VALUES (:cedula, :grado_instruccion);
 
-                INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
-                VALUES (:cedula, :id_rol, :password, :token);
-            ";
+            INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
+            VALUES (:cedula, :id_rol, :password, :token);
+        ";
 
-            $valores = array(
-                ':cedula' => $this->cedula,
-                ':nombre' => $this->nombres,
-                ':apellido' => $this->apellidos,
-                ':genero' => $this->genero,
-                ':fecha_nacimiento' => $this->fecha_nacimiento,
-                ':lugar_nacimiento' => $this->lugar_nacimiento,
-                ':estado_civil' => $this->estado_civil,
-                ':telefono' => $this->telefono,
-                ':correo' => $this->correo_electronico,
-                ':grado_instruccion' => $this->grado_instruccion,
-                ':id_rol' => $id_rol,
-                ':password' => $password,
-                ':token' => $token
-            );
+        $valores = array(
+            ':cedula' => $this->cedula,
+            ':nombre' => $this->nombres,
+            ':apellido' => $this->apellidos,
+            ':genero' => $this->genero,
+            ':fecha_nacimiento' => $this->fecha_nacimiento,
+            ':lugar_nacimiento' => $this->lugar_nacimiento,
+            ':estado_civil' => $this->estado_civil,
+            ':telefono' => $this->telefono,
+            ':correo' => $this->correo_electronico,
+            ':grado_instruccion' => $this->grado_instruccion,
+            ':id_rol' => $id_rol,
+            ':password' => $password,
+            ':token' => $token
+        );
 
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $respuesta->closeCursor(); 
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute($valores);
+        $respuesta->closeCursor(); 
 
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        $this->conexion->commit();
+        $resultado["ok"] = true;
+    } catch (Exception $e) {
+        $this->conexion->rollBack();
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
     }
+    return $resultado;
+}
+
 
     private function modificar()
     {
@@ -221,9 +222,25 @@ class Entrenador extends datos
                 ':grado_instruccion' => $this->grado_instruccion
             );
 
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $respuesta->closeCursor();
+            $respuesta1 = $this->conexion->prepare($consulta);
+            $respuesta1->execute($valores);
+            $respuesta1->closeCursor();
+
+            if ($this->password !== null) {
+                $consulta_password = "
+                    UPDATE usuarios_roles
+                    SET password = :password
+                    WHERE id_usuario = :cedula;
+                ";
+                $valores_password = array(
+                    ':cedula' => $this->cedula,
+                    ':password' => $this->password
+                );
+
+                $respuesta2 = $this->conexion->prepare($consulta_password);
+                $respuesta2->execute($valores_password);
+                $respuesta2->closeCursor();
+            }
 
             $this->conexion->commit();
             $resultado["ok"] = true;
@@ -247,5 +264,4 @@ class Entrenador extends datos
     }
 }
 
-    ?>
-    
+?>
