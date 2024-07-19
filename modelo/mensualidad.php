@@ -83,8 +83,11 @@ class Mensualidad extends datos
                 SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
                 FROM atleta a
                 INNER JOIN usuarios u ON a.cedula = u.cedula
-                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta
-                WHERE m.id_atleta IS NULL OR m.fecha < DATE_FORMAT(NOW() ,'%Y-%m-01')
+                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta 
+                  AND m.fecha >= DATE_FORMAT(NOW(), '%Y-%m-01') 
+                  AND m.fecha <= LAST_DAY(NOW())
+                WHERE m.id_atleta IS NULL 
+                GROUP BY u.cedula
             ";
             $con = $this->conexion->prepare($consulta);
             $con->execute();
@@ -97,6 +100,7 @@ class Mensualidad extends datos
         }
         return $resultado;
     }
+    
 
     private function listado_atletas_privado() 
     {

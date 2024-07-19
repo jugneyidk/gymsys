@@ -376,7 +376,7 @@
     <!--  Modal Registrar Evento  -->
 
     <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Registrar Evento</h1>
@@ -386,38 +386,52 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col">
+                            <div class="col">
                                 <label for="in_nombre" class="form-label">Nombre del Evento</label>
                                 <input type="text" class="form-control form-control-sm" id="in_nombre" name="in_name">
+                                <div class="invalid-feedback">Nombre del evento es obligatorio</div>
                                 <label for="in_ubicacion" class="form-label">Ubicación</label>
                                 <input type="text" class="form-control form-control-sm" id="in_ubicacion" name="in_ubicacion">
+                                <div class="invalid-feedback">Ubicación es obligatoria</div>
                                 <div class="row">
                                     <div class="col">
                                         <label for="in_date_start" class="form-label">Fecha de Apertura</label>
                                         <input type="date" id="in_date_start" class="form-control form-control-sm" name="in_date_start">
+                                        <div class="invalid-feedback">Fecha de apertura es obligatoria</div>
                                     </div>
                                     <div class="col">
                                         <label for="in_date_end" class="form-label">Fecha de Clausura</label>
-                                        <input type="date" if="in_date_end" class="form-control form-control-sm" name="in_date_end">
+                                        <input type="date" id="in_date_end" class="form-control form-control-sm" name="in_date_end">
+                                        <div class="invalid-feedback">Fecha de clausura es obligatoria</div>
                                     </div>
                                 </div>
                                 
                             </div>
-                            <div class="col">
+                            <div class="row">
+                            <div class="col-md-4 mb-3">
                                 <label for="in_categoria" class="form-label">Categoria</label>
                                 <select id="in_categoria" name="in_categoria" class="form-select form-control form-select-sm">
                                     <option selected>Seleccione una</option>
                                     <option data-bs-target="#ModalRegistrarCategoria" data-bs-toggle="modal" value="">Registrar categoria</option>
                                 </select>
+                                <div class="invalid-feedback">Categoría es obligatoria</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
                                 <label for="in_subs" class="form-label">Subs</label>
                                 <select id="in_subs" name="in_subs" class="form-select form-control form-select-sm">
                                     <option selected>Seleccione una</option>
                                     <option data-bs-target="#ModalRegistrarSubs" data-bs-toggle="modal" value="">Registrar Subs</option>
                                 </select>
+                                <div class="invalid-feedback">Subs es obligatorio</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
                                 <label for="in_categoria" class="form-label">Tipo</label>
                                 <select id="in_tipo" class="form-select form-control form-select-sm">
                                     <option selected>Seleccione una</option>
                                     <option data-bs-target="#ModalRegistrarTipo" data-bs-toggle="modal" value="">Registrar tipo</option>
                                 </select>
+                                <div class="invalid-feedback">Tipo es obligatorio</div>
+                                </div>
                             </div>
                         </div>
                     </div>
