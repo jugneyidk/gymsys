@@ -10,9 +10,9 @@
 
 <div class="error-container">
     <h1>404</h1>
-    <p>Página no encontrada</p>
-    <p>¡Oops! La página que estás buscando no existe. Puede que haya sido movida o eliminada.</p>
-    <a class="btn btn-primary" onclick="history.back();">Volver a la página principal</a>
+    <p class="text-light">Página no encontrada</p>
+    <p class="text-light">La página que estás buscando no existe. Puede que haya sido movida o eliminada.</p>
+    <a class="btn btn-primary" onclick="history.back();">Volver</a>
 </div>
 
 </body>
