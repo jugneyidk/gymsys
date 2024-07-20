@@ -3,10 +3,12 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "No existe el modelo.";
     exit;
 }
-require_once("modelo/" . $p . ".php");
-
+require_once ("modelo/" . $p . ".php");
+require_once ("modelo/permisos.php");
+$o = new Entrenador();
+$permisos_o = new Permisos();
+$permisos = $permisos_o->chequear_permisos();
 if (!empty($_POST)) {
-    $o = new Entrenador();
     if ($_POST["accion"] == "incluir") {
         $response = $o->incluir_entrenador(
             $_POST["nombres"],
@@ -52,9 +54,9 @@ if (!empty($_POST)) {
 }
 
 if (is_file("vista/" . $p . ".php")) {
-    require_once("vista/" . $p . ".php");
+    require_once ("vista/" . $p . ".php");
 } else {
-    require_once("comunes/404.php");
+    require_once ("comunes/404.php");
 }
 
 ?>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,7 +33,12 @@
         }
     </style>
 </head>
+
 <body class="d-flex flex-column vh-100">
+    <script>
+        var actualizar = <?php echo $permisos["actualizar"] ?>;
+        var eliminar = <?php echo $permisos["eliminar"] ?>;
+    </script>
     <?php require_once ("comunes/menu.php"); ?>
     <div class="container-lg">
         <div class="row">
@@ -40,9 +46,16 @@
                 <div class="card shadow card-custom">
                     <div class="card-header header-custom d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Gestionar WADA</h2>
-                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
-                            Registrar+
-                        </button>
+                        <?php
+                        if ($permisos["crear"] === 1):
+                            ?>
+                            <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                                data-bs-target="#modalInscripcion">
+                                Registrar+
+                            </button>
+                            <?php
+                        endif;
+                        ?>
                     </div>
                     <div class="p-4">
                         <h2 class="text-center mb-4">Atletas Registrados en WADA</h2>
@@ -87,7 +100,8 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel" aria-hidden="true">
+        <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -120,7 +134,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="ultima_actualizacion" class="form-label">Última Actualización:</label>
-                                <input type="date" class="form-control" id="ultima_actualizacion" name="ultima_actualizacion" required>
+                                <input type="date" class="form-control" id="ultima_actualizacion"
+                                    name="ultima_actualizacion" required>
                                 <div id="sultima_actualizacion" class="invalid-feedback"></div>
                             </div>
                             <div class="mb-3">
@@ -134,7 +149,8 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel" aria-hidden="true">
+        <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -162,17 +178,21 @@
                             </div>
                             <div class="mb-3">
                                 <label for="inscrito_modificar" class="form-label">Inscrito:</label>
-                                <input type="date" class="form-control" id="inscrito_modificar" name="inscrito_modificar" required>
+                                <input type="date" class="form-control" id="inscrito_modificar"
+                                    name="inscrito_modificar" required>
                                 <div id="sinscrito_modificar" class="invalid-feedback"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="ultima_actualizacion_modificar" class="form-label">Última Actualización:</label>
-                                <input type="date" class="form-control" id="ultima_actualizacion_modificar" name="ultima_actualizacion_modificar" required>
+                                <label for="ultima_actualizacion_modificar" class="form-label">Última
+                                    Actualización:</label>
+                                <input type="date" class="form-control" id="ultima_actualizacion_modificar"
+                                    name="ultima_actualizacion_modificar" required>
                                 <div id="sultima_actualizacion_modificar" class="invalid-feedback"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="vencimiento_modificar" class="form-label">Vencimiento:</label>
-                                <input type="date" class="form-control" id="vencimiento_modificar" name="vencimiento_modificar" required>
+                                <input type="date" class="form-control" id="vencimiento_modificar"
+                                    name="vencimiento_modificar" required>
                                 <div id="svencimiento_modificar" class="invalid-feedback"></div>
                             </div>
                             <button type="submit" class="btn btn-primary btn-large btn-block">Modificar</button>
@@ -184,7 +204,8 @@
     </div>
     <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
-   
+
     <script src="js/wada.js"></script>
 </body>
+
 </html>

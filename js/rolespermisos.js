@@ -174,8 +174,16 @@ $(document).ready(function () {
                     <td class='d-none'>${rol.id_rol}</td>
                     <td class='align-middle text-capitalize'>${rol.nombre}</td>
                     <td class='align-middle'>
-                        <button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class="fa-regular fa-pen-to-square"></i></button>
-                        <button class='btn btn-block btn-danger'><i class="fa-solid fa-trash-can"></i></button>
+                    ${
+                      actualizar === 1
+                        ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                        : ""
+                    }
+                    ${
+                      eliminar === 1
+                        ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+                        : ""
+                    }                        
                     </td>
                 </tr>
             `;
@@ -248,5 +256,6 @@ $(document).ready(function () {
   }
   $("#modalCrear").on("hidden.bs.modal", function () {
     limpiarFormulario();
+    $("#nombre").removeClass("is-valid");
   });
 });

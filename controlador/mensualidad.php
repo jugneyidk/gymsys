@@ -4,16 +4,17 @@ if (!is_file("modelo/" . $p . ".php")) {
     exit;
 }
 
-require_once("modelo/" . $p . ".php");
-
+require_once ("modelo/" . $p . ".php");
+require_once ("modelo/permisos.php");
+$permisos_o = new Permisos();
+$permisos = $permisos_o->chequear_permisos();
 if (!empty($_POST)) {
-    $o = new Mensualidad(); 
+    $o = new Mensualidad();
     $accion = $_POST['accion'];
-
     if ($accion == 'incluir') {
         $respuesta = $o->incluir_mensualidad(
-            $_POST['id_atleta'], 
-            $_POST['monto'], 
+            $_POST['id_atleta'],
+            $_POST['monto'],
             $_POST['fecha']
         );
         echo json_encode($respuesta);
@@ -31,8 +32,8 @@ if (!empty($_POST)) {
 }
 
 if (is_file("vista/" . $p . ".php")) {
-    require_once("vista/" . $p . ".php");
+    require_once ("vista/" . $p . ".php");
 } else {
-    require_once("comunes/404.php");
+    require_once ("comunes/404.php");
 }
 ?>

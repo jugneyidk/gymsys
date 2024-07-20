@@ -3,8 +3,11 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "No existe el modelo.";
     exit;
 }
-require_once("modelo/" . $p . ".php");
+require_once ("modelo/" . $p . ".php");
+require_once ("modelo/permisos.php");
 
+$permisos_o = new Permisos();
+$permisos = $permisos_o->chequear_permisos();
 if (!empty($_POST)) {
     $o = new WADA();
     $accion = $_POST['accion'];
@@ -48,8 +51,8 @@ if (!empty($_POST)) {
 }
 
 if (is_file("vista/" . $p . ".php")) {
-    require_once("vista/" . $p . ".php");
+    require_once ("vista/" . $p . ".php");
 } else {
-    require_once("comunes/404.php");
+    require_once ("comunes/404.php");
 }
 ?>

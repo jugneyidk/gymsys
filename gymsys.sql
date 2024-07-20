@@ -17,6 +17,9 @@ CREATE TABLE `asistencias` (
   `comentario` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `asistencias` (`id_atleta`, `asistio`, `fecha`, `comentario`) VALUES
+('9252463', 1, '2024-07-20', '');
+
 CREATE TABLE `atleta` (
   `cedula` varchar(10) NOT NULL,
   `entrenador` varchar(10) NOT NULL,
@@ -25,18 +28,17 @@ CREATE TABLE `atleta` (
   `altura` decimal(6,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`) VALUES
+('9252463', '22222222', 0, 73.00, 100.00);
+
 CREATE TABLE `bitacora` (
   `id_accion` int(50) NOT NULL,
   `id_usuario` varchar(10) NOT NULL,
   `accion` varchar(100) NOT NULL,
   `usuario_modificado` varchar(10) DEFAULT NULL,
   `valor_cambiado` varchar(100) DEFAULT NULL,
-  `fecha` date NOT NULL DEFAULT current_timestamp()
+  `fecha` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
-INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `usuario_modificado`, `valor_cambiado`, `fecha`) VALUES
-(1, '22222222', 'modificó', '28609560', 'nombre de diego a jugney', '0000-00-00'),
-(2, '28609560', 'eliminó\r\n', '22222222', NULL, '2024-07-19');
 
 CREATE TABLE `categorias` (
   `id_categoria` int(5) NOT NULL,
@@ -81,6 +83,9 @@ CREATE TABLE `mensualidades` (
   `cobro` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+INSERT INTO `mensualidades` (`id_mensualidad`, `id_atleta`, `fecha`, `tipo`, `monto`, `cobro`) VALUES
+(3, '9252463', '2024-07-26', 0, 23.00, 0);
+
 CREATE TABLE `modulos` (
   `id_modulo` int(50) NOT NULL,
   `nombre` varchar(50) NOT NULL
@@ -104,6 +109,18 @@ CREATE TABLE `permisos` (
   `actualizar` tinyint(4) NOT NULL,
   `eliminar` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `eliminar`) VALUES
+(1, 1, 1, 1, 1, 0),
+(1, 2, 1, 1, 0, 0),
+(30, 1, 1, 1, 1, 1),
+(30, 2, 1, 1, 1, 1),
+(30, 3, 0, 1, 1, 1),
+(30, 4, 0, 1, 0, 0),
+(30, 5, 0, 1, 0, 0),
+(30, 6, 1, 1, 0, 0),
+(30, 7, 0, 1, 1, 1),
+(30, 8, 0, 1, 0, 0);
 
 CREATE TABLE `representantes` (
   `cedula` varchar(10) NOT NULL,
@@ -130,7 +147,8 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id_rol`, `nombre`) VALUES
 (0, 'atleta'),
-(1, 'entrenador');
+(1, 'entrenador'),
+(30, 'rol prueba');
 
 CREATE TABLE `subs` (
   `id_sub` int(5) NOT NULL,
@@ -158,7 +176,8 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
 ('22222222', 'jugneys', 'dfdfdf', 'Masculino', '2002-07-15', 'sdfdsfdfds', 'Soltero', '04245681343', 'dsfdsfd@gmail.com'),
-('28609560', 'jugney', 'vargas', 'Masculino', '2002-07-15', 'dsdj', 'Soltero', '04245681343', 'KJSHJSHKJH@GMAIL.COM');
+('28609560', 'jugney', 'vargas', 'Masculino', '2002-07-15', 'dsdj', 'Soltero', '04245681343', 'KJSHJSHKJH@GMAIL.COM'),
+('9252463', 'Reprehenderit fuga ', 'Sit impedit vero in', 'Masculino', '1989-03-13', 'Et accusantium maior', 'Viudo', '04559403067', 'lodujobyqa@mailinator.com');
 
 CREATE TABLE `usuarios_roles` (
   `id_usuario` varchar(10) NOT NULL,
@@ -168,8 +187,8 @@ CREATE TABLE `usuarios_roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
-('22222222', 1, '$2y$10$syf4uVv4j1iML9whitgx2.ylZwVlWhUHrA7zFhvMyP0qqpzD6yNWO', '0'),
-('28609560', 0, 'jugney28609560', '0');
+('22222222', 30, '$2y$10$syf4uVv4j1iML9whitgx2.ylZwVlWhUHrA7zFhvMyP0qqpzD6yNWO', '0'),
+('9252463', 0, '$2y$10$HKTnPY5Ndj4ljvylWoszouAsfl8RyRll5pSpZOUmQI7Wb9i.9SibO', '0');
 
 CREATE TABLE `wada` (
   `id_atleta` varchar(10) NOT NULL,
@@ -178,6 +197,9 @@ CREATE TABLE `wada` (
   `ultima_actualizacion` date NOT NULL,
   `estado` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `wada` (`id_atleta`, `inscrito`, `vencimiento`, `ultima_actualizacion`, `estado`) VALUES
+('9252463', '2024-07-20', '2024-08-10', '2024-07-20', 1);
 
 
 ALTER TABLE `asistencias`
@@ -247,7 +269,7 @@ ALTER TABLE `wada`
 
 
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `categorias`
   MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT;
@@ -259,7 +281,7 @@ ALTER TABLE `marcas`
   MODIFY `id_marca` int(10) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `mensualidades`
-  MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `modulos`
   MODIFY `id_modulo` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
@@ -268,7 +290,7 @@ ALTER TABLE `resultado_competencia`
   MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `roles`
-  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 ALTER TABLE `subs`
   MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT;
@@ -303,7 +325,7 @@ ALTER TABLE `mensualidades`
   ADD CONSTRAINT `mensualidades_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
 ALTER TABLE `permisos`
-  ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permisos_ibfk_2` FOREIGN KEY (`modulo`) REFERENCES `modulos` (`id_modulo`) ON UPDATE CASCADE;
 
 ALTER TABLE `representantes`

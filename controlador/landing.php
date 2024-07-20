@@ -1,10 +1,12 @@
 <?php
 
-  if(is_file("vista/".$p.".php")){
-	  require_once("vista/".$p.".php"); 
-  }
-  else{
-	  require_once("comunes/404.php"); 
-  }
+if (is_file("vista/" . $p . ".php")) {
+  require_once ("modelo/permisos.php");
+  $permisos_o = new Permisos();
+  $permisos = $permisos_o->chequear_permisos();
+  require_once ("vista/" . $p . ".php");
+} else {
+  require_once ("comunes/404.php");
+}
 
 ?>

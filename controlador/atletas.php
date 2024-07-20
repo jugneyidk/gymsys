@@ -3,28 +3,31 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "Falta definir la clase " . $p;
     exit;
 }
-require_once("modelo/" . $p . ".php");
+require_once ("modelo/" . $p . ".php");
+require_once ("modelo/permisos.php");
 if (is_file("vista/" . $p . ".php")) {
     $o = new Atleta();
+    $permisos_o = new Permisos();
+    $permisos = $permisos_o->chequear_permisos();
     if (!empty($_POST)) {
-        $accion = $_POST['accion']; 
+        $accion = $_POST['accion'];
         if ($accion == 'listado_atleta') {
             $respuesta = $o->listado_atleta();
             echo json_encode($respuesta);
         } elseif ($accion == 'incluir') {
             $respuesta = $o->incluir_atleta(
-                $_POST['nombres'], 
-                $_POST['apellidos'], 
-                $_POST['cedula'], 
-                $_POST['genero'], 
-                $_POST['fecha_nacimiento'], 
-                $_POST['lugar_nacimiento'], 
-                $_POST['peso'], 
-                $_POST['altura'], 
-                $_POST['tipo_atleta'], 
-                $_POST['estado_civil'], 
-                $_POST['telefono'], 
-                $_POST['correo'], 
+                $_POST['nombres'],
+                $_POST['apellidos'],
+                $_POST['cedula'],
+                $_POST['genero'],
+                $_POST['fecha_nacimiento'],
+                $_POST['lugar_nacimiento'],
+                $_POST['peso'],
+                $_POST['altura'],
+                $_POST['tipo_atleta'],
+                $_POST['estado_civil'],
+                $_POST['telefono'],
+                $_POST['correo'],
                 $_POST['entrenador_asignado'],
                 $_POST['password']
             );
@@ -33,18 +36,18 @@ if (is_file("vista/" . $p . ".php")) {
             $modificar_contraseña = isset($_POST['modificar_contraseña']) && $_POST['modificar_contraseña'] === 'on';
             $password_modificar = $modificar_contraseña ? $_POST['password_modificar'] : null;
             $respuesta = $o->modificar_atleta(
-                $_POST['nombres_modificar'], 
-                $_POST['apellidos_modificar'], 
-                $_POST['cedula_modificar'], 
-                $_POST['genero_modificar'], 
-                $_POST['fecha_nacimiento_modificar'], 
-                $_POST['lugar_nacimiento_modificar'], 
-                $_POST['peso_modificar'], 
-                $_POST['altura_modificar'], 
-                $_POST['tipo_atleta_modificar'], 
-                $_POST['estado_civil_modificar'], 
-                $_POST['telefono_modificar'], 
-                $_POST['correo_modificar'], 
+                $_POST['nombres_modificar'],
+                $_POST['apellidos_modificar'],
+                $_POST['cedula_modificar'],
+                $_POST['genero_modificar'],
+                $_POST['fecha_nacimiento_modificar'],
+                $_POST['lugar_nacimiento_modificar'],
+                $_POST['peso_modificar'],
+                $_POST['altura_modificar'],
+                $_POST['tipo_atleta_modificar'],
+                $_POST['estado_civil_modificar'],
+                $_POST['telefono_modificar'],
+                $_POST['correo_modificar'],
                 $_POST['entrenador_asignado_modificar'],
                 $modificar_contraseña,
                 $password_modificar
@@ -59,7 +62,7 @@ if (is_file("vista/" . $p . ".php")) {
         }
         exit;
     }
-    require_once("vista/" . $p . ".php");
+    require_once ("vista/" . $p . ".php");
 } else {
     echo "pagina en construccion";
 }

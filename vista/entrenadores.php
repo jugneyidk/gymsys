@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción de Entrenadores - Sistema</title>
-    <?php require_once("comunes/linkcss.php"); ?>
+    <?php require_once ("comunes/linkcss.php"); ?>
 </head>
+
 <body class="d-flex flex-column vh-100">
-    <?php require_once("comunes/menu.php"); ?>
+    <script>
+        var actualizar = <?php echo $permisos["actualizar"] ?>;
+        var eliminar = <?php echo $permisos["eliminar"] ?>;
+    </script>
+    <?php require_once ("comunes/menu.php"); ?>
     <div class="container-lg d-flex justify-content-center align-items-center">
         <div class="row justify-content-center w-100">
             <div class="col-12 col-md-8 col-lg-9">
                 <div class="card-header d-flex justify-content-between align-items-center bg-info text-white w-100">
                     <h2 class="mb-0">Gestionar Entrenadores</h2>
-                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modalInscripcion">
-                        Registrar+
-                    </button>
+                    <?php
+                    if ($permisos["crear"] === 1):
+                        ?>
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                            data-bs-target="#modalInscripcion">
+                            Registrar <i class="fa-solid fa-plus"></i>
+                        </button>
+                        <?php
+                    endif;
+                    ?>
                 </div>
                 <div class="p-4 shadow">
                     <div class="p-4">
@@ -44,7 +57,8 @@
         </div>
 
         <!-- Modal de Inscripción -->
-        <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel" aria-hidden="true">
+        <div class="modal fade" id="modalInscripcion" tabindex="-1" aria-labelledby="modalInscripcionLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -79,12 +93,14 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento:</label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento">
+                                    <input type="date" class="form-control" id="fecha_nacimiento"
+                                        name="fecha_nacimiento">
                                     <div id="sfecha_nacimiento" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento:</label>
-                                    <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento">
+                                    <input type="text" class="form-control" id="lugar_nacimiento"
+                                        name="lugar_nacimiento">
                                     <div id="slugarnacimiento" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -108,7 +124,8 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="grado_instruccion" class="form-label">Grado de Instrucción:</label>
-                                    <input type="text" class="form-control" id="grado_instruccion" name="grado_instruccion">
+                                    <input type="text" class="form-control" id="grado_instruccion"
+                                        name="grado_instruccion">
                                     <div id="sgrado_instruccion" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -117,7 +134,8 @@
                                     <div id="spassword" class="invalid-feedback"></div>
                                 </div>
                             </div>
-                            <button type="submit" id="incluir" class="btn btn-primary btn-block">Registrar Entrenador</button>
+                            <button type="submit" id="incluir" class="btn btn-primary btn-block">Registrar
+                                Entrenador</button>
                         </form>
                     </div>
                 </div>
@@ -125,8 +143,9 @@
         </div>
 
         <!-- Modal de Modificación -->
-        <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal fade" id="modalModificar" tabindex="-1" aria-labelledby="modalModificarLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="modalModificarLabel">Modificar Entrenador</h5>
@@ -138,17 +157,20 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nombres_modificar" class="form-label">Nombres:</label>
-                                    <input type="text" class="form-control" id="nombres_modificar" name="nombres_modificar">
+                                    <input type="text" class="form-control" id="nombres_modificar"
+                                        name="nombres_modificar">
                                     <div id="snombres_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="apellidos_modificar" class="form-label">Apellidos:</label>
-                                    <input type="text" class="form-control" id="apellidos_modificar" name="apellidos_modificar">
+                                    <input type="text" class="form-control" id="apellidos_modificar"
+                                        name="apellidos_modificar">
                                     <div id="sapellidos_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="cedula_modificar" class="form-label">Cédula:</label>
-                                    <input type="text" class="form-control" id="cedula_modificar" name="cedula_modificar">
+                                    <input type="text" class="form-control" id="cedula_modificar"
+                                        name="cedula_modificar">
                                     <div id="scedula_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
@@ -159,18 +181,23 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="fecha_nacimiento_modificar" class="form-label">Fecha de Nacimiento:</label>
-                                    <input type="date" class="form-control" id="fecha_nacimiento_modificar" name="fecha_nacimiento_modificar">
+                                    <label for="fecha_nacimiento_modificar" class="form-label">Fecha de
+                                        Nacimiento:</label>
+                                    <input type="date" class="form-control" id="fecha_nacimiento_modificar"
+                                        name="fecha_nacimiento_modificar">
                                     <div id="sfecha_nacimiento_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="lugar_nacimiento_modificar" class="form-label">Lugar de Nacimiento:</label>
-                                    <input type="text" class="form-control" id="lugar_nacimiento_modificar" name="lugar_nacimiento_modificar">
+                                    <label for="lugar_nacimiento_modificar" class="form-label">Lugar de
+                                        Nacimiento:</label>
+                                    <input type="text" class="form-control" id="lugar_nacimiento_modificar"
+                                        name="lugar_nacimiento_modificar">
                                     <div id="slugarnacimiento_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="estado_civil_modificar" class="form-label">Estado Civil:</label>
-                                    <select class="form-select" id="estado_civil_modificar" name="estado_civil_modificar">
+                                    <select class="form-select" id="estado_civil_modificar"
+                                        name="estado_civil_modificar">
                                         <option>Soltero</option>
                                         <option>Casado</option>
                                         <option>Divorciado</option>
@@ -179,41 +206,50 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="telefono_modificar" class="form-label">Teléfono:</label>
-                                    <input type="tel" class="form-control" id="telefono_modificar" name="telefono_modificar">
+                                    <input type="tel" class="form-control" id="telefono_modificar"
+                                        name="telefono_modificar">
                                     <div id="stelefono_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="correo_modificar" class="form-label">Correo:</label>
-                                    <input type="email" class="form-control" id="correo_modificar" name="correo_modificar">
+                                    <input type="email" class="form-control" id="correo_modificar"
+                                        name="correo_modificar">
                                     <div id="scorreo_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="grado_instruccion_modificar" class="form-label">Grado de Instrucción:</label>
-                                    <input type="text" class="form-control" id="grado_instruccion_modificar" name="grado_instruccion_modificar">
+                                    <label for="grado_instruccion_modificar" class="form-label">Grado de
+                                        Instrucción:</label>
+                                    <input type="text" class="form-control" id="grado_instruccion_modificar"
+                                        name="grado_instruccion_modificar">
                                     <div id="sgrado_instruccion_modificar" class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="modificar_contraseña" name="modificar_contraseña">
-                                        <label class="form-check-label" for="modificar_contraseña">Modificar contraseña</label>
+                                        <input class="form-check-input" type="checkbox" id="modificar_contraseña"
+                                            name="modificar_contraseña">
+                                        <label class="form-check-label" for="modificar_contraseña">Modificar
+                                            contraseña</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="password_modificar" class="form-label">Nueva Contraseña:</label>
-                                    <input type="password" class="form-control" id="password_modificar" name="password_modificar" disabled>
+                                    <input type="password" class="form-control" id="password_modificar"
+                                        name="password_modificar" disabled>
                                     <div id="spassword_modificar" class="invalid-feedback"></div>
                                 </div>
-                                
+
                             </div>
-                            <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar Entrenador</button>
+                            <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar
+                                Entrenador</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <?php require_once("comunes/footer.php"); ?>
+    <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script src="js/entrenadores.js"></script>
 </body>
+
 </html>

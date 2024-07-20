@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,12 @@
     <?php require_once ("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="datatables/datatables.min.css">
 </head>
+
 <body class="d-flex flex-column vh-100">
+    <script>
+        var actualizar = <?php echo $permisos["actualizar"] ?>;
+        var eliminar = <?php echo $permisos["eliminar"] ?>;
+    </script>
     <?php require_once ("comunes/menu.php"); ?>
     <div class="container-lg my-4">
         <div class="row">
@@ -38,7 +44,15 @@
                                     <tbody id="listadoAsistencias"></tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn btn-primary mt-3" id="btnGuardarAsistencias">Guardar Asistencias</button>
+                            <?php
+                            if ($permisos["crear"] === 1):
+                                ?>
+                                <button type="button" class="btn btn-primary mt-3" id="btnGuardarAsistencias">Guardar
+                                    Asistencias
+                                </button>
+                                <?php
+                            endif;
+                            ?>
                         </form>
                     </div>
                 </div>
@@ -49,4 +63,5 @@
     <script src="datatables/datatables.min.js"></script>
     <script src="js/asistencias.js"></script>
 </body>
+
 </html>
