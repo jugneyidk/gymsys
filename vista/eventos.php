@@ -14,22 +14,22 @@
         <div class="row">
             <div class="col">
                 <p class="mt-2 lead fs-1 text-info"><strong>Eventos</strong></p>
-                <nav class="navbar navbar-expand-lg border rounded bg-info mt-2">
+                <nav class="navbar navbar-expand-lg border rounded bg-info mt-2 shadow">
                     <div class="container-fluid">
-                        <a href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></a>
+                        <span href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></span>
                         <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li class="nav-item">
-                                    <button class="nav-link btn btn-outline-light mx-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
+                                    <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link btn btn-outline-light mx-2"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
+                                    <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="" class="nav-link btn btn-outline-light mx-2">Eliminar</a>
+                                    <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1">Eliminar</a>
                                 </li>
                             </ul>
                         </div>
@@ -41,74 +41,86 @@
             <p class="lead mt-2"><strong>Eventos activos</strong></p>
             <!--definir los campos a consultar (div.col)-->
         </div>
-        <div class="row">
-            <div class="col">
-                <div class="card border-primary">
-                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>Evento Activo</strong></small></div>
-                            
-                    <div class="row g-0">
-                        <div class="col-md-5 bg-secondary border-end border-primary">
-                            <img src="" alt="" class="img-fluid rounded-start" >
-                        </div>
-                        <div class="col-md-7">
-                            <div class="card-body">
-                                <div class="card-title lead text-primary"><strong>Evento Activo</strong></div>
-                                <p class="card-text lead m-0"><small>Fecha: 19/07 al 21/07</small></p>
-                                <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
-                                <p class="card-text lead m-0"><small>Participantes: 20</small></p>
-                                <button class="btn btn-sm btn-secondary">opciones</button>
-                            </div>
-                            <div class="card-footer my-1 border-primary">
-                                <div class="btn-group visible">
-                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoVer">Ver</button>
-                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento">Inscribir</button>
-                                    <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
+        <div class="card shadow">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <div class="card border-primary">
+                            <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>Evento Activo</strong></small></div>
+                                    
+                            <div class="row g-0">
+                                <div class="col-md-1 bg-primary border-end border-primary">
+                                    <img src="" alt="" class="img-fluid rounded-start" >
+                                </div>
+                                <div class="col-md-11">
+                                    <div class="card-body p-3 ps-4 ">
+                                        <div class="card-title m-0 lead text-primary"><strong>Evento Activo</strong></div>
+                                        <p class="card-text lead m-0 fs-6"><strong>Fecha: 19/07 al 21/07</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Cupos Disponibles: 30</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Participantes: 20</strong></p>
+                                        
+                                    </div>
+                                    <div class="card-footer my-1 border-primary">
+                                        <div class="btn-group visible">
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalVerEventoActivo">Ver</button>
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento">Inscribir</button>
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card border-info">
-                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-info text-white"><small><strong>Evento En Espera</strong></small></div>
-                    <div class="card-body">
-                        <div class="card-title lead text-primary"><strong>Evento en Espera</strong></div>
-                        <p class="card-text lead m-0"><small>Fecha: 19/08 al 21/08</small></p>
-                        <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
-                        <p class="card-text lead m-0"><small>Participantes: 5</small></p>
-                        <button class="btn btn-sm btn-secondary">opciones</button>
-                    </div>
-                    <div class="card-footer my-1 border-primary">
-                        <div class="btn-group visible">
-                            <button class="btn btn-outline-primary btn-sm">Ver</button>
-                            <button class="btn btn-outline-primary btn-sm">Inscribir</button>
-                            <button class="btn btn-outline-primary btn-sm">Modificar</button>
+                    <div class="col">
+                        <div class="card border-info">
+                            <div class="card-header lead m-0 p-0 px-3 pb-1 bg-info text-white"><small><strong>Evento En Espera</strong></small></div>
+                            <div class="row g-0">
+                                <div class="col-md-1 bg-info border-end border-primary">
+                                    <img src="" alt="" class="img-fluid rounded-start" >
+                                </div>
+                                <div class="col-md-11">
+                                    <div class="card-body">
+                                        <div class="card-title m-0 lead text-info"><strong>Evento en Espera</strong></div>
+                                        <p class="card-text lead m-0 fs-6"><strong>Fecha: 19/08 al 21/08</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Cupos Disponibles: 30</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Participantes: 5</strong></p>
+                                    </div>
+                                    <div class="card-footer my-1 border-info">
+                                        <div class="btn-group visible">
+                                        <button class="btn btn-outline-info btn-sm">Ver</button>
+                                        <button class="btn btn-outline-info btn-sm">Inscribir</button>
+                                        <button class="btn btn-outline-info btn-sm">Modificar</button>
+                                        </div>
+                                    </div>
+                                </div>                                   
+                            </div>
                         </div>
-                        <div class="btn-group invisible">
-                            <button class="btn btn-outline-primary btn-sm">Calificar</button>
-                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card border-info">
-                    <div class="card-header lead m-0 p-0 px-3 pb-1 bg-info text-white"><small><strong>Evento inactiva</strong></small></div>
-                    <div class="card-body">
-                        <div class="card-title lead text-primary"><strong>Evento Inactiva</strong></div>
-                        <p class="card-text lead m-0"><small>Fecha: 19/10 al 21/10</small></p>
-                        <p class="card-text lead m-0"><small>Cupos Disponibles: 30</small></p>
-                        <p class="card-text lead m-0"><small>Participantes: 0</small></p>
-                        <button class="btn btn-sm btn-secondary">opciones</button>
-                    </div>
-                    <div class="card-footer my-1 border-primary">
-                        <div class="btn-group visible">
-                            <button class="btn btn-outline-primary btn-sm">Ver</button>
-                            <button class="btn btn-outline-primary btn-sm">Preinscribir</button>
-                            <button class="btn btn-outline-primary btn-sm">Modificar</button>
-                        </div>
-                        <div class="btn-group invisible">
-                            <button class="btn btn-outline-primary btn-sm">Calificar</button>
+                    <div class="col">
+                        <div class="card border-secondary">
+                            <div class="card-header lead m-0 p-0 px-3 pb-1 bg-secondary text-black"><small><strong>Evento inactiva</strong></small></div>
+                            <div class="row g-0">
+                                <div class="col-md-1 bg-secondary border-end border-secondary">
+                                    <img src="" alt="" class="img-fluid rounded-start" >
+                                </div>    
+                                <div class="col-md-11">
+                                    <div class="card-body">
+                                        <div class="card-title m-0 lead text-black"><strong>Evento Inactiva</strong></div>
+                                        <p class="card-text lead m-0 fs-6"><strong>Fecha: 19/10 al 21/10</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Cupos Disponibles: 30</strong></p>
+                                        <p class="card-text lead m-0 fs-6"><strong>Participantes: 0</strong></p>
+                                    </div>
+                                    <div class="card-footer my-1 border-secondary">
+                                        <div class="btn-group visible">
+                                            <button class="btn btn-outline-secondary btn-sm">Ver</button>
+                                            <button class="btn btn-outline-secondary btn-sm">Preinscribir</button>
+                                            <button class="btn btn-outline-secondary btn-sm">Modificar</button>
+                                        </div>
+                                        <div class="btn-group invisible">
+                                            <button class="btn btn-outline-primary btn-sm">Calificar</button>
+                                        </div>
+                                    </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -122,7 +134,7 @@
 
 -->
     
-    <!-- Modal Registrar Evento -->
+    <!-- Modal Inscribir Evento -->
     
     <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
         <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -198,7 +210,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Consulta anteriores</h1>
+                    <h1 class="modal-title fs-4 lead">Consulta eventos anteriores</h1>
                     <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -209,30 +221,24 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Nombre</th>
-                                        <th scope="col">Cedula</th>
-                                        <th scope="col">Edad</th>
-                                        <th scope="col">Peso</th>
-                                        <th scope="col">Altura</th>
+                                        <th scope="col">Fecha de inicio</th>
+                                        <th scope="col">Fecha final</th>
                                         <th scope="col">Op</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
                                         <td>1</td>
-                                        <td>Juan Jimenez</td>
-                                        <td>25.123.231</td>
-                                        <td>18</td>
-                                        <td>55 kg</td>
-                                        <td>1.35 cm</td>
+                                        <td>Evento Sub 17</td>
+                                        <td>10/12/23</td>
+                                        <td>11/12/23</td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td>2</td>
-                                        <td>Ricardo Sanchez</td>
-                                        <td>30.315.412</td>
-                                        <td>20</td>
-                                        <td>60 kg</td>
-                                        <td>1.25 cm</td>
+                                        <td>Evento Sub 15</td>
+                                        <td>10/12/23</td>
+                                        <td>11/12/23</td>
                                         <td></td>
                                     </tr>
                                 </tbody>
@@ -541,6 +547,90 @@
 
 
 -->
+
+<!-- Modal Activo Ver-->
+
+    <div class="modal" id="modalVerEventoActivo" aria-hidden="true" aria-labelledby="modalVerEventoActivo" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Ver Evento Activo</h1>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <span class="lead fs-4 text-info"><strong>Informacion del Evento</strong></span>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col">
+                            <label for="" class="form-label ">Nombre del Evento : </label>
+                            <span class=""><u> Evento Activo</u></span><br>
+                            <label for="" class="form-label ">Fecha de Inicio : </label>
+                            <span class=""><u> <?php echo date("d/m/y")?></u></span><br>
+                            
+                        </div>
+                        <div class="col">
+                            <label for="" class="form-label">Ubicacion : </label>
+                            <span> <u>Gimnasio UPTAEB</u></span><br>
+                            <label for="" class="form-label ">Fecha de Inicio : </label>
+                            <span class=""><u> <?php echo date("d/m/y")?></u></span><br>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <span class="lead fs-4 text-info"><strong>Participantes</strong></span>
+                        </div>
+                    </div>
+                    <div class="row my-3">
+                        <div class="col"></div>
+                        <div class="table-responsive px-2 ps-2">
+                            <table id="tablaParticipantes" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                        <th scope="col">Op</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
 
