@@ -106,17 +106,22 @@ endif;
             <?php
           endif;
           ?>
-          <li class="nav-item">
-            <a class="nav-link" href="?p=bitacora">Bitacora</a>
-          </li>
+          <?php
+          if ($permisos_navbar[8]["leer"]):
+            ?>
+            <li class="nav-item">
+              <a class="nav-link" href="?p=bitacora">Bitacora</a>
+            </li>
+            <?php
+          endif;
+          ?>
           <li class="nav-item dropdown">
-        
-              <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-                aria-expanded="false"><i class="fa-solid fa-bell"></i></a>
-              <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
-                <div class="ms-2">Notificaciones</div>
-                <div class="dropdown-divider"></div>
-              </div>
+            <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
+              aria-expanded="false"><i class="fa-solid fa-bell"></i></a>
+            <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
+              <div class="ms-2">Notificaciones</div>
+              <div class="dropdown-divider"></div>
+            </div>
             </a>
           </li>
           <li class="nav-item">

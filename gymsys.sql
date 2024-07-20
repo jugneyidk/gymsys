@@ -29,6 +29,24 @@ CREATE TABLE `atleta` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`) VALUES
+('23124144', '22222222', 1, 75.00, 24.00),
+('24244444', '22222222', 1, 75.00, 24.00),
+('2594894', '22222222', 1, 22.00, 1.00),
+('3376883', '22222222', 1, 92.00, 60.00),
+('42342344', '22222222', 1, 75.00, 24.00),
+('6645684', '22222222', 0, 21.00, 61.00),
+('66456842', '22222222', 0, 21.00, 61.00),
+('664568422', '22222222', 0, 21.00, 61.00),
+('6759472', '22222222', 0, 8.00, 70.00),
+('6828158', '22222222', 1, 75.00, 24.00),
+('68281580', '22222222', 1, 75.00, 24.00),
+('68281581', '22222222', 1, 75.00, 24.00),
+('682815811', '22222222', 1, 75.00, 24.00),
+('682815813', '22222222', 1, 75.00, 24.00),
+('682815815', '22222222', 1, 75.00, 24.00),
+('682815818', '22222222', 1, 75.00, 24.00),
+('682815819', '22222222', 1, 75.00, 24.00),
+('68281582', '22222222', 1, 75.00, 24.00),
 ('9252463', '22222222', 0, 73.00, 100.00);
 
 CREATE TABLE `bitacora` (
@@ -37,8 +55,14 @@ CREATE TABLE `bitacora` (
   `accion` varchar(100) NOT NULL,
   `usuario_modificado` varchar(10) DEFAULT NULL,
   `valor_cambiado` varchar(100) DEFAULT NULL,
-  `fecha` date NOT NULL
+  `fecha` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `usuario_modificado`, `valor_cambiado`, `fecha`) VALUES
+(3, '22222222', 'elimino', '28609560', NULL, '2024-07-20'),
+(16, '22222222', 'Agregó', '42342344', NULL, '2024-07-20'),
+(17, '22222222', 'Agregó', '3376883', NULL, '2024-07-20'),
+(18, '22222222', 'Agregó un atleta', '6759472', NULL, '2024-07-20');
 
 CREATE TABLE `categorias` (
   `id_categoria` int(5) NOT NULL,
@@ -99,7 +123,8 @@ INSERT INTO `modulos` (`id_modulo`, `nombre`) VALUES
 (5, 'eventos'),
 (6, 'mensualidad'),
 (7, 'wada'),
-(8, 'reportes');
+(8, 'reportes'),
+(9, 'bitacora');
 
 CREATE TABLE `permisos` (
   `id_rol` int(50) NOT NULL,
@@ -115,12 +140,13 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (1, 2, 1, 1, 0, 0),
 (30, 1, 1, 1, 1, 1),
 (30, 2, 1, 1, 1, 1),
-(30, 3, 0, 1, 1, 1),
-(30, 4, 0, 1, 0, 0),
+(30, 3, 1, 1, 1, 1),
+(30, 4, 0, 0, 0, 0),
 (30, 5, 0, 1, 0, 0),
 (30, 6, 1, 1, 0, 0),
-(30, 7, 0, 1, 1, 1),
-(30, 8, 0, 1, 0, 0);
+(30, 7, 1, 1, 1, 1),
+(30, 8, 0, 1, 0, 0),
+(30, 9, 1, 1, 0, 0);
 
 CREATE TABLE `representantes` (
   `cedula` varchar(10) NOT NULL,
@@ -176,7 +202,25 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
 ('22222222', 'jugneys', 'dfdfdf', 'Masculino', '2002-07-15', 'sdfdsfdfds', 'Soltero', '04245681343', 'dsfdsfd@gmail.com'),
+('23124144', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('24244444', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('2594894', 'Repudiandae harum do', 'Voluptatem et labori', 'Masculino', '1992-09-17', 'Molestiae officia ad', 'Divorciado', '04844940895', 'sikylydig@mailinator.com'),
 ('28609560', 'jugney', 'vargas', 'Masculino', '2002-07-15', 'dsdj', 'Soltero', '04245681343', 'KJSHJSHKJH@GMAIL.COM'),
+('3376883', 'Id voluptas rerum c', 'Velit in blanditiis ', 'Masculino', '2004-12-27', 'Maiores fugiat aut ', 'Casado', '04534055751', 'zazehoz@mailinator.com'),
+('42342344', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('6645684', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
+('66456842', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
+('664568422', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
+('6759472', 'Minima adipisci anim', 'Non aliquam voluptat', 'Masculino', '1995-11-03', 'Sed deserunt quis as', 'Casado', '04418277535', 'pise@mailinator.com'),
+('6828158', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('68281580', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('68281581', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815811', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815813', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815815', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815818', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815819', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('68281582', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
 ('9252463', 'Reprehenderit fuga ', 'Sit impedit vero in', 'Masculino', '1989-03-13', 'Et accusantium maior', 'Viudo', '04559403067', 'lodujobyqa@mailinator.com');
 
 CREATE TABLE `usuarios_roles` (
@@ -188,6 +232,24 @@ CREATE TABLE `usuarios_roles` (
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
 ('22222222', 30, '$2y$10$syf4uVv4j1iML9whitgx2.ylZwVlWhUHrA7zFhvMyP0qqpzD6yNWO', '0'),
+('23124144', 0, '$2y$10$.U6xdgWQPqo4HJbgPmi.u.j.6XZzLH46HiGXdB5lIS19BATJIKaCa', '0'),
+('24244444', 0, '$2y$10$AlnDESIrQ20GjFP2bL5G5eXc.FAXQsbITN.Z1VSxpOf2EtaIaU6Oq', '0'),
+('2594894', 0, '$2y$10$XWoALDkOSs/n2fT30oBlluAS9RPUNKozcntpT/Tk9b4zJvR.mYZCO', '0'),
+('3376883', 0, '$2y$10$ltWDsUEwgZ94BjvHY7tHMO7oJM6bEzPqoyzeqhQDExl6.tfRR5MeG', '0'),
+('42342344', 0, '$2y$10$oPNkW491S4A4p7dKf2ngSePU2L4oBz/iezYPFKXxNagC6hduogbZ.', '0'),
+('6645684', 0, '$2y$10$84Huw1bt0oXtZ8mnIeNtPu9D0Qt0zhYLMkocsA413vMWX5YxP2tii', '0'),
+('66456842', 0, '$2y$10$wdnIzo5Js4PI8TInBAhL.ORc1siZNVKbbaNg9ir99GZ3fuR24cTou', '0'),
+('664568422', 0, '$2y$10$P6vxsbx8q8ITDfhHqu9VaOU310ZTDjdPoBFIn5AKZtMiMIMB91adS', '0'),
+('6759472', 0, '$2y$10$OulaL.OOEq7fwxJmig51rugXt4UHPPywK/R5oMclKs7jvytCSYrUu', '0'),
+('6828158', 0, '$2y$10$md4PwPLFMXm6RQf8gine2OLunXu4Y/l75cAik4GrKNk.FDAMqSm.G', '0'),
+('68281580', 0, '$2y$10$hvCMlvd9BEFiyXbdghtz.eikWnVVyv.0XRGYLPIX/dlwhOAd6oia6', '0'),
+('68281581', 0, '$2y$10$QxgU9C2kdQnmURdS.YhOkORUbk33RyNPXBS6MCjfgOCBpF1fY6yY2', '0'),
+('682815811', 0, '$2y$10$JQ4ytSeERzWg5630.qYZRuDLmRBM219/ABuAAAoJve52TsELtR1tW', '0'),
+('682815813', 0, '$2y$10$56Ny5itgre8c7qEyejeGf.cN64g0MOWK0oEm5461cR1UXCpgQ5d4S', '0'),
+('682815815', 0, '$2y$10$gyjv.k/2GA8PVklPv8VtcOylHuUrvtF2ykym2vrzMK/rbazY7ZmPS', '0'),
+('682815818', 0, '$2y$10$s9EfBbzTfXgumE5NZAKzvu8QshZq.Ic1O0uuZ7ytk7V6L4GyZhEcC', '0'),
+('682815819', 0, '$2y$10$t3YdC2hn7OuC0a6yzWFf/O8D6w8Z5C5ty6.F6jLT/EplLOna3NUCa', '0'),
+('68281582', 0, '$2y$10$IegZMzWD3iDEV7Zxu5Z8k.rX.pg1ib8jPSd2k57kz4QXzar8XiuWO', '0'),
 ('9252463', 0, '$2y$10$HKTnPY5Ndj4ljvylWoszouAsfl8RyRll5pSpZOUmQI7Wb9i.9SibO', '0');
 
 CREATE TABLE `wada` (
@@ -269,7 +331,7 @@ ALTER TABLE `wada`
 
 
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 ALTER TABLE `categorias`
   MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT;
@@ -284,7 +346,7 @@ ALTER TABLE `mensualidades`
   MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 ALTER TABLE `modulos`
-  MODIFY `id_modulo` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_modulo` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 ALTER TABLE `resultado_competencia`
   MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT;

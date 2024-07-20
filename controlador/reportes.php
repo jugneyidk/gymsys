@@ -3,14 +3,14 @@ if (!is_file("modelo/reportes.php")) {
     echo json_encode(['error' => 'Falta definir la clase Reporte']);
     exit;
 }
-require_once("modelo/reportes.php");
+require_once ("modelo/reportes.php");
 require_once ("modelo/permisos.php");
 $o = new Reporte();
 $permisos_o = new Permisos();
-    $permisos = $permisos_o->chequear_permisos();
-    if ($permisos["leer"] === 0) {
-        header("Location: .");
-    }
+$permisos = $permisos_o->chequear_permisos();
+if ($permisos["leer"] === 0) {
+    header("Location: .");
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST)) {
         $accion = $_POST['accion'];
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 if (is_file("vista/reportes.php")) {
-    require_once("vista/reportes.php");
+    require_once ("vista/reportes.php");
 } else {
     echo "pagina en construccion";
 }

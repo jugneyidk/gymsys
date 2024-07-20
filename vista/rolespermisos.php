@@ -361,6 +361,38 @@
                                                                                                                         value="1">
                                                                                                         </td>
                                                                                                 </tr>
+                                                                                                <tr>
+                                                                                                        <td>Gestionar Bitacora
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                                <input class="form-check-input"
+                                                                                                                        type="checkbox"
+                                                                                                                        name="cbitacora"
+                                                                                                                        id="cbitacora"
+                                                                                                                        value="1">
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                                <input class="form-check-input"
+                                                                                                                        type="checkbox"
+                                                                                                                        name="rbitacora"
+                                                                                                                        id="rbitacora"
+                                                                                                                        value="1">
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                                <input class="form-check-input"
+                                                                                                                        type="checkbox"
+                                                                                                                        name="ubitacora"
+                                                                                                                        id="ubitacora"
+                                                                                                                        value="1">
+                                                                                                        </td>
+                                                                                                        <td class="text-center">
+                                                                                                                <input class="form-check-input"
+                                                                                                                        type="checkbox"
+                                                                                                                        name="dbitacora"
+                                                                                                                        id="dbitacora"
+                                                                                                                        value="1">
+                                                                                                        </td>
+                                                                                                </tr>
                                                                                         </tbody>
                                                                                 </table>
                                                                         </div>
