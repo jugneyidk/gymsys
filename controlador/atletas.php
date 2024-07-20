@@ -5,7 +5,7 @@ if (!is_file("modelo/" . $p . ".php")) {
 }
 require_once ("modelo/" . $p . ".php");
 require_once ("modelo/permisos.php");
-if (is_file("vista/" . $p . ".php")) {
+if (is_file("vista/" . $p . ".php")) { 
     $o = new Atleta();
     $permisos_o = new Permisos();
     $permisos = $permisos_o->chequear_permisos();

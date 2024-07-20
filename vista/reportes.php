@@ -6,6 +6,7 @@
     <title>Reportes - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="datatables/datatables.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="d-flex flex-column vh-100">
     <?php require_once("comunes/menu.php"); ?>
@@ -22,7 +23,6 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="tipoReporte" class="form-label">Tipo de Reporte:</label>
                                     <select class="form-select" id="tipoReporte" name="tipoReporte">
-                                    <option value="">Seleccione</option>
                                         <option value="atletas">Atletas</option>
                                         <option value="entrenadores">Entrenadores</option>
                                         <option value="eventos">Eventos</option>
@@ -55,7 +55,6 @@
                                                 <option value="">Todos</option>
                                                 <option value="1">Tipo 1</option>
                                                 <option value="2">Tipo 2</option>
-                                               
                                             </select>
                                         </div>
                                         <div class="col-md-6 mb-3">
@@ -161,9 +160,158 @@
                 </div>
             </div>
         </div>
+        <div class="row my-4">
+            <div class="col-12">
+                <h3>Reportes Estadísticos</h3>
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h4>Distribución de Edad de Atletas</h4>
+                        <canvas id="edadAtletasChart"></canvas>
+                    </div>
+                </div>
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h4>Proporción de Género</h4>
+                        <canvas id="generoChart"></canvas>
+                    </div>
+                </div>
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h4>Progreso de Asistencias Mensuales</h4>
+                        <canvas id="asistenciasChart"></canvas>
+                    </div>
+                </div>
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h4>Resultados de Pruebas WADA</h4>
+                        <canvas id="wadaChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <?php require_once("comunes/footer.php"); ?>
     <script src="datatables/datatables.min.js"></script>
     <script src="js/reportes.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('controlador/reportes.php?tipo=edad_atletas')
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById('edadAtletasChart').getContext('2d');
+                    var edadAtletasChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,  
+                            datasets: [{
+                                label: 'Número de Atletas',
+                                data: data.values,  
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }).catch(error => {
+                    console.error('Error fetching edad_atletas data:', error);
+                });
+
+            fetch('controlador/reportes.php?tipo=genero')
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById('generoChart').getContext('2d');
+                    var generoChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels, 
+                            datasets: [{
+                                label: 'Proporción de Género',
+                                data: data.values, 
+                                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                                borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Proporción de Género'
+                                }
+                            }
+                        }
+                    });
+                }).catch(error => {
+                    console.error('Error fetching genero data:', error);
+                });
+
+            fetch('controlador/reportes.php?tipo=asistencias')
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById('asistenciasChart').getContext('2d');
+                    var asistenciasChart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,     
+                            datasets: [{
+                                label: 'Asistencias',
+                                data: data.values,  
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }).catch(error => {
+                    console.error('Error fetching asistencias data:', error);
+                });
+
+            fetch('controlador/reportes.php?tipo=wada')
+                .then(response => response.json())
+                .then(data => {
+                    var ctx = document.getElementById('wadaChart').getContext('2d');
+                    var wadaChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,  
+                            datasets: [{
+                                label: 'Resultados de Pruebas WADA',
+                                data: data.values, 
+                                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                                borderColor: 'rgba(153, 102, 255, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                }).catch(error => {
+                    console.error('Error fetching wada data:', error);
+                });
+        });
+    </script>
 </body>
 </html>

@@ -1,332 +1,224 @@
 <?php
+require_once('modelo/datos.php');
 
-	if(is_file('modelo/resEvento.php')){
-		require_once('modelo/resEvento.php');
-	}else{
-		$respuesta[mensaje]="error";
-		return $respuesta;
-	}
+class Eventos extends datos
+{
+    private $conexion, $nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia;
 
-	class Eventos extends ResEvento{
+    public function __construct()
+    {
+        $this->conexion = $this->conecta();
+    }
 
-		private $idCompetencia;			//id_competencia;							
-		private $tipo_competencia;		//tipo_competencia;								
-		private $nombre;				//nombre;			
-		private $categoria;				//categoria;				
-		private $subs;					//subs;	
-		private $lugar_competencia;		//lugar_competencia;
-		private $fecha_inicio;			//fecha_inicio;					
-		private $fecha_fin;				//fecha_fin;			
+    public function incluir_evento($nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia)
+    {
+        $this->nombre = $nombre;
+        $this->lugar_competencia = $lugar_competencia;
+        $this->fecha_inicio = $fecha_inicio;
+        $this->fecha_fin = $fecha_fin;
+        $this->categoria = $categoria;
+        $this->subs = $subs;
+        $this->tipo_competencia = $tipo_competencia;
+        return $this->incluir();
+    }
 
-		public function __construct(){
-			parent::__construct();
-		}
+    public function listado_eventos()
+    {
+        return $this->listado();
+    }
 
-		// Metodo Get's//
+    private function incluir()
+    {
+        try {
+            $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin) 
+                         VALUES (:tipo_competencia, :nombre, :categoria, :subs, :lugar_competencia, :fecha_inicio, :fecha_fin)";
+            $valores = array(
+                ':nombre' => $this->nombre,
+                ':lugar_competencia' => $this->lugar_competencia,
+                ':fecha_inicio' => $this->fecha_inicio,
+                ':fecha_fin' => $this->fecha_fin,
+                ':categoria' => $this->categoria,
+                ':subs' => $this->subs,
+                ':tipo_competencia' => $this->tipo_competencia
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		public function get_idCompetencia(){
-			return $this->idCompetencia;
-		}
-		public function get_tipo_competencia(){
-			return $this->tipo_competencia;
-		}
-		public function get_nombre(){
-			return $this->nombre;
-		}
-		public function get_categoria(){
-			return $this->categoria;
-		}
-		public function get_subs(){
-			return $this->subs;
-		}
-		public function get_lugar_competencia(){
-			return $this->lugar_competencia;
-		}
-		public function get_fecha_inicio(){
-			return $this->fecha_inicio;
-		}
-		public function get_fecha_fin(){
-			return $this->fecha_fin;
-		}
+    private function listado()
+    {
+        try {
+            $consulta = "SELECT * FROM competencia";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		// Metodo Set's
+    public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
+    {
+        try {
+            $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
+            $valores = array(
+                ':nombre' => $nombre,
+                ':pesoMinimo' => $pesoMinimo,
+                ':pesoMaximo' => $pesoMaximo
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		public function set_idCompetencia($value){
-			$this->idCompetencia = $value;
-		}
-		public function set_tipo_competencia($value){
-			$this->tipo_competencia = $value;
-		}
-		public function set_nombre($value){
-			$this->nombre = $value;
-		}
-		public function set_categoria($value){
-			$this->categoria = $value;
-		}
-		public function set_subs($value){
-			$this->subs = $value;
-		}
-		public function set_lugar_competencia($value){
-			$this->lugar_competencia = $value;
-		}
-		public function set_fecha_inicio($value){
-			$this->fecha_inicio = $value;
-		}
-		public function set_fecha_fin($value){
-			$this->fecha_fin = $value;
-		}
+    public function incluir_subs($nombre, $edadMinima, $edadMaxima)
+    {
+        try {
+            $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) VALUES (:nombre, :edadMinima, :edadMaxima)";
+            $valores = array(
+                ':nombre' => $nombre,
+                ':edadMinima' => $edadMinima,
+                ':edadMaxima' => $edadMaxima
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		// Metodo Consulta
+    public function incluir_tipo($nombre)
+    {
+        try {
+            $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
+            $valores = array(':nombre' => $nombre);
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		public function consultaGeneral(){
+    public function listado_categoria()
+    {
+        try {
+            $consulta = "SELECT * FROM categorias";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-			try{
-				$sql = "SELECT * FROM competencia ;";
-				$con = parent::conecta();
-				$res = $con->query($sql);
-				$res = $res->fetchAll(PDO::FETCH_ASSOC);
-				if(isset($res["id_competencia"]))
-					{
-					foreach ($res as $key => $value) {
-					$this->idCompetencia = $key["id_competencia"];
-					$this->tipo_competencia = $key["tipo_competencia"];
-					$this->nombre = $key["nombre"];
-					$this->categoria = $key["categoria"];
-					$this->subs = $key["subs"];
-					$this->lugar_competencia = $key["lugar_competencia"];
-					$this->fecha_inicio = $key["fecha_inicio"];
-					$this->fecha_fin = $key["fecha_fin"];
-					}
-				
-				}
-				$resultado["ok"]=true;
-				$resultado["respuesta"]=$res;
-			}catch(Exception $e){
-				$resultado["ok"]= false;
-				$resultado["respuesta"]=$e;
-			}
-			return $resultado;
+    public function listado_subs()
+    {
+        try {
+            $consulta = "SELECT * FROM subs";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		}
+    public function listado_tipo()
+    {
+        try {
+            $consulta = "SELECT * FROM tipo_competencia";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		// Metodo Consulta Evento
+    public function listado_atletas_disponibles($id_competencia)
+    {
+        try {
+            $consulta = "
+                SELECT a.* 
+                FROM atleta a
+                LEFT JOIN resultado_competencia rc ON a.cedula = rc.id_atleta AND rc.id_competencia = :id_competencia
+                WHERE rc.id_atleta IS NULL";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([':id_competencia' => $id_competencia]);
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-		public function consultaEvento(){
+    public function inscribir_atletas($id_competencia, $atletas)
+    {
+        try {
+            $this->conexion->beginTransaction();
+            foreach ($atletas as $id_atleta) {
+                $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
+                $valores = array(
+                    ':id_competencia' => $id_competencia,
+                    ':id_atleta' => $id_atleta
+                );
+                $respuesta = $this->conexion->prepare($consulta);
+                $respuesta->execute($valores);
+            }
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
 
-			try{
-				$sql = "SELECT * FROM competencia WHERE id_competencia = :idCompetencia;";
-				$valores = array(':idCompetencia' => $this->idCompetencia);
-				$con = parent::conecta();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-				$res = $con->prepare($sql);
-				$res = $con(execute);
-				$res = $res->fetchAll(PDO::FETCH_ASSOC);
-				$respuesta["ok"]= true;
-				$respuesta["respuesta"] = $res;
-			}catch(Exception $e){
-				$respuesta["ok"] = false;
-				$respuesta["respuesta"]= $e;
-			}
-				return $respuesta;
-		}
+    public function __get($propiedad)
+    {
+        return $this->$propiedad;
+    }
 
-		// Metodo Insertar
-
-		public function insertarEvento(){
-
-			try{
-				$sql = "INSERT INTO competencia VALUES DEFAULT,:tipo_competencia,:nombre,:categoria,:subs,:lugar_competencia,:fecha_inicio,:fecha_fin;";
-				$valores = array(
-					':tipo_competencia' => $this->tipo_competencia,
-					':nombre' => $this->nombre,
-					':categoria' => $this->categoria,
-					':subs' => $this->subs,
-					':lugar_competencia' => $this->lugar_competencia,
-					':fecha_inicio' => $this->fecha_inicio,
-					':fecha_fin' => $this->fecha_fin
-				);
-				$con = parent::conectar();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-				$res = $con->prepare($sql);
-				$res->execute($valores);
-				$resultado["ok"] = true;			
-			}catch(exception $e){
-				$resultado["ok"] =false;
-				$resultado["mensaje"] = $e;
-			}
-			return $resultado;
-		}
-
-		// Metodo Modificar
-
-		public function modificarEvento(){
-
-			try{
-				$sql = "UPDATE  competencia SET 
-						tipo_competencia = :tipo_competencia,
-						nombre = :nombre,
-						categoria = :categoria,
-						subs = :subs,
-						lugar_competencia = :lugar_competencia,
-						fecha_inicio = :fecha_inicio,
-						fecha_fin = :fecha_fin 
-					WHERE id_competencia = :id_competencia";
-				$valores = array(
-					':id_competencia' => $this->idCompetencia,
-					':tipo_competencia' => $this->tipo_competencia,
-					':nombre' => $this->nombre,
-					':categoria' => $this->categoria,
-					':subs' => $this->subs,
-					':lugar_competencia' => $this->lugar_competencia,
-					':fecha_inicio' => $this->fecha_inicio,
-					':fecha_fin' => $this->fecha_fin
-				);
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
-				$res->execute($valores);
-				$resultado["ok"] = true;			
-			}catch(exception $e){
-				$resultado["ok"] =false;
-				$resultado["mensaje"] = $e;
-			}
-			return $resultado;
-		}
-
-		// Metodo Eliminar
-
-		public function eliminarEvento(){
-
-			try{
-				$sql = "DELETE FROM competencia	WHERE id_competencia = :id_competencia";
-				$datos = array(
-					':id_competencia' => $this->idCompetencia);
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
-				$res->execute($datos);
-				$resultado["ok"] = true;			
-			}catch(exception $e){
-				$resultado["ok"] =false;
-				$resultado["mensaje"] = $e;
-			}
-			return $resultado;
-		}	
-
-		//metodos de Subs
-
-		public function metodosSubs($method,$values)
-		{
-			if(is_file('modelo/eventosSubs.php')){
-				require_once('modelo/eventosSubs.php');
-			}else{
-				$respuesta[mensaje]="error";
-				return $respuesta;
-			} 
-			//print_r($values);
-			$objSubs = new Subs();
-			switch ($method) {
-
-				case 'insertar':
-					$datos = $objSubs->setAll($values);
-					$datos = $objSubs->insertar();
-					return $datos;
-					break;
-
-				case 'consultar':
-					$datos = $objSubs->consultar();
-					return $datos;
-					break;
-
-				case 'modificar':
-					$datos = $objSubs->modificar();
-					return $datos;
-					break;
-
-				case 'eliminar':
-					$datos = $objSubs->eliminar();
-					return $datos;
-					break;	
-			}
-		}
-
-		//metodo Categoria
-
-		public function metodosCategoria($method,$values)
-		{
-			
-			if(is_file('modelo/eventosCategoria.php')){
-				require_once('modelo/eventosCategoria.php');
-			}else{
-				$respuesta[mensaje]="error";
-				return $respuesta;
-			} 
-
-			$objCategoria = new Categorias();
-			switch ($method) {
-			
-				case 'insertar':
-					$datos = $objCategoria->setAll($values);
-					$datos = $objCategoria->insertar();
-					return $datos;
-					break;
-
-				case 'consultar':
-
-					$datos = $objCategoria->consultar();
-					return $datos;
-					break;
-
-				case 'modificar':
-					$datos = $objCategoria->setAll($values);
-					$datos = $objCategoria->modificar();
-					return $datos;
-					break;
-
-				case 'eliminar':
-
-					$datos = $objCategoria->eliminar();
-					return $datos;
-					break;	
-			}
-		}
-
-		//metodos TipoCompetencia
-
-
-		public function metodosTipo($method,$values)
-		{
-			if(is_file('modelo/eventosTipo.php')){
-				require_once('modelo/eventosTipo.php');
-			}else{
-				$respuesta[mensaje]="error";
-				return $respuesta;
-			} 
-			$objTipo = new Tipo();
-			switch ($method) {
-				
-				case 'insertar':
-					$objTipo->setAll($values);
-					$datos = $objTipo->insertar();
-					return $datos;
-					break;
-
-				case 'consultar':
-					$datos = $objTipo->consultar();
-					return $datos;
-					break;
-
-				case 'modificar':
-					$datos = $objTipo->modificar();
-					return $datos;
-					break;
-
-				case 'eliminar':
-					$datos = $objTipo->eliminar();
-					return $datos;
-					break;	
-			}
-		}
-
-
-	}
-
-?>
+    public function __set($propiedad, $valor)
+    {
+        $this->$propiedad = $valor;
+        return $this;
+    }
+}
