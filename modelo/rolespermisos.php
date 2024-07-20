@@ -10,7 +10,11 @@ class Roles extends datos
     {
         $this->conexion = $this->conecta();
     }
-
+    public function consultar_rol($id_rol)
+    {
+        $this->id_rol = $id_rol;
+        return $this->consultar();
+    }
     public function incluir_rol($nombre, $valores)
     {
         $this->nombre = $nombre;
@@ -47,6 +51,49 @@ class Roles extends datos
         $this->ureportes = $valores['ureportes'];
         $this->dreportes = $valores['dreportes'];
         return $this->incluir();
+    }
+    public function modificar_rol($id_rol, $nombre, $valores)
+    {
+        $this->id_rol = $id_rol;
+        $this->nombre = $nombre;
+        $this->centrenadores = $valores['centrenadores'];
+        $this->rentrenadores = $valores['rentrenadores'];
+        $this->uentrenadores = $valores['uentrenadores'];
+        $this->dentrenadores = $valores['dentrenadores'];
+        $this->catletas = $valores['catletas'];
+        $this->ratletas = $valores['ratletas'];
+        $this->uatletas = $valores['uatletas'];
+        $this->datletas = $valores['datletas'];
+        $this->crolespermisos = $valores['crolespermisos'];
+        $this->rrolespermisos = $valores['rrolespermisos'];
+        $this->urolespermisos = $valores['urolespermisos'];
+        $this->drolespermisos = $valores['drolespermisos'];
+        $this->casistencias = $valores['casistencias'];
+        $this->rasistencias = $valores['rasistencias'];
+        $this->uasistencias = $valores['uasistencias'];
+        $this->dasistencias = $valores['dasistencias'];
+        $this->ceventos = $valores['ceventos'];
+        $this->reventos = $valores['reventos'];
+        $this->ueventos = $valores['ueventos'];
+        $this->deventos = $valores['deventos'];
+        $this->cmensualidad = $valores['cmensualidad'];
+        $this->rmensualidad = $valores['rmensualidad'];
+        $this->umensualidad = $valores['umensualidad'];
+        $this->dmensualidad = $valores['dmensualidad'];
+        $this->cwada = $valores['cwada'];
+        $this->rwada = $valores['rwada'];
+        $this->uwada = $valores['uwada'];
+        $this->dwada = $valores['dwada'];
+        $this->creportes = $valores['creportes'];
+        $this->rreportes = $valores['rreportes'];
+        $this->ureportes = $valores['ureportes'];
+        $this->dreportes = $valores['dreportes'];
+        return $this->modificar();
+    }
+    public function eliminar_rol($id_rol)
+    {
+        $this->id_rol = $id_rol;
+        return $this->eliminar();
     }
 
     private function incluir()
@@ -137,39 +184,27 @@ class Roles extends datos
         return $resultado;
     }
 
-    public function obtener_atleta($cedula)
+    private function consultar()
     {
         try {
             $consulta = "
-                SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                    u.correo_electronico, 
-                    a.tipo_atleta, 
-                    a.peso, 
-                    a.altura, 
-                    a.entrenador
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                WHERE u.cedula = :cedula
+                SELECT r.nombre AS nombre_rol, m.id_modulo, p.crear, p.leer, p.actualizar, p.eliminar, m.nombre AS nombre_modulo
+                FROM roles r
+                INNER JOIN permisos p ON p.id_rol = r.id_rol
+                INNER JOIN modulos m ON m.id_modulo = p.modulo
+                WHERE r.id_rol = :id_rol;
             ";
-            $valores = array(':cedula' => $cedula);
+            $valores = array(':id_rol' => $this->id_rol);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
-            $atleta = $respuesta->fetch(PDO::FETCH_ASSOC);
-
-            if ($atleta) {
+            $rol = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            if ($rol) {
                 $resultado["ok"] = true;
-                $resultado["atleta"] = $atleta;
+                $resultado["devol"] = 'consultar_rol';
+                $resultado["respuesta"] = $rol;
             } else {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = "No se encontró el atleta";
+                $resultado["mensaje"] = "No se encontró el rol";
             }
         } catch (Exception $e) {
             $resultado["ok"] = false;
@@ -177,93 +212,80 @@ class Roles extends datos
         }
         return $resultado;
     }
-
-    public function modificar_atleta($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $modificar_contraseña, $password)
-    {
-        $this->nombres = $nombres;
-        $this->apellidos = $apellidos;
-        $this->cedula = $cedula;
-        $this->genero = $genero;
-        $this->fecha_nacimiento = $fecha_nacimiento;
-        $this->lugar_nacimiento = $lugar_nacimiento;
-        $this->peso = $peso;
-        $this->altura = $altura;
-        $this->tipo_atleta = $tipo_atleta;
-        $this->estado_civil = $estado_civil;
-        $this->telefono = $telefono;
-        $this->correo = $correo;
-        $this->entrenador_asignado = $entrenador_asignado;
-
-        if ($modificar_contraseña) {
-            $this->password = password_hash($password, PASSWORD_DEFAULT);
-        } else {
-            $this->password = null;
-        }
-
-        return $this->modificar();
-    }
     private function modificar()
     {
         try {
             $this->conexion->beginTransaction();
 
             $consulta = "
-            UPDATE usuarios 
-            SET 
-                nombre = :nombre, 
-                apellido = :apellido, 
-                genero = :genero, 
-                fecha_nacimiento = :fecha_nacimiento, 
-                lugar_nacimiento = :lugar_nacimiento, 
-                estado_civil = :estado_civil, 
-                telefono = :telefono, 
-                correo_electronico = :correo 
-            WHERE cedula = :cedula;
-    
-            UPDATE atleta 
-            SET 
-                entrenador = :id_entrenador, 
-                tipo_atleta = :tipo_atleta, 
-                peso = :peso, 
-                altura = :altura 
-            WHERE cedula = :cedula;
-        ";
+            UPDATE roles SET nombre = :nombre
+            WHERE id_rol = :id_rol;
+            UPDATE permisos SET crear = :centrenadores, leer = :rentrenadores, actualizar = :uentrenadores, eliminar = :dentrenadores
+            WHERE id_rol = :id_rol AND modulo = :moduloentrenadores;
+            UPDATE permisos SET crear = :catletas, leer = :ratletas, actualizar = :uatletas, eliminar = :datletas
+            WHERE id_rol = :id_rol AND modulo = :moduloatletas;
+            UPDATE permisos SET crear = :crolespermisos, leer = :rrolespermisos, actualizar = :urolespermisos, eliminar = :drolespermisos
+            WHERE id_rol = :id_rol AND modulo = :modulorolespermisos;
+            UPDATE permisos SET crear = :casistencias, leer = :rasistencias, actualizar = :uasistencias, eliminar = :dasistencias
+            WHERE id_rol = :id_rol AND modulo = :moduloasistencias;
+            UPDATE permisos SET crear = :ceventos, leer = :reventos, actualizar = :ueventos, eliminar = :deventos
+            WHERE id_rol = :id_rol AND modulo = :moduloeventos;
+            UPDATE permisos SET crear = :cmensualidad, leer = :rmensualidad, actualizar = :umensualidad, eliminar = :dmensualidad
+            WHERE id_rol = :id_rol AND modulo = :modulomensualidad;
+            UPDATE permisos SET crear = :cwada, leer = :rwada, actualizar = :uwada, eliminar = :dwada
+            WHERE id_rol = :id_rol AND modulo = :modulowada;
+            UPDATE permisos SET crear = :creportes, leer = :rreportes, actualizar = :ureportes, eliminar = :dreportes
+            WHERE id_rol = :id_rol AND modulo = :moduloreportes;
+            ";
 
-            $valores = array(
-                ':cedula' => $this->cedula,
-                ':nombre' => $this->nombres,
-                ':apellido' => $this->apellidos,
-                ':genero' => $this->genero,
-                ':fecha_nacimiento' => $this->fecha_nacimiento,
-                ':lugar_nacimiento' => $this->lugar_nacimiento,
-                ':estado_civil' => $this->estado_civil,
-                ':telefono' => $this->telefono,
-                ':correo' => $this->correo,
-                ':id_entrenador' => $this->entrenador_asignado,
-                ':tipo_atleta' => $this->tipo_atleta,
-                ':peso' => $this->peso,
-                ':altura' => $this->altura
+            $valores_permisos = array(
+                ':nombre' => $this->nombre,
+                ':id_rol' => $this->id_rol,
+                ':moduloentrenadores' => 1,
+                ':centrenadores' => $this->centrenadores,
+                ':rentrenadores' => $this->rentrenadores,
+                ':uentrenadores' => $this->uentrenadores,
+                ':dentrenadores' => $this->dentrenadores,
+                ':moduloatletas' => 2,
+                ':catletas' => $this->catletas,
+                ':ratletas' => $this->ratletas,
+                ':uatletas' => $this->uatletas,
+                ':datletas' => $this->datletas,
+                ':modulorolespermisos' => 3,
+                ':crolespermisos' => $this->crolespermisos,
+                ':rrolespermisos' => $this->rrolespermisos,
+                ':urolespermisos' => $this->urolespermisos,
+                ':drolespermisos' => $this->drolespermisos,
+                ':moduloasistencias' => 4,
+                ':casistencias' => $this->casistencias,
+                ':rasistencias' => $this->rasistencias,
+                ':uasistencias' => $this->uasistencias,
+                ':dasistencias' => $this->dasistencias,
+                ':moduloeventos' => 5,
+                ':ceventos' => $this->ceventos,
+                ':reventos' => $this->reventos,
+                ':ueventos' => $this->ueventos,
+                ':deventos' => $this->deventos,
+                ':modulomensualidad' => 6,
+                ':cmensualidad' => $this->cmensualidad,
+                ':rmensualidad' => $this->rmensualidad,
+                ':umensualidad' => $this->umensualidad,
+                ':dmensualidad' => $this->dmensualidad,
+                ':modulowada' => 7,
+                ':cwada' => $this->cwada,
+                ':rwada' => $this->rwada,
+                ':uwada' => $this->uwada,
+                ':dwada' => $this->dwada,
+                ':moduloreportes' => 8,
+                ':creportes' => $this->creportes,
+                ':rreportes' => $this->rreportes,
+                ':ureportes' => $this->ureportes,
+                ':dreportes' => $this->dreportes,
             );
 
             $respuesta1 = $this->conexion->prepare($consulta);
-            $respuesta1->execute($valores);
+            $respuesta1->execute($valores_permisos);
             $respuesta1->closeCursor();
-
-            if ($this->password !== null) {
-                $consulta_password = "
-                UPDATE usuarios_roles
-                SET password = :password
-                WHERE id_usuario = :cedula;
-            ";
-                $valores_password = array(
-                    ':cedula' => $this->cedula,
-                    ':password' => $this->password
-                );
-                $respuesta2 = $this->conexion->prepare($consulta_password);
-                $respuesta2->execute($valores_password);
-                $respuesta2->closeCursor();
-            }
-
             $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (Exception $e) {
@@ -276,19 +298,15 @@ class Roles extends datos
 
 
 
-    public function eliminar_atleta($cedula)
+    private function eliminar()
     {
         try {
             $this->conexion->beginTransaction();
-
-
             $consulta = "
-                DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
-                DELETE FROM atleta WHERE cedula = :cedula;
-                DELETE FROM usuarios WHERE cedula = :cedula;
+                DELETE FROM roles WHERE id_rol = :id_rol;
             ";
 
-            $valores = array(':cedula' => $cedula);
+            $valores = array(':id_rol' => $this->id_rol);
 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
