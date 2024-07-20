@@ -1,5 +1,5 @@
 <?php
-require_once ('modelo/datos.php');
+require_once('modelo/datos.php');
 class Permisos extends datos
 {
     private $conexion;
@@ -23,7 +23,6 @@ class Permisos extends datos
             $this->conexion->commit();
             return $permisos;
         } catch (Exception $e) {
-
         }
     }
     public function permisos_nav()
@@ -41,9 +40,6 @@ class Permisos extends datos
             $this->conexion->commit();
             return $permisos;
         } catch (Exception $e) {
-
         }
     }
-
-
 }
