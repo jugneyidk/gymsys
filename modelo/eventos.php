@@ -302,16 +302,9 @@
 			} 
 			$objTipo = new Tipo();
 			switch ($method) {
-				case 'Get':
-					$datos = $objTipo->getAll();
-					return $datos;
-					break;
 				
-				case 'Set':
-					$datos = $objTipo->setAll($values);
-					break;
-
 				case 'insertar':
+					$objTipo->setAll($values);
 					$datos = $objTipo->insertar();
 					return $datos;
 					break;

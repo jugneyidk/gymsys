@@ -22,12 +22,13 @@ console.log(data);
 $("#btnRegistrarTipo").on("click",function(event){
   event.preventDefault();
   
-  var data = new FormData(document.getElementById("registrarCategoria"));
+  var data = new FormData(document.getElementById("registrarTipo"));
 console.log(data);
-  data.append('option','registrarCategoria');
+  data.append('option','registrarTipo');
   var respuesta = enviarConsultaAjax(data);
   console.log(respuesta);
 });
+
 
 $("#btnconsultaCategoria").on("click",function(event){
     var data = new FormData();

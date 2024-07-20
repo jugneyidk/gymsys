@@ -72,10 +72,10 @@
 
 		// Metodo Insertar
 
-		public function insertarEvento(){
+		public function insertar(){
 
 			try{
-				$sql = "INSERT INTO tipo_competencia VALUES DEFAULT,:nombre";
+				$sql = "INSERT INTO tipo_competencia VALUES (DEFAULT,:nombre)";
 				$valores = array(
 					':nombre' => $this->nombre
 				);
@@ -92,7 +92,7 @@
 
 		// Metodo Modificar
 
-		public function modificarEvento(){
+		public function modificar(){
 
 			try{
 				$sql = "UPDATE tipo_competencia SET 
@@ -114,7 +114,7 @@
 
 		// Metodo Eliminar
 
-		public function eliminarEvento(){
+		public function eliminar(){
 
 			try{
 				$sql = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :idTipoCompetencia";

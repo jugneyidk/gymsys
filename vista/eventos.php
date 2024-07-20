@@ -71,7 +71,7 @@
                                         </li>
                                         <li class="nav-item dropdown">
                                             <a class="nav-link btn btn-outline-light rounded-1 dropdown-toggle mx-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Subs
+                                            Tipo
                                             </a>
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo" href="#">Registrar</a></li>
@@ -444,7 +444,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="submit" id="btnRegistrarTipo" class="btn px-2 btn-primary" value="Registrar">
                     <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
                     <button id="btnRegistrarSubs" class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
                 </div>

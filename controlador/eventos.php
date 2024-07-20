@@ -47,7 +47,11 @@
       break;
 
     case 'registrarTipo':
-      // code...
+      $data = array(
+        "nombre" => $_POST["in_desc"]
+      );
+      $respuesta = $objEvento->metodosTipo("insertar",$data);
+      echo json_encode($respuesta);
       break;
     case 'consultarTipo':
       // code...
