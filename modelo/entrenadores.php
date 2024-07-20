@@ -1,6 +1,6 @@
 <?php
 require_once('modelo/datos.php');
-
+require_once ('modelo/bitacora.php');
 class Entrenador extends datos
 {
     private $conexion;
@@ -147,8 +147,14 @@ class Entrenador extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor(); 
-
             $this->conexion->commit();
+            $bitacora = new Bitacora();
+            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Agregó un entrenador",$this->cedula,NULL);
+            if($respuesta_bitacora["ok"]){
+                $resultado["ok"] = true;
+            } else{
+                throw new Exception();
+            }
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
