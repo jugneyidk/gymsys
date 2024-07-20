@@ -49,7 +49,7 @@
                                         <th>Detalles</th>
                                         <th>Fecha</th>
                                     </tr>
-                                </thead>
+                                </thead> 
                                 <tbody id="listadoReportes"></tbody>
                             </table>
                         </div>
