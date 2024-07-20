@@ -45,6 +45,7 @@
             <!-- Aquí se mostrarán los eventos activos -->
         </div>
         </div>
+        
     </div>
 
     <!-- Modales -->
@@ -162,7 +163,7 @@
                         <div class="row">
                             <div class="col">
                                 <label for="in_subs_nombre" class="form-label">Descripcion</label>
-                                <input type="text" class="form-control form-control-sm" id="in_subs_nombre                                " name="nombre">
+                                <input type="text" class="form-control form-control-sm" id="in_subs_nombre" name="nombre">
                                 <label for="in_edad_minima" class="form-label">Edad Minima</label>
                                 <input type="text" class="form-control form-control-sm" id="in_edad_minima" name="edadMinima">
                                 <label for="in_edad_maxima" class="form-label">Edad Maxima</label>
@@ -250,14 +251,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Aquí se mostrarán los participantes inscritos -->
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                        <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalParicipante">Ver</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td></td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                 </div>
             </div>
         </div>
@@ -338,6 +357,7 @@
                                         <td></td>
                                     </tr>
                                     <tr>
+                                    <tr>
                                         <td>2</td>
                                         <td>Evento Sub 15</td>
                                         <td>10/12/23</td>
@@ -412,8 +432,7 @@
     </div>
    
     <?php require_once("comunes/footer.php"); ?>
+    <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script type="text/javascript" src="js/eventos.js"></script>
 </body>
 </html>
-
-

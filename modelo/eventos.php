@@ -1,5 +1,4 @@
-<?php
-require_once('modelo/datos.php');
+<?php require_once('modelo/datos.php');
 
 class Eventos extends datos
 {
@@ -172,10 +171,10 @@ class Eventos extends datos
     {
         try {
             $consulta = "
-                SELECT a.cedula, u.nombre, u.apellido, u.fecha_nacimiento, a.peso, a.altura 
+                SELECT a.*, u.nombre, u.apellido, u.fecha_nacimiento
                 FROM atleta a
                 LEFT JOIN resultado_competencia rc ON a.cedula = rc.id_atleta AND rc.id_competencia = :id_competencia
-                INNER JOIN usuarios u ON a.cedula = u.cedula
+                JOIN usuarios u ON a.cedula = u.cedula
                 WHERE rc.id_atleta IS NULL";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute([':id_competencia' => $id_competencia]);
@@ -188,6 +187,28 @@ class Eventos extends datos
         }
         return $resultado;
     }
+
+    public function listado_atletas_inscritos($id_competencia)
+{
+    try {
+        $consulta = "
+            SELECT a.*, u.nombre, u.apellido, u.fecha_nacimiento, rc.id_competencia
+            FROM resultado_competencia rc
+            JOIN atleta a ON rc.id_atleta = a.cedula
+            JOIN usuarios u ON a.cedula = u.cedula
+            WHERE rc.id_competencia = :id_competencia";
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute([':id_competencia' => $id_competencia]);
+        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+        $resultado["ok"] = true;
+        $resultado["respuesta"] = $respuesta;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
+    }
+    return $resultado;
+}
+
 
     public function inscribir_atletas($id_competencia, $atletas)
     {
@@ -212,20 +233,26 @@ class Eventos extends datos
         return $resultado;
     }
 
-    public function listado_atletas_inscritos($id_competencia)
+    public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
     {
         try {
             $consulta = "
-                SELECT u.nombre, u.apellido, a.cedula, u.fecha_nacimiento, a.peso, a.altura 
-                FROM resultado_competencia rc
-                INNER JOIN atleta a ON rc.id_atleta = a.cedula
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                WHERE rc.id_competencia = :id_competencia";
+                UPDATE resultado_competencia 
+                SET arranque = :arranque, envion = :envion, medalla_arranque = :medalla_arranque, medalla_envion = :medalla_envion, medalla_total = :medalla_total, total = :total 
+                WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
+            $valores = array(
+                ':id_competencia' => $id_competencia,
+                ':id_atleta' => $id_atleta,
+                ':arranque' => $arranque,
+                ':envion' => $envion,
+                ':medalla_arranque' => $medalla_arranque,
+                ':medalla_envion' => $medalla_envion,
+                ':medalla_total' => $medalla_total,
+                ':total' => $total
+            );
             $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_competencia' => $id_competencia]);
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $respuesta->execute($valores);
             $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -244,4 +271,3 @@ class Eventos extends datos
         return $this;
     }
 }
-

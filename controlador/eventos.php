@@ -57,14 +57,26 @@ if (is_file("vista/" . $p . ".php")) {
         } elseif ($accion == 'listado_atletas_disponibles') {
             $respuesta = $o->listado_atletas_disponibles($_POST['id_competencia']);
             echo json_encode($respuesta);
+        } elseif ($accion == 'listado_atletas_inscritos') {
+            $respuesta = $o->listado_atletas_inscritos($_POST['id_competencia']);
+            echo json_encode($respuesta);
         } elseif ($accion == 'inscribir_atletas') {
             $respuesta = $o->inscribir_atletas(
                 $_POST['id_competencia'],
                 isset($_POST['atleta']) ? $_POST['atleta'] : []
             );
             echo json_encode($respuesta);
-        } elseif ($accion == 'listado_atletas_inscritos') {
-            $respuesta = $o->listado_atletas_inscritos($_POST['id_competencia']);
+        } elseif ($accion == 'registrar_resultados') {
+            $respuesta = $o->registrar_resultados(
+                $_POST['id_competencia'],
+                $_POST['id_atleta'],
+                $_POST['arranque'],
+                $_POST['envion'],
+                $_POST['medalla_arranque'],
+                $_POST['medalla_envion'],
+                $_POST['medalla_total'],
+                $_POST['total']
+            );
             echo json_encode($respuesta);
         }
         exit;
@@ -73,3 +85,4 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     echo "pagina en construccion";
 }
+?>
