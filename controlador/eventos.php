@@ -1,14 +1,15 @@
 <?php
 
 
-  if(isset($_GET["option"]))
+  if(isset($_POST["option"]))
   {
-    // Ver que hago aqui
+    print_f("fola");
   }else{
-    $_GET["option"] = "default";
+    $_POST["option"] = "default";
   }
 
-  switch ($_GET["option"]) {
+
+  switch ($_POST["option"]) {
     case 'registrar':
       // code...
       break;
@@ -49,7 +50,13 @@
       break;
       
     case 'registrarCategoria':
-      // code...
+      $data = array(
+        "nombre" => $_POST["in_desc"],
+        "pesoMinimo" => $_POST["in_peso_minimo"],
+        "pesoMaximo" => $_POST["in_peso_maximo"], 
+      );
+      $objEvento->metodosCategoria("setAll",$data);
+      $respuesta = $objEvento->metodosCategoria("insertar");
       break;
     case 'consultarCategoria':
       $respuesta = array(
@@ -68,9 +75,9 @@
       if(is_file("modelo/eventos.php")){
         require_once("modelo/eventos.php");
       }
+
         $objEvento = new Eventos();
         $res = $objEvento->consultaGeneral();
-        
         if(is_file("vista/".$p.".php")){
           require_once("vista/".$p.".php"); 
         }

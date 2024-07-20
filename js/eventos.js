@@ -1,7 +1,20 @@
 console.log("aqui");
-$('#in_categoria').on('click',function(event){
 
-  var datos = enviarConsultaAjax("consultarCategoria");
+$("#btnRegistrarCategoria").on("click",function(event){
+  event.preventDefault();
+  
+  var data = new FormData(document.getElementById("registrarCategoria"));
+console.log(data);
+  data.append('option','registrarCategoria');
+  var respuesta = enviarConsultaAjax(data);
+  console.log(respuesta);
+});
+
+$('#in_categoria').on('click',function(event){
+  var form = new FormData();
+  form.append("option","consultarCategoria");
+
+  var datos = enviarConsultaAjax(form);
   console.log(datos);
   
   
@@ -11,7 +24,7 @@ function enviarConsultaAjax(value){
   console.log(value);
     var comp = $.ajax({
             async: true,
-            url: "&option=".value,
+            url: "",
             type: "POST",
             contentType: false,
             data: value,

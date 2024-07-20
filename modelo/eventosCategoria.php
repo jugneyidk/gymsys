@@ -64,9 +64,18 @@
 
 		}
 
+		public function setAll($value){
+			if(isset($value)){
+				$this->nombre = $value["nombre"];
+				$this->pesoMinimo = $value["pesoMinimo"];
+				$this->pesoMaximo= $value["pesoMaximo"];
+				echo "gola";
+			}
+		}
+
 		// Metodo Insertar
 
-		public function insertarEvento(){
+		public function insertar(){
 
 			try{
 				$sql = "INSERT INTO categorias VALUES DEFAULT,:nombre,:pesoMinimo,:pesoMaximo";
@@ -89,7 +98,7 @@
 
 		// Metodo Modificar
 
-		public function modificarEvento(){
+		public function modificar(){
 
 			try{
 				$sql = "UPDATE categorias SET 
@@ -116,7 +125,7 @@
 
 		// Metodo Eliminar
 
-		public function eliminarEvento(){
+		public function eliminar(){
 
 			try{
 				$sql = "DELETE FROM categorias WHERE id_categorias = :idCategorias";

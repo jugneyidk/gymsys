@@ -264,12 +264,12 @@
                             <input type="text" class="form-control form-control-sm" id="in_peso_minimo" name="in_peso_minimo">
 
                             <label for="in_peso_maximo" class="form-label">Peso maximo</label>
-                            <input type="text" class="form-control form-control-sm" id="in_peso_minimo" name="in_peso_minimo">
+                            <input type="text" class="form-control form-control-sm" id="in_peso_maximo" name="in_peso_maximo">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input id="btnRegistrarCategoria" type="submit" class="btn px-2 btn-primary" value="Registrar">
                     <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
                     <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
                 </div>
