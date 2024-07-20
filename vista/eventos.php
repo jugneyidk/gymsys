@@ -23,7 +23,7 @@
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                         <li class="nav-item">
-                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento" type = "button">Registrar</button>
+                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
                                         </li>
                                         <li class="nav-item">
                                             <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
@@ -39,13 +39,12 @@
                 </div>
             </div>
         </div>
-        <div class="container1 mb-8">
+        <div class="container1 mb-3 card shadow">
         <div class="row">
             <p class="lead mt-2"><strong>Eventos activos</strong></p>
             <!-- Aquí se mostrarán los eventos activos -->
         </div>
         </div>
-        
     </div>
 
     <!-- Modales -->
@@ -87,7 +86,7 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Categoría es obligatoria</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria" type = "button">Registrar Categoria</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar Categoria</button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="in_subs" class="form-label">Subs</label>
@@ -95,7 +94,7 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Subs es obligatorio</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs" type = "button">Registrar Subs</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs">Registrar Subs</button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="in_tipo" class="form-label">Tipo</label>
@@ -103,7 +102,7 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Tipo es obligatorio</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo" type = "button">Registrar Tipo</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo">Registrar Tipo</button>
                                 </div>
                             </div>
                         </div>
@@ -142,8 +141,8 @@
                     </div>
                     <div class="modal-footer">
                         <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar" >
-                        <button class="btn btn-warning px-2" data-bs-dismiss="modal" type="button">Regresar</button>
+                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                        <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                     </div>
                 </form>
             </div>
@@ -163,7 +162,7 @@
                         <div class="row">
                             <div class="col">
                                 <label for="in_subs_nombre" class="form-label">Descripcion</label>
-                                <input type="text" class="form-control form-control-sm" id="in_subs_nombre" name="nombre">
+                                <input type="text" class="form-control form-control-sm" id="in_subs_nombre                                " name="nombre">
                                 <label for="in_edad_minima" class="form-label">Edad Minima</label>
                                 <input type="text" class="form-control form-control-sm" id="in_edad_minima" name="edadMinima">
                                 <label for="in_edad_maxima" class="form-label">Edad Maxima</label>
@@ -172,9 +171,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar" >
-                        <button class="btn btn-warning px-2" data-bs-dismiss="modal" type="button">Regresar</button>
+                        <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                        <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                     </div>
                 </form>
             </div>
@@ -199,9 +198,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar" >
-                        <button class="btn btn-warning px-2" data-bs-dismiss="modal" type="button">Regresar</button>
+                        <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                        <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                        <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                     </div>
                 </form>
             </div>
@@ -251,32 +250,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Juan Jimenez</td>
-                                        <td>25.123.231</td>
-                                        <td>18</td>
-                                        <td>55 kg</td>
-                                        <td>1.35 cm</td>
-                                        <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalParicipante">Ver</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Ricardo Sanchez</td>
-                                        <td>30.315.412</td>
-                                        <td>20</td>
-                                        <td>60 kg</td>
-                                        <td></td>
-                                    </tr>
+                                    <!-- Aquí se mostrarán los participantes inscritos -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
-                    <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -284,7 +265,7 @@
 
     <!-- Modal Inscribir Evento -->
     <div class="modal" id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered ">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
@@ -318,7 +299,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Inscribir">
+                        <input type="submit" class="btn btn-primary" value="Inscribir">
                         <input type="reset" class="btn btn-warning" value="Limpiar">
                         <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
                     </div>
@@ -420,7 +401,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 
                 <div class="modal-footer">
@@ -434,4 +415,5 @@
     <script type="text/javascript" src="js/eventos.js"></script>
 </body>
 </html>
+
 
