@@ -1,4 +1,30 @@
 $(document).ready(function () {
+    $('#filtrosAtletas, #filtrosEntrenadores, #filtrosMensualidades, #filtrosWada, #filtrosEventos, #filtrosAsistencias').hide();
+
+    $('#tipoReporte').change(function () {
+        $('#filtrosAtletas, #filtrosEntrenadores, #filtrosMensualidades, #filtrosWada, #filtrosEventos, #filtrosAsistencias').hide();
+        switch ($(this).val()) {
+            case 'atletas':
+                $('#filtrosAtletas').show();
+                break;
+            case 'entrenadores':
+                $('#filtrosEntrenadores').show();
+                break;
+            case 'mensualidades':
+                $('#filtrosMensualidades').show();
+                break;
+            case 'wada':
+                $('#filtrosWada').show();
+                break;
+            case 'eventos':
+                $('#filtrosEventos').show();
+                break;
+            case 'asistencias':
+                $('#filtrosAsistencias').show();
+                break;
+        }
+    });
+
     $('#btnGenerarReporte').on('click', function () {
         var datos = new FormData($('#formReportes')[0]);
         datos.append('accion', 'obtener_reportes');
@@ -64,9 +90,19 @@ $(document).ready(function () {
     }
 
     $('#btnDescargarPDF').on('click', function () {
-        var tipoReporte = $('#tipoReporte').val();
-        var fechaInicio = $('#fechaInicio').val();
-        var fechaFin = $('#fechaFin').val();
-        window.location.href = 'reportes_pdf.php?tipoReporte=' + tipoReporte + '&fechaInicio=' + fechaInicio + '&fechaFin=' + fechaFin;
+        var datos = $('#formReportes').serialize();
+        var popup = window.open('', 'popup', 'width=800,height=600');
+        $.ajax({
+            url: 'reportes_pdf.php',
+            type: 'POST',
+            data: datos,
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function (data) {
+                var url = window.URL.createObjectURL(data);
+                popup.location.href = url;
+            }
+        });
     });
 });
