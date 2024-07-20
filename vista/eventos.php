@@ -87,7 +87,7 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Categoría es obligatoria</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar Categoria</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria" type="button">Registrar Categoria</button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="in_subs" class="form-label">Subs</label>
@@ -95,7 +95,7 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Subs es obligatorio</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs">Registrar Subs</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs" type="button">Registrar Subs</button>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="in_tipo" class="form-label">Tipo</label>
@@ -103,15 +103,15 @@
                                         <option selected>Seleccione una</option>
                                     </select>
                                     <div class="invalid-feedback">Tipo es obligatorio</div>
-                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo">Registrar Tipo</button>
+                                    <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo" type="button">Registrar Tipo</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-primary" value="Registrar">
-                        <input type="reset" class="btn btn-warning" value="Limpiar">
-                        <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                        <input type="submit" class="btn btn-primary" value="Registrar"type="button">
+                        <input type="reset" class="btn btn-warning" value="Limpiar"type="button">
+                        <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button type="button">
                     </div>
                 </form>
             </div>
