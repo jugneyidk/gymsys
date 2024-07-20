@@ -128,194 +128,16 @@
         </div>
     </div>
 
-<!--
+<!-- -------------------- ------- -------------------- -->
+<!-- -------------------- ------- -------------------- -->
+<!-- -------------------- MODALES -------------------- -->
+<!-- -------------------- ------- -------------------- -->
+<!-- -------------------- ------- -------------------- -->
 
-
-
--->
+    <!-- --- --- ----- --------- ------ --- --- -->
+    <!-- --- --- Modal Registrar Evento --- --- -->
+    <!-- --- --- ----- --------- ------ --- --- -->
     
-    <!-- Modal Inscribir Evento -->
-    
-    <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
-        <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="#" class="form-control" id="registrarEvento">
-                    <div class="modal-body mx-5">
-                        <div class="row">
-                            <div class="col-6">
-                                <label for="in_cedula" class="form-label">Cedula</label>
-                                <input type="text" class="form-control form-control-sm" name="cedula" id="in_cedula">
-                            </div>
-                            <div class="col-6">
-                                
-                            </div>
-                        </div>
-                        <div class="row my-3">
-                            <table id="tablaParticipantes" class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Op</th>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Cedula</th>
-                                        <th scope="col">Edad</th>
-                                        <th scope="col">Peso</th>
-                                        <th scope="col">Altura</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
-                                        <td>1</td>
-                                        <td>Juan Jimenez</td>
-                                        <td>25.123.231</td>
-                                        <td>18</td>
-                                        <td>55 kg</td>
-                                        <td>1.35 cm</td>
-                                    </tr>
-                                    <tr>
-                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
-                                        <td>2</td>
-                                        <td>Ricardo Sanchez</td>
-                                        <td>30.315.412</td>
-                                        <td>20</td>
-                                        <td>60 kg</td>
-                                        <td>1.25 cm</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </select>
-                        </div>
-                    </div>                    
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Registrar">
-                    <input type="reset" class="btn btn-warning" value="Limpiar">
-                    <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Fin -->
-
-    <!-- Modal Consulta Anteriores Evento -->
-
-
-    <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true" aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Consulta eventos anteriores</h1>
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col my-3 mx-2">
-                            <table id="tablaParticipantes" class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Fecha de inicio</th>
-                                        <th scope="col">Fecha final</th>
-                                        <th scope="col">Op</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
-                                        <td>1</td>
-                                        <td>Evento Sub 17</td>
-                                        <td>10/12/23</td>
-                                        <td>11/12/23</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Evento Sub 15</td>
-                                        <td>10/12/23</td>
-                                        <td>11/12/23</td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Fin -->
-
-    <!-- Modal Consulta Esp-->
-
-    <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Consulta anterioresSS</h1>
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col my-3 mx-2">
-                            <table id="tablaParticipantes" class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Cedula</th>
-                                        <th scope="col">Edad</th>
-                                        <th scope="col">Peso</th>
-                                        <th scope="col">Altura</th>
-                                        <th scope="col">Op</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
-                                        <td>1</td>
-                                        <td>Juan Jimenez</td>
-                                        <td>25.123.231</td>
-                                        <td>18</td>
-                                        <td>55 kg</td>
-                                        <td>1.35 cm</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Ricardo Sanchez</td>
-                                        <td>30.315.412</td>
-                                        <td>20</td>
-                                        <td>60 kg</td>
-                                        <td>1.25 cm</td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Fin -->
-    
-    
-    <!--  Modal Registrar Evento  -->
-
     <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -386,44 +208,13 @@
         </div>
     </div>
 
-    <!--
+    <!-- --- --- --- --------- ------ --- --- -->
+    <!-- --- --- Fin Registrar Evento --- --- -->
+    <!-- --- --- --- --------- ------ --- --- -->
 
-    <div class="modal modal-xl " id="modalEventoActivoVer" aria-hidden="true" aria-labelledby="modalEventoActivoVer" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Evento Activo</h1>
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-target="#ModalEventoParticipante" data-bs-toggle="modal">BOTON</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal modal-xl" id="ModalEventoParticipante" aria-hidden="true" aria-labelledby="ModalEventoParticipante" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">Segundo Modal</h1>
-                    <button class="btn-close" data-bs-target="#modalEventoActivoVer" data-bs-toggle="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Segundo Modal
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-bs-target="#modalEventoActivoVer" data-bs-toggle="modal">Regresar</button>
-                </div>
-            </div>
-        </div>
-    </div>
--->
-
-<!-- Modal Registrar Categoria -->
+    <!-- --- --- ----- --------- --------- --- --- -->
+    <!-- --- --- Modal Registrar Categoria --- --- -->
+    <!-- --- --- ----- --------- --------- --- --- -->
 
     <div class="modal" id="modalRegistrarCategoria" aria-hidden="true" aria-labelledby="modalRegistrarCategoria" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -457,7 +248,13 @@
         </div>
     </div>
 
-<!-- Modal Registrar Subs -->
+    <!-- --- --- --- --------- --------- --- --- -->
+    <!-- --- --- Fin Registrar Categoria --- --- -->
+    <!-- --- --- --- --------- --------- --- --- -->
+
+    <!-- --- --- ----- --------- ---- --- --- -->
+    <!-- --- --- Modal Registrar Subs --- --- -->
+    <!-- --- --- ----- --------- ---- --- --- -->
 
     <div class="modal" id="modalRegistrarSubs" aria-hidden="true" aria-labelledby="modalRegistrarSubs" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -513,7 +310,13 @@
         </div>
     </div>
 
-<!-- Modal Registrar Tipo -->
+    <!-- --- --- --- --------- ---- --- --- -->
+    <!-- --- --- Fin Registrar Subs --- --- -->
+    <!-- --- --- --- --------- ---- --- --- -->
+
+    <!-- --- --- ----- --------- ---- --- --- -->
+    <!-- --- --- Modal Registrar Tipo --- --- -->
+    <!-- --- --- ----- --------- ---- --- --- -->
 
     <div class="modal" id="modalRegistrarTipo" aria-hidden="true" aria-labelledby="modalRegistrarTipo" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -541,14 +344,13 @@
         </div>
     </div>
 
+    <!-- --- --- --- --------- ---- --- --- -->
+    <!-- --- --- Fin Registrar Tipo --- --- -->
+    <!-- --- --- --- --------- ---- --- --- -->
 
-<!--
-
-
-
--->
-
-<!-- Modal Activo Ver-->
+    <!-- --- --- ----- --- ------ ------ --- --- -->
+    <!-- --- --- Modal Ver Evento Activo --- --- -->
+    <!-- --- --- ----- --- ------ ------ --- --- -->
 
     <div class="modal" id="modalVerEventoActivo" aria-hidden="true" aria-labelledby="modalVerEventoActivo" tabindex="-1">
         <div class="modal-dialog modal-lg modal-sm modal-dialog-centered">
@@ -579,6 +381,11 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div class="col"></div>
+                        <div class="col"></div>
+                        <div class="col"></div>
+                    </div>
+                    <div class="row">
                         <div class="col">
                             <span class="lead fs-4 text-info"><strong>Participantes</strong></span>
                         </div>
@@ -599,14 +406,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
+                                    <tr >
                                         <td>1</td>
                                         <td>Juan Jimenez</td>
                                         <td>25.123.231</td>
                                         <td>18</td>
                                         <td>55 kg</td>
                                         <td>1.35 cm</td>
-                                        <td></td>
+                                        <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalParicipante">Ver</button></td>
                                     </tr>
                                     <tr>
                                         <td>2</td>
@@ -632,7 +439,237 @@
         </div>
     </div>
 
+    <!-- --- --- --- --- ------ ------ --- --- -->
+    <!-- --- --- Fin Ver Evento Activo --- --- -->
+    <!-- --- --- --- --- ------ ------ --- --- -->
 
+    <!-- --- --- ----- --- ------------ ------ ------ --- --- -->
+    <!-- --- --- Modal Ver Participante Evento Activo --- --- -->
+    <!-- --- --- ----- --- ------------ ------ ------ --- --- -->
+
+    <!-- Participante Ver -->
+
+    <div class="modal" tabindex="-1" aria-hidden="true" id="modalParicipante" aria-labelledby="modalParticipante">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="lead text-black">Participante Nombre</h5>
+                    <button type="button" class="btn-blose" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <span class="lead fs-5">Datos del Participante</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- --- --- --- ------------ ------ ------ --- --- -->
+    <!-- --- --- Fin Ver Participante Evento Activo --- --- -->
+    <!-- --- --- --- --- ------------ ------ ------ --- --- -->
+
+    <!-- --- --- ----- -------- ---------- ------ --- --- -->
+    <!-- --- --- Modal Consulta Anteriores Evento --- --- -->
+    <!-- --- --- ----- -------- ---------- ------ --- --- -->
+
+    <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true" aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Consulta eventos anteriores</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col my-3 mx-2">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Fecha de inicio</th>
+                                        <th scope="col">Fecha final</th>
+                                        <th scope="col">Op</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-bs-target="#" data-bs-toggle="modal">
+                                        <td>1</td>
+                                        <td>Evento Sub 17</td>
+                                        <td>10/12/23</td>
+                                        <td>11/12/23</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Evento Sub 15</td>
+                                        <td>10/12/23</td>
+                                        <td>11/12/23</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- --- --- -------- ---------- ------ --- --- -->
+    <!-- --- --- FIN Consulta Anteriores Evento --- --- -->
+    <!-- --- --- --- -------- ---------- ------ --- --- -->
+    
+
+
+    <!-- --- --- ----- --------- ------ --- --- -->
+    <!-- --- --- Modal Inscribir Evento --- --- -->
+    <!-- --- --- ----- --------- ------ --- --- -->
+    
+    <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
+        <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="#" class="form-control" id="registrarEvento">
+                    <div class="modal-body mx-5">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="in_cedula" class="form-label">Cedula</label>
+                                <input type="text" class="form-control form-control-sm" name="cedula" id="in_cedula">
+                            </div>
+                            <div class="col-6">
+                                
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Op</th>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </select>
+                        </div>
+                    </div>                    
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                    <input type="reset" class="btn btn-warning" value="Limpiar">
+                    <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- --- --- --- --------- ------ --- --- -->
+    <!-- --- --- FIN Inscribir Evento --- --- -->
+    <!-- --- --- --- --------- ------ --- --- -->
+
+    <!-- --- --- ----- -------- ---------- ---------- ------ --- --- -->
+    <!-- --- --- Modal Consulta Anteriores Especifica Evento --- --- -->
+    <!-- --- --- ----- -------- ---------- ---------- ------ --- --- -->
+
+    <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Consulta anterioresSS</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col my-3 mx-2">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                        <th scope="col">Op</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-bs-target="#modalConsultaAnteriorEsp" data-bs-toggle="modal">
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- --- --- -------- ---------- ---------- ------ --- --- -->
+    <!-- --- --- Fin Consulta Anteriores Especifica Evento --- --- -->
+    <!-- --- --- --- -------- ---------- ---------- ------ --- --- -->
+
+    
+    
+    
+    
+
+    
 
     <!-- Modal Incluir-->
     <!--
@@ -865,8 +902,8 @@
     
     
 
-    <div class="modal fade" id="ParticipanteJugney" style="display: none;" tabindex="-1"
-        aria-labelledby="ParticipanteJugneylabel" aria-hidden="true" role="dialog">
+    <div class="modal fade" id="ParticipanteJugney" tabindex="-1"
+        aria-labelledby="ParticipanteJugney" aria-hidden="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
