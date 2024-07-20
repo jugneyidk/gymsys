@@ -21,6 +21,7 @@ $(document).ready(function () {
         var lee = JSON.parse(respuesta);
         if (lee.ok) {
           callback(lee.respuesta);
+          console.log(lee.respuesta)
         } else {
           Swal.fire("Error", lee.mensaje, "error");
         }
@@ -40,56 +41,49 @@ $(document).ready(function () {
     data.forEach(function (registro) {
       html += `<tr>
                         <td>${registro.nombre} ${registro.apellido}</td>
-                        <td>${
-                          registro.estado === "1" ? "Cumple" : "No Cumple"
-                        }</td>
+                        <td>${registro.estado === "1" ? "Cumple" : "No Cumple"
+        }</td>
                         <td>${registro.inscrito}</td>
                         <td>${registro.ultima_actualizacion}</td>
                         <td>${registro.vencimiento}</td>
                         <td>
-                        ${
-                          actualizar === 1
-                            ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
-                            : ""
-                        }
-                          ${
-                            eliminar === 1
-                              ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
-                              : ""
-                          }      
+                        ${actualizar === 1
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          : ""
+        }  
                         </td>
                     </tr>`;
     });
-    $("#tablaWada tbody").html(html);
 
     if ($.fn.DataTable.isDataTable("#tablaWada")) {
       $("#tablaWada").DataTable().clear().destroy();
     }
     $("#tablaWada").DataTable();
+    $("#tablaWada tbody").html(html);
   }
 
   function actualizarTablaProximosVencer(data) {
     var html = "";
+    console.log(data)
     data.forEach(function (registro) {
       html += `<tr>
                         <td>${registro.nombre} ${registro.apellido}</td>
                         <td>${registro.cedula}</td>
                         <td>${registro.vencimiento}</td>
                         <td>
-                        ${
-                          actualizar === 1
-                            ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
-                            : ""
-                        }
+                        ${actualizar === 1
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          : ""
+        }
                         </td>
                     </tr>`;
     });
-    $("#tablaProximosVencer tbody").html(html);
 
     if ($.fn.DataTable.isDataTable("#tablaProximosVencer")) {
       $("#tablaProximosVencer").DataTable().clear().destroy();
     }
     $("#tablaProximosVencer").DataTable();
+    $("#tablaProximosVencer tbody").html(html);
   }
 
   function cargaProximosVencer() {

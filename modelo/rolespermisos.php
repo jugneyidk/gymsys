@@ -1,6 +1,6 @@
 <?php
-require_once ('modelo/datos.php');
-require_once ('modelo/bitacora.php');
+require_once('modelo/datos.php');
+require_once('modelo/bitacora.php');
 class Roles extends datos
 {
     private $conexion;
@@ -191,10 +191,10 @@ class Roles extends datos
             $respuesta->closeCursor();
             $this->conexion->commit();
             $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Agregó el rol ".$this->nombre,NULL,NULL);
-            if($respuesta_bitacora["ok"]){
+            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Agregó el rol '" . $this->nombre . "'", NULL, NULL);
+            if ($respuesta_bitacora["ok"]) {
                 $resultado["ok"] = true;
-            } else{
+            } else {
                 throw new Exception();
             }
             $resultado["ok"] = true;
@@ -331,6 +331,15 @@ class Roles extends datos
     {
         try {
             $this->conexion->beginTransaction();
+            $consulta_nombre = "
+                SELECT * FROM roles WHERE id_rol = :id_rol;
+            ";
+            $valores_nombre = array(':id_rol' => $this->id_rol);
+            $respuesta_nombre = $this->conexion->prepare($consulta_nombre);
+            $respuesta_nombre->execute($valores_nombre);
+            $resultado_nombre = $respuesta_nombre->fetch(PDO::FETCH_ASSOC);
+            $nombre = $resultado_nombre["nombre"];
+            $respuesta_nombre->closeCursor();
             $consulta = "
                 DELETE FROM roles WHERE id_rol = :id_rol;
             ";
@@ -340,10 +349,10 @@ class Roles extends datos
             $respuesta->closeCursor();
             $this->conexion->commit();
             $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Eliminó el rol ".$this->nombre,NULL,NULL);
-            if($respuesta_bitacora["ok"]){
+            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Eliminó el rol '" . $nombre . "'", NULL, NULL);
+            if ($respuesta_bitacora["ok"]) {
                 $resultado["ok"] = true;
-            } else{
+            } else {
                 throw new Exception();
             }
             $resultado["ok"] = true;

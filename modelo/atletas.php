@@ -1,7 +1,7 @@
 <?php
-require_once ('modelo/datos.php');
-require_once ('modelo/bitacora.php');
-class Atleta extends datos 
+require_once('modelo/datos.php');
+require_once('modelo/bitacora.php');
+class Atleta extends datos
 {
     private $conexion;
     private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $password;
@@ -31,12 +31,12 @@ class Atleta extends datos
         return $this->incluir();
     }
 
-    public function listado_atleta() 
+    public function listado_atleta()
     {
         return $this->listado();
     }
 
-    private function incluir() 
+    private function incluir()
     {
         try {
             $this->conexion->beginTransaction();
@@ -79,10 +79,10 @@ class Atleta extends datos
             $respuesta->closeCursor();
             $this->conexion->commit();
             $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Agregó un atleta",$this->cedula,NULL);
-            if($respuesta_bitacora["ok"]){
+            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Agregó un atleta", $this->cedula, NULL);
+            if ($respuesta_bitacora["ok"]) {
                 $resultado["ok"] = true;
-            } else{
+            } else {
                 throw new Exception();
             }
         } catch (Exception $e) {
@@ -93,7 +93,7 @@ class Atleta extends datos
         return $resultado;
     }
 
-    private function listado() 
+    private function listado()
     {
         try {
             $consulta = "
@@ -194,7 +194,7 @@ class Atleta extends datos
         return $this->modificar();
     }
 
-    private function modificar() 
+    private function modificar()
     {
         try {
             $this->conexion->beginTransaction();
@@ -239,7 +239,7 @@ class Atleta extends datos
 
             $respuesta1 = $this->conexion->prepare($consulta);
             $respuesta1->execute($valores);
-            $respuesta1->closeCursor(); 
+            $respuesta1->closeCursor();
 
             if ($this->password !== null) {
                 $consulta_password = "
@@ -253,7 +253,7 @@ class Atleta extends datos
                 );
                 $respuesta2 = $this->conexion->prepare($consulta_password);
                 $respuesta2->execute($valores_password);
-                $respuesta2->closeCursor();  
+                $respuesta2->closeCursor();
             }
 
             $this->conexion->commit();
@@ -270,19 +270,15 @@ class Atleta extends datos
     {
         try {
             $this->conexion->beginTransaction();
-
             $consulta = "
                 DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
                 DELETE FROM atleta WHERE cedula = :cedula;
                 DELETE FROM usuarios WHERE cedula = :cedula;
             ";
-
             $valores = array(':cedula' => $cedula);
-
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
-
             $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (Exception $e) {
@@ -304,4 +300,3 @@ class Atleta extends datos
         return $this;
     }
 }
-?>

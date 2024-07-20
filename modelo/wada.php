@@ -42,12 +42,12 @@ class WADA extends datos
         return $this->eliminar();
     }
 
-    public function listado_wada() 
+    public function listado_wada()
     {
         return $this->listado();
     }
 
-    private function incluir() 
+    private function incluir()
     {
         try {
             $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
@@ -69,7 +69,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function modificar() 
+    private function modificar()
     {
         try {
             $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento 
@@ -91,7 +91,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function obtener() 
+    private function obtener()
     {
         try {
             $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
@@ -107,7 +107,7 @@ class WADA extends datos
         return $resultado;
     }
 
-    private function eliminar() 
+    private function eliminar()
     {
         try {
             $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
@@ -124,7 +124,27 @@ class WADA extends datos
     private function listado()
     {
         try {
-            $consulta = "SELECT * FROM wada ORDER BY id_atleta DESC";
+            $consulta = "SELECT 
+                    u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    u.genero, 
+                    u.fecha_nacimiento, 
+                    u.lugar_nacimiento, 
+                    u.estado_civil, 
+                    u.telefono, 
+                    u.correo_electronico, 
+                    a.tipo_atleta, 
+                    a.peso, 
+                    a.altura, 
+                    a.entrenador,
+                    w.inscrito,
+                    w.vencimiento,
+                    w.ultima_actualizacion
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN wada w ON w.id_atleta = u.cedula
+                ORDER BY u.cedula DESC";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -172,9 +192,19 @@ class WADA extends datos
         return $resultado;
     }
 
-    public function obtener_proximos_vencer() {
+    public function obtener_proximos_vencer()
+    {
         try {
-            $consulta = "SELECT * FROM wada WHERE vencimiento <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) ORDER BY vencimiento ASC";
+            $consulta = "SELECT u.cedula, 
+                    u.nombre, 
+                    u.apellido, 
+                    w.inscrito,
+                    w.vencimiento,
+                    w.ultima_actualizacion
+                FROM atleta a
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN wada w ON w.id_atleta = u.cedula
+                WHERE w.vencimiento <= DATE_ADD(CURDATE(), INTERVAL 30 DAY) ORDER BY vencimiento DESC;";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $registros = $respuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -187,15 +217,14 @@ class WADA extends datos
         return $resultado;
     }
 
-    public function __get($propiedad) 
+    public function __get($propiedad)
     {
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor) 
+    public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
         return $this;
     }
 }
-?>
