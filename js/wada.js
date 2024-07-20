@@ -48,7 +48,7 @@ $(document).ready(function () {
                         <td>${registro.vencimiento}</td>
                         <td>
                         ${actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar'><i class='fa-regular fa-pen-to-square'></i></button>"
           : ""
         }  
                         </td>
@@ -72,7 +72,7 @@ $(document).ready(function () {
                         <td>${registro.vencimiento}</td>
                         <td>
                         ${actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar'><i class='fa-regular fa-pen-to-square'></i></button>"
           : ""
         }
                         </td>
