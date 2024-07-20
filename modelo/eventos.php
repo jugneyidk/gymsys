@@ -189,29 +189,51 @@ class Eventos extends datos
     return $resultado;
 }
 
-
-    public function inscribir_atletas($id_competencia, $atletas)
-    {
-        try {
-            $this->conexion->beginTransaction();
-            foreach ($atletas as $id_atleta) {
-                $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
-                $valores = array(
-                    ':id_competencia' => $id_competencia,
-                    ':id_atleta' => $id_atleta
-                );
-                $respuesta = $this->conexion->prepare($consulta);
-                $respuesta->execute($valores);
-            }
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+public function listado_atletas_inscritos($id_competencia)
+{
+    try {
+        $consulta = "
+            SELECT a.cedula, u.nombre, u.apellido, u.fecha_nacimiento, a.peso, a.altura
+            FROM resultado_competencia rc
+            JOIN atleta a ON rc.id_atleta = a.cedula
+            JOIN usuarios u ON a.cedula = u.cedula
+            WHERE rc.id_competencia = :id_competencia";
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute([':id_competencia' => $id_competencia]);
+        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+        $resultado["ok"] = true;
+        $resultado["respuesta"] = $respuesta;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
     }
+    return $resultado;
+}
+
+
+public function inscribir_atletas($id_competencia, $atletas)
+{
+    try {
+        $this->conexion->beginTransaction();
+        foreach ($atletas as $id_atleta) {
+            $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
+            $valores = array(
+                ':id_competencia' => $id_competencia,
+                ':id_atleta' => $id_atleta
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+        }
+        $this->conexion->commit();
+        $resultado["ok"] = true;
+    } catch (Exception $e) {
+        $this->conexion->rollBack();
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
+    }
+    return $resultado;
+}
+
 
     public function __get($propiedad)
     {

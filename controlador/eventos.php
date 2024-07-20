@@ -63,10 +63,15 @@ if (is_file("vista/" . $p . ".php")) {
                 isset($_POST['atleta']) ? $_POST['atleta'] : []
             );
             echo json_encode($respuesta);
+        }elseif ($accion == 'listado_atletas_inscritos') {
+            $respuesta = $o->listado_atletas_inscritos($_POST['id_competencia']);
+            echo json_encode($respuesta);
         }
+        
         exit;
     }
     require_once("vista/" . $p . ".php");
 } else {
     echo "pagina en construccion";
 }
+?>

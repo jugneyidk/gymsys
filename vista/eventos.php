@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="container1 mb-3 card shadow">
+        <div class="container1 mb-8">
         <div class="row">
             <p class="lead mt-2"><strong>Eventos activos</strong></p>
             <!-- Aquí se mostrarán los eventos activos -->
