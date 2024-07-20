@@ -12,6 +12,7 @@
 
 		//Atributos
 
+		private $conexion;
 		private $idCategoria;		//idCategoria
 		private $nombre;			//nombre
 		private $pesoMinimo;		//pesoMinimo
@@ -44,15 +45,20 @@
 			$this->pesoMaximo = $value;
 		}
 
+		public function __construct(){
+
+			$this->conexion = $this->conecta();
+
+		}
+
+
 		// consulta
 
 		public function consultar(){
 			try
 			{
 			$sql = " SELECT * FROM categorias ;";
-			$con = parent::conectar();
-			$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-			$res = $con->query($sql);
+			$res = $this->conexion->query($sql);
 			$res = $res->fetchAll(PDO::FETCH_ASSOC);
 				$resultado["ok"]=true;
 				$resultado["respuesta"]=$res;
@@ -63,14 +69,24 @@
 			return $respuesta;
 
 		}
+		public function getAll($value){
+			$respuesta = array(
+
+				"idCategoria" => $this->idCategoria,
+				"nombre" => $this->nombre,
+				"pesoMinimo" => $this->pesoMinimo,
+				"pesoMaximo" => $this->pesoMaximo
+
+			);
+			return $respuesta;
+		}
 
 		public function setAll($value){
-			if(isset($value)){
+			
 				$this->nombre = $value["nombre"];
 				$this->pesoMinimo = $value["pesoMinimo"];
 				$this->pesoMaximo= $value["pesoMaximo"];
-				echo "gola";
-			}
+			
 		}
 
 		// Metodo Insertar
@@ -78,20 +94,20 @@
 		public function insertar(){
 
 			try{
-				$sql = "INSERT INTO categorias VALUES DEFAULT,:nombre,:pesoMinimo,:pesoMaximo";
+				$sql = "INSERT INTO categorias VALUES (DEFAULT,:nombre,:pesoMinimo,:pesoMaximo)";
 				$valores = array(
 					':nombre' => $this->nombre,
 					':pesoMinimo' => $this->pesoMinimo,
 					':pesoMaximo' => $this->pesoMaximo
 				);
-				$con = parent::conectar();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-				$res = $con->prepare($sql);
+			
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
 				$resultado["ok"] =false;
 				$resultado["mensaje"] = $e;
+				echo $e;
 			}
 			return $resultado;
 		}
@@ -112,8 +128,8 @@
 					':pesoMaximo' => $this->pesoMaximo,
 					':idCategoria' => $this->idCategoria
 				);
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
@@ -130,8 +146,8 @@
 			try{
 				$sql = "DELETE FROM categorias WHERE id_categorias = :idCategorias";
 				$val = array( ':idCategorias' => $this->idCategoria );
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				
+				$res = $this->conexion->prepare($sql);
 				$res->execute($val);
 				$resultado["ok"] = true;			
 			}catch(exception $e){

@@ -30,15 +30,35 @@
 		public function set_nombre($value)
 		{	$this->nombre($value);	}
 
+		public function __construct(){
+
+			$this->conexion = $this->conecta();
+
+		}
+
+		public function getAll($value){
+			$respuesta = array(
+
+				"idSubs" => $this->idTipoCompetencia,
+				"nombre" => $this->nombre,
+
+			);
+			return $respuesta;
+		}
+
+		public function setAll($value){
+			
+				$this->idSubs = $value["idTipoCompetencia"];
+				$this->nombre = $value["nombre"];
+		}
+
 		// consulta
 
 		public function consultar(){
 			try
 			{
 			$sql = " SELECT * FROM tipo_competencia ;";
-			$con = parent::conectar();
-			$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-			$res = $con->query($sql);
+			$res = $this->conexion->query($sql);
 			$res = $res->fetchAll(PDO::FETCH_ASSOC);
 				$resultado["ok"]=true;
 				$resultado["respuesta"]=$res;
@@ -59,9 +79,8 @@
 				$valores = array(
 					':nombre' => $this->nombre
 				);
-				$con = parent::conectar();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-				$res = $con->prepare($sql);
+				
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
@@ -83,8 +102,7 @@
 					':nombre' => $this->nombre,
 					':idTipoCompetencia' => $this->idTipoCompetencia
 				);
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
@@ -101,8 +119,7 @@
 			try{
 				$sql = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :idTipoCompetencia";
 				$val = array( ':idTipoCompetencia' => $this->idTipoCompetencia );
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				$res = $this->conexion->prepare($sql);
 				$res->execute($val);
 				$resultado["ok"] = true;			
 			}catch(exception $e){

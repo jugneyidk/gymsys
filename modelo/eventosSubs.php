@@ -12,6 +12,7 @@
 
 		//Atributos
 
+		private $conexion;
 		private $idSubs;		//idSubs
 		private $nombre;		//nombre
 		private $edadMinima;	//edadMinima
@@ -39,15 +40,40 @@
 		public function set_edadMaxima($values)
 		{	$this->edadMaxima = $values;	}
 
+		public function __construct(){
+
+			$this->conexion = $this->conecta();
+
+		}
+
+		public function getAll($value){
+			$respuesta = array(
+
+				"idSubs" => $this->idCategoria,
+				"nombre" => $this->nombre,
+				"edadMinima" => $this->pesoMinimo,
+				"edadMaxima" => $this->pesoMaximo
+
+			);
+			return $respuesta;
+		}
+
+		public function setAll($value){
+			
+				$this->idSubs = $value["idSubs"];
+				$this->nombre = $value["nombre"];
+				$this->pesoMinimo = $value["edadMinima"];
+				$this->pesoMaximo= $value["edadMaxima"];
+			
+		}
+
 		// consulta
 
 		public function consultar(){
 			try
 			{
 			$sql = " SELECT * FROM subs ;";
-			$con = parent::conectar();
-			$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-			$res = $con->query($sql);
+			$res = $this->conexion->query($sql);
 			$res = $res->fetchAll(PDO::FETCH_ASSOC);
 				$resultado["ok"]=true;
 				$resultado["respuesta"]=$res;
@@ -70,9 +96,7 @@
 					':edadMinima' => $this->edadMinima,
 					':edadMaxima' => $this->edadMaxima
 				);
-				$con = parent::conectar();
-				$con = $con->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-				$res = $con->prepare($sql);
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
@@ -98,8 +122,7 @@
 					':edadMaxima' => $this->edadMaxima,
 					':idSubs' => $this->idSubs
 				);
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
 				$resultado["ok"] = true;			
 			}catch(exception $e){
@@ -116,8 +139,7 @@
 			try{
 				$sql = "DELETE FROM subs WHERE id_sub = :idSubs";
 				$val = array( ':idSubs' => $this->idSubs );
-				$con = parent::conectar();
-				$res = $con->prepare($sql);
+				$res = $this->conexion->prepare($sql);
 				$res->execute($val);
 				$resultado["ok"] = true;			
 			}catch(exception $e){

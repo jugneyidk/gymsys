@@ -55,8 +55,9 @@
         "pesoMinimo" => $_POST["in_peso_minimo"],
         "pesoMaximo" => $_POST["in_peso_maximo"], 
       );
-      $objEvento->metodosCategoria("setAll",$data);
-      $respuesta = $objEvento->metodosCategoria("insertar");
+      $respuesta = $objEvento->metodosCategoria("insertar",$data);
+      
+    
       break;
     case 'consultarCategoria':
       $respuesta = array(
@@ -100,7 +101,12 @@
 
 
 */
-
-
+/*
+$data = array(
+        "nombre" => "Mediano",
+        "pesoMinimo" => 40,
+        "pesoMaximo" => 30, 
+      );
+      $respuesta = $objEvento->metodosCategoria("insertar",$data);*/
 
 ?>

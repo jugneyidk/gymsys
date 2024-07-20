@@ -264,33 +264,31 @@
 				$respuesta[mensaje]="error";
 				return $respuesta;
 			} 
+
 			$objCategoria = new Categorias();
 			switch ($method) {
-				case 'Get':
-					$datos = $objCategoria->getAll();
-					return $datos;
-					break;
-				
-				case 'Set':
-					$datos = $objCategoria->setAll($values);
-					break;
-
+			
 				case 'insertar':
+					$datos = $objCategoria->setAll($values);
 					$datos = $objCategoria->insertar();
 					return $datos;
 					break;
 
 				case 'consultar':
+
 					$datos = $objCategoria->consultar();
+					$datos = $objCategoria->getAll();
 					return $datos;
 					break;
 
 				case 'modificar':
+					$datos = $objCategoria->setAll($values);
 					$datos = $objCategoria->modificar();
 					return $datos;
 					break;
 
 				case 'eliminar':
+
 					$datos = $objCategoria->eliminar();
 					return $datos;
 					break;	
