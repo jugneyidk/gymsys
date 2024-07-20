@@ -14,34 +14,61 @@
         <div class="row">
             <div class="col">
                 <p class="mt-2 lead fs-1 text-info"><strong>Eventos</strong></p>
-                <nav class="navbar navbar-expand-lg border rounded bg-info mt-2 shadow">
-                    <div class="container-fluid">
-                        <span href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></span>
-                        <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li class="nav-item">
-                                    <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1">Eliminar</a>
-                                </li>
-                            </ul>
-                        </div>
+                <div class="row">
+                    <div class="col">
+                        <nav class="navbar navbar-expand-lg border rounded bg-info mt-2 shadow">
+                            <div class="container-fluid">
+                                <span href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></span>
+                                <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                        <li class="nav-item">
+                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1">Eliminar</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
                     </div>
-                </nav>
+                    <div class="col">
+                        <nav class="navbar navbar-expand-lg border rounded bg-info mt-2 shadow">
+                            <div class="container-fluid">
+                                <span href="#" class="navbar-brand lead text-white" disabled><strong>Opciones</strong></span>
+                                <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                        <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                        <li class="nav-item">
+                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar</button>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1">Eliminar</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <p class="lead mt-2"><strong>Eventos activos</strong></p>
             <!--definir los campos a consultar (div.col)-->
         </div>
-        <div class="card shadow">
+        <div class="mb-3 card shadow">
             <div class="card-body">
                 <div class="row">
                     <div class="col">
@@ -124,9 +151,12 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
+</div>
+
 
 <!-- -------------------- ------- -------------------- -->
 <!-- -------------------- ------- -------------------- -->
@@ -139,7 +169,7 @@
     <!-- --- --- ----- --------- ------ --- --- -->
     
     <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento" tabindex="-1">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">Registrar Evento</h1>
@@ -174,8 +204,7 @@
                                     <label for="in_categoria" class="form-label">Categoria</label>
                                     <select id="in_categoria" name="in_categoria" class="form-select form-control form-select-sm">
                                         <option selected>Seleccione una</option>
-                                        <!--Datos a consultar-->
-                                        <option data-bs-target="#modalRegistrarCategoria" data-bs-toggle="modal" value="">Registrar categoria</option>
+                                        <option id="opRegistrarCategoria" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar categoria</option>
                                     </select>
                                     <div class="invalid-feedback">Categoría es obligatoria</div>
                                 </div>
@@ -183,7 +212,7 @@
                                     <label for="in_subs" class="form-label">Subs</label>
                                     <select id="in_subs" name="in_subs" class="form-select form-control form-select-sm">
                                         <option selected>Seleccione una</option>
-                                        <option data-bs-target="#modalRegistrarSubs" data-bs-toggle="modal" value="">Registrar Subs</option>
+                                        <option data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar Subs</option>
                                     </select>
                                     <div class="invalid-feedback">Subs es obligatorio</div>
                                 </div>
@@ -207,6 +236,7 @@
             </div>
         </div>
     </div>
+
 
     <!-- --- --- --- --------- ------ --- --- -->
     <!-- --- --- Fin Registrar Evento --- --- -->
@@ -443,11 +473,82 @@
     <!-- --- --- Fin Ver Evento Activo --- --- -->
     <!-- --- --- --- --- ------ ------ --- --- -->
 
+    <!-- --- --- ----- --------- ------ --- --- -->
+    <!-- --- --- Modal Inscribir Evento --- --- -->
+    <!-- --- --- ----- --------- ------ --- --- -->
+    
+    <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
+        <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="post" action="#" class="form-control" id="registrarEvento">
+                    <div class="modal-body mx-5">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="in_cedula" class="form-label">Cedula</label>
+                                <input type="text" class="form-control form-control-sm" name="cedula" id="in_cedula">
+                            </div>
+                            <div class="col-6">
+                                
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <table id="tablaParticipantes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Op</th>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>1</td>
+                                        <td>Juan Jimenez</td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                        <td>55 kg</td>
+                                        <td>1.35 cm</td>
+                                    </tr>
+                                    <tr>
+                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                        <td>60 kg</td>
+                                        <td>1.25 cm</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </select>
+                        </div>
+                    </div>                    
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Registrar">
+                    <input type="reset" class="btn btn-warning" value="Limpiar">
+                    <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- --- --- --- --------- ------ --- --- -->
+    <!-- --- --- FIN Inscribir Evento --- --- -->
+    <!-- --- --- --- --------- ------ --- --- -->
+
     <!-- --- --- ----- --- ------------ ------ ------ --- --- -->
     <!-- --- --- Modal Ver Participante Evento Activo --- --- -->
     <!-- --- --- ----- --- ------------ ------ ------ --- --- -->
-
-    <!-- Participante Ver -->
 
     <div class="modal" tabindex="-1" aria-hidden="true" id="modalParicipante" aria-labelledby="modalParticipante">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -530,78 +631,7 @@
     
 
 
-    <!-- --- --- ----- --------- ------ --- --- -->
-    <!-- --- --- Modal Inscribir Evento --- --- -->
-    <!-- --- --- ----- --------- ------ --- --- -->
     
-    <div class="modal " id="modalInscribirEvento" aria-hidden="true" aria-labelledby="modalInscribirEvento" tabindex="-1">
-        <div class="modal-dialog  modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-4 lead">Inscribir Participante</h1>
-                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form method="post" action="#" class="form-control" id="registrarEvento">
-                    <div class="modal-body mx-5">
-                        <div class="row">
-                            <div class="col-6">
-                                <label for="in_cedula" class="form-label">Cedula</label>
-                                <input type="text" class="form-control form-control-sm" name="cedula" id="in_cedula">
-                            </div>
-                            <div class="col-6">
-                                
-                            </div>
-                        </div>
-                        <div class="row my-3">
-                            <table id="tablaParticipantes" class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Op</th>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Cedula</th>
-                                        <th scope="col">Edad</th>
-                                        <th scope="col">Peso</th>
-                                        <th scope="col">Altura</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
-                                        <td>1</td>
-                                        <td>Juan Jimenez</td>
-                                        <td>25.123.231</td>
-                                        <td>18</td>
-                                        <td>55 kg</td>
-                                        <td>1.35 cm</td>
-                                    </tr>
-                                    <tr>
-                                        <td><div class="form-check"><input class="form-check-input" type="radio" name="in_participante" value="cedula"></div></td>
-                                        <td>2</td>
-                                        <td>Ricardo Sanchez</td>
-                                        <td>30.315.412</td>
-                                        <td>20</td>
-                                        <td>60 kg</td>
-                                        <td>1.25 cm</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            </select>
-                        </div>
-                    </div>                    
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Registrar">
-                    <input type="reset" class="btn btn-warning" value="Limpiar">
-                    <button class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    
-    <!-- --- --- --- --------- ------ --- --- -->
-    <!-- --- --- FIN Inscribir Evento --- --- -->
-    <!-- --- --- --- --------- ------ --- --- -->
 
     <!-- --- --- ----- -------- ---------- ---------- ------ --- --- -->
     <!-- --- --- Modal Consulta Anteriores Especifica Evento --- --- -->
@@ -1057,7 +1087,9 @@
             </div>
         </div>
     </div>
+
     <?php require_once ("comunes/footer.php"); ?>
+    <script type="text/javascript" src="js/eventos.js"></script>
     <!--
     <script src="js/eventos.js"></script>
     <script>

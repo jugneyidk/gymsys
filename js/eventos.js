@@ -1,3 +1,33 @@
+console.log("aqui");
+$('#in_categoria').on('click',function(event){
+
+  var datos = enviarConsultaAjax("consultarCategoria");
+  console.log(datos);
+  
+  
+});
+
+function enviarConsultaAjax(value){
+  console.log(value);
+    var comp = $.ajax({
+            async: true,
+            url: "&option=".value,
+            type: "POST",
+            contentType: false,
+            data: value,
+            processData: false,
+            cache: false,
+            beforeSend: function () { },
+            timeout: 10000,
+            success: "",
+            error: function (request, status, err) {
+                const errorMsg = status === "timeout" ? "Servidor ocupado, Intente de nuevo" : "Error al procesar la solicitud";
+                Swal.fire("Error", errorMsg, "error");
+            },
+            complete: function () { },
+        });
+  }
+
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('fRegistrarEvento');
 
@@ -5,9 +35,47 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!validarEnvio()) {
           event.preventDefault();
           event.stopPropagation();
+          data = new FormData($("#fRegistrarEvento"));
+          enviarAjax(data);
       }
   });
 
+  
+  
+  function enviaAjax(datos) {
+        $.ajax({
+            async: true,
+            url: "",
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            beforeSend: function () { },
+            timeout: 10000,
+            success: function (respuesta) {
+                try {
+                    const lee = JSON.parse(respuesta);
+                    if (lee.devol === "listado_atletas") {
+                        actualizarListadoAtletas(lee.respuesta);
+                    } else if (lee.ok) {
+                        Swal.fire("Éxito", "Operación realizada con éxito", "success");
+                        cargaListadoAtleta();
+                        $('#modalModificar').modal('hide');
+                    } else {
+                        Swal.fire("Error", lee.mensaje, "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Algo salió mal", "error");
+                }
+            },
+            error: function (request, status, err) {
+                const errorMsg = status === "timeout" ? "Servidor ocupado, Intente de nuevo" : "Error al procesar la solicitud";
+                Swal.fire("Error", errorMsg, "error");
+            },
+            complete: function () { },
+        });
+    }
 
   function validarKeyPress(event, regex) {
       const key = event.key;
@@ -81,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
           fechaClausura.classList.remove('is-invalid');
           fechaClausura.classList.add('is-valid');
       }
-
+      
       const categoria = document.getElementById('in_categoria');
       const categoriaMensaje = categoria.nextElementSibling;
       if (categoria.value === 'Seleccione una') {
@@ -126,3 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
   nombre.addEventListener('keyup', () => validarKeyUp(nombre, /^[a-zA-Z0-9\s]{1,100}$/, nombre.nextElementSibling));
   ubicacion.addEventListener('keyup', () => validarKeyUp(ubicacion, /^[a-zA-Z0-9\s]{1,100}$/, ubicacion.nextElementSibling));
 });
+
+
+  
+ 

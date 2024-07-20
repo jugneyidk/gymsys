@@ -52,7 +52,9 @@
       // code...
       break;
     case 'consultarCategoria':
-      // code...
+      $respuesta = array(
+        "respuesta" => "hola");
+      return json_decode($respuesta);
       break;
     case 'modificarCategoria':
       // code...
