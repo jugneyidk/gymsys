@@ -51,19 +51,19 @@
 
 				"idSubs" => $this->idCategoria,
 				"nombre" => $this->nombre,
-				"edadMinima" => $this->pesoMinimo,
-				"edadMaxima" => $this->pesoMaximo
+				"edadMinimo" => $this->pesoMinimo,
+				"edadMaximo" => $this->pesoMaximo
 
 			);
 			return $respuesta;
 		}
 
-		public function setAll($value){
-			
-				$this->idSubs = $value["idSubs"];
+		public function setAll($value)
+		{
+				print_r($value);	
 				$this->nombre = $value["nombre"];
-				$this->pesoMinimo = $value["edadMinima"];
-				$this->pesoMaximo= $value["edadMaxima"];
+				$this->edadMinima = $value["edadMinimo"];
+				$this->edadMaxima= $value["edadMaximo"];
 			
 		}
 
@@ -87,10 +87,10 @@
 
 		// Metodo Insertar
 
-		public function insertarEvento(){
+		public function insertar(){
 
 			try{
-				$sql = "INSERT INTO subs VALUES DEFAULT,:nombre,:edadminima,:edadmaxima;";
+				$sql = "INSERT INTO subs VALUES (DEFAULT,:nombre,:edadMinima,:edadMaxima)";
 				$valores = array(
 					':nombre' => $this->nombre,
 					':edadMinima' => $this->edadMinima,
@@ -108,7 +108,7 @@
 
 		// Metodo Modificar
 
-		public function modificarEvento(){
+		public function modificar(){
 
 			try{
 				$sql = "UPDATE subs SET 
@@ -134,7 +134,7 @@
 
 		// Metodo Eliminar
 
-		public function eliminarEvento(){
+		public function eliminar(){
 
 			try{
 				$sql = "DELETE FROM subs WHERE id_sub = :idSubs";

@@ -221,18 +221,12 @@
 				$respuesta[mensaje]="error";
 				return $respuesta;
 			} 
+			//print_r($values);
 			$objSubs = new Subs();
 			switch ($method) {
-				case 'Get':
-					$datos = $objSubs->getAll();
-					return $datos;
-					break;
-				
-				case 'Set':
-					$datos = $objSubs->setAll($values);
-					break;
 
 				case 'insertar':
+					$datos = $objSubs->setAll($values);
 					$datos = $objSubs->insertar();
 					return $datos;
 					break;
@@ -278,7 +272,6 @@
 				case 'consultar':
 
 					$datos = $objCategoria->consultar();
-					$datos = $objCategoria->getAll();
 					return $datos;
 					break;
 

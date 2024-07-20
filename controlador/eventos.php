@@ -26,7 +26,15 @@
       break;
     
     case 'registrarSubs':
-      // code...
+      $data = array(
+        "nombre" => $_POST["in_desc"],
+        "edadMinimo" => $_POST["in_edad_minima"],
+        "edadMaximo" => $_POST["in_edad_maxima"], 
+      );
+      $respuesta = $objEvento->metodosSubs("insertar",$data);
+      echo json_encode($respuesta);
+    
+      break;
       break;
     case 'consultarSubs':
       // code...
@@ -62,9 +70,9 @@
     
       break;
     case 'consultarCategoria':
-      $respuesta = array(
-        "respuesta" => "hola");
-      return json_decode($respuesta);
+      $val = "";
+      $respuesta = $objEvento->metodosCategoria("consultar",$val);
+      echo json_encode($respuesta);
       break;
     case 'modificarCategoria':
       // code...

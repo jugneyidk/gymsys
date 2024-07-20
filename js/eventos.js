@@ -10,6 +10,38 @@ console.log(data);
   console.log(respuesta);
 });
 
+$("#btnRegistrarSubs").on("click",function(event){
+  event.preventDefault();
+  
+  var data = new FormData(document.getElementById("registrarSubs"));
+console.log(data);
+  data.append('option','registrarSubs');
+  var respuesta = enviarConsultaAjax(data);
+  console.log(respuesta);
+});
+$("#btnRegistrarTipo").on("click",function(event){
+  event.preventDefault();
+  
+  var data = new FormData(document.getElementById("registrarCategoria"));
+console.log(data);
+  data.append('option','registrarCategoria');
+  var respuesta = enviarConsultaAjax(data);
+  console.log(respuesta);
+});
+
+$("#btnconsultaCategoria").on("click",function(event){
+    var data = new FormData();
+    data.append('option','consultarCategoria');
+    var respuesta = enviarConsultaAjax(data);
+    var bott = document.createElement("TR");
+    respuesta.forEach((dato) => function(){
+    var Fila="<tr><td>".dato["id_categoria"]+"</td><td>".dato["nombre"]+"</td><td>".dato["peso_minimo"]+" kg</td><td>".dato["id_categoria"]+" kg</td></tr>";
+
+    bott.innerHTML = Fila;
+    document.getElementById("tablaConsultaCategoria").appendChild(bott);
+    });
+});
+
 $('#in_categoria').on('click',function(event){
   var form = new FormData();
   form.append("option","consultarCategoria");

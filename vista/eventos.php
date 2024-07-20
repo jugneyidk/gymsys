@@ -25,7 +25,7 @@
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                         <li class="nav-item">
-                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
+                                            <but ton class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
                                         </li>
                                         <li class="nav-item">
                                             <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
@@ -47,14 +47,38 @@
                                 </button>
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                        <li class="nav-item">
-                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria">Registrar</button>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link btn btn-outline-light rounded-1 dropdown-toggle mx-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Categorias
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria" href="#">Registrar</a></li>
+                                                <li><a class="dropdown-item" id="btnconsultaCategoria" data-bs-toggle="modal" data-bs-target="#modalConsultarCategoria" href="#">Consultar</a></li>
+                                                <li><a class="dropdown-item" href="#">Modificar</a></li>
+                                                <li><a class="dropdown-item" href="#">Eliminar</a></li>
+                                            </ul>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1"  data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link btn btn-outline-light rounded-1 dropdown-toggle mx-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Subs
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs" href="#">Registrar</a></li>
+                                                <li><a class="dropdown-item" href="#">Consultar</a></li>
+                                                <li><a class="dropdown-item" href="#">Modificar</a></li>
+                                                <li><a class="dropdown-item" href="#">Eliminar</a></li>
+                                            </ul>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1">Eliminar</a>
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link btn btn-outline-light rounded-1 dropdown-toggle mx-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Subs
+                                            </a>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo" href="#">Registrar</a></li>
+                                                <li><a class="dropdown-item" href="#">Consultar</a></li>
+                                                <li><a class="dropdown-item" href="#">Modificar</a></li>
+                                                <li><a class="dropdown-item" href="#">Eliminar</a></li>
+                                            </ul>
                                         </li>
                                     </ul>
                                 </div>
@@ -282,6 +306,61 @@
     <!-- --- --- Fin Registrar Categoria --- --- -->
     <!-- --- --- --- --------- --------- --- --- -->
 
+    <!-- --- --- ----- --------- --------- --- --- -->
+    <!-- --- --- Modal Consultar Categoria --- --- -->
+    <!-- --- --- ----- --------- --------- --- --- -->
+
+    <div class="modal" id="modalConsultarCategoria" aria-hidden="true" aria-labelledby="modalConsultarCategoria" tabindex="-1">
+        <div class="modal-dialog modal modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Consultar Categoria</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row my-3">
+                        <div class="col"></div>
+                        <div class="table-responsive px-2 ps-2">
+                            <table id="tablaConsultaCategoria" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Peso Minimo</th>
+                                        <th scope="col">Peso Maximo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr >
+                                        <td>1</td>
+                                        <td></td>
+                                        <td>25.123.231</td>
+                                        <td>18</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Ricardo Sanchez</td>
+                                        <td>30.315.412</td>
+                                        <td>20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input id="btnRegistrarCategoria" type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- --- --- --------- --------- --- --- -->
+    <!-- --- --- Fin Consultar Categoria --- --- -->
+    <!-- --- --- --- --------- --------- --- --- -->
+
     <!-- --- --- ----- --------- ---- --- --- -->
     <!-- --- --- Modal Registrar Subs --- --- -->
     <!-- --- --- ----- --------- ---- --- --- -->
@@ -293,7 +372,7 @@
                     <h1 class="modal-title fs-5">Registrar Subs</h1>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="registrarCategoria needs-validation" method="post" action=# novalidate>
+                <form id="registrarSubs" class="needs-validation" method="post" action=# novalidate>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col">
@@ -307,7 +386,7 @@
                             </div>
                             <label for="in_edad_minima" class="form-label">Edad minima</label>
                             <div class="input-group flex-nowrap mb-3">    
-                                <input type="text" class="form-control form-control-sm"  aria-label="in_edad_minima" aria-describedby="addon" id="in_peso_minimo" name="in_peso_minimo">
+                                <input type="text" class="form-control form-control-sm"  aria-label="in_edad_minima" aria-describedby="addon" id="in_edad_minima" name="in_edad_minima">
                                 <span class="input-group-text" id="addon">Años</span>  
                             </div>
                             <div class="valid-feedback">
@@ -318,7 +397,7 @@
                             </div>
                             <label for="in_edad_maxima" class="form-label">Edad maxima</label>
                             <div class="input-group flex-nowrap mb-3">
-                                <input type="text" class="form-control form-control-sm" aria-label="in_edad_minima" aria-describedby="addon" id="in_peso_minimo" name="in_peso_minimo">
+                                <input type="text" class="form-control form-control-sm" aria-label="in_edad_maxima" aria-describedby="addon" id="in_edad_maxima" name="in_edad_maxima">
                                 <span class="input-group-text">Años</span>
                             </div>
                             <div class="valid-feedback">
@@ -331,7 +410,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="submit" class="btn px-2 btn-primary" value="Registrar">
+                    <input type="submit" id="btnRegistrarSubs" class="btn px-2 btn-primary" value="Registrar">
                     <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
                     <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
                 </div>
@@ -355,7 +434,7 @@
                     <h1 class="modal-title fs-5">Registrar Tipo</h1>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="registrarCategoria" method="post" action=#>
+                <form id="registrarTipo" method="post" action=#>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col">
@@ -367,7 +446,7 @@
                 <div class="modal-footer">
                     <input type="submit" class="btn px-2 btn-primary" value="Registrar">
                     <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
-                    <button class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
+                    <button id="btnRegistrarSubs" class="btn btn-warning px-2" data-bs-target="#modalRegistrarEvento" data-bs-toggle="modal">Regresar</button>
                 </div>
                 </form>
             </div>

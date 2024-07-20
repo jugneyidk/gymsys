@@ -69,7 +69,7 @@
 			return $resultado;
 
 		}
-		public function getAll($value){
+		public function getAll(){
 			$respuesta = array(
 
 				"idCategoria" => $this->idCategoria,
