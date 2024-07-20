@@ -66,7 +66,7 @@
 				$resultado["ok"]= false;
 				$resultado["respuesta"]=$e;
 			}
-			return $respuesta;
+			return $resultado;
 
 		}
 		public function getAll($value){
@@ -94,6 +94,7 @@
 		public function insertar(){
 
 			try{
+				
 				$sql = "INSERT INTO categorias VALUES (DEFAULT,:nombre,:pesoMinimo,:pesoMaximo)";
 				$valores = array(
 					':nombre' => $this->nombre,
@@ -103,7 +104,7 @@
 			
 				$res = $this->conexion->prepare($sql);
 				$res->execute($valores);
-				$resultado["ok"] = true;			
+				$resultado["ok"] = true;
 			}catch(exception $e){
 				$resultado["ok"] =false;
 				$resultado["mensaje"] = $e;

@@ -1,14 +1,16 @@
 <?php
-
+  
+  if(is_file("modelo/eventos.php")){
+        require_once("modelo/eventos.php");
+      }
 
   if(isset($_POST["option"]))
   {
-    print_f("fola");
   }else{
     $_POST["option"] = "default";
   }
 
-
+  $objEvento = new Eventos();
   switch ($_POST["option"]) {
     case 'registrar':
       // code...
@@ -56,7 +58,7 @@
         "pesoMaximo" => $_POST["in_peso_maximo"], 
       );
       $respuesta = $objEvento->metodosCategoria("insertar",$data);
-      
+      echo json_encode($respuesta);
     
       break;
     case 'consultarCategoria':

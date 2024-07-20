@@ -32,7 +32,18 @@ function enviarConsultaAjax(value){
             cache: false,
             beforeSend: function () { },
             timeout: 10000,
-            success: "",
+            success: function (respuesta) {
+                try {
+                    const lee = JSON.parse(respuesta);
+                    if (lee.ok) {
+                        Swal.fire("Éxito", "Operación realizada con éxito", "success");
+                    } else {
+                        Swal.fire("Error", lee.mensaje, "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Algo salió mal", "error");
+                }
+            },
             error: function (request, status, err) {
                 const errorMsg = status === "timeout" ? "Servidor ocupado, Intente de nuevo" : "Error al procesar la solicitud";
                 Swal.fire("Error", errorMsg, "error");

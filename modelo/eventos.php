@@ -258,6 +258,7 @@
 
 		public function metodosCategoria($method,$values)
 		{
+			
 			if(is_file('modelo/eventosCategoria.php')){
 				require_once('modelo/eventosCategoria.php');
 			}else{
