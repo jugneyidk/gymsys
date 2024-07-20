@@ -49,7 +49,7 @@ $(document).ready(function () {
                                     <div class="card-footer my-1 border-primary">
                                         <div class="btn-group">
                                             <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalVerEventoActivo">Ver</button>
-                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento" data-id="${evento.id_competencia}">Inscribir</button>
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento" type="button" data-id="${evento.id_competencia}">Inscribir</button>
                                             <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
                                         </div>
                                     </div>
@@ -279,6 +279,7 @@ $(document).ready(function () {
                         actualizarListadoTipos(result.respuesta);
                     }
                 } catch (error) {
+                   
                     console.error("Error al procesar la respuesta de tipos:", error);
                 }
             },
@@ -316,6 +317,7 @@ $(document).ready(function () {
     });
 
     $('#modalRegistrarTipo').on('show.bs.modal', function () {
+
         cargarListadoTipos();
     });
 
@@ -416,13 +418,13 @@ $(document).ready(function () {
             success: function (respuesta) {
                 try {
                     const result = JSON.parse(respuesta);
-                    if (result.ok) {
+                    if (result.ok = true) {
                         actualizarTablaAtletas(result.respuesta);
                     } else {
                         Swal.fire("Error", "No se pudieron cargar los atletas disponibles", "error");
                     }
                 } catch (error) {
-                    Swal.fire("Error", "Algo salió mal al cargar los atletas disponibles", "error");
+                   
                 }
             },
             error: function () {
@@ -444,7 +446,7 @@ $(document).ready(function () {
                     <td>${atleta.peso}</td>
                     <td>${atleta.altura}</td>
                     <td>
-                        <input type="checkbox" class="form-check-input" name="atleta" value="${atleta.id_atleta}">
+                        <input type="checkbox" class="form-check-input" name="atleta" value="${atleta.cedula}">
                     </td>
                 </tr>
             `);
@@ -474,6 +476,10 @@ $(document).ready(function () {
             dom: '<"top"f>rt<"bottom"lp><"clear">',
         });
     }
+$("#fRegistrarEvento").on("submit", function (e) {
+        e.preventDefault();
+    
+});
 
     $("#registrarEvento").on("submit", function (e) {
         e.preventDefault();

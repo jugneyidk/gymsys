@@ -169,24 +169,26 @@ class Eventos extends datos
     }
 
     public function listado_atletas_disponibles($id_competencia)
-    {
-        try {
-            $consulta = "
-                SELECT a.* 
-                FROM atleta a
-                LEFT JOIN resultado_competencia rc ON a.cedula = rc.id_atleta AND rc.id_competencia = :id_competencia
-                WHERE rc.id_atleta IS NULL";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_competencia' => $id_competencia]);
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+{
+    try {
+        $consulta = "
+           SELECT a.*, u.nombre
+            FROM atleta a
+            JOIN usuarios u ON a.cedula = u.cedula
+            LEFT JOIN resultado_competencia rc ON a.cedula = rc.id_atleta AND rc.id_competencia = :id_competencia
+            WHERE rc.id_atleta IS NULL";
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute([':id_competencia' => $id_competencia]);
+        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+        $resultado["ok"] = true;
+        $resultado["respuesta"] = $respuesta;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
     }
+    return $resultado;
+}
+
 
     public function inscribir_atletas($id_competencia, $atletas)
     {
