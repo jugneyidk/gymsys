@@ -66,12 +66,9 @@ function actualizarListadoBitacora(bitacora) {
 
     $("#listado").html(listadoBitacora);
     $("#tablabitacora").DataTable({
-        columnDefs: [
-            { targets: [1], orderable: false, searchable: false },
-        ],
         language: {
             lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron roles",
+            zeroRecords: "No se encontraron acciones",
             info: "Mostrando página _PAGE_ de _PAGES_",
             infoEmpty: "No hay roles disponibles",
             infoFiltered: "(filtrado de _MAX_ registros totales)",

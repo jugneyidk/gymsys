@@ -1,6 +1,6 @@
 <?php
 require_once ('modelo/datos.php');
-
+require_once ('modelo/bitacora.php');
 class Atleta extends datos 
 {
     private $conexion;
@@ -8,7 +8,7 @@ class Atleta extends datos
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); 
+        $this->conexion = $this->conecta();
     }
 
     public function incluir_atleta($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $password)
@@ -76,10 +76,15 @@ class Atleta extends datos
 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
-            $respuesta->closeCursor(); 
-
+            $respuesta->closeCursor();
             $this->conexion->commit();
-            $resultado["ok"] = true;
+            $bitacora = new Bitacora();
+            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Agregó un atleta",$this->cedula,NULL);
+            if($respuesta_bitacora["ok"]){
+                $resultado["ok"] = true;
+            } else{
+                throw new Exception();
+            }
         } catch (Exception $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;

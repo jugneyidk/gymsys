@@ -4,32 +4,12 @@ require_once ('modelo/datos.php');
 class Roles extends datos
 {
     private $conexion;
-    private $id_rol, $nombre, $centrenadores, $rentrenadores, $uentrenadores, $dentrenadores, $catletas, $ratletas, $uatletas, $datletas, $crolespermisos, $rrolespermisos, $urolespermisos, $drolespermisos, $casistencias, $rasistencias, $uasistencias, $dasistencias, $ceventos, $reventos, $ueventos, $deventos, $cmensualidad, $rmensualidad, $umensualidad, $dmensualidad, $cwada, $rwada, $uwada, $dwada, $creportes, $rreportes, $ureportes, $dreportes;
+    private $id_rol, $nombre, $centrenadores, $rentrenadores, $uentrenadores, $dentrenadores, $catletas, $ratletas, $uatletas, $datletas, $crolespermisos, $rrolespermisos, $urolespermisos, $drolespermisos, $casistencias, $rasistencias, $uasistencias, $dasistencias, $ceventos, $reventos, $ueventos, $deventos, $cmensualidad, $rmensualidad, $umensualidad, $dmensualidad, $cwada, $rwada, $uwada, $dwada, $creportes, $rreportes, $ureportes, $dreportes, $cbitacora, $rbitacora, $ubitacora, $dbitacora;
 
     public function __construct()
     {
         $this->conexion = $this->conecta();
     }
-    // public function chequear_permisos()
-    // {
-    //     try {
-    //         $this->conexion->beginTransaction();
-    //         $id_rol = $_SESSION['rol'];
-    //         $modulo = $_GET['p'];
-    //         $consulta = "SELECT m.id_modulo, m.nombre, p.crear, p.leer, p.actualizar, p.eliminar FROM permisos p
-    //                     INNER JOIN modulos m ON p.modulo = m.id_modulo
-    //                     WHERE p.id_rol = :id_rol AND m.nombre = :modulo;";
-    //         $valores = array(':id_rol' => $id_rol, ':modulo' => $modulo);
-    //         $respuesta = $this->conexion->prepare($consulta);
-    //         $respuesta->execute($valores);
-    //         $permisos = $respuesta->fetch(PDO::FETCH_ASSOC);
-    //         $this->conexion->commit();
-    //         return $permisos;
-    //     } catch (Exception $e) {
-           
-    //     }
-
-    // }
     public function consultar_rol($id_rol)
     {
         $this->id_rol = $id_rol;
@@ -70,6 +50,10 @@ class Roles extends datos
         $this->rreportes = $valores['rreportes'];
         $this->ureportes = $valores['ureportes'];
         $this->dreportes = $valores['dreportes'];
+        $this->cbitacora = $valores['cbitacora'];
+        $this->rbitacora = $valores['rbitacora'];
+        $this->ubitacora = $valores['ubitacora'];
+        $this->dbitacora = $valores['dbitacora'];
         return $this->incluir();
     }
     public function modificar_rol($id_rol, $nombre, $valores)
@@ -108,6 +92,10 @@ class Roles extends datos
         $this->rreportes = $valores['rreportes'];
         $this->ureportes = $valores['ureportes'];
         $this->dreportes = $valores['dreportes'];
+        $this->cbitacora = $valores['cbitacora'];
+        $this->rbitacora = $valores['rbitacora'];
+        $this->ubitacora = $valores['ubitacora'];
+        $this->dbitacora = $valores['dbitacora'];
         return $this->modificar();
     }
     public function eliminar_rol($id_rol)
@@ -147,6 +135,8 @@ class Roles extends datos
             VALUES (:id_rol,:modulowada,:cwada,:rwada,:uwada,:dwada);
             INSERT INTO permisos (id_rol,modulo,crear,leer,actualizar,eliminar)
             VALUES (:id_rol,:moduloreportes,:creportes,:rreportes,:ureportes,:dreportes);
+            INSERT INTO permisos (id_rol,modulo,crear,leer,actualizar,eliminar)
+            VALUES (:id_rol,:modulobitacora,:cbitacora,:rbitacora,:ubitacora,:dbitacora);
             ";
             $valores_permisos = array(
                 ':id_rol' => $id_rol,
@@ -190,6 +180,11 @@ class Roles extends datos
                 ':rreportes' => $this->rreportes,
                 ':ureportes' => $this->ureportes,
                 ':dreportes' => $this->dreportes,
+                ':modulobitacora' => 9,
+                ':cbitacora' => $this->cbitacora,
+                ':rbitacora' => $this->rbitacora,
+                ':ubitacora' => $this->ubitacora,
+                ':dbitacora' => $this->dbitacora,
             );
             $respuesta = $this->conexion->prepare($consulta_permisos);
             $respuesta->execute($valores_permisos);
@@ -256,6 +251,8 @@ class Roles extends datos
             WHERE id_rol = :id_rol AND modulo = :modulowada;
             UPDATE permisos SET crear = :creportes, leer = :rreportes, actualizar = :ureportes, eliminar = :dreportes
             WHERE id_rol = :id_rol AND modulo = :moduloreportes;
+            UPDATE permisos SET crear = :cbitacora, leer = :rbitacora, actualizar = :ubitacora, eliminar = :dbitacora
+            WHERE id_rol = :id_rol AND modulo = :modulobitacora;
             ";
 
             $valores_permisos = array(
@@ -301,6 +298,11 @@ class Roles extends datos
                 ':rreportes' => $this->rreportes,
                 ':ureportes' => $this->ureportes,
                 ':dreportes' => $this->dreportes,
+                ':modulobitacora' => 9,
+                ':cbitacora' => $this->cbitacora,
+                ':rbitacora' => $this->rbitacora,
+                ':ubitacora' => $this->ubitacora,
+                ':dbitacora' => $this->dbitacora,
             );
 
             $respuesta1 = $this->conexion->prepare($consulta);

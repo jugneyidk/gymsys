@@ -51,6 +51,10 @@ if (is_file("vista/" . $p . ".php")) {
                 "rreportes" => isset($_POST['rreportes']) ? $_POST['rreportes'] : 0,
                 "ureportes" => isset($_POST['ureportes']) ? $_POST['ureportes'] : 0,
                 "dreportes" => isset($_POST['dreportes']) ? $_POST['dreportes'] : 0,
+                "cbitacora" => isset($_POST['cbitacora']) ? $_POST['cbitacora'] : 0,
+                "rbitacora" => isset($_POST['rbitacora']) ? $_POST['rbitacora'] : 0,
+                "ubitacora" => isset($_POST['ubitacora']) ? $_POST['ubitacora'] : 0,
+                "dbitacora" => isset($_POST['dbitacora']) ? $_POST['dbitacora'] : 0,
             ];
             $respuesta = $o->incluir_rol(
                 $_POST['nombre'],
@@ -91,6 +95,10 @@ if (is_file("vista/" . $p . ".php")) {
                 "rreportes" => isset($_POST['rreportes']) ? $_POST['rreportes'] : 0,
                 "ureportes" => isset($_POST['ureportes']) ? $_POST['ureportes'] : 0,
                 "dreportes" => isset($_POST['dreportes']) ? $_POST['dreportes'] : 0,
+                "cbitacora" => isset($_POST['cbitacora']) ? $_POST['cbitacora'] : 0,
+                "rbitacora" => isset($_POST['rbitacora']) ? $_POST['rbitacora'] : 0,
+                "ubitacora" => isset($_POST['ubitacora']) ? $_POST['ubitacora'] : 0,
+                "dbitacora" => isset($_POST['dbitacora']) ? $_POST['dbitacora'] : 0,
             ];
             $respuesta = $o->modificar_rol(
                 $_POST['id_rol'],

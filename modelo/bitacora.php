@@ -11,13 +11,13 @@ class Bitacora extends datos
     {
         $this->id_usuario = $id_usuario;
         $this->accion = $accion;
-        if(isset($usuario_modificado)){
+        if (isset($usuario_modificado)) {
             $this->usuario_modificado = $usuario_modificado;
             $this->valor_cambiado = $valor_cambiado;
-        } else{
+        } else {
             $this->usuario_modificado = NULL;
-            $this->valor_cambiado = null;
-        }        
+            $this->valor_cambiado = NULL;
+        }
         return $this->incluir();
     }
     public function listado_bitacora()
@@ -27,10 +27,12 @@ class Bitacora extends datos
     private function incluir()
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO bitacora(id_usuario,accion,usuario_modificado,valor_cambiado) VALUES (:id_usuario,:accion,:usuario_modificado,:valor_cambiado)";
             $valores = array(':id_usuario' => $this->id_usuario, ':accion' => $this->accion, ':usuario_modificado' => $this->usuario_modificado, ':valor_cambiado' => $this->valor_cambiado);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $resultado["ok"] = false;
