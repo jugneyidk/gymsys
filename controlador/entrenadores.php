@@ -8,6 +8,9 @@ require_once ("modelo/permisos.php");
 $o = new Entrenador();
 $permisos_o = new Permisos();
 $permisos = $permisos_o->chequear_permisos();
+if ($permisos["leer"] === 0) {
+    header("Location: .");
+}
 if (!empty($_POST)) {
     if ($_POST["accion"] == "incluir") {
         $response = $o->incluir_entrenador(

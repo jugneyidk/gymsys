@@ -12,7 +12,7 @@ class Permisos extends datos
         try {
             $this->conexion->beginTransaction();
             $id_rol = $_SESSION['rol'];
-            $modulo = $_GET['p'];
+            $modulo = isset($_GET['p']) ? $_GET['p'] : "landing";
             $consulta = "SELECT m.id_modulo, m.nombre, p.crear, p.leer, p.actualizar, p.eliminar FROM permisos p
                             INNER JOIN modulos m ON p.modulo = m.id_modulo
                             WHERE p.id_rol = :id_rol AND m.nombre = :modulo;";

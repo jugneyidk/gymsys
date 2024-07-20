@@ -8,6 +8,9 @@ require_once ("modelo/permisos.php");
 
 $permisos_o = new Permisos();
 $permisos = $permisos_o->chequear_permisos();
+if ($permisos["leer"] === 0) {
+    header("Location: .");
+}
 if (!empty($_POST)) {
     $o = new WADA();
     $accion = $_POST['accion'];
