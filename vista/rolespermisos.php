@@ -8,13 +8,14 @@
         <?php require_once ("comunes/linkcss.php");
         ?>
 </head>
-
 <body class="d-flex flex-column vh-100">
         <script>
                 var actualizar = <?php echo $permisos["actualizar"] ?>;
                 var eliminar = <?php echo $permisos["eliminar"] ?>;
         </script>
         <?php require_once ("comunes/menu.php"); ?>
+        <br>
+        <main>
         <div class="container-lg d-flex justify-content-center align-items-center">
                 <div class="row justify-content-center w-100">
                         <div class="col-12 col-md-8 col-lg-9">
@@ -409,6 +410,8 @@
                 endif;
                 ?>
         </div>
+        </main>
+        <br>
         <?php require_once ("comunes/footer.php"); ?>
         <script type="text/javascript" src="datatables/datatables.min.js"></script>
         <script src="js/rolespermisos.js"></script>

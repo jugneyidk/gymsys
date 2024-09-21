@@ -15,6 +15,7 @@
         var eliminar = <?php echo $permisos["eliminar"] ?>;
     </script>
     <?php require_once ("comunes/menu.php"); ?>
+     <main>
     <div class="container-lg my-4">
         <div class="row">
             <div class="col-12">
@@ -59,6 +60,7 @@
             </div>
         </div>
     </div>
+   </main>
     <?php require_once ("comunes/footer.php"); ?>
     <script src="datatables/datatables.min.js"></script>
     <script src="js/asistencias.js"></script>

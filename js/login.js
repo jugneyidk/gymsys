@@ -25,7 +25,7 @@ $(document).ready(function () {
   $("#password").on("keyup", function () {
     validarKeyUp(
       /^[a-zA-Z0-9@._-]{6,20}$/,
-      $(this),
+      $(this), 
       $("#spassword"),
       "Debe ingresar entre 6 y 20 caracteres"
     );

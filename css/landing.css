@@ -1,0 +1,62 @@
+h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+ul.list-unstyled {
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+ul.list-unstyled i {
+    margin-right: 10px;
+}
+
+.d-flex a {
+    text-decoration: none;
+}
+
+.d-flex a:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}
+.btn-contacto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    font-size: 13px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    background-color: #007bff; /* Color predeterminado para el botón */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 140px; /* Tamaño fijo para los botones */
+}
+
+.btn-contacto i {
+    margin-right: 5px;
+}
+
+.btn-contacto:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos específicos para cada botón */
+.btn-contacto:first-of-type {
+    background-color: #db4437; /* Color de fondo para el correo (Gmail) */
+}
+
+.btn-contacto:last-of-type {
+    background-color: #25d366; /* Color de fondo para WhatsApp */
+}
+
+.btn-contacto:first-of-type:hover {
+    background-color: #c23321;
+}
+
+.btn-contacto:last-of-type:hover {
+    background-color: #1ebd55;
+}

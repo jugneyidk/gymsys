@@ -1,12 +1,12 @@
 <?php
 class datos
 {
-    // DATOS DE LA DB
+   
     private $ip = "localhost";
     private $bd = "gymsys";
     private $usuario = "root";
     private $contrasena = "";
-    // FUNCION PARA ESTABLECER CONEXION
+  
     public function conecta()
     {
         try {

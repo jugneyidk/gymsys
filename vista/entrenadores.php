@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción de Entrenadores - Sistema</title>
     <?php require_once ("comunes/linkcss.php"); ?>
 </head>
-
 <body class="d-flex flex-column vh-100">
     <script>
         var actualizar = <?php echo $permisos["actualizar"] ?>;
         var eliminar = <?php echo $permisos["eliminar"] ?>;
     </script>
+    
     <?php require_once ("comunes/menu.php"); ?>
+    <br>
+    <main>
     <div class="container-lg d-flex justify-content-center align-items-center">
         <div class="row justify-content-center w-100">
             <div class="col-12 col-md-8 col-lg-9">
@@ -61,7 +62,7 @@
             aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-info">
                         <h5 class="modal-title" id="modalInscripcionLabel">Nuevo Entrenador</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -147,7 +148,7 @@
             aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-warning">
                         <h5 class="modal-title" id="modalModificarLabel">Modificar Entrenador</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -175,7 +176,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="genero_modificar" class="form-label">Género:</label>
-                                    <select class="form-select" id="genero_modificar" name="genero_modificar">
+                                    <select                                     class="form-select" id="genero_modificar" name="genero_modificar">
                                         <option>Masculino</option>
                                         <option>Femenino</option>
                                     </select>
@@ -237,7 +238,6 @@
                                         name="password_modificar" disabled>
                                     <div id="spassword_modificar" class="invalid-feedback"></div>
                                 </div>
-
                             </div>
                             <button type="submit" id="modificar" class="btn btn-primary btn-block">Modificar
                                 Entrenador</button>
@@ -247,9 +247,10 @@
             </div>
         </div>
     </div>
-    <?php require_once ("comunes/footer.php"); ?>
+   </main>
+    <?php require_once("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script src="js/entrenadores.js"></script>
 </body>
-
 </html>
+

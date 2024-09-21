@@ -40,6 +40,7 @@
         var eliminar = <?php echo $permisos["eliminar"] ?>;
     </script>
     <?php require_once ("comunes/menu.php"); ?>
+    <main>
     <div class="container-lg">
         <div class="row">
             <div class="col-10 col-lg-8">
@@ -202,9 +203,9 @@
             </div>
         </div>
     </div>
+    </main>
     <?php require_once ("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
-
     <script src="js/wada.js"></script>
 </body>
 

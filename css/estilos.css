@@ -9,8 +9,8 @@ body {
     flex: 1;
 }
 #card-acciones{
-    width: 100%; /* Ajusta el ancho al 100% del contenedor de columna */
-    max-width: 300px; /* Ancho máximo deseado */
+    width: 100%; 
+    max-width: 300px;  
 }
 a{
     color: #007bff;
@@ -74,7 +74,7 @@ footer {
 
 /*Pantalla 404*/
 .bodystyle404 {
-    background-color: #012549; /* Color de fondo claro */
+    background-color: #012549; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -116,7 +116,8 @@ footer a{
 
 .carousel-slide img {
     width: 100%;
-    display: none;
+    height: 400px;  
+    object-fit: cover;  
 }
 
 .carousel-slide img.active {
@@ -169,12 +170,11 @@ footer a{
     margin-left: 0;
 }
 
-/* Atletas*/
 .container1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; /* Asegura que el contenedor ocupe la pantalla completa */
+    height: 100vh; 
 }
 
 .form-group {
@@ -225,4 +225,62 @@ footer a{
 
 .btn-large {
     font-size: 1.2em;
+}
+.btn-primary {
+    background-color: #0062cc;
+    border-color: #005cbf;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #005cbf;
+    transform: scale(1.05); 
+}
+ 
+.gym-title {
+    font-family: 'Poppins', sans-serif;  
+    font-size: 28px;
+    color: #6dd5ed; 
+    font-weight: bold;
+    letter-spacing: 2px;  
+    text-transform: uppercase; 
+    position: relative;
+    display: inline-block;
+}
+
+
+.gym-title::after {
+    content: '';
+    width: 60px;
+    height: 4px;
+    background-color: #2193b0; 
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+ 
+.logo-container {
+    margin-bottom: 20px;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Asegura que el cuerpo ocupe toda la altura de la ventana */
+}
+
+main {
+    flex: 1; /* Hace que el contenido principal crezca para ocupar el espacio disponible */
+}
+
+footer {
+    background-color: #343a40;
+    color: #ffffff;
+    text-align: center;
+    padding: 1rem;
+    position: relative; /* Elimina cualquier problema de superposición */
+    bottom: 0;
+    width: 100%;
 }
