@@ -31,15 +31,15 @@ $(document).ready(function () {
         let listadoEventos = "";
         eventos.forEach(evento => {
             listadoEventos += `
-            <div class="row mb-3">
-                <div class="col">
+            
+                <div class="col-md-4">
                     <div class="card border-primary">
                         <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>${evento.nombre}</strong></small></div>
                         <div class="row g-0">
                             <div class="col-md-1 bg-primary border-end border-primary">
                                 <img src="" alt="" class="img-fluid rounded-start">
                             </div>
-                            <div class="col-md-11">
+                            <div class="col-md-10">
                                 <div class="card-body p-3 ps-4">
                                     <div class="card-title m-0 lead text-primary"><strong>${evento.nombre}</strong></div>
                                     <p class="card-text lead m-0 fs-6"><strong>Fecha: ${evento.fecha_inicio} al ${evento.fecha_fin}</strong></p>
@@ -58,11 +58,11 @@ $(document).ready(function () {
                         </div>
                     </div>
                 </div>
-            </div>
+           
         `;
     });
 
-    $(".container1 .row:last").html(listadoEventos);
+    $(".container .row:last").html(listadoEventos);
 }
 
 cargarEventos();

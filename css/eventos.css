@@ -1,0 +1,48 @@
+.container1 {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se ajusten a la siguiente línea si no caben en una fila */
+    justify-content: flex-start; /* Alinea los elementos al principio */
+    gap: 20px; /* Espacio entre los eventos */
+    padding: 20px;
+}
+
+.container1 .card {
+    flex: 1 1 calc(33.333% - 40px); /* Los eventos ocuparán un tercio del ancho del contenedor menos el espacio entre ellos */
+    max-width: calc(33.333% - 40px); /* Tamaño máximo que cada tarjeta puede tomar */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade un efecto de sombra */
+}
+
+@media (max-width: 768px) {
+    .container1 .card {
+        flex: 1 1 calc(50% - 40px); /* En pantallas más pequeñas, ajusta a dos por fila */
+    }
+}
+
+@media (max-width: 576px) {
+    .container1 .card {
+        flex: 1 1 100%; /* En móviles, cada tarjeta ocupa el ancho completo */
+    }
+}
+/* Mejoras para el modal de inscripción */
+.modal-content {
+    border-radius: 10px;
+    border: 2px solid #007bff;
+}
+
+.modal-title {
+    color: #007bff;
+}
+
+.table thead {
+    background-color: #007bff;
+    color: white;
+}
+
+.table-responsive {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    justify-content: space-between;
+}

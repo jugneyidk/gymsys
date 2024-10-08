@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Competencias - Sistema</title>
     <?php require_once("comunes/linkcss.php") ?>
+    <link href="css/eventos.css" rel="stylesheet">
 </head>
 <body class="d-flex flex-column vh-100">
     <?php require_once("comunes/menu.php"); ?>
+    <main>
     <div class="container mb-5">
         <div class="row">
             <div class="col">
@@ -36,14 +38,14 @@
                 </div>
             </div>
         </div>
-        <div class="container1 mb-3 card shadow">
-        <div class="row">
-            <p class="lead mt-2"><strong>Eventos activos</strong></p>
-            <!-- Aquí se mostrarán los eventos activos -->
-        </div>
-        </div>
-        
+        <div class="container">
+       
+    <p class="lead mt-2"><strong>Eventos activos</strong></p>
+    <div id="lista-eventos" class="row">
+       
     </div>
+    </div>
+    </div> <!-- Cerrando div container -->
 
     <!-- Modales -->
     <!-- Modal Registrar Evento -->
@@ -106,9 +108,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="submit" class="btn btn-primary" value="Registrar"type="button">
-                        <input type="reset" class="btn btn-warning" value="Limpiar"type="button">
-                        <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button type="button">
+                        <input type="submit" class="btn btn-primary" value="Registrar" type="button">
+                        <input type="reset" class="btn btn-warning" value="Limpiar" type="button">
+                        <button class="btn btn-danger" data-bs-dismiss="modal" type="button">Cancelar</button> <!-- Corregido el botón -->
                     </div>
                 </form>
             </div>
@@ -271,7 +273,6 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                 
                     <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                 </div>
             </div>
@@ -280,59 +281,58 @@
 
     <!-- Modal Inscribir Evento -->
     <div class="modal fade" id="modalInscribirEvento" tabindex="-1" aria-labelledby="modalInscribirEventoLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fs-4 lead text-info" id="modalInscribirEventoLabel">Inscribir Participante</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for=""><strong>Nombre del Evento:</strong></label>
-                        <span id="nombreEventoInscripcion"></span><br>
-                        <label for=""><strong>Fecha de Inicio:</strong></label>
-                        <span id="fechaInicioEventoInscripcion"></span><br>
-                    </div>
-                    <div class="col-md-6">
-                        <label for=""><strong>Ubicación:</strong></label>
-                        <span id="ubicacionEventoInscripcion"></span><br>
-                        <label for=""><strong>Fecha de Clausura:</strong></label>
-                        <span id="fechaFinEventoInscripcion"></span><br>
-                    </div>
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4 lead text-info" id="modalInscribirEventoLabel">Inscribir Participante</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for=""><strong>Nombre del Evento:</strong></label>
+                            <span id="nombreEventoInscripcion"></span><br>
+                            <label for=""><strong>Fecha de Inicio:</strong></label>
+                            <span id="fechaInicioEventoInscripcion"></span><br>
+                        </div>
+                        <div class="col-md-6">
+                            <label for=""><strong>Ubicación:</strong></label>
+                            <span id="ubicacionEventoInscripcion"></span><br>
+                            <label for=""><strong>Fecha de Clausura:</strong></label>
+                            <span id="fechaFinEventoInscripcion"></span><br>
+                        </div>
+                    </div>
 
-                <div class="row my-3">
-                    <div class="table-responsive">
-                        <table id="tablaParticipantesInscripcion" class="table table-bordered">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Cédula</th>
-                                    <th scope="col">Edad</th>
-                                    <th scope="col">Peso</th>
-                                    <th scope="col">Altura</th>
-                                    <th scope="col">Seleccionar</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              
-                            </tbody>
-                        </table>
+                    <div class="row my-3">
+                        <div class="table-responsive">
+                            <table id="tablaParticipantesInscripcion" class="table table-bordered">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Cédula</th>
+                                        <th scope="col">Edad</th>
+                                        <th scope="col">Peso</th>
+                                        <th scope="col">Altura</th>
+                                        <th scope="col">Seleccionar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Datos dinámicos aquí -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+                <form id="formInscribirAtletas">
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Inscribir">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
             </div>
-            <form id="formInscribirAtletas">
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Inscribir">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
-
 
     <!-- Modal Consulta Anteriores Evento -->
     <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true" aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
@@ -364,7 +364,6 @@
                                         <td></td>
                                     </tr>
                                     <tr>
-                                    <tr>
                                         <td>2</td>
                                         <td>Evento Sub 15</td>
                                         <td>10/12/23</td>
@@ -382,167 +381,168 @@
             </div>
         </div>
     </div>
-    <!-- Modal para Modificar Resultados de los Atletas -->
-<div class="modal fade" id="modalModificarResultados" tabindex="-1" aria-labelledby="modalModificarResultadosLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fs-4 lead text-info" id="modalModificarResultadosLabel">Modificar Resultados del Atleta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="formModificarResultados">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for=""><strong>Nombre del Atleta:</strong></label>
-                            <span id="nombreAtletaModificarResultados"></span><br>
-                            <label for=""><strong>Cédula:</strong></label>
-                            <span id="cedulaAtletaModificarResultados"></span><br>
-                        </div>
-                        <div class="col-md-6">
-                            <label for=""><strong>Competencia:</strong></label>
-                            <span id="nombreCompetenciaModificarResultados"></span><br>
-                            <label for=""><strong>Fecha:</strong></label>
-                            <span id="fechaCompetenciaModificarResultados"></span><br>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label for="arranque_modificar" class="form-label">Arranque</label>
-                            <input type="number" class="form-control" id="arranque_modificar" name="arranque" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="envion_modificar" class="form-label">Envión</label>
-                            <input type="number" class="form-control" id="envion_modificar" name="envion" required>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <label for="medalla_arranque_modificar" class="form-label">Medalla Arranque</label>
-                            <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="medalla_envion_modificar" class="form-label">Medalla Envión</label>
-                            <select id="medalla_envion_modificar" name="medalla_envion" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="medalla_total_modificar" class="form-label">Medalla Total</label>
-                            <select id="medalla_total_modificar" name="medalla_total" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <label for="total_modificar" class="form-label">Total (Arranque + Envión)</label>
-                            <input type="number" class="form-control" id="total_modificar" name="total" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Modificar Resultados">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
-<!-- Modal para Registrar Resultados de los Atletas -->
-<div class="modal fade" id="modalRegistrarResultados" tabindex="-1" aria-labelledby="modalRegistrarResultadosLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fs-4 lead text-info" id="modalRegistrarResultadosLabel">Registrar Resultados del Atleta</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Modal para Modificar Resultados de los Atletas -->
+    <div class="modal fade" id="modalModificarResultados" tabindex="-1" aria-labelledby="modalModificarResultadosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4 lead text-info" id="modalModificarResultadosLabel">Modificar Resultados del Atleta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formModificarResultados">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for=""><strong>Nombre del Atleta:</strong></label>
+                                <span id="nombreAtletaModificarResultados"></span><br>
+                                <label for=""><strong>Cédula:</strong></label>
+                                <span id="cedulaAtletaModificarResultados"></span><br>
+                            </div>
+                            <div class="col-md-6">
+                                <label for=""><strong>Competencia:</strong></label>
+                                <span id="nombreCompetenciaModificarResultados"></span><br>
+                                <label for=""><strong>Fecha:</strong></label>
+                                <span id="fechaCompetenciaModificarResultados"></span><br>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="arranque_modificar" class="form-label">Arranque</label>
+                                <input type="number" class="form-control" id="arranque_modificar" name="arranque" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="envion_modificar" class="form-label">Envión</label>
+                                <input type="number" class="form-control" id="envion_modificar" name="envion" required>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label for="medalla_arranque_modificar" class="form-label">Medalla Arranque</label>
+                                <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="medalla_envion_modificar" class="form-label">Medalla Envión</label>
+                                <select id="medalla_envion_modificar" name="medalla_envion" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="medalla_total_modificar" class="form-label">Medalla Total</label>
+                                <select id="medalla_total_modificar" name="medalla_total" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label for="total_modificar" class="form-label">Total (Arranque + Envión)</label>
+                                <input type="number" class="form-control" id="total_modificar" name="total" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Modificar Resultados">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
             </div>
-            <form id="formRegistrarResultados">
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label for=""><strong>Nombre del Atleta:</strong></label>
-                            <span id="nombreAtletaResultados"></span><br>
-                            <label for=""><strong>Cédula:</strong></label>
-                            <span id="cedulaAtletaResultados"></span><br>
-                        </div>
-                        <div class="col-md-6">
-                            <label for=""><strong>Competencia:</strong></label>
-                            <span id="nombreCompetenciaResultados"></span><br>
-                            <label for=""><strong>Fecha:</strong></label>
-                            <span id="fechaCompetenciaResultados"></span><br>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label for="arranque" class="form-label">Arranque</label>
-                            <input type="number" class="form-control" id="arranque" name="arranque" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="envion" class="form-label">Envión</label>
-                            <input type="number" class="form-control" id="envion" name="envion" required>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-4">
-                            <label for="medalla_arranque" class="form-label">Medalla Arranque</label>
-                            <select id="medalla_arranque" name="medalla_arranque" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="medalla_envion" class="form-label">Medalla Envión</label>
-                            <select id="medalla_envion" name="medalla_envion" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="medalla_total" class="form-label">Medalla Total</label>
-                            <select id="medalla_total" name="medalla_total" class="form-select" required>
-                                <option value="oro">Oro</option>
-                                <option value="plata">Plata</option>
-                                <option value="bronce">Bronce</option>
-                                <option value="ninguna">Ninguna</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <label for="total" class="form-label">Total (Arranque + Envión)</label>
-                            <input type="number" class="form-control" id="total" name="total" readonly>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <input type="submit" class="btn btn-primary" value="Registrar Resultados">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
+
+    <!-- Modal para Registrar Resultados de los Atletas -->
+    <div class="modal fade" id="modalRegistrarResultados" tabindex="-1" aria-labelledby="modalRegistrarResultadosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fs-4 lead text-info" id="modalRegistrarResultadosLabel">Registrar Resultados del Atleta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formRegistrarResultados">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for=""><strong>Nombre del Atleta:</strong></label>
+                                <span id="nombreAtletaResultados"></span><br>
+                                <label for=""><strong>Cédula:</strong></label>
+                                <span id="cedulaAtletaResultados"></span><br>
+                            </div>
+                            <div class="col-md-6">
+                                <label for=""><strong>Competencia:</strong></label>
+                                <span id="nombreCompetenciaResultados"></span><br>
+                                <label for=""><strong>Fecha:</strong></label>
+                                <span id="fechaCompetenciaResultados"></span><br>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <label for="arranque" class="form-label">Arranque</label>
+                                <input type="number" class="form-control" id="arranque" name="arranque" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="envion" class="form-label">Envión</label>
+                                <input type="number" class="form-control" id="envion" name="envion" required>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <label for="medalla_arranque" class="form-label">Medalla Arranque</label>
+                                <select id="medalla_arranque" name="medalla_arranque" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="medalla_envion" class="form-label">Medalla Envión</label>
+                                <select id="medalla_envion" name="medalla_envion" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="medalla_total" class="form-label">Medalla Total</label>
+                                <select id="medalla_total" name="medalla_total" class="form-select" required>
+                                    <option value="oro">Oro</option>
+                                    <option value="plata">Plata</option>
+                                    <option value="bronce">Bronce</option>
+                                    <option value="ninguna">Ninguna</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label for="total" class="form-label">Total (Arranque + Envión)</label>
+                                <input type="number" class="form-control" id="total" name="total" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-primary" value="Registrar Resultados">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal Consulta Anteriores Especifica Evento -->
     <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-4 lead">Consulta Anteriores Especifica Evento</h1>
@@ -556,7 +556,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Nombre</th>
-                                        <th scope="col">Cedula</th>
+                                        <th scope="col">Cédula</th>
                                         <th scope="col">Edad</th>
                                         <th scope="col">Peso</th>
                                         <th scope="col">Altura</th>
@@ -587,14 +587,13 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="modal-footer">
                     <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
             </div>
         </div>
     </div>
-   
+    </main>
     <?php require_once("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script type="text/javascript" src="js/eventos.js"></script>
