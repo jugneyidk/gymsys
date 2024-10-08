@@ -78,7 +78,25 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['total']
             );
             echo json_encode($respuesta);
+        }elseif ($accion == 'cerrar_evento') {
+            $id_competencia = $_POST['id_competencia'];
+            $respuesta = $o->cerrar_evento($id_competencia); // Agregar método cerrar_evento en el modelo
+            echo json_encode($respuesta);
+        }elseif ($accion == 'modificar_resultados') {
+            $respuesta = $o->modificar_resultados(
+                $_POST['id_competencia'],
+                $_POST['id_atleta'],
+                $_POST['arranque'],
+                $_POST['envion'],
+                $_POST['medalla_arranque'],
+                $_POST['medalla_envion'],
+                $_POST['medalla_total'],
+                $_POST['total']
+            );
+            echo json_encode($respuesta);
         }
+        
+        
         exit;
     }
     require_once("vista/" . $p . ".php");

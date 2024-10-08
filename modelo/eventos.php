@@ -49,11 +49,27 @@ class Eventos extends datos
         }
         return $resultado;
     }
-
-    private function listado()
+    public function cerrar_evento($id_competencia)
     {
         try {
-            $consulta = "SELECT * FROM competencia";
+            $consulta = "UPDATE competencia SET estado = 'cerrado' WHERE id_competencia = :id_competencia";
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->execute([':id_competencia' => $id_competencia]);
+            $resultado["ok"] = true;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+    
+    private function listado() {
+        try {
+            $consulta = "SELECT c.*, 
+                    (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia) AS participantes, 
+                    (10 - (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia)) AS cupos_disponibles
+                    FROM competencia c
+                    WHERE c.estado = 'activo'";  // Filtramos solo los eventos activos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -65,6 +81,7 @@ class Eventos extends datos
         }
         return $resultado;
     }
+    
 
     public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
     {
@@ -269,5 +286,9 @@ class Eventos extends datos
     {
         $this->$propiedad = $valor;
         return $this;
+    }
+    public function __destruct()
+    {
+        $this->conexion = null;  // Esto cierra la conexión
     }
 }

@@ -1,6 +1,6 @@
 <?php
 require_once('modelo/datos.php');
-
+require_once('modelo/bitacora.php');
 class Mensualidad extends datos 
 {
     private $conexion, $id_atleta, $monto, $fecha;
@@ -47,6 +47,7 @@ class Mensualidad extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $resultado["ok"] = true;
+            
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -132,6 +133,10 @@ class Mensualidad extends datos
     {
         $this->$propiedad = $valor;
         return $this;
+    }
+    public function __destruct()
+    {
+        $this->conexion = null;  // Esto cierra la conexión
     }
 }
 ?>

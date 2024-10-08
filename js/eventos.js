@@ -51,7 +51,8 @@ $(document).ready(function () {
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalVerEventoActivo" data-id="${evento.id_competencia}" data-nombre="${evento.nombre}" data-inicio="${evento.fecha_inicio}" data-fin="${evento.fecha_fin}" data-ubicacion="${evento.lugar_competencia}">Ver</button>
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento" data-id="${evento.id_competencia}">Inscribir</button>
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
-                                    </div>
+                                        <button class="btn btn-outline-danger btn-sm" data-id="${evento.id_competencia}" onclick="cerrarEvento(${evento.id_competencia})">Cerrar</button>
+                                        </div>
                                 </div>
                             </div>
                         </div>
@@ -342,6 +343,54 @@ function verificarFecha(fechaInput, mensaje) {
     mensaje.text(isValid ? "" : (fecha ? "La fecha debe ser posterior al día actual" : "La fecha de inicio es obligatoria"));
     return isValid;
 }
+$("#formInscribirAtletas").on("submit", function (e) {
+    e.preventDefault();
+    const idCompetencia = $('#modalInscribirEvento').data('id_competencia');
+    
+    const datos = new FormData(this);
+    datos.append("accion", "inscribir_atletas");
+    datos.append("id_competencia", idCompetencia);
+
+    const atletasSeleccionados = [];
+    $("#tablaParticipantesInscripcion input[name='atleta']:checked").each(function () {
+        atletasSeleccionados.push($(this).val());
+    });
+
+    if (atletasSeleccionados.length === 0) {
+        Swal.fire("Error", "Debes seleccionar al menos un atleta", "error");
+        return;
+    }
+
+    atletasSeleccionados.forEach(atleta => {
+        datos.append("atleta[]", atleta);
+    });
+
+    $.ajax({
+        url: "",
+        type: "POST",
+        contentType: false,
+        data: datos,
+        processData: false,
+        cache: false,
+        success: function (respuesta) {
+            try {
+                const result = JSON.parse(respuesta);
+                if (result.ok) {
+                    Swal.fire("Éxito", result.mensaje, "success");
+                    $('#modalInscribirEvento').modal('hide');
+                    cargarEventos();
+                } else {
+                    Swal.fire("Error", result.mensaje, "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Hubo un error al procesar la respuesta", "error");
+            }
+        },
+        error: function () {
+            Swal.fire("Error", "Error en la solicitud AJAX para inscribir atletas", "error");
+        }
+    });
+});
 
 function validarEnvio(formId) {
     let esValido = true;
@@ -396,9 +445,53 @@ $("#in_date_start, #in_date_end").on("change", function () {
 // Inscribir Participantes
 $('#modalInscribirEvento').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget);
-    const id_competencia = button.data('id');
-    cargarAtletasDisponibles(id_competencia);
+    const idCompetencia = button.data('id');
+    $('#modalInscribirEvento').data('id_competencia', idCompetencia);
+
+    const datos = new FormData();
+    datos.append("accion", "listado_atletas_disponibles");
+    datos.append("id_competencia", idCompetencia);
+
+    $.ajax({
+        url: "",
+        type: "POST",
+        contentType: false,
+        data: datos,
+        processData: false,
+        cache: false,
+        success: function (respuesta) {
+            try {
+                const result = JSON.parse(respuesta);
+                if (result.ok) {
+                    actualizarTablaAtletas(result.respuesta); 
+                } else {
+                    Swal.fire("Error", "No se pudieron cargar los atletas disponibles", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Algo salió mal al cargar los atletas disponibles", "error");
+            }
+        },
+        error: function () {
+            Swal.fire("Error", "Error en la solicitud AJAX para cargar atletas disponibles", "error");
+        }
+    });
 });
+
+$('#modalRegistrarResultados').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const idCompetencia = button.data('id-competencia');
+    const idAtleta = button.data('id-atleta');
+    const nombreAtleta = button.closest('tr').find('td:eq(1)').text();
+    const cedulaAtleta = button.closest('tr').find('td:eq(2)').text();
+
+    $('#nombreAtletaResultados').text(nombreAtleta);
+    $('#cedulaAtletaResultados').text(cedulaAtleta);
+
+    $('#formRegistrarResultados').data('id-competencia', idCompetencia);
+    $('#formRegistrarResultados').data('id-atleta', idAtleta);
+});
+
+
 
 function cargarAtletasDisponibles(id_competencia) {
     const datos = new FormData();
@@ -426,6 +519,46 @@ function cargarAtletasDisponibles(id_competencia) {
         },
         error: function () {
             Swal.fire("Error", "Error en la solicitud AJAX para cargar atletas disponibles", "error");
+        }
+    });
+}
+function cerrarEvento(idCompetencia) {
+    Swal.fire({
+        title: '¿Estás seguro de cerrar este evento?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cerrar',
+        cancelButtonText: 'No, cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const datos = new FormData();
+            datos.append("accion", "cerrar_evento");
+            datos.append("id_competencia", idCompetencia);
+
+            $.ajax({
+                url: "",
+                type: "POST",
+                contentType: false,
+                data: datos,
+                processData: false,
+                cache: false,
+                success: function (respuesta) {
+                    try {
+                        const result = JSON.parse(respuesta);
+                        if (result.ok) {
+                            Swal.fire("Éxito", "Evento cerrado con éxito", "success");
+                            cargarEventos(); // Actualiza el listado de eventos
+                        } else {
+                            Swal.fire("Error", result.mensaje, "error");
+                        }
+                    } catch (error) {
+                        Swal.fire("Error", "Error al procesar la respuesta", "error");
+                    }
+                },
+                error: function () {
+                    Swal.fire("Error", "Error en la solicitud AJAX", "error");
+                }
+            });
         }
     });
 }
@@ -543,6 +676,8 @@ $('#modalVerEventoActivo').on('show.bs.modal', function (event) {
 function actualizarTablaInscritos(atletas) {
     let filas = "";
     atletas.forEach((atleta, index) => {
+        const resultadoRegistrado = atleta.resultado_registrado; // Campo que indica si ya tiene resultados registrados
+
         filas += `
             <tr>
                 <td>${index + 1}</td>
@@ -551,13 +686,64 @@ function actualizarTablaInscritos(atletas) {
                 <td>${calcularEdad(atleta.fecha_nacimiento)}</td>
                 <td>${atleta.peso} kg</td>
                 <td>${atleta.altura} cm</td>
-                                   <td><button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRegistrarResultados" data-id-competencia="${atleta.id_competencia}" data-id-atleta="${atleta.cedula}">Registrar Resultados</button></td>
-                </tr>
-            `;
-        });
+                <td>
+                    ${resultadoRegistrado ? 
+                        `<button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalModificarResultados" data-id-competencia="${atleta.id_competencia}" data-id-atleta="${atleta.cedula}">Modificar Resultados</button>` : 
+                        `<button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalRegistrarResultados" data-id-competencia="${atleta.id_competencia}" data-id-atleta="${atleta.cedula}">Registrar Resultados</button>`
+                    }
+                </td>
+            </tr>
+        `;
+    });
 
-        $('#tablaParticipantes tbody').html(filas);
-    }
+    $('#tablaParticipantes tbody').html(filas);
+}
+
+$('#modalModificarResultados').on('show.bs.modal', function (event) {
+    const button = $(event.relatedTarget);
+    const idCompetencia = button.data('id-competencia');
+    const idAtleta = button.data('id-atleta');
+    
+    // Petición AJAX para obtener los resultados actuales del atleta
+    const datos = new FormData();
+    datos.append("accion", "obtener_resultados");
+    datos.append("id_competencia", idCompetencia);
+    datos.append("id_atleta", idAtleta);
+
+    $.ajax({
+        url: "",
+        type: "POST",
+        contentType: false,
+        data: datos,
+        processData: false,
+        cache: false,
+        success: function (respuesta) {
+            try {
+                const result = JSON.parse(respuesta);
+                if (result.ok) {
+                    // Llenar los campos del formulario con los resultados existentes
+                    $('#arranque_modificar').val(result.respuesta.arranque);
+                    $('#envion_modificar').val(result.respuesta.envion);
+                    $('#medalla_arranque_modificar').val(result.respuesta.medalla_arranque);
+                    $('#medalla_envion_modificar').val(result.respuesta.medalla_envion);
+                    $('#medalla_total_modificar').val(result.respuesta.medalla_total);
+                    $('#total_modificar').val(result.respuesta.total);
+
+                    // Llenar los datos del atleta en el modal
+                    $('#nombreAtletaModificarResultados').text(result.respuesta.nombre_atleta);
+                    $('#cedulaAtletaModificarResultados').text(result.respuesta.cedula_atleta);
+                } else {
+                    Swal.fire("Error", "No se pudieron cargar los resultados del atleta", "error");
+                }
+            } catch (error) {
+                Swal.fire("Error", "Error al procesar la respuesta de resultados", "error");
+            }
+        },
+        error: function () {
+            Swal.fire("Error", "Error en la solicitud AJAX para cargar los resultados", "error");
+        }
+    });
+});
 
     // Abrir modal de registrar resultados y cargar datos del atleta
     $('#modalRegistrarResultados').on('show.bs.modal', function (event) {
@@ -569,6 +755,51 @@ function actualizarTablaInscritos(atletas) {
         $('#formRegistrarResultados').data('id-atleta', idAtleta);
     });
 
+// Lógica para calcular el total automáticamente
+$('#arranque, #envion').on('input', function() {
+    const arranque = parseFloat($('#arranque').val()) || 0;
+    const envion = parseFloat($('#envion').val()) || 0;
+    const total = arranque + envion;
+    $('#total').val(total);
+});
+
+    $('#formRegistrarResultados').on('submit', function (e) {
+        e.preventDefault();
+    
+        const idCompetencia = $(this).data('id-competencia');
+        const idAtleta = $(this).data('id-atleta');
+    
+        const datos = new FormData(this);
+        datos.append("accion", "registrar_resultados");
+        datos.append("id_competencia", idCompetencia);
+        datos.append("id_atleta", idAtleta);
+    
+        $.ajax({
+            url: "",
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                try {
+                    const result = JSON.parse(respuesta);
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Resultados registrados con éxito", "success");
+                        $('#modalRegistrarResultados').modal('hide');
+                    } else {
+                        Swal.fire("Error", result.mensaje, "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Algo salió mal al registrar los resultados", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Error en la solicitud AJAX para registrar resultados", "error");
+            }
+        });
+    });
+    
     // Registrar resultados
     $('#formRegistrarResultados').on('submit', function (e) {
         e.preventDefault();
@@ -605,7 +836,44 @@ function actualizarTablaInscritos(atletas) {
             }
         });
     });
-
+    $('#formModificarResultados').on('submit', function (e) {
+        e.preventDefault();
+    
+        const idCompetencia = $(this).data('id-competencia');
+        const idAtleta = $(this).data('id-atleta');
+    
+        const datos = new FormData(this);
+        datos.append("accion", "modificar_resultados");
+        datos.append("id_competencia", idCompetencia);
+        datos.append("id_atleta", idAtleta);
+    
+        $.ajax({
+            url: "",
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                try {
+                    const result = JSON.parse(respuesta);
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Resultados modificados con éxito", "success");
+                        $('#modalModificarResultados').modal('hide');
+                        cargarEventos();  
+                    } else {
+                        Swal.fire("Error", result.mensaje, "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Algo salió mal al modificar los resultados", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Error en la solicitud AJAX para modificar resultados", "error");
+            }
+        });
+    });
+    
     function calcularEdad(fechaNacimiento) {
         const hoy = new Date();
         const nacimiento = new Date(fechaNacimiento);
@@ -615,5 +883,5 @@ function actualizarTablaInscritos(atletas) {
             edad--;
         }
         return edad;
-    }
+    }    
 });
