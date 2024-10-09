@@ -31,8 +31,7 @@ $(document).ready(function () {
         let listadoEventos = "";
         eventos.forEach(evento => {
             listadoEventos += `
-            
-                <div class="col-md-4">
+                <div class="col-md-3 mb-4 d-flex align-items-stretch">
                     <div class="card border-primary">
                         <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>${evento.nombre}</strong></small></div>
                         <div class="row g-0">
@@ -52,18 +51,19 @@ $(document).ready(function () {
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento" data-id="${evento.id_competencia}">Inscribir</button>
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEventoActivoModificar">Modificar</button>
                                         <button class="btn btn-outline-danger btn-sm" data-id="${evento.id_competencia}" onclick="cerrarEvento(${evento.id_competencia})">Cerrar</button>
-                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-           
-        `;
-    });
-
-    $(".container .row:last").html(listadoEventos);
-}
+            `;
+        });
+    
+        // Inserta los eventos en el contenedor con el ID "lista-eventos"
+        $("#lista-eventos").html(listadoEventos);
+    }
+    
 
 cargarEventos();
 
