@@ -1,14 +1,33 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 20-10-2024 a las 18:59:16
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Base de datos: `gymsys`
+--
 CREATE DATABASE IF NOT EXISTS `gymsys` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `gymsys`;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `asistencias`
+--
 
 CREATE TABLE `asistencias` (
   `id_atleta` varchar(10) NOT NULL,
@@ -17,8 +36,18 @@ CREATE TABLE `asistencias` (
   `comentario` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `asistencias`
+--
+
 INSERT INTO `asistencias` (`id_atleta`, `asistio`, `fecha`, `comentario`) VALUES
 ('9252463', 1, '2024-07-20', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `atleta`
+--
 
 CREATE TABLE `atleta` (
   `cedula` varchar(10) NOT NULL,
@@ -27,6 +56,10 @@ CREATE TABLE `atleta` (
   `peso` decimal(6,2) NOT NULL,
   `altura` decimal(6,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `atleta`
+--
 
 INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`) VALUES
 ('23124144', '22222222', 1, 75.00, 24.00),
@@ -42,27 +75,106 @@ INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`) V
 ('68281580', '22222222', 1, 75.00, 24.00),
 ('68281581', '22222222', 1, 75.00, 24.00),
 ('682815811', '22222222', 1, 75.00, 24.00),
-('682815813', '22222222', 1, 75.00, 24.00),
-('682815815', '22222222', 1, 75.00, 24.00),
-('682815818', '22222222', 1, 75.00, 24.00),
-('682815819', '22222222', 1, 75.00, 24.00),
 ('68281582', '22222222', 1, 75.00, 24.00),
-('9252463', '22222222', 0, 73.00, 100.00);
+('9252463', '22222222', 0, 73.00, 100.00),
+('99389012', '22222222', 0, 12.00, 223.00);
+
+--
+-- Disparadores `atleta`
+--
+DELIMITER $$
+CREATE TRIGGER `after_atleta_create` AFTER INSERT ON `atleta` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Atletas', @usuario_actual, NEW.cedula, CONCAT('Se agregó el Atleta: ', NEW.cedula, ' - ', @nombre_usuario, ' ', @apellido_usuario));
+    SET @nombre_usuario = NULL;
+    SET @apellido_usuario = NULL;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_atleta_delete` AFTER DELETE ON `atleta` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (id_usuario, accion, modulo, usuario_modificado)
+    VALUES (@usuario_actual, 'Elminar', 'Atletas', OLD.cedula);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_atleta_update` AFTER UPDATE ON `atleta` FOR EACH ROW BEGIN
+    IF OLD.entrenador != NEW.entrenador THEN
+        SET @cambios = CONCAT(@cambios, 'Entrenador cambiado de "', OLD.entrenador, '" a "', NEW.entrenador, '"; ');
+    END IF;
+    IF OLD.tipo_atleta != NEW.tipo_atleta THEN
+        SET @cambios = CONCAT(@cambios, 'Tipo de atleta cambiado de "', OLD.tipo_atleta, '" a "', NEW.tipo_atleta, '"; ');
+    END IF;
+    IF OLD.peso != NEW.peso THEN
+        SET @cambios = CONCAT(@cambios, 'Peso cambiado de "', OLD.peso, '" a "', NEW.peso, '"; ');
+    END IF;
+    IF OLD.altura != NEW.altura THEN
+        SET @cambios = CONCAT(@cambios, 'Altura cambiado de "', OLD.altura, '" a "', NEW.altura, '"; ');
+    END IF;
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Modificar', 'Atletas', @usuario_actual, OLD.cedula, @cambios);
+    SET @cambios = NULL;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bitacora`
+--
 
 CREATE TABLE `bitacora` (
   `id_accion` int(50) NOT NULL,
   `id_usuario` varchar(10) NOT NULL,
   `accion` varchar(100) NOT NULL,
+  `modulo` varchar(50) NOT NULL,
   `usuario_modificado` varchar(10) DEFAULT NULL,
-  `valor_cambiado` varchar(100) DEFAULT NULL,
-  `fecha` date NOT NULL DEFAULT current_timestamp()
+  `detalles` varchar(500) DEFAULT NULL,
+  `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `usuario_modificado`, `valor_cambiado`, `fecha`) VALUES
-(3, '22222222', 'elimino', '28609560', NULL, '2024-07-20'),
-(16, '22222222', 'Agregó', '42342344', NULL, '2024-07-20'),
-(17, '22222222', 'Agregó', '3376883', NULL, '2024-07-20'),
-(18, '22222222', 'Agregó un atleta', '6759472', NULL, '2024-07-20');
+--
+-- Volcado de datos para la tabla `bitacora`
+--
+
+INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_modificado`, `detalles`, `fecha`) VALUES
+(3, '22222222', 'elimino', '', '28609560', NULL, '2024-07-20 04:00:00'),
+(16, '22222222', 'Agregó', '', '42342344', NULL, '2024-07-20 04:00:00'),
+(17, '22222222', 'Agregó', '', '3376883', NULL, '2024-07-20 04:00:00'),
+(18, '22222222', 'Agregó un atleta', '', '6759472', NULL, '2024-07-20 04:00:00'),
+(19, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(20, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(21, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(22, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(23, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(24, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(25, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(26, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(27, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(28, '22222222', 'Modificó atleta', '', NULL, NULL, '2024-08-18 04:00:00'),
+(29, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(30, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(31, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(33, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-08-18 04:00:00'),
+(35, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-10-11 04:00:00'),
+(36, '22222222', 'Entró al modulo \'Atletas\'', '', NULL, NULL, '2024-10-11 04:00:00'),
+(37, '22222222', 'Elminó al atleta', '', NULL, NULL, '2024-10-12 04:00:00'),
+(38, '22222222', 'Elminó al atleta', '', '682815813', NULL, '2024-10-17 04:00:00'),
+(39, '22222222', 'Incluir', 'Atletas', '26773645', 'Se agregó el Atleta: 26773645 - Junsey magra', '2024-10-17 04:00:00'),
+(40, '22222222', 'Incluir', 'Atletas', '99389012', 'Se agregó el Atleta: 99389012 - pepito fulanito', '2024-10-18 04:00:00'),
+(41, '22222222', 'Modificar', 'Atletas', '26773645', 'Nombre cambiado de \"Junsey\" a \"Jusdney\"; Apellido cambiado de \"magra\" a \"Maclovin\"; Estado civil cambiado de \"Soltero\" a \"Casado\"; Tipo de atleta cambiado de \"0\" a \"1\"; Peso cambiado de \"44.00\" a \"43.00\"; ', '2024-10-18 04:00:00'),
+(42, '22222222', 'Modificar', 'Atletas', '26773645', 'Correo electrónico cambiado de \"jusney2331@gmail.com\" a \"jusney12331@gmail.com\"; Altura cambiado de \"200.00\" a \"222.00\"; ', '2024-10-18 04:00:00'),
+(43, '22222222', 'Elminar', 'Atletas', '26773645', NULL, '2024-10-18 04:00:00'),
+(44, '22222222', 'Modificar', 'Atletas', '682815811', 'Telefono cambiado de \"04436386697\" a \"04436386698\"; ', '2024-10-18 04:00:00'),
+(45, '22222222', 'Modificar', 'Atletas', '682815811', 'Fecha de nacimiento cambiada de \"1996-03-04\" a \"1996-03-20\"; ', '2024-10-19 01:37:15');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `categorias`
+--
 
 CREATE TABLE `categorias` (
   `id_categoria` int(5) NOT NULL,
@@ -70,6 +182,12 @@ CREATE TABLE `categorias` (
   `peso_minimo` decimal(10,2) NOT NULL,
   `peso_maximo` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `competencia`
+--
 
 CREATE TABLE `competencia` (
   `id_competencia` int(50) NOT NULL,
@@ -82,13 +200,51 @@ CREATE TABLE `competencia` (
   `fecha_fin` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `entrenador`
+--
+
 CREATE TABLE `entrenador` (
   `cedula` varchar(10) NOT NULL,
   `grado_instruccion` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `entrenador`
+--
+
 INSERT INTO `entrenador` (`cedula`, `grado_instruccion`) VALUES
 ('22222222', 'dsffdfsdf');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `lista_atletas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `lista_atletas` (
+`cedula` varchar(10)
+,`nombre` varchar(50)
+,`apellido` varchar(50)
+,`genero` varchar(30)
+,`fecha_nacimiento` date
+,`lugar_nacimiento` varchar(50)
+,`estado_civil` varchar(50)
+,`telefono` varchar(15)
+,`correo_electronico` varchar(50)
+,`tipo_atleta` int(11)
+,`peso` decimal(6,2)
+,`altura` decimal(6,2)
+,`entrenador` varchar(10)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `marcas`
+--
 
 CREATE TABLE `marcas` (
   `id_marca` int(10) NOT NULL,
@@ -97,6 +253,12 @@ CREATE TABLE `marcas` (
   `envion` decimal(10,2) NOT NULL,
   `total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `mensualidades`
+--
 
 CREATE TABLE `mensualidades` (
   `id_mensualidad` int(50) NOT NULL,
@@ -107,13 +269,27 @@ CREATE TABLE `mensualidades` (
   `cobro` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `mensualidades`
+--
+
 INSERT INTO `mensualidades` (`id_mensualidad`, `id_atleta`, `fecha`, `tipo`, `monto`, `cobro`) VALUES
 (3, '9252463', '2024-07-26', 0, 23.00, 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `modulos`
+--
 
 CREATE TABLE `modulos` (
   `id_modulo` int(50) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `modulos`
+--
 
 INSERT INTO `modulos` (`id_modulo`, `nombre`) VALUES
 (1, 'entrenadores'),
@@ -126,6 +302,12 @@ INSERT INTO `modulos` (`id_modulo`, `nombre`) VALUES
 (8, 'reportes'),
 (9, 'bitacora');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `permisos`
+--
+
 CREATE TABLE `permisos` (
   `id_rol` int(50) NOT NULL,
   `modulo` int(50) NOT NULL,
@@ -134,6 +316,10 @@ CREATE TABLE `permisos` (
   `actualizar` tinyint(4) NOT NULL,
   `eliminar` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `permisos`
+--
 
 INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `eliminar`) VALUES
 (1, 1, 1, 1, 1, 0),
@@ -148,12 +334,24 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (30, 8, 0, 1, 0, 0),
 (30, 9, 1, 1, 0, 0);
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `representantes`
+--
+
 CREATE TABLE `representantes` (
   `cedula` varchar(10) NOT NULL,
   `id_atleta` varchar(10) NOT NULL,
   `nombre_completo` varchar(100) NOT NULL,
   `telefono` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `resultado_competencia`
+--
 
 CREATE TABLE `resultado_competencia` (
   `id_competencia` int(10) NOT NULL,
@@ -166,15 +364,31 @@ CREATE TABLE `resultado_competencia` (
   `total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
 CREATE TABLE `roles` (
   `id_rol` int(50) NOT NULL,
   `nombre` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `roles`
+--
+
 INSERT INTO `roles` (`id_rol`, `nombre`) VALUES
 (0, 'atleta'),
 (1, 'entrenador'),
 (30, 'rol prueba');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `subs`
+--
 
 CREATE TABLE `subs` (
   `id_sub` int(5) NOT NULL,
@@ -183,10 +397,22 @@ CREATE TABLE `subs` (
   `edad_maxima` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_competencia`
+--
+
 CREATE TABLE `tipo_competencia` (
   `id_tipo_competencia` int(5) NOT NULL,
   `nombre` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
 
 CREATE TABLE `usuarios` (
   `cedula` varchar(10) NOT NULL,
@@ -199,6 +425,10 @@ CREATE TABLE `usuarios` (
   `telefono` varchar(15) NOT NULL,
   `correo_electronico` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
 ('22222222', 'jugneys', 'dfdfdf', 'Masculino', '2002-07-15', 'sdfdsfdfds', 'Soltero', '04245681343', 'dsfdsfd@gmail.com'),
@@ -215,13 +445,60 @@ INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimie
 ('6828158', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
 ('68281580', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
 ('68281581', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815811', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815813', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815815', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815818', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815819', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('682815811', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-20', 'Ut quaerat eveniet ', 'Viudo', '04436386698', 'zuda@mailinator.com'),
 ('68281582', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('9252463', 'Reprehenderit fuga ', 'Sit impedit vero in', 'Masculino', '1989-03-13', 'Et accusantium maior', 'Viudo', '04559403067', 'lodujobyqa@mailinator.com');
+('9252463', 'Reprehenderit fuga ', 'Sit impedit vero in', 'Masculino', '1989-03-13', 'Et accusantium maior', 'Viudo', '04559403067', 'lodujobyqa@mailinator.com'),
+('99389012', 'pepito', 'fulanito', 'Masculino', '2000-02-08', 'maracay', 'Soltero', '04555555555', 'dieodollo12@ooglo.com');
+
+--
+-- Disparadores `usuarios`
+--
+DELIMITER $$
+CREATE TRIGGER `after_usuario_create` AFTER INSERT ON `usuarios` FOR EACH ROW BEGIN
+    SET @nombre_usuario = NEW.nombre;
+    SET @apellido_usuario = NEW.apellido;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_usuario_update` AFTER UPDATE ON `usuarios` FOR EACH ROW BEGIN
+    SET @cambios = '';
+    IF OLD.cedula != NEW.cedula THEN
+        SET @cambios = CONCAT(@cambios, 'Cedula cambiada de "', OLD.cedula, '" a "', NEW.cedula, '"; ');
+    END IF;
+    IF OLD.nombre != NEW.nombre THEN
+        SET @cambios = CONCAT(@cambios, 'Nombre cambiado de "', OLD.nombre, '" a "', NEW.nombre, '"; ');
+    END IF;
+    IF OLD.apellido != NEW.apellido THEN
+        SET @cambios = CONCAT(@cambios, 'Apellido cambiado de "', OLD.apellido, '" a "', NEW.apellido, '"; ');
+    END IF;
+    IF OLD.genero != NEW.genero THEN
+        SET @cambios = CONCAT(@cambios, 'Genero cambiado de "', OLD.genero, '" a "', NEW.genero, '"; ');
+    END IF;
+    IF OLD.fecha_nacimiento != NEW.fecha_nacimiento THEN
+        SET @cambios = CONCAT(@cambios, 'Fecha de nacimiento cambiada de "', OLD.fecha_nacimiento, '" a "', NEW.fecha_nacimiento, '"; ');
+    END IF;
+    IF OLD.lugar_nacimiento != NEW.lugar_nacimiento THEN
+        SET @cambios = CONCAT(@cambios, 'Lugar de nacimiento cambiado de "', OLD.lugar_nacimiento, '" a "', NEW.lugar_nacimiento, '"; ');
+    END IF;
+    IF OLD.estado_civil != NEW.estado_civil THEN
+        SET @cambios = CONCAT(@cambios, 'Estado civil cambiado de "', OLD.estado_civil, '" a "', NEW.estado_civil, '"; ');
+    END IF;
+    IF OLD.telefono != NEW.telefono THEN
+        SET @cambios = CONCAT(@cambios, 'Telefono cambiado de "', OLD.telefono, '" a "', NEW.telefono, '"; ');
+    END IF;
+    IF OLD.correo_electronico != NEW.correo_electronico THEN
+        SET @cambios = CONCAT(@cambios, 'Correo electrónico cambiado de "', OLD.correo_electronico, '" a "', NEW.correo_electronico, '"; ');
+    END IF;
+END
+$$
+DELIMITER ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios_roles`
+--
 
 CREATE TABLE `usuarios_roles` (
   `id_usuario` varchar(10) NOT NULL,
@@ -229,6 +506,10 @@ CREATE TABLE `usuarios_roles` (
   `password` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios_roles`
+--
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
 ('22222222', 30, '$2y$10$syf4uVv4j1iML9whitgx2.ylZwVlWhUHrA7zFhvMyP0qqpzD6yNWO', '0'),
@@ -245,12 +526,15 @@ INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUE
 ('68281580', 0, '$2y$10$hvCMlvd9BEFiyXbdghtz.eikWnVVyv.0XRGYLPIX/dlwhOAd6oia6', '0'),
 ('68281581', 0, '$2y$10$QxgU9C2kdQnmURdS.YhOkORUbk33RyNPXBS6MCjfgOCBpF1fY6yY2', '0'),
 ('682815811', 0, '$2y$10$JQ4ytSeERzWg5630.qYZRuDLmRBM219/ABuAAAoJve52TsELtR1tW', '0'),
-('682815813', 0, '$2y$10$56Ny5itgre8c7qEyejeGf.cN64g0MOWK0oEm5461cR1UXCpgQ5d4S', '0'),
-('682815815', 0, '$2y$10$gyjv.k/2GA8PVklPv8VtcOylHuUrvtF2ykym2vrzMK/rbazY7ZmPS', '0'),
-('682815818', 0, '$2y$10$s9EfBbzTfXgumE5NZAKzvu8QshZq.Ic1O0uuZ7ytk7V6L4GyZhEcC', '0'),
-('682815819', 0, '$2y$10$t3YdC2hn7OuC0a6yzWFf/O8D6w8Z5C5ty6.F6jLT/EplLOna3NUCa', '0'),
 ('68281582', 0, '$2y$10$IegZMzWD3iDEV7Zxu5Z8k.rX.pg1ib8jPSd2k57kz4QXzar8XiuWO', '0'),
-('9252463', 0, '$2y$10$HKTnPY5Ndj4ljvylWoszouAsfl8RyRll5pSpZOUmQI7Wb9i.9SibO', '0');
+('9252463', 0, '$2y$10$HKTnPY5Ndj4ljvylWoszouAsfl8RyRll5pSpZOUmQI7Wb9i.9SibO', '0'),
+('99389012', 0, '$2y$10$BRdgyLi2EP6cQlyfq4eeXugzCaY0QucArbuz2b0MVjSS9dMSOG0yW', '0');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `wada`
+--
 
 CREATE TABLE `wada` (
   `id_atleta` varchar(10) NOT NULL,
@@ -260,147 +544,287 @@ CREATE TABLE `wada` (
   `estado` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `wada`
+--
+
 INSERT INTO `wada` (`id_atleta`, `inscrito`, `vencimiento`, `ultima_actualizacion`, `estado`) VALUES
 ('9252463', '2024-07-20', '2024-08-10', '2024-07-20', 1);
 
+-- --------------------------------------------------------
 
+--
+-- Estructura para la vista `lista_atletas`
+--
+DROP TABLE IF EXISTS `lista_atletas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `lista_atletas`  AS SELECT `u`.`cedula` AS `cedula`, `u`.`nombre` AS `nombre`, `u`.`apellido` AS `apellido`, `u`.`genero` AS `genero`, `u`.`fecha_nacimiento` AS `fecha_nacimiento`, `u`.`lugar_nacimiento` AS `lugar_nacimiento`, `u`.`estado_civil` AS `estado_civil`, `u`.`telefono` AS `telefono`, `u`.`correo_electronico` AS `correo_electronico`, `a`.`tipo_atleta` AS `tipo_atleta`, `a`.`peso` AS `peso`, `a`.`altura` AS `altura`, `a`.`entrenador` AS `entrenador` FROM (`atleta` `a` join `usuarios` `u` on(`a`.`cedula` = `u`.`cedula`)) ORDER BY `u`.`cedula` DESC ;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `asistencias`
+--
 ALTER TABLE `asistencias`
   ADD KEY `id_atleta` (`id_atleta`);
 
+--
+-- Indices de la tabla `atleta`
+--
 ALTER TABLE `atleta`
   ADD UNIQUE KEY `cedula` (`cedula`),
   ADD KEY `entrenador` (`entrenador`);
 
+--
+-- Indices de la tabla `bitacora`
+--
 ALTER TABLE `bitacora`
   ADD PRIMARY KEY (`id_accion`),
-  ADD KEY `id_usuario` (`id_usuario`),
-  ADD KEY `usuario_modificado` (`usuario_modificado`);
+  ADD KEY `id_usuario` (`id_usuario`);
 
+--
+-- Indices de la tabla `categorias`
+--
 ALTER TABLE `categorias`
   ADD PRIMARY KEY (`id_categoria`);
 
+--
+-- Indices de la tabla `competencia`
+--
 ALTER TABLE `competencia`
   ADD PRIMARY KEY (`id_competencia`),
   ADD KEY `categoria` (`categoria`),
   ADD KEY `subs` (`subs`),
   ADD KEY `tipo_competicion` (`tipo_competicion`);
 
+--
+-- Indices de la tabla `entrenador`
+--
 ALTER TABLE `entrenador`
   ADD UNIQUE KEY `cedula` (`cedula`);
 
+--
+-- Indices de la tabla `marcas`
+--
 ALTER TABLE `marcas`
   ADD PRIMARY KEY (`id_marca`),
   ADD KEY `id_atleta` (`id_atleta`);
 
+--
+-- Indices de la tabla `mensualidades`
+--
 ALTER TABLE `mensualidades`
   ADD PRIMARY KEY (`id_mensualidad`),
   ADD KEY `id_atleta` (`id_atleta`);
 
+--
+-- Indices de la tabla `modulos`
+--
 ALTER TABLE `modulos`
   ADD PRIMARY KEY (`id_modulo`);
 
+--
+-- Indices de la tabla `permisos`
+--
 ALTER TABLE `permisos`
   ADD KEY `id_rol` (`id_rol`),
   ADD KEY `modulo` (`modulo`);
 
+--
+-- Indices de la tabla `representantes`
+--
 ALTER TABLE `representantes`
   ADD UNIQUE KEY `id_atleta` (`id_atleta`);
 
+--
+-- Indices de la tabla `resultado_competencia`
+--
 ALTER TABLE `resultado_competencia`
   ADD PRIMARY KEY (`id_competencia`),
   ADD KEY `id_atleta` (`id_atleta`);
 
+--
+-- Indices de la tabla `roles`
+--
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id_rol`);
 
+--
+-- Indices de la tabla `subs`
+--
 ALTER TABLE `subs`
   ADD PRIMARY KEY (`id_sub`);
 
+--
+-- Indices de la tabla `tipo_competencia`
+--
 ALTER TABLE `tipo_competencia`
   ADD PRIMARY KEY (`id_tipo_competencia`);
 
+--
+-- Indices de la tabla `usuarios`
+--
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`cedula`);
 
+--
+-- Indices de la tabla `usuarios_roles`
+--
 ALTER TABLE `usuarios_roles`
   ADD UNIQUE KEY `id_usuario` (`id_usuario`),
   ADD KEY `id_rol` (`id_rol`);
 
+--
+-- Indices de la tabla `wada`
+--
 ALTER TABLE `wada`
   ADD UNIQUE KEY `id_atleta` (`id_atleta`) USING BTREE;
 
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
 
+--
+-- AUTO_INCREMENT de la tabla `bitacora`
+--
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
+--
+-- AUTO_INCREMENT de la tabla `categorias`
+--
 ALTER TABLE `categorias`
   MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `competencia`
+--
 ALTER TABLE `competencia`
   MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `marcas`
+--
 ALTER TABLE `marcas`
   MODIFY `id_marca` int(10) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `mensualidades`
+--
 ALTER TABLE `mensualidades`
   MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
+--
+-- AUTO_INCREMENT de la tabla `modulos`
+--
 ALTER TABLE `modulos`
   MODIFY `id_modulo` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
+--
+-- AUTO_INCREMENT de la tabla `resultado_competencia`
+--
 ALTER TABLE `resultado_competencia`
   MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
 ALTER TABLE `roles`
   MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
+--
+-- AUTO_INCREMENT de la tabla `subs`
+--
 ALTER TABLE `subs`
   MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT;
 
+--
+-- AUTO_INCREMENT de la tabla `tipo_competencia`
+--
 ALTER TABLE `tipo_competencia`
   MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT;
 
+--
+-- Restricciones para tablas volcadas
+--
 
+--
+-- Filtros para la tabla `asistencias`
+--
 ALTER TABLE `asistencias`
   ADD CONSTRAINT `asistencias_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `atleta`
+--
 ALTER TABLE `atleta`
   ADD CONSTRAINT `atleta_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE,
   ADD CONSTRAINT `atleta_ibfk_2` FOREIGN KEY (`entrenador`) REFERENCES `entrenador` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `bitacora`
+--
 ALTER TABLE `bitacora`
-  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `bitacora_ibfk_2` FOREIGN KEY (`usuario_modificado`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `bitacora_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `competencia`
+--
 ALTER TABLE `competencia`
   ADD CONSTRAINT `competencia_ibfk_1` FOREIGN KEY (`tipo_competicion`) REFERENCES `tipo_competencia` (`id_tipo_competencia`) ON UPDATE CASCADE,
   ADD CONSTRAINT `competencia_ibfk_2` FOREIGN KEY (`categoria`) REFERENCES `categorias` (`id_categoria`) ON UPDATE CASCADE,
   ADD CONSTRAINT `competencia_ibfk_3` FOREIGN KEY (`subs`) REFERENCES `subs` (`id_sub`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `entrenador`
+--
 ALTER TABLE `entrenador`
   ADD CONSTRAINT `entrenador_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `marcas`
+--
 ALTER TABLE `marcas`
   ADD CONSTRAINT `marcas_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `mensualidades`
+--
 ALTER TABLE `mensualidades`
   ADD CONSTRAINT `mensualidades_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `permisos`
+--
 ALTER TABLE `permisos`
   ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permisos_ibfk_2` FOREIGN KEY (`modulo`) REFERENCES `modulos` (`id_modulo`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `representantes`
+--
 ALTER TABLE `representantes`
   ADD CONSTRAINT `representantes_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `resultado_competencia`
+--
 ALTER TABLE `resultado_competencia`
   ADD CONSTRAINT `resultado_competencia_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE,
   ADD CONSTRAINT `resultado_competencia_ibfk_2` FOREIGN KEY (`id_competencia`) REFERENCES `competencia` (`id_competencia`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `usuarios_roles`
+--
 ALTER TABLE `usuarios_roles`
   ADD CONSTRAINT `usuarios_roles_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON UPDATE CASCADE,
   ADD CONSTRAINT `usuarios_roles_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE;
 
+--
+-- Filtros para la tabla `wada`
+--
 ALTER TABLE `wada`
   ADD CONSTRAINT `wada_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 COMMIT;

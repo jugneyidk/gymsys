@@ -43,7 +43,7 @@ class Bitacora extends datos
     private function listado()
     {
         try {
-            $consulta = "SELECT * FROM `bitacora` ORDER BY id_accion DESC";
+            $consulta = "SELECT id_accion, id_usuario, accion, modulo, usuario_modificado, fecha FROM `bitacora` ORDER BY id_accion DESC";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);

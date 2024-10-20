@@ -40,10 +40,8 @@ class Atleta extends datos
     {
         try {
             $this->conexion->beginTransaction();
-
             $id_rol = 0;
             $token = 0;
-
             $consulta = "
                 INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
                 VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
@@ -54,7 +52,6 @@ class Atleta extends datos
                 INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
                 VALUES (:cedula, :id_rol, :password, :token);
             ";
-
             $valores = array(
                 ':cedula' => $this->cedula,
                 ':nombre' => $this->nombres,
@@ -73,18 +70,11 @@ class Atleta extends datos
                 ':password' => $this->password,
                 ':token' => $token
             );
-
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
             $this->conexion->commit();
-            $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Agregó un atleta", $this->cedula, NULL);
-            if ($respuesta_bitacora["ok"]) {
-                $resultado["ok"] = true;
-            } else {
-                throw new Exception();
-            }
+            $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
@@ -96,31 +86,17 @@ class Atleta extends datos
     private function listado()
     {
         try {
-            $consulta = "
-                SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                    u.correo_electronico, 
-                    a.tipo_atleta, 
-                    a.peso, 
-                    a.altura, 
-                    a.entrenador 
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                ORDER BY u.cedula DESC
-            ";
+            $this->conexion->beginTransaction();
+            $consulta = "SELECT * FROM lista_atletas";
             $con = $this->conexion->prepare($consulta);
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_atletas';
             $resultado["respuesta"] = $respuesta;
+            $con->closeCursor();
+            $this->conexion->commit();
+            $this->desconecta();
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -198,7 +174,6 @@ class Atleta extends datos
     {
         try {
             $this->conexion->beginTransaction();
-
             $consulta = "
                 UPDATE usuarios 
                 SET 
@@ -210,8 +185,7 @@ class Atleta extends datos
                     estado_civil = :estado_civil, 
                     telefono = :telefono, 
                     correo_electronico = :correo 
-                WHERE cedula = :cedula;
-        
+                WHERE cedula = :cedula;        
                 UPDATE atleta 
                 SET 
                     entrenador = :id_entrenador, 
@@ -255,8 +229,8 @@ class Atleta extends datos
                 $respuesta2->execute($valores_password);
                 $respuesta2->closeCursor();
             }
-
             $this->conexion->commit();
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
@@ -268,6 +242,11 @@ class Atleta extends datos
 
     public function eliminar_atleta($cedula)
     {
+        $this->cedula = $cedula;
+        return $this->eliminar();
+    }
+    private function eliminar()
+    {
         try {
             $this->conexion->beginTransaction();
             $consulta = "
@@ -275,11 +254,12 @@ class Atleta extends datos
                 DELETE FROM atleta WHERE cedula = :cedula;
                 DELETE FROM usuarios WHERE cedula = :cedula;
             ";
-            $valores = array(':cedula' => $cedula);
+            $valores = array(':cedula' => $this->cedula);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
             $this->conexion->commit();
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
@@ -288,7 +268,6 @@ class Atleta extends datos
         }
         return $resultado;
     }
-
     public function __get($propiedad)
     {
         return $this->$propiedad;

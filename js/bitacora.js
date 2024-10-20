@@ -53,13 +53,12 @@ function actualizarListadoBitacora(bitacora) {
                 <tr>
                 <td class='align-middle text-capitalize'>${elemento.id_usuario}</td>
                     <td class='align-middle text-capitalize'>${elemento.accion}</td>
+                    <td class='align-middle text-capitalize'>${elemento.modulo}</td>
                     <td class='align-middle text-capitalize'>${elemento.fecha}</td>
                     ${elemento.usuario_modificado !== null ? `<td class='align-middle text-capitalize'>${elemento.usuario_modificado}</td>`
                 :
-                `<td class='align-middle text-capitalize'><span class='badge bg-secondary'>No</span></td>`}
-                ${elemento.valor_cambiado !== null ? `<td class='align-middle text-capitalize'>${elemento.valor_cambiado}</td>`
-                :
-                `<td class='align-middle text-capitalize'><span class='badge bg-secondary'>No</span></td>`}                    
+                `<td class='align-middle text-capitalize'><span class='badge bg-secondary'>No</span></td>`}    
+                <td class='align-middle text-capitalize'><button class='btn btn-sm btn-warning'>Ver</button></td>                    
                 </tr>
             `;
     });

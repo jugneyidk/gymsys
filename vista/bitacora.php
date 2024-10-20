@@ -27,9 +27,10 @@
                                                                         <tr>
                                                                                 <th>Usuario</th>
                                                                                 <th>Accion</th>
+                                                                                <th>Modulo</th>
                                                                                 <th>Fecha</th>
                                                                                 <th>Usuario Modificado</th>
-                                                                                <th>Valor Cambiado</th>
+                                                                                <th>Detalles</th>
                                                                         </tr>
                                                                 </thead>
                                                                 <tbody id="listado">

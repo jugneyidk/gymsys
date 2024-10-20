@@ -5,7 +5,7 @@ class Login extends datos
     private $conexion, $id_usuario, $password;
     public function __construct()
     {
-        $this->conexion = $this->conecta(); // inicia la conexion a la db
+        $this->conexion = $this->conecta();
     }
     public function iniciar_sesion($id_usuario,$password){
         $this->id_usuario = $id_usuario;
@@ -15,7 +15,6 @@ class Login extends datos
     private function login()
     {
         if (!empty($this->id_usuario) && !empty($this->password)) {
-            $this->conexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             try {
                 $consulta = "SELECT id_rol, `password` FROM usuarios_roles WHERE id_usuario = :id_usuario";
                 $valores = array(':id_usuario' => $this->id_usuario);
@@ -31,6 +30,7 @@ class Login extends datos
                     $respuesta['resultado'] = false;
                     $respuesta['mensaje'] = "Los datos ingresados son incorrectos";
                 }
+                // $this->desconecta();
                 return $respuesta;
             } catch (Exception $e) {
                 $respuesta['resultado'] = false;
