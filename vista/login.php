@@ -25,17 +25,17 @@
                 <form action="" method="POST" id="login">
                     <div class="form-group">
                         <label for="id_usuario">Usuario:</label>
-                        <input type="text" class="form-control" id="id_usuario" name="id_usuario" >
+                        <input type="text" class="form-control" id="id_usuario" name="id_usuario" tabindex="1">
                         <div id="susuario" class="invalid-feedback"></div>
                     </div>
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
                             <label for="password">Contraseña:</label>
                             <small><a href="#"
-                                    class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover">Olvidé
+                                    class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover" tabindex="3">Olvidé
                                     mi contraseña</a></small>
                         </div>
-                        <input type="password" class="form-control" id="password" name="password" >
+                        <input type="password" class="form-control" id="password" name="password" tabindex="2">
                         <div id="spassword" class="invalid-feedback"></div>
                     </div>
                     <div class="d-grid gap-2">
