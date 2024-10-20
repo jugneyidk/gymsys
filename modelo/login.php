@@ -30,7 +30,7 @@ class Login extends datos
                     $respuesta['resultado'] = false;
                     $respuesta['mensaje'] = "Los datos ingresados son incorrectos";
                 }
-                // $this->desconecta();
+                $this->desconecta();
                 return $respuesta;
             } catch (Exception $e) {
                 $respuesta['resultado'] = false;
