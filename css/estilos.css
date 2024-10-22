@@ -131,7 +131,7 @@ footer a{
     transform: translateY(-50%);
     font-size: 30px;
     color: white;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     border: none;
     padding: 2px;
 }
@@ -180,10 +180,7 @@ footer a{
 .form-group {
     margin-bottom: 15px;
 }
-.card-header {
-    width: 100%;
-    /* margin-top: 10px; */
-}
+
 .table-responsive {
     overflow-x: auto;
 }
@@ -225,16 +222,6 @@ footer a{
 
 .btn-large {
     font-size: 1.2em;
-}
-.btn-primary {
-    background-color: #0062cc;
-    border-color: #005cbf;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #005cbf;
-    transform: scale(1.05); 
 }
  
 .gym-title {

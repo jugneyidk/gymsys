@@ -74,6 +74,7 @@ class Atleta extends datos
             $respuesta->execute($valores);
             $respuesta->closeCursor();
             $this->conexion->commit();
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
@@ -130,7 +131,7 @@ class Atleta extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $atleta = $respuesta->fetch(PDO::FETCH_ASSOC);
-
+            $this->desconecta();
             if ($atleta) {
                 $resultado["ok"] = true;
                 $resultado["atleta"] = $atleta;

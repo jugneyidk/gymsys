@@ -19,27 +19,27 @@ if (isset($_SESSION['rol'])) {
             <a class="nav-link" href="?p=dashboard"><i class="fas fa-house"></i></a>
           </li>
           <?php
-          if ($permisos_navbar[0]["leer"] || $permisos_navbar[1]["leer"] || $permisos_navbar[2]["leer"]) :
+          if (($permisos_navbar[0]["leer"] ?? false) || ($permisos_navbar[1]["leer"] ?? false) || ($permisos_navbar[2]["leer"] ?? false)) :
           ?>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">Gestionar Usuarios</a>
               <div class="dropdown-menu" data-bs-popper="static">
                 <?php
-                if ($permisos_navbar[0]["leer"]) :
+                if (($permisos_navbar[0]["leer"] ?? false)) :
                 ?>
                   <a class="dropdown-item" href="?p=entrenadores">Entrenadores</a>
                 <?php
                 endif;
                 ?>
                 <?php
-                if ($permisos_navbar[1]["leer"]) :
+                if (($permisos_navbar[1]["leer"] ?? false)) :
                 ?>
                   <a class="dropdown-item" href="?p=atletas">Atletas</a>
                 <?php
                 endif;
                 ?>
                 <?php
-                if ($permisos_navbar[2]["leer"]) :
+                if (($permisos_navbar[2]["leer"] ?? false)) :
                 ?>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="?p=rolespermisos">Roles y permisos</a>
@@ -52,7 +52,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[3]["leer"]) :
+          if (($permisos_navbar[3]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=asistencias">Asistencias</a>
@@ -62,7 +62,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[4]["leer"]) :
+          if (($permisos_navbar[4]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=eventos">Eventos/competencia</a>
@@ -71,7 +71,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[5]["leer"]) :
+          if (($permisos_navbar[5]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=mensualidad">Mensualidad</a>
@@ -80,7 +80,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[6]["leer"]) :
+          if (($permisos_navbar[6]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=wada">Status Wada</a>
@@ -89,7 +89,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[7]["leer"]) :
+          if (($permisos_navbar[7]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=reportes">Reportes</a>
@@ -98,7 +98,7 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <?php
-          if ($permisos_navbar[8]["leer"]) :
+          if (($permisos_navbar[8]["leer"] ?? false)) :
           ?>
             <li class="nav-item">
               <a class="nav-link" href="?p=bitacora">Bitacora</a>

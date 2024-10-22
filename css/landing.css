@@ -17,11 +17,6 @@
     margin-right: 5px;
 }
 
-.btn-contacto:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 /* Estilos específicos para cada botón */
 .btn-contacto:first-of-type {
     background-color: #db4437; /* Color de fondo para el correo (Gmail) */

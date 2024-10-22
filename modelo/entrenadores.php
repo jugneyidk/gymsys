@@ -1,6 +1,6 @@
 <?php
 require_once('modelo/datos.php');
-require_once ('modelo/bitacora.php');
+require_once('modelo/bitacora.php');
 class Entrenador extends datos
 {
     private $conexion;
@@ -8,7 +8,7 @@ class Entrenador extends datos
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); 
+        $this->conexion = $this->conecta();
     }
 
     public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
@@ -67,7 +67,7 @@ class Entrenador extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $entrenador = $respuesta->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($entrenador) {
                 $resultado["ok"] = true;
                 $resultado["entrenador"] = $entrenador;
@@ -91,16 +91,15 @@ class Entrenador extends datos
     {
         try {
             $consulta = "
+                DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
                 DELETE FROM entrenador WHERE cedula = :cedula;
                 DELETE FROM usuarios WHERE cedula = :cedula;
-                DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
             ";
             $valores = array(':cedula' => $cedula);
-
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
-
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $resultado["ok"] = false;
@@ -109,14 +108,12 @@ class Entrenador extends datos
         return $resultado;
     }
 
-    private function incluir() 
+    private function incluir()
     {
         try {
             $this->conexion->beginTransaction();
-
-            $id_rol = 1;  
+            $id_rol = 1;
             $token = 0;
-
             $consulta = "
                 INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
                 VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
@@ -127,7 +124,6 @@ class Entrenador extends datos
                 INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
                 VALUES (:cedula, :id_rol, :password, :token);
             ";
-
             $valores = array(
                 ':cedula' => $this->cedula,
                 ':nombre' => $this->nombres,
@@ -143,18 +139,11 @@ class Entrenador extends datos
                 ':password' => $this->password,
                 ':token' => $token
             );
-
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
-            $respuesta->closeCursor(); 
+            $respuesta->closeCursor();
             $this->conexion->commit();
-            $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"],"Agregó un entrenador",$this->cedula,NULL);
-            if($respuesta_bitacora["ok"]){
-                $resultado["ok"] = true;
-            } else{
-                throw new Exception();
-            }
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
@@ -222,6 +211,7 @@ class Entrenador extends datos
             }
 
             $this->conexion->commit();
+            $this->desconecta();
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
@@ -253,6 +243,7 @@ class Entrenador extends datos
             $con = $this->conexion->prepare($consulta);
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $this->desconecta();
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_entrenadores';
             $resultado["respuesta"] = $respuesta;
@@ -268,11 +259,9 @@ class Entrenador extends datos
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor) 
+    public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
         return $this;
     }
 }
-?>
-

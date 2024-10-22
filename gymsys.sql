@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 20-10-2024 a las 18:59:16
+-- Tiempo de generación: 22-10-2024 a las 06:51:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -168,7 +168,19 @@ INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_
 (42, '22222222', 'Modificar', 'Atletas', '26773645', 'Correo electrónico cambiado de \"jusney2331@gmail.com\" a \"jusney12331@gmail.com\"; Altura cambiado de \"200.00\" a \"222.00\"; ', '2024-10-18 04:00:00'),
 (43, '22222222', 'Elminar', 'Atletas', '26773645', NULL, '2024-10-18 04:00:00'),
 (44, '22222222', 'Modificar', 'Atletas', '682815811', 'Telefono cambiado de \"04436386697\" a \"04436386698\"; ', '2024-10-18 04:00:00'),
-(45, '22222222', 'Modificar', 'Atletas', '682815811', 'Fecha de nacimiento cambiada de \"1996-03-04\" a \"1996-03-20\"; ', '2024-10-19 01:37:15');
+(45, '22222222', 'Modificar', 'Atletas', '682815811', 'Fecha de nacimiento cambiada de \"1996-03-04\" a \"1996-03-20\"; ', '2024-10-19 01:37:15'),
+(46, '22222222', 'Incluir', 'Entrenador', '4412968', 'Se agregó el Atleta: 4412968 - Lorem nisi nobis id Ratione cupiditate e', '2024-10-20 23:44:42'),
+(47, '22222222', 'Modificar', 'Entrenador', '22222222', 'Nombre cambiado de \"jugneys\" a \"Jugney\"; Apellido cambiado de \"dfdfdf\" a \"Vargas\"; ', '2024-10-21 00:09:05'),
+(48, '22222222', 'Modificar', 'Entrenador', '22222222', 'Genero cambiado de \"Masculino\" a \"Femenino\"; Telefono cambiado de \"04245681343\" a \"04245681341\"; Grado de instrucción cambiado de \"dsffdfsdf\" a \"cacaca\"; ', '2024-10-21 00:09:47'),
+(49, '22222222', 'Eliminar', 'Entrenadores', '4412968', 'Se eliminó el Entrenador con ID: 4412968', '2024-10-21 00:18:23'),
+(50, '22222222', 'Incluir', 'Entrenadores', '2517624', 'Se agregó el Entrenador: 2517624 - Facilis officia quo  Illum sit nostrud d', '2024-10-21 03:59:27'),
+(51, '22222222', 'Eliminar', 'Entrenadores', '2517624', 'Se eliminó el Entrenador con ID: 2517624', '2024-10-21 03:59:31'),
+(52, '22222222', 'Incluir', 'Entrenadores', '4822255', 'Se agregó el Entrenador: 4822255 - Occaecat corrupti v Sed excepturi dolore', '2024-10-21 04:00:49'),
+(53, '22222222', 'Eliminar', 'Entrenadores', '4822255', 'Se eliminó el Entrenador con ID: 4822255', '2024-10-21 04:00:52'),
+(54, '22222222', 'Incluir', 'Entrenadores', '1797963', 'Se agregó el Entrenador: 1797963 - Doloribus pariatur  Dolores perspiciatis', '2024-10-21 04:04:12'),
+(55, '22222222', 'Eliminar', 'Entrenadores', '1797963', NULL, '2024-10-21 04:04:14'),
+(56, '22222222', 'Incluir', 'Entrenadores', '8131964', 'Se agregó el Entrenador: 8131964 - Et ipsum enim enim  Cupidatat occaecat e', '2024-10-21 04:05:53'),
+(57, '22222222', 'Eliminar', 'Entrenadores', '8131964', NULL, '2024-10-21 04:05:56');
 
 -- --------------------------------------------------------
 
@@ -216,7 +228,39 @@ CREATE TABLE `entrenador` (
 --
 
 INSERT INTO `entrenador` (`cedula`, `grado_instruccion`) VALUES
-('22222222', 'dsffdfsdf');
+('22222222', 'cacaca');
+
+--
+-- Disparadores `entrenador`
+--
+DELIMITER $$
+CREATE TRIGGER `after_entrenador_create` AFTER INSERT ON `entrenador` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Entrenadores', @usuario_actual, NEW.cedula, CONCAT('Se agregó el Entrenador: ', NEW.cedula, ' - ', @nombre_usuario, ' ', @apellido_usuario));
+    SET @nombre_usuario = NULL;
+    SET @apellido_usuario = NULL;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_entrenador_delete` AFTER DELETE ON `entrenador` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado)
+    VALUES ('Eliminar', 'Entrenadores', @usuario_actual, OLD.cedula);
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_entrenador_update` AFTER UPDATE ON `entrenador` FOR EACH ROW BEGIN
+    IF OLD.grado_instruccion != NEW.grado_instruccion THEN
+        SET @cambios = CONCAT(@cambios, 'Grado de instrucción cambiado de "', OLD.grado_instruccion, '" a "', NEW.grado_instruccion, '"; ');
+    END IF;
+    
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Modificar', 'Entrenadores', @usuario_actual, OLD.cedula, @cambios);
+    SET @cambios = NULL;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -431,13 +475,15 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
-('22222222', 'jugneys', 'dfdfdf', 'Masculino', '2002-07-15', 'sdfdsfdfds', 'Soltero', '04245681343', 'dsfdsfd@gmail.com'),
+('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Soltero', '04245681341', 'dsfdsfd@gmail.com'),
 ('23124144', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
 ('24244444', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('2517624', 'Facilis officia quo ', 'Illum sit nostrud d', 'Masculino', '1987-09-15', 'Nisi officiis explic', 'Casado', '04744313188', 'webyrajic@mailinator.com'),
 ('2594894', 'Repudiandae harum do', 'Voluptatem et labori', 'Masculino', '1992-09-17', 'Molestiae officia ad', 'Divorciado', '04844940895', 'sikylydig@mailinator.com'),
 ('28609560', 'jugney', 'vargas', 'Masculino', '2002-07-15', 'dsdj', 'Soltero', '04245681343', 'KJSHJSHKJH@GMAIL.COM'),
 ('3376883', 'Id voluptas rerum c', 'Velit in blanditiis ', 'Masculino', '2004-12-27', 'Maiores fugiat aut ', 'Casado', '04534055751', 'zazehoz@mailinator.com'),
 ('42342344', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('4412968', 'Lorem nisi nobis id', 'Ratione cupiditate e', 'Masculino', '2010-06-07', 'Accusamus do sed nat', 'Casado', '04193003130', 'tewuvijo@mailinator.com'),
 ('6645684', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
 ('66456842', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
 ('664568422', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
@@ -515,9 +561,11 @@ INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUE
 ('22222222', 30, '$2y$10$syf4uVv4j1iML9whitgx2.ylZwVlWhUHrA7zFhvMyP0qqpzD6yNWO', '0'),
 ('23124144', 0, '$2y$10$.U6xdgWQPqo4HJbgPmi.u.j.6XZzLH46HiGXdB5lIS19BATJIKaCa', '0'),
 ('24244444', 0, '$2y$10$AlnDESIrQ20GjFP2bL5G5eXc.FAXQsbITN.Z1VSxpOf2EtaIaU6Oq', '0'),
+('2517624', 1, '$2y$10$FgILLleAxEHPjdia6vXFx.7EZ96T7utWeeCeAmgypvd0E4lx9Dww6', '0'),
 ('2594894', 0, '$2y$10$XWoALDkOSs/n2fT30oBlluAS9RPUNKozcntpT/Tk9b4zJvR.mYZCO', '0'),
 ('3376883', 0, '$2y$10$ltWDsUEwgZ94BjvHY7tHMO7oJM6bEzPqoyzeqhQDExl6.tfRR5MeG', '0'),
 ('42342344', 0, '$2y$10$oPNkW491S4A4p7dKf2ngSePU2L4oBz/iezYPFKXxNagC6hduogbZ.', '0'),
+('4412968', 1, '$2y$10$de8lZBRdxcBCEjk4vpINsOJrSQxrzKTA8Owtz9gHhR/1Ma.4mxxwC', '0'),
 ('6645684', 0, '$2y$10$84Huw1bt0oXtZ8mnIeNtPu9D0Qt0zhYLMkocsA413vMWX5YxP2tii', '0'),
 ('66456842', 0, '$2y$10$wdnIzo5Js4PI8TInBAhL.ORc1siZNVKbbaNg9ir99GZ3fuR24cTou', '0'),
 ('664568422', 0, '$2y$10$P6vxsbx8q8ITDfhHqu9VaOU310ZTDjdPoBFIn5AKZtMiMIMB91adS', '0'),
@@ -549,6 +597,7 @@ CREATE TABLE `wada` (
 --
 
 INSERT INTO `wada` (`id_atleta`, `inscrito`, `vencimiento`, `ultima_actualizacion`, `estado`) VALUES
+('68281580', '2024-10-23', '2024-11-28', '2024-11-08', 1),
 ('9252463', '2024-07-20', '2024-08-10', '2024-07-20', 1);
 
 -- --------------------------------------------------------
@@ -690,7 +739,7 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
