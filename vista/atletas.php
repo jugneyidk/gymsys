@@ -7,7 +7,7 @@
     <title>Inscripción de Atletas - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
 </head>
-
+ 
 <body class="d-flex flex-column vh-100">
     <script>
         var actualizar = <?php echo $permisos["actualizar"] ?>;
@@ -138,22 +138,35 @@
                                     <div id="sentrenador_asignado" class="invalid-feedback"></div>
                                 </div>
                                 <!-- Campos adicionales para el representante -->
-                                <div id="representanteInfo" class="row" style="display:none;">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="nombre_representante" class="form-label">Nombre del Representante:</label>
-                                        <input type="text" class="form-control" id="nombre_representante" name="nombre_representante">
-                                        <div id="snombre_representante" class="invalid-feedback"></div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="telefono_representante" class="form-label">Teléfono del Representante:</label>
-                                        <input type="tel" class="form-control" id="telefono_representante" name="telefono_representante">
-                                        <div id="stelefono_representante" class="invalid-feedback"></div>
-                                    </div>
-                                </div>
+                    
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="form-label">Contraseña:</label>
                                     <input type="password" class="form-control" id="password" name="password" required>
                                     <div id="spassword" class="invalid-feedback"></div>
+                                </div>
+                                
+                            </div>
+                             <!-- Representante -->
+                             <div class="row representante mb-3" style="display: none;">
+                                <div class="col-md-6">
+                                    <label for="nombre_representante" class="form-label">Nombre del Representante:</label>
+                                    <input type="text" class="form-control" id="nombre_representante" name="nombre_representante">
+                                    <div id="snombre_representante" class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="cedula_representante" class="form-label">Cédula del Representante:</label>
+                                    <input type="text" class="form-control" id="cedula_representante" name="cedula_representante">
+                                    <div id="scedula_representante" class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="telefono_representante" class="form-label">Teléfono del Representante:</label>
+                                    <input type="text" class="form-control" id="telefono_representante" name="telefono_representante">
+                                    <div id="stelefono_representante" class="invalid-feedback"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="parentesco_representante" class="form-label">Parentesco:</label>
+                                    <input type="text" class="form-control" id="parentesco_representante" name="parentesco_representante">
+                                    <div id="sparentesco_representante" class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <button type="button" id="btnIncluir" class="btn btn-primary btn-block">Registrar Atleta</button>

@@ -116,7 +116,7 @@ $(document).ready(function () {
         "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
       );
     }
-
+ 
     esValido &= verificarFecha(
       form.find(`#fecha_nacimiento${sufijo}`),
       form.find(`#sfecha_nacimiento${sufijo}`)
@@ -272,6 +272,32 @@ $(document).ready(function () {
     });
   }
 
+  function calcularEdad(fechaNacimiento) {
+    var hoy = new Date();
+    var fechaNac = new Date(fechaNacimiento);
+    var edad = hoy.getFullYear() - fechaNac.getFullYear();
+    var mes = hoy.getMonth() - fechaNac.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
+        edad--;
+    }
+    return edad;
+}
+
+function mostrarCamposRepresentante() {
+    var fechaNacimiento = $("#fecha_nacimiento").val();
+    if (fechaNacimiento) {
+        var edad = calcularEdad(fechaNacimiento);
+        if (edad < 18) {
+            $(".representante").show();
+        } else {
+            $(".representante").hide();
+        }
+    }
+}
+
+$("#fecha_nacimiento").on("change", function () {
+    mostrarCamposRepresentante();
+});
   function llenarFormularioModificar(atleta) {
     $("#f2 #nombres_modificar").val(atleta.nombre);
     $("#f2 #apellidos_modificar").val(atleta.apellido);

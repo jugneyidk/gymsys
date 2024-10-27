@@ -11,7 +11,7 @@ if (is_file("vista/" . $p . ".php")) {
     $permisos = $permisos_o->chequear_permisos();
     if ($permisos["leer"] === 0) {
         header("Location: .");
-    }
+    } 
     if (!empty($_POST)) {
         $accion = $_POST['accion'];
         if ($accion == 'listado_atleta') {
