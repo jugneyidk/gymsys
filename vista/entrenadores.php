@@ -41,11 +41,8 @@
                                     <thead>
                                         <tr>
                                             <th>Cédula</th>
-                                            <th>Nombres</th>
-                                            <th>Apellidos</th>
-                                            <th>Género</th>
-                                            <th>Fecha nac.</th>
-                                            <th>Correo</th>
+                                            <th>Nombre</th> 
+                                            <th>Teléfono</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>

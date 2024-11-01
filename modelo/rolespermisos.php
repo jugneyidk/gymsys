@@ -1,6 +1,5 @@
 <?php
 require_once('modelo/datos.php');
-require_once('modelo/bitacora.php');
 class Roles extends datos
 {
     private $conexion;
@@ -18,84 +17,18 @@ class Roles extends datos
     public function incluir_rol($nombre, $valores)
     {
         $this->nombre = $nombre;
-        $this->centrenadores = $valores['centrenadores'];
-        $this->rentrenadores = $valores['rentrenadores'];
-        $this->uentrenadores = $valores['uentrenadores'];
-        $this->dentrenadores = $valores['dentrenadores'];
-        $this->catletas = $valores['catletas'];
-        $this->ratletas = $valores['ratletas'];
-        $this->uatletas = $valores['uatletas'];
-        $this->datletas = $valores['datletas'];
-        $this->crolespermisos = $valores['crolespermisos'];
-        $this->rrolespermisos = $valores['rrolespermisos'];
-        $this->urolespermisos = $valores['urolespermisos'];
-        $this->drolespermisos = $valores['drolespermisos'];
-        $this->casistencias = $valores['casistencias'];
-        $this->rasistencias = $valores['rasistencias'];
-        $this->uasistencias = $valores['uasistencias'];
-        $this->dasistencias = $valores['dasistencias'];
-        $this->ceventos = $valores['ceventos'];
-        $this->reventos = $valores['reventos'];
-        $this->ueventos = $valores['ueventos'];
-        $this->deventos = $valores['deventos'];
-        $this->cmensualidad = $valores['cmensualidad'];
-        $this->rmensualidad = $valores['rmensualidad'];
-        $this->umensualidad = $valores['umensualidad'];
-        $this->dmensualidad = $valores['dmensualidad'];
-        $this->cwada = $valores['cwada'];
-        $this->rwada = $valores['rwada'];
-        $this->uwada = $valores['uwada'];
-        $this->dwada = $valores['dwada'];
-        $this->creportes = $valores['creportes'];
-        $this->rreportes = $valores['rreportes'];
-        $this->ureportes = $valores['ureportes'];
-        $this->dreportes = $valores['dreportes'];
-        $this->cbitacora = $valores['cbitacora'];
-        $this->rbitacora = $valores['rbitacora'];
-        $this->ubitacora = $valores['ubitacora'];
-        $this->dbitacora = $valores['dbitacora'];
+        foreach ($valores as $atributo => $valor) {
+            $this->$atributo = $valor;
+        }
         return $this->incluir();
     }
     public function modificar_rol($id_rol, $nombre, $valores)
     {
         $this->id_rol = $id_rol;
         $this->nombre = $nombre;
-        $this->centrenadores = $valores['centrenadores'];
-        $this->rentrenadores = $valores['rentrenadores'];
-        $this->uentrenadores = $valores['uentrenadores'];
-        $this->dentrenadores = $valores['dentrenadores'];
-        $this->catletas = $valores['catletas'];
-        $this->ratletas = $valores['ratletas'];
-        $this->uatletas = $valores['uatletas'];
-        $this->datletas = $valores['datletas'];
-        $this->crolespermisos = $valores['crolespermisos'];
-        $this->rrolespermisos = $valores['rrolespermisos'];
-        $this->urolespermisos = $valores['urolespermisos'];
-        $this->drolespermisos = $valores['drolespermisos'];
-        $this->casistencias = $valores['casistencias'];
-        $this->rasistencias = $valores['rasistencias'];
-        $this->uasistencias = $valores['uasistencias'];
-        $this->dasistencias = $valores['dasistencias'];
-        $this->ceventos = $valores['ceventos'];
-        $this->reventos = $valores['reventos'];
-        $this->ueventos = $valores['ueventos'];
-        $this->deventos = $valores['deventos'];
-        $this->cmensualidad = $valores['cmensualidad'];
-        $this->rmensualidad = $valores['rmensualidad'];
-        $this->umensualidad = $valores['umensualidad'];
-        $this->dmensualidad = $valores['dmensualidad'];
-        $this->cwada = $valores['cwada'];
-        $this->rwada = $valores['rwada'];
-        $this->uwada = $valores['uwada'];
-        $this->dwada = $valores['dwada'];
-        $this->creportes = $valores['creportes'];
-        $this->rreportes = $valores['rreportes'];
-        $this->ureportes = $valores['ureportes'];
-        $this->dreportes = $valores['dreportes'];
-        $this->cbitacora = $valores['cbitacora'];
-        $this->rbitacora = $valores['rbitacora'];
-        $this->ubitacora = $valores['ubitacora'];
-        $this->dbitacora = $valores['dbitacora'];
+        foreach ($valores as $atributo => $valor) {
+            $this->$atributo = $valor;
+        }
         return $this->modificar();
     }
     public function eliminar_rol($id_rol)
@@ -190,25 +123,20 @@ class Roles extends datos
             $respuesta->execute($valores_permisos);
             $respuesta->closeCursor();
             $this->conexion->commit();
-            $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Agregó el rol '" . $this->nombre . "'", NULL, NULL);
-            if ($respuesta_bitacora["ok"]) {
-                $resultado["ok"] = true;
-            } else {
-                throw new Exception();
-            }
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
     private function consultar()
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "
                 SELECT r.nombre AS nombre_rol, m.id_modulo, p.crear, p.leer, p.actualizar, p.eliminar, m.nombre AS nombre_modulo
                 FROM roles r
@@ -220,6 +148,8 @@ class Roles extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $rol = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
             if ($rol) {
                 $resultado["ok"] = true;
                 $resultado["devol"] = 'consultar_rol';
@@ -232,13 +162,13 @@ class Roles extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
     private function modificar()
     {
         try {
             $this->conexion->beginTransaction();
-
             $consulta = "
             UPDATE roles SET nombre = :nombre
             WHERE id_rol = :id_rol;
@@ -261,7 +191,6 @@ class Roles extends datos
             UPDATE permisos SET crear = :cbitacora, leer = :rbitacora, actualizar = :ubitacora, eliminar = :dbitacora
             WHERE id_rol = :id_rol AND modulo = :modulobitacora;
             ";
-
             $valores_permisos = array(
                 ':nombre' => $this->nombre,
                 ':id_rol' => $this->id_rol,
@@ -311,7 +240,6 @@ class Roles extends datos
                 ':ubitacora' => $this->ubitacora,
                 ':dbitacora' => $this->dbitacora,
             );
-
             $respuesta1 = $this->conexion->prepare($consulta);
             $respuesta1->execute($valores_permisos);
             $respuesta1->closeCursor();
@@ -322,24 +250,13 @@ class Roles extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
-
-
-
     private function eliminar()
     {
         try {
             $this->conexion->beginTransaction();
-            $consulta_nombre = "
-                SELECT * FROM roles WHERE id_rol = :id_rol;
-            ";
-            $valores_nombre = array(':id_rol' => $this->id_rol);
-            $respuesta_nombre = $this->conexion->prepare($consulta_nombre);
-            $respuesta_nombre->execute($valores_nombre);
-            $resultado_nombre = $respuesta_nombre->fetch(PDO::FETCH_ASSOC);
-            $nombre = $resultado_nombre["nombre"];
-            $respuesta_nombre->closeCursor();
             $consulta = "
                 DELETE FROM roles WHERE id_rol = :id_rol;
             ";
@@ -348,25 +265,20 @@ class Roles extends datos
             $respuesta->execute($valores);
             $respuesta->closeCursor();
             $this->conexion->commit();
-            $bitacora = new Bitacora();
-            $respuesta_bitacora = $bitacora->incluir_bitacora($_SESSION["id_usuario"], "Eliminó el rol '" . $nombre . "'", NULL, NULL);
-            if ($respuesta_bitacora["ok"]) {
-                $resultado["ok"] = true;
-            } else {
-                throw new Exception();
-            }
             $resultado["ok"] = true;
         } catch (Exception $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
     public function listado_roles()
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "
                 SELECT *                
                 FROM roles                
@@ -375,6 +287,8 @@ class Roles extends datos
             $con = $this->conexion->prepare($consulta);
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
+            $con->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_roles';
             $resultado["respuesta"] = $respuesta;
@@ -382,6 +296,7 @@ class Roles extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 

@@ -25,10 +25,10 @@
                                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                                         <li class="nav-item">
-                                            <button class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
+                                            <button class="btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalRegistrarEvento">Registrar</button>
                                         </li>
                                         <li class="nav-item">
-                                            <a href="" class="nav-link btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
+                                            <a href="" class="btn btn-outline-light mx-2 rounded-1" data-bs-toggle="modal" data-bs-target="#modalEventoConsultaAnterior">Consultar Anteriores</a>
                                         </li>
                                     </ul>
                                 </div>

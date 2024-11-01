@@ -1,0 +1,17 @@
+{
+    "name": "dsakield/gymsys",
+    "description": "Sistema de gestion de informacion para el gimnasio de halterofilia Eddie Suarez",
+    "type": "project",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "authors": [
+        {
+            "name": "JDWE"
+        }
+    ],
+    "autoload": {
+        "classmap": ["modelo"]
+    }
+    
+}

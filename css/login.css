@@ -64,19 +64,8 @@ h2 {
     transform: scale(1.2);  
 }
 
- 
-.btn-primary {
-    background-color: #2980b9;
-    border-color: #2980b9;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
 
-.btn-primary:hover {
-    background-color: #1f6391;
-    transform: scale(1.05);
-}
 
- 
 @media (max-width: 768px) {
     .mini-menu {
         bottom: 10px;
@@ -149,18 +138,6 @@ h2 {
 .form-control:focus {
     border-color: #6dd5ed;
     box-shadow: 0 0 5px rgba(109, 213, 237, 0.5);
-}
-
- 
-.btn-primary {
-    background-color: #2193b0;
-    border-color: #2193b0;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.btn-primary:hover {
-    background-color: #6dd5ed;
-    transform: scale(1.05);
 }
 
  

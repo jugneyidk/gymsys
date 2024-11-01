@@ -1,4 +1,4 @@
-<?php require_once('modelo/datos.php');
+<?php
 
 class Eventos extends datos
 {

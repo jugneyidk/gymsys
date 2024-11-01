@@ -39,8 +39,8 @@
                         <div id="spassword" class="invalid-feedback"></div>
                     </div>
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary rounded-2" id="submit">Ingresar</button>
-                        <button type="button" class="btn btn-outline-dark rounded-2" onclick="history.back();">Volver</button>
+                        <button type="submit" class="btn btn-info rounded-2" id="submit">Ingresar</button>
+                        <button type="button" class="btn btn-light rounded-2" onclick="history.back();">Volver</button>
                     </div>
                 </form>
             </div>

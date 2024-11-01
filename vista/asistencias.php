@@ -63,7 +63,7 @@
    </main>
     <?php require_once ("comunes/footer.php"); ?>
     <script src="datatables/datatables.min.js"></script>
-    <script src="js/asistencias.js"></script>
+    <script type="module" src="js/asistencias.js"></script>
 </body>
 
 </html>

@@ -18,10 +18,16 @@ class datos
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $this->pdo;
         } catch (PDOException $e) {
-            return 'Error de conexión: ' . $e->getMessage();
+            return null;
         }
     }
 
+    protected function verificarConexion()
+    {
+        if ($this->pdo === null) {
+            throw new Exception("Error: No se pudo establecer la conexión a la base de datos.");
+        }
+    }
     public function desconecta()
     {
         if ($this->pdo !== null) {
@@ -29,4 +35,3 @@ class datos
         }
     }
 }
-?>

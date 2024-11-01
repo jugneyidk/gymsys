@@ -25,11 +25,12 @@
                                                         <table class="table table-striped table-hover" id="tablabitacora">
                                                                 <thead>
                                                                         <tr>
+                                                                                <th class="d-none">Usuario</th>
                                                                                 <th>Usuario</th>
                                                                                 <th>Accion</th>
                                                                                 <th>Modulo</th>
                                                                                 <th>Fecha</th>
-                                                                                <th>Usuario Modificado</th>
+                                                                                <th>Registro Modificado</th>
                                                                                 <th>Detalles</th>
                                                                         </tr>
                                                                 </thead>
@@ -44,6 +45,7 @@
                 </div>
         </div>
         </main>
+        <?php require_once "comunes/modal.php"; ?>
         <?php require_once("comunes/footer.php"); ?>
         <script type="text/javascript" src="datatables/datatables.min.js"></script>
         <script src="js/bitacora.js"></script>

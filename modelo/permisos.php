@@ -10,6 +10,7 @@ class Permisos extends datos
     public function chequear_permisos()
     {
         try {
+            $this->verificarConexion();
             $this->conexion->beginTransaction();
             $id_rol = $_SESSION['rol'];
             $modulo = isset($_GET['p']) ? $_GET['p'] : "landing";
@@ -19,11 +20,15 @@ class Permisos extends datos
             $valores = array(':id_rol' => $id_rol, ':modulo' => $modulo);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
-            $permisos = $respuesta->fetch(PDO::FETCH_ASSOC);
+            $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
             $this->conexion->commit();
-            return $permisos;
         } catch (Exception $e) {
+            echo($e->getMessage());
+            exit;
         }
+        $this->desconecta();
+        return $resultado;
+
     }
     public function permisos_nav()
     {

@@ -100,10 +100,12 @@ $(document).ready(function () {
                         $(this).find('input[type="checkbox"]').prop('checked', false);
                         $(this).find('input[type="text"]').val('');
                     }
-
                     if (deshabilitar) {
                         $(this).find('input[type="checkbox"]').prop('disabled', true);
                         $(this).find('input[type="text"]').prop('disabled', true);
+                    } else {
+                        $(this).find('input[type="checkbox"]').prop('disabled', false);
+                        $(this).find('input[type="text"]').prop('disabled', false);
                     }
                 });
             } else {

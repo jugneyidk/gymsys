@@ -154,18 +154,10 @@ $(document).ready(function () {
               listado_entrenador +=
                 "<tr><td class='align-middle'>" + entrenador.cedula + "</td>";
               listado_entrenador +=
-                "<td class='align-middle'>" + entrenador.nombre + "</td>";
-              listado_entrenador +=
-                "<td class='align-middle'>" + entrenador.apellido + "</td>";
-              listado_entrenador +=
-                "<td class='align-middle'>" + entrenador.genero + "</td>";
+                "<td class='align-middle'>" + entrenador.nombre + " " + entrenador.apellido + "</td>";
               listado_entrenador +=
                 "<td class='align-middle'>" +
-                entrenador.fecha_nacimiento +
-                "</td>";
-              listado_entrenador +=
-                "<td class='align-middle'>" +
-                entrenador.correo_electronico +
+                entrenador.telefono +
                 "</td>";
               listado_entrenador += `<td>${
                 actualizar === 1
@@ -182,7 +174,7 @@ $(document).ready(function () {
             $("#listado").html(listado_entrenador);
             $("#tablaentrenador").DataTable({
               columnDefs: [
-                { targets: [6], orderable: false, searchable: false },
+                { targets: [3], orderable: false, searchable: false },
               ],
               language: {
                 lengthMenu: "Mostrar _MENU_ por página",

@@ -86,7 +86,7 @@ class Entrenador extends datos
     {
         return $this->listado();
     }
-
+    
     public function eliminar_entrenador($cedula)
     {
         try {
@@ -229,13 +229,7 @@ class Entrenador extends datos
                     u.cedula, 
                     u.nombre, 
                     u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                                       u.correo_electronico, 
-                    e.grado_instruccion 
+                    u.telefono
                 FROM entrenador e
                 INNER JOIN usuarios u ON e.cedula = u.cedula
                 ORDER BY u.cedula DESC

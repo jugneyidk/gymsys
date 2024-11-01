@@ -1,5 +1,4 @@
 <?php
-require_once ('modelo/datos.php');
 
 class Asistencia extends datos
 {
@@ -7,7 +6,7 @@ class Asistencia extends datos
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); 
+        $this->conexion = $this->conecta();
     }
 
     public function obtener_atletas()
@@ -37,27 +36,31 @@ class Asistencia extends datos
     public function guardar_asistencias($fecha, $asistencias)
     {
         try {
-            $asistencias = json_decode($asistencias, true); // Decodificar JSON en array
+            $asistencias = json_decode($asistencias, true);
             $this->conexion->beginTransaction();
-            
-            // Eliminar asistencias previas del día
-            $consulta = "DELETE FROM asistencias WHERE fecha = :fecha";
+            $num_asistencias = count($asistencias);
+            $consulta = "IF @num_asistencias IS NULL THEN
+            SET @num_asistencias = :num_asistencias;
+            END IF;
+            INSERT INTO asistencias (id_atleta, fecha, asistio, comentario)
+            VALUES 
+                (:id_atleta, :fecha, :asistio, :comentario)
+            ON DUPLICATE KEY UPDATE
+                asistio = VALUES(asistio),
+                comentario = VALUES(comentario);
+            ";
             $stmt = $this->conexion->prepare($consulta);
-            $stmt->execute([':fecha' => $fecha]);
-
-            // Insertar nuevas asistencias
-            $consulta = "INSERT INTO asistencias (id_atleta, asistio, fecha, comentario) VALUES (:id_atleta, :asistio, :fecha, :comentario)";
-            $stmt = $this->conexion->prepare($consulta);
-
             foreach ($asistencias as $asistencia) {
                 $stmt->execute([
+                    ':num_asistencias' => $num_asistencias,
                     ':id_atleta' => $asistencia['id_atleta'],
                     ':asistio' => $asistencia['asistio'],
                     ':fecha' => $fecha,
                     ':comentario' => $asistencia['comentario']
                 ]);
-            }
 
+                $stmt->closeCursor();
+            }
             $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (Exception $e) {
@@ -65,6 +68,7 @@ class Asistencia extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 

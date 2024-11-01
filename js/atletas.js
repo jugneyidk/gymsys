@@ -1,24 +1,15 @@
+import { validarKeyPress, validarKeyUp, enviaAjax } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoAtleta() {
     const datos = new FormData();
     datos.append("accion", "listado_atleta");
-    enviaAjax(datos);
+    enviaAjax(datos, "").then((respuesta) => {
+      console.log(respuesta)
+    });
+    
   }
 
   cargaListadoAtleta();
-
-  function validarKeyPress(e, regex) {
-    if (!regex.test(e.key)) {
-      e.preventDefault();
-    }
-  }
-
-  function validarKeyUp(regex, input, mensaje, textoError) {
-    const isValid = regex.test(input.val());
-    input.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
-    mensaje.text(isValid ? "" : textoError);
-    return isValid;
-  }
 
   function verificarFecha(fechaInput, mensaje) {
     const fecha = fechaInput.val();
@@ -116,7 +107,7 @@ $(document).ready(function () {
         "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
       );
     }
- 
+
     esValido &= verificarFecha(
       form.find(`#fecha_nacimiento${sufijo}`),
       form.find(`#sfecha_nacimiento${sufijo}`)
@@ -146,44 +137,6 @@ $(document).ready(function () {
   $("#modificar_contraseña").on("change", function () {
     $("#password_modificar").prop("disabled", !$(this).is(":checked")).val("");
   });
-
-  function enviaAjax(datos) {
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      beforeSend: function () {},
-      timeout: 10000,
-      success: function (respuesta) {
-        try {
-          const lee = JSON.parse(respuesta);
-          if (lee.devol === "listado_atletas") {
-            actualizarListadoAtletas(lee.respuesta);
-          } else if (lee.ok) {
-            Swal.fire("Éxito", "Operación realizada con éxito", "success");
-            cargaListadoAtleta();
-            $("#modalModificar").modal("hide");
-          } else {
-            Swal.fire("Error", lee.mensaje, "error");
-          }
-        } catch (error) {
-          Swal.fire("Error", "Algo salió mal", "error");
-        }
-      },
-      error: function (request, status, err) {
-        const errorMsg =
-          status === "timeout"
-            ? "Servidor ocupado, Intente de nuevo"
-            : "Error al procesar la solicitud";
-        Swal.fire("Error", errorMsg, "error");
-      },
-      complete: function () {},
-    });
-  }
 
   function actualizarListadoAtletas(atletas) {
     let listadoAtleta = "";
@@ -278,26 +231,26 @@ $(document).ready(function () {
     var edad = hoy.getFullYear() - fechaNac.getFullYear();
     var mes = hoy.getMonth() - fechaNac.getMonth();
     if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-        edad--;
+      edad--;
     }
     return edad;
-}
+  }
 
-function mostrarCamposRepresentante() {
+  function mostrarCamposRepresentante() {
     var fechaNacimiento = $("#fecha_nacimiento").val();
     if (fechaNacimiento) {
-        var edad = calcularEdad(fechaNacimiento);
-        if (edad < 18) {
-            $(".representante").show();
-        } else {
-            $(".representante").hide();
-        }
+      var edad = calcularEdad(fechaNacimiento);
+      if (edad < 18) {
+        $(".representante").show();
+      } else {
+        $(".representante").hide();
+      }
     }
-}
+  }
 
-$("#fecha_nacimiento").on("change", function () {
+  $("#fecha_nacimiento").on("change", function () {
     mostrarCamposRepresentante();
-});
+  });
   function llenarFormularioModificar(atleta) {
     $("#f2 #nombres_modificar").val(atleta.nombre);
     $("#f2 #apellidos_modificar").val(atleta.apellido);
@@ -342,7 +295,9 @@ $("#fecha_nacimiento").on("change", function () {
           data: datos,
           processData: false,
           cache: false,
-          beforeSend: function () {},
+          beforeSend: function () {
+            modalCarga(true);
+          },
           timeout: 10000,
           success: function (respuesta) {
             try {
