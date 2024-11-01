@@ -316,7 +316,6 @@
     </main>
     <?php 
     require_once("comunes/footer.php"); 
-    require_once("comunes/carga.php");
     ?>  
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script type="module" src="js/atletas.js"></script>

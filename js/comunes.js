@@ -40,6 +40,10 @@ export function enviaAjax(datos, url) {
       success: function (respuesta) {
         try {
           const datosParseados = JSON.parse(respuesta);
+          if (!datosParseados.ok) {
+            muestraMensaje("Error", datosParseados.mensaje, "error");
+            return;
+          }
           resolve(datosParseados);
         } catch (error) {
           reject("Error al parsear la respuesta JSON");
@@ -50,7 +54,7 @@ export function enviaAjax(datos, url) {
           status === "timeout"
             ? "Servidor ocupado, intente de nuevo"
             : "Error al procesar la solicitud";
-            muestraMensaje("Error", errorMsg, "error");
+        muestraMensaje("Error", errorMsg, "error");
         reject(errorMsg);
       },
       complete: function () {

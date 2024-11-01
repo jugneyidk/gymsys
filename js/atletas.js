@@ -1,16 +1,15 @@
-import { validarKeyPress, validarKeyUp, enviaAjax, muestraMensaje } from "./comunes.js";
+import {
+  validarKeyPress,
+  validarKeyUp,
+  enviaAjax,
+  muestraMensaje,
+} from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoAtleta() {
     const datos = new FormData();
     datos.append("accion", "listado_atleta");
     enviaAjax(datos, "").then((respuesta) => {
-      if (!respuesta.ok) {
-        muestraMensaje("Error", respuesta.mensaje, "error");
-        return;
-      }
       actualizarListadoAtletas(respuesta.respuesta);
-    }).catch((error)=>{
-      muestraMensaje("Error", error, "error")
     });
   }
 
@@ -128,14 +127,30 @@ $(document).ready(function () {
   $("#btnIncluir").on("click", function () {
     if (validarEnvio("#f1")) {
       const datos = new FormData($("#f1")[0]);
-      enviaAjax(datos);
+      enviaAjax(datos, "").then((respuesta) => {
+        muestraMensaje(
+          "Atleta incluido",
+          "El atleta se ha incluido satisfactoriamente.",
+          "success"
+        );
+        cargaListadoAtleta();
+        $("#modalInscripcion").modal("hide");
+      });
     }
   });
 
   $("#btnModificar").on("click", function () {
     if (validarEnvio("#f2")) {
       const datos = new FormData($("#f2")[0]);
-      enviaAjax(datos);
+      enviaAjax(datos, "").then((respuesta) => {
+        muestraMensaje(
+          "Atleta modificado",
+          "El atleta se ha modificado satisfactoriamente.",
+          "success"
+        );
+        cargaListadoAtleta();
+        $("#modalModificar").modal("hide");
+      });
     }
   });
 
@@ -201,31 +216,9 @@ $(document).ready(function () {
     const datos = new FormData();
     datos.append("accion", "obtener_atleta");
     datos.append("cedula", cedula);
-
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      success: function (respuesta) {
-        try {
-          const lee = JSON.parse(respuesta);
-          if (lee.ok) {
-            llenarFormularioModificar(lee.atleta);
-            $("#modalModificar").modal("show");
-          } else {
-            Swal.fire("Error", lee.mensaje, "error");
-          }
-        } catch (error) {
-          Swal.fire("Error", "Algo salió mal", "error");
-        }
-      },
-      error: function () {
-        Swal.fire("Error", "Error al procesar la solicitud", "error");
-      },
+    enviaAjax(datos, "").then((respuesta) => {
+      llenarFormularioModificar(respuesta.atleta);
+      $("#modalModificar").modal("show");
     });
   }
 
@@ -290,44 +283,13 @@ $(document).ready(function () {
         const datos = new FormData();
         datos.append("accion", "eliminar");
         datos.append("cedula", cedula);
-
-        $.ajax({
-          async: true,
-          url: "",
-          type: "POST",
-          contentType: false,
-          data: datos,
-          processData: false,
-          cache: false,
-          beforeSend: function () {
-            modalCarga(true);
-          },
-          timeout: 10000,
-          success: function (respuesta) {
-            try {
-              const lee = JSON.parse(respuesta);
-              if (lee.ok) {
-                Swal.fire(
-                  "Eliminado!",
-                  "El atleta ha sido eliminado.",
-                  "success"
-                );
-                cargaListadoAtleta();
-              } else {
-                Swal.fire("Error", lee.mensaje, "error");
-              }
-            } catch (error) {
-              Swal.fire("Error", "Algo salió mal", "error");
-            }
-          },
-          error: function (request, status, err) {
-            const errorMsg =
-              status === "timeout"
-                ? "Servidor ocupado, Intente de nuevo"
-                : "Error al procesar la solicitud";
-            Swal.fire("Error", errorMsg, "error");
-          },
-          complete: function () {},
+        enviaAjax(datos, "").then((respuesta) => {
+          muestraMensaje(
+            "Eliminado!",
+            "El atleta ha sido eliminado.",
+            "success"
+          );
+          cargaListadoAtleta();
         });
       }
     });

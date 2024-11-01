@@ -85,7 +85,7 @@ $(document).ready(function () {
                 var fechaActual = new Date();
                 var unDia = 24 * 60 * 60 * 1000; // Un día en milisegundos
 
-                var deshabilitar = (fechaActual - fechaSeleccionada) > unDia;
+                var deshabilitar = (fechaActual - fechaSeleccionada) >= unDia;
 
                 $('#listadoAsistencias tr').each(function () {
                     var id = $(this).find('input[type="checkbox"]').data('id');
