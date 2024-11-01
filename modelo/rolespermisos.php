@@ -153,7 +153,7 @@ class Roles extends datos
             if ($rol) {
                 $resultado["ok"] = true;
                 $resultado["devol"] = 'consultar_rol';
-                $resultado["respuesta"] = $rol;
+                $resultado["permisos"] = $rol;
             } else {
                 $resultado["ok"] = false;
                 $resultado["mensaje"] = "No se encontró el rol";
@@ -291,7 +291,7 @@ class Roles extends datos
             $this->conexion->commit();
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_roles';
-            $resultado["respuesta"] = $respuesta;
+            $resultado["roles"] = $respuesta;
         } catch (Exception $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();

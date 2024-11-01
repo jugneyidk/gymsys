@@ -1,24 +1,19 @@
+import {
+  validarKeyPress,
+  validarKeyUp,
+  enviaAjax,
+  muestraMensaje,
+} from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoRoles() {
     const datos = new FormData();
     datos.append("accion", "listado_roles");
-    enviaAjax(datos);
+    enviaAjax(datos, "").then((respuesta) => {
+      actualizarListadoRoles(respuesta.roles);
+    });
   }
 
   cargaListadoRoles();
-
-  function validarKeyPress(e, regex) {
-    if (!regex.test(e.key)) {
-      e.preventDefault();
-    }
-  }
-
-  function validarKeyUp(regex, input, mensaje, textoError) {
-    const isValid = regex.test(input.val());
-    input.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
-    mensaje.text(isValid ? "" : textoError);
-    return isValid;
-  }
 
   function validarEnvio(formId) {
     let esValido = true;
@@ -53,27 +48,33 @@ $(document).ready(function () {
   });
 
   $("#btnSubmit").on("click", function () {
-    if (!$("#id_rol").val()) {
-      if (validarEnvio("#form_incluir")) {
-        const datos = new FormData($("#form_incluir")[0]);
-        datos.append("accion", "incluir");
-        enviaAjax(datos);
+    if (validarEnvio("#form_incluir")) {
+      const datos = new FormData($("#form_incluir")[0]);
+      datos.append("accion", "incluir");
+      enviaAjax(datos, "").then((respuesta) => {
+        muestraMensaje(
+          "Éxito",
+          "El rol se ha agregado exitosamente.",
+          "success"
+        );
         $("#modalCrear").modal("hide");
-      }
-    } else {
-      if (validarEnvio("#form_incluir")) {
-        const datos = new FormData($("#form_incluir")[0]);
-        datos.append("accion", "modificar");
-        enviaAjax(datos);
-        $("#modalCrear").modal("hide");
-      }
+        cargaListadoRoles();
+      });
     }
   });
 
   $("#btnModificar").on("click", function () {
     if (validarEnvio("#f2")) {
       const datos = new FormData($("#f2")[0]);
-      enviaAjax(datos);
+      enviaAjax(datos,"").then((respuesta)=>{
+        muestraMensaje(
+          "Éxito",
+          "El rol se ha modificado exitosamente.",
+          "success"
+        );
+        $("#modalModificar").modal("hide");
+        cargaListadoRoles();
+      });
     }
   });
   function llenarFormularioModificar(permisos) {
@@ -95,54 +96,14 @@ $(document).ready(function () {
       );
     });
   }
-  function enviaAjax(datos) {
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      beforeSend: function () {},
-      timeout: 10000,
-      success: function (respuesta) {
-        try {
-          const lee = JSON.parse(respuesta);
-          if (lee.devol === "listado_roles") {
-            console.log(lee.respuesta);
-            actualizarListadoRoles(lee.respuesta);
-          } else if (lee.devol === "consultar_rol") {
-            llenarFormularioModificar(lee.respuesta);
-            $("#modalCrearLabel").text("Modificar Rol");
-            $("#modalCrear").modal("show");
-            console.log(lee.respuesta);
-          } else if (lee.ok) {
-            Swal.fire("Éxito", "Operación realizada con éxito", "success");
-            cargaListadoRoles();
-          } else {
-            Swal.fire("Error", lee.mensaje, "error");
-          }
-        } catch (error) {
-          Swal.fire("Error", "Algo salió mal", "error");
-          console.log(error);
-        }
-      },
-      error: function (request, status, err) {
-        const errorMsg =
-          status === "timeout"
-            ? "Servidor ocupado, Intente de nuevo"
-            : "Error al procesar la solicitud";
-        Swal.fire("Error", errorMsg, "error");
-      },
-      complete: function () {},
-    });
-  }
   function cargarDatosRol(id_rol) {
     const datos = new FormData();
     datos.append("accion", "consultar_rol");
     datos.append("id_rol", id_rol);
-    enviaAjax(datos);
+    enviaAjax(datos,"").then((respuesta)=>{
+      llenarFormularioModificar(respuesta.permisos);
+      $("#modalCrear").modal("show");
+    });
   }
   function eliminarRol(id_rol) {
     Swal.fire({

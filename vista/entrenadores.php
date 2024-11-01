@@ -249,7 +249,7 @@
     </main>
     <?php require_once("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
-    <script src="js/entrenadores.js"></script>
+    <script type="module" src="js/entrenadores.js"></script>
 </body>
 
 </html>

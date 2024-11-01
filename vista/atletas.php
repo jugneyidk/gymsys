@@ -36,12 +36,7 @@
                                     <thead>
                                         <tr>
                                             <th>Cédula</th>
-                                            <th>Entrenador</th>
                                             <th>Nombre</th>
-                                            <th>Apellidos</th>
-                                            <th>Tipo</th>
-                                            <th>Género</th>
-                                            <th>Fecha nac.</th>
                                             <th>Acción</th>
                                         </tr>
                                     </thead>
@@ -314,9 +309,9 @@
             </div>
         </div>
     </main>
-    <?php 
-    require_once("comunes/footer.php"); 
-    ?>  
+    <?php
+    require_once("comunes/footer.php");
+    ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script type="module" src="js/atletas.js"></script>
 </body>

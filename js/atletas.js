@@ -167,12 +167,7 @@ $(document).ready(function () {
       listadoAtleta += `
                 <tr>
                     <td class='align-middle'>${atleta.cedula}</td>
-                    <td class='align-middle'>${atleta.entrenador}</td>
-                    <td class='align-middle'>${atleta.nombre}</td>
-                    <td class='align-middle'>${atleta.apellido}</td>
-                    <td class='align-middle'>${atleta.tipo_atleta}</td>
-                    <td class='align-middle'>${atleta.genero}</td>
-                    <td class='align-middle'>${atleta.fecha_nacimiento}</td>
+                    <td class='align-middle'>${atleta.nombre} ${atleta.apellido}</td>
                     <td class='align-middle'>
                     ${
                       actualizar === 1
@@ -191,7 +186,7 @@ $(document).ready(function () {
 
     $("#listado").html(listadoAtleta);
     $("#tablaatleta").DataTable({
-      columnDefs: [{ targets: [7], orderable: false, searchable: false }],
+      columnDefs: [{ targets: [2], orderable: false, searchable: false }],
       language: {
         lengthMenu: "Mostrar _MENU_ por página",
         zeroRecords: "No se encontraron atletas",
