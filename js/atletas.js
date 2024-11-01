@@ -1,12 +1,17 @@
-import { validarKeyPress, validarKeyUp, enviaAjax } from "./comunes.js";
+import { validarKeyPress, validarKeyUp, enviaAjax, muestraMensaje } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoAtleta() {
     const datos = new FormData();
     datos.append("accion", "listado_atleta");
     enviaAjax(datos, "").then((respuesta) => {
-      console.log(respuesta)
+      if (!respuesta.ok) {
+        muestraMensaje("Error", respuesta.mensaje, "error");
+        return;
+      }
+      actualizarListadoAtletas(respuesta.respuesta);
+    }).catch((error)=>{
+      muestraMensaje("Error", error, "error")
     });
-    
   }
 
   cargaListadoAtleta();
@@ -143,7 +148,6 @@ $(document).ready(function () {
     if ($.fn.DataTable.isDataTable("#tablaatleta")) {
       $("#tablaatleta").DataTable().destroy();
     }
-
     atletas.forEach((atleta) => {
       listadoAtleta += `
                 <tr>

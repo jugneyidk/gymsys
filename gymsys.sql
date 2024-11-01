@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-10-2024 a las 06:51:59
+-- Tiempo de generación: 01-11-2024 a las 02:58:19
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -41,7 +41,59 @@ CREATE TABLE `asistencias` (
 --
 
 INSERT INTO `asistencias` (`id_atleta`, `asistio`, `fecha`, `comentario`) VALUES
-('9252463', 1, '2024-07-20', '');
+('23124144', 0, '2024-10-27', ''),
+('23124144', 0, '2024-10-28', ''),
+('24244444', 0, '2024-10-27', ''),
+('24244444', 0, '2024-10-28', ''),
+('42342344', 0, '2024-10-27', ''),
+('42342344', 0, '2024-10-28', ''),
+('66456842', 0, '2024-10-27', ''),
+('66456842', 0, '2024-10-28', ''),
+('664568422', 0, '2024-10-27', ''),
+('664568422', 0, '2024-10-28', 'lerololelole'),
+('68281580', 0, '2024-10-27', ''),
+('68281580', 0, '2024-10-28', ''),
+('68281581', 0, '2024-10-27', ''),
+('68281581', 1, '2024-10-28', ''),
+('682815811', 1, '2024-10-27', ''),
+('682815811', 0, '2024-10-28', ''),
+('68281582', 1, '2024-10-27', ''),
+('68281582', 1, '2024-10-28', ''),
+('99389012', 0, '2024-10-27', ''),
+('99389012', 0, '2024-10-28', 'jejeje');
+
+--
+-- Disparadores `asistencias`
+--
+DELIMITER $$
+CREATE TRIGGER `after_asistencias_insert` AFTER INSERT ON `asistencias` FOR EACH ROW BEGIN
+    IF @num_asistencias = 1 THEN
+        INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+        VALUES ('Incluir', 'Asistencias', @usuario_actual, NEW.fecha, CONCAT('Se agregó asistencias para la fecha: ', NEW.fecha));
+        SET @num_asistencias = NULL;
+    ELSE
+        SET @num_asistencias = @num_asistencias - 1;  
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_asistencias_update` AFTER UPDATE ON `asistencias` FOR EACH ROW BEGIN
+	IF @cambios IS NULL THEN
+    	SET @cambios = '';
+    END IF;
+    IF OLD.asistio != NEW.asistio THEN
+    	SET @cambios = CONCAT(@cambios, 'Cambio la asistencia de ', OLD.id_atleta, ': ', IF(OLD.asistio = 0, 'No','Si'), ' -> ', IF(NEW.asistio = 0, 'No','Si'),'; ');
+    END IF;
+    IF OLD.comentario != NEW.comentario THEN
+    	SET @cambios = CONCAT(@cambios, 'Cambio el comentario de ', OLD.id_atleta, ': ', OLD.comentario, ' -> ', NEW.comentario,'; ');
+    END IF;
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Modificar', 'Asistencias', @usuario_actual, OLD.fecha, @cambios);
+    SET @cambios = NULL;  
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -131,7 +183,7 @@ CREATE TABLE `bitacora` (
   `accion` varchar(100) NOT NULL,
   `modulo` varchar(50) NOT NULL,
   `usuario_modificado` varchar(10) DEFAULT NULL,
-  `detalles` varchar(500) DEFAULT NULL,
+  `detalles` varchar(2000) DEFAULT NULL,
   `fecha` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -180,7 +232,48 @@ INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_
 (54, '22222222', 'Incluir', 'Entrenadores', '1797963', 'Se agregó el Entrenador: 1797963 - Doloribus pariatur  Dolores perspiciatis', '2024-10-21 04:04:12'),
 (55, '22222222', 'Eliminar', 'Entrenadores', '1797963', NULL, '2024-10-21 04:04:14'),
 (56, '22222222', 'Incluir', 'Entrenadores', '8131964', 'Se agregó el Entrenador: 8131964 - Et ipsum enim enim  Cupidatat occaecat e', '2024-10-21 04:05:53'),
-(57, '22222222', 'Eliminar', 'Entrenadores', '8131964', NULL, '2024-10-21 04:05:56');
+(57, '22222222', 'Eliminar', 'Entrenadores', '8131964', NULL, '2024-10-21 04:05:56'),
+(58, '22222222', 'Incluir', 'Rol', 'washuwa', 'Se agregó el Rol: washuwa', '2024-10-25 20:42:37'),
+(59, '22222222', 'Eliminar', 'Roles', 'washuwa', 'Se eliminó el Rol: washuwa', '2024-10-25 20:45:24'),
+(60, '22222222', 'Modificar', 'Roles', 'rol prueba', '', '2024-10-25 21:27:56'),
+(61, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(62, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(63, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(64, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(65, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(66, '22222222', 'Modificar', 'Roles', NULL, NULL, '2024-10-25 21:27:56'),
+(69, '22222222', 'Modificar', 'Roles', NULL, ' Modulo rolespermisos - crear: Si cambió a No; ', '2024-10-25 21:37:09'),
+(70, '22222222', 'Modificar', 'Roles', NULL, ' Modulo asistencias - crear: No cambió a Si; ', '2024-10-25 21:37:09'),
+(71, '22222222', 'Modificar', 'Roles', NULL, ' Modulo eventos - crear: No cambió a Si; ', '2024-10-25 21:37:09'),
+(72, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo rolespermisos - crear: No -> Si;  Modulo asistencias - crear: Si -> No;  Modulo eventos - crear: Si -> No;  Modulo mensualidad - crear: Si -> No; ', '2024-10-25 21:40:07'),
+(73, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo entrenadores - crear: Si -> No;  Modulo atletas - crear: Si -> No;  Modulo rolespermisos - crear: Si -> No;  Modulo asistencias - crear: No -> Si;  Modulo eventos - crear: No -> Si; ', '2024-10-25 21:40:41'),
+(74, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo entrenadores - crear: No -> Si;  Modulo atletas - crear: No -> Si;  Modulo rolespermisos - crear: No -> Si;  Modulo asistencias - leer: No -> Si;  Modulo asistencias - actualizar: No -> Si;  Modulo asistencias - eliminar: No -> Si;  Modulo eventos - actualizar: No -> Si;  Modulo eventos - eliminar: No -> Si;  Modulo mensualidad - crear: No -> Si;  Modulo mensualidad - actualizar: No -> Si;  Modulo mensualidad - eliminar: No -> Si; ', '2024-10-25 21:44:07'),
+(75, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo wada - crear: Si -> No;  Modulo reportes - crear: Si -> No; ', '2024-10-25 21:46:06'),
+(76, '22222222', 'Modificar', 'Roles', NULL, ' Modulo bitacora - leer: No -> Si; ', '2024-10-25 21:47:33'),
+(77, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo mensualidad - crear: Si -> No; ', '2024-10-25 21:50:29'),
+(78, '22222222', 'Modificar', 'Roles', NULL, ' Modulo atletas - crear: Si -> No; ', '2024-10-25 21:53:24'),
+(79, '22222222', 'Modificar', 'Roles', NULL, ' Modulo rolespermisos - crear: Si -> No; ', '2024-10-25 21:53:24'),
+(80, '22222222', 'Modificar', 'Roles', NULL, ' Modulo asistencias - crear: Si -> No; ', '2024-10-25 21:53:24'),
+(81, '22222222', 'Modificar', 'Roles', NULL, ' Modulo eventos - crear: Si -> No;  Modulo eventos - leer: Si -> No; ', '2024-10-25 21:53:24'),
+(82, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo eventos - crear: No -> Si;  Modulo eventos - leer: No -> Si; ', '2024-10-25 22:22:40'),
+(83, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo atletas - crear: No -> Si;  Modulo rolespermisos - crear: No -> Si;  Modulo asistencias - crear: No -> Si; ', '2024-10-25 22:24:45'),
+(84, '22222222', 'Modificar', 'Roles', NULL, ' Modulo mensualidad - crear: No -> Si; ', '2024-10-25 22:24:45'),
+(85, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo mensualidad - crear: Si -> No;  Modulo mensualidad - leer: Si -> No;  Modulo wada - crear: Si -> No;  Modulo wada - leer: Si -> No;  Modulo reportes - crear: Si -> No;  Modulo reportes - leer: Si -> No;  Modulo bitacora - crear: Si -> No;  Modulo bitacora - leer: Si -> No; ', '2024-10-25 22:39:57'),
+(86, '22222222', 'Modificar', 'Roles', 'rol prueba', 'Nombre de rol cambiado de \"rol prueba\" a \"rol pruebas\";  Modulo mensualidad - crear: No -> Si;  Modulo mensualidad - leer: No -> Si;  Modulo wada - crear: No -> Si;  Modulo wada - leer: No -> Si;  Modulo reportes - crear: No -> Si;  Modulo reportes - leer: No -> Si;  Modulo bitacora - crear: No -> Si;  Modulo bitacora - leer: No -> Si; ', '2024-10-25 22:40:36'),
+(87, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo entrenadores - crear: Si -> No;  Modulo entrenadores - leer: Si -> No;  Modulo atletas - crear: Si -> No;  Modulo atletas - leer: Si -> No;  Modulo asistencias - crear: Si -> No;  Modulo asistencias - leer: Si -> No;  Modulo eventos - crear: Si -> No;  Modulo eventos - leer: Si -> No;  Modulo mensualidad - crear: Si -> No;  Modulo mensualidad - leer: Si -> No;  Modulo wada - crear: Si -> No;  Modulo wada - leer: Si -> No;  Modulo reportes - crear: Si -> No;  Modulo reportes - leer: Si ->', '2024-10-25 22:41:13'),
+(88, '22222222', 'Modificar', 'Roles', 'rol prueba', 'Nombre de rol cambiado de \"rol pruebas\" a \"rol prueba\";  Modulo entrenadores - crear: No -> Si;  Modulo entrenadores - leer: No -> Si;  Modulo entrenadores - eliminar: Si -> No;  Modulo atletas - crear: No -> Si;  Modulo atletas - leer: No -> Si;  Modulo atletas - eliminar: Si -> No;  Modulo rolespermisos - eliminar: Si -> No;  Modulo asistencias - crear: No -> Si;  Modulo asistencias - leer: No -> Si;  Modulo asistencias - eliminar: Si -> No;  Modulo eventos - crear: No -> Si;  Modulo eventos - leer: No -> Si;  Modulo eventos - eliminar: Si -> No;  Modulo mensualidad - crear: No -> Si;  Modulo mensualidad - leer: No -> Si;  Modulo mensualidad - eliminar: Si -> No;  Modulo wada - crear: No -> Si;  Modulo wada - leer: No -> Si;  Modulo wada - eliminar: Si -> No;  Modulo reportes - crear: No -> Si;  Modulo reportes - leer: No -> Si;  Modulo reportes - eliminar: Si -> No;  Modulo bitacora - crear: No -> Si;  Modulo bitacora - leer: No -> Si;  Modulo bitacora - eliminar: Si -> No; ', '2024-10-25 22:43:43'),
+(89, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo entrenadores - eliminar: No -> Si;  Modulo atletas - eliminar: No -> Si;  Modulo rolespermisos - eliminar: No -> Si;  Modulo asistencias - eliminar: No -> Si;  Modulo eventos - eliminar: No -> Si;  Modulo mensualidad - eliminar: No -> Si;  Modulo wada - eliminar: No -> Si;  Modulo reportes - eliminar: No -> Si;  Modulo bitacora - eliminar: No -> Si; ', '2024-10-25 22:49:33'),
+(90, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo mensualidad - eliminar: Si -> No;  Modulo wada - actualizar: Si -> No;  Modulo reportes - leer: Si -> No;  Modulo bitacora - crear: Si -> No; ', '2024-10-27 15:40:03'),
+(91, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo mensualidad - eliminar: No -> Si;  Modulo wada - actualizar: No -> Si;  Modulo reportes - leer: No -> Si;  Modulo bitacora - crear: No -> Si; ', '2024-10-27 15:40:40'),
+(92, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo eventos - crear: Si -> No;  Modulo eventos - leer: Si -> No;  Modulo eventos - actualizar: Si -> No;  Modulo eventos - eliminar: Si -> No; ', '2024-10-27 19:38:34'),
+(93, '22222222', 'Modificar', 'Roles', 'rol prueba', ' Modulo eventos - crear: No -> Si;  Modulo eventos - leer: No -> Si;  Modulo eventos - actualizar: No -> Si;  Modulo eventos - eliminar: No -> Si; ', '2024-10-27 19:39:13'),
+(94, '22222222', 'Incluir', 'Asistencias', '2024-10-27', 'Se agregó asistencias para la fecha: 2024-10-27', '2024-10-27 23:30:27'),
+(97, '22222222', 'Incluir', 'Asistencias', '2024-10-28', 'Se agregó asistencias para la fecha: 2024-10-28', '2024-10-28 03:11:57'),
+(98, '22222222', 'Modificar', 'Asistencias', '2024-10-28', 'Cambio la asistencia de 664568422: Si -> No; ', '2024-10-28 03:43:08'),
+(99, '22222222', 'Modificar', 'Asistencias', '2024-10-28', 'Cambio la asistencia de 99389012: No -> Si; ', '2024-10-28 03:43:08'),
+(100, '22222222', 'Modificar', 'Asistencias', '2024-10-28', 'Cambio la asistencia de 664568422: No -> Si; ', '2024-10-28 03:49:19'),
+(101, '22222222', 'Modificar', 'Asistencias', '2024-10-28', 'Cambio la asistencia de 664568422: Si -> No; Cambio el comentario de 664568422:  -> lerololelole; ', '2024-10-28 03:53:05'),
+(102, '22222222', 'Modificar', 'Asistencias', '2024-10-28', 'Cambio la asistencia de 99389012: Si -> No; Cambio el comentario de 99389012:  -> jejeje; ', '2024-10-28 03:53:05');
 
 -- --------------------------------------------------------
 
@@ -371,12 +464,53 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (30, 1, 1, 1, 1, 1),
 (30, 2, 1, 1, 1, 1),
 (30, 3, 1, 1, 1, 1),
-(30, 4, 0, 0, 0, 0),
-(30, 5, 0, 1, 0, 0),
-(30, 6, 1, 1, 0, 0),
+(30, 4, 1, 1, 1, 1),
+(30, 5, 1, 1, 1, 1),
+(30, 6, 1, 1, 1, 1),
 (30, 7, 1, 1, 1, 1),
-(30, 8, 0, 1, 0, 0),
-(30, 9, 1, 1, 0, 0);
+(30, 8, 1, 1, 1, 1),
+(30, 9, 1, 1, 1, 1);
+
+--
+-- Disparadores `permisos`
+--
+DELIMITER $$
+CREATE TRIGGER `after_permiso_update` AFTER UPDATE ON `permisos` FOR EACH ROW BEGIN
+ IF @cambios IS NULL THEN
+        SET @cambios = '';
+    END IF;
+    IF @filas_afectadas IS NULL THEN
+        SET @filas_afectadas = 0;
+    END IF;
+    IF @total_modulos IS NULL THEN
+        SET @total_modulos = (SELECT COUNT(*) FROM modulos);
+    END IF;
+	IF OLD.crear != NEW.crear THEN
+    	SET @cambios = CONCAT(@cambios, ' Modulo ', (SELECT nombre FROM modulos WHERE id_modulo = OLD.modulo), ' - crear: ', IF(OLD.crear = 0, 'No', 'Si'), ' -> ', 			IF(NEW.crear = 0, 'No', 'Si'), '; ');
+    END IF;
+    IF OLD.leer != NEW.leer THEN
+    	SET @cambios = CONCAT(@cambios, ' Modulo ', (SELECT nombre FROM modulos WHERE id_modulo = OLD.modulo), ' - leer: ', IF(OLD.leer = 0, 'No', 'Si'), ' -> ', IF(NEW.leer = 0, 'No', 'Si'), '; ');
+    END IF;
+    IF OLD.actualizar != NEW.actualizar THEN
+    	SET @cambios = CONCAT(@cambios, ' Modulo ', (SELECT nombre FROM modulos WHERE id_modulo = OLD.modulo), ' - actualizar: ', IF(OLD.actualizar = 0, 'No', 'Si'), ' -> ', 			IF(NEW.actualizar = 0, 'No', 'Si'), '; ');
+    END IF;
+    IF OLD.eliminar != NEW.eliminar THEN
+    	SET @cambios = CONCAT(@cambios, ' Modulo ', (SELECT nombre FROM modulos WHERE id_modulo = OLD.modulo), ' - eliminar: ', IF(OLD.eliminar = 0, 'No', 'Si'), ' -> ', 			IF(NEW.eliminar = 0, 'No', 'Si'), '; ');
+    END IF;
+    SET @filas_afectadas = @filas_afectadas + 1; 
+    IF @filas_afectadas = @total_modulos THEN
+        IF @cambios != '' THEN
+            INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+            VALUES ('Modificar', 'Roles', @usuario_actual, @nombre_rol, @cambios);
+            SET @cambios = NULL;
+        	SET @nombre_rol = NULL;
+            SET @filas_afectadas = NULL;
+            SET @total_modulos = NULL;
+        END IF;        
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -424,9 +558,39 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`id_rol`, `nombre`) VALUES
-(0, 'atleta'),
+(0, 'Atleta'),
 (1, 'entrenador'),
 (30, 'rol prueba');
+
+--
+-- Disparadores `roles`
+--
+DELIMITER $$
+CREATE TRIGGER `after_rol_create` AFTER INSERT ON `roles` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Roles', @usuario_actual, NEW.nombre, CONCAT('Se agregó el Rol: ', NEW.nombre));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_rol_delete` AFTER DELETE ON `roles` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Eliminar', 'Roles', @usuario_actual, OLD.nombre, CONCAT('Se eliminó el Rol: ', OLD.nombre));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_rol_update` AFTER UPDATE ON `roles` FOR EACH ROW BEGIN
+	IF @cambios IS NULL THEN
+        SET @cambios = '';
+    END IF;
+    SET @nombre_rol = OLD.nombre;
+    IF OLD.nombre != NEW.nombre THEN
+        SET @cambios = CONCAT(@cambios, 'Nombre de rol cambiado de "', OLD.nombre, '" a "', NEW.nombre, '"; ');
+    END IF;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -617,7 +781,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- Indices de la tabla `asistencias`
 --
 ALTER TABLE `asistencias`
-  ADD KEY `id_atleta` (`id_atleta`);
+  ADD PRIMARY KEY (`id_atleta`,`fecha`);
 
 --
 -- Indices de la tabla `atleta`
@@ -739,7 +903,7 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
@@ -781,7 +945,7 @@ ALTER TABLE `resultado_competencia`
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `subs`
