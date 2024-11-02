@@ -48,25 +48,39 @@ $(document).ready(function () {
   });
 
   $("#btnSubmit").on("click", function () {
-    if (validarEnvio("#form_incluir")) {
+    if (!$("#id_rol").val()) {
+      if (validarEnvio("#form_incluir")) {
+        const datos = new FormData($("#form_incluir")[0]);
+        datos.append("accion", "incluir");
+        enviaAjax(datos, "").then((respuesta) => {
+          muestraMensaje(
+            "Éxito",
+            "El rol se ha agregado exitosamente.",
+            "success"
+          );
+          $("#modalCrear").modal("hide");
+          cargaListadoRoles();
+        });
+      }
+    } else if (validarEnvio("#form_incluir")) {
       const datos = new FormData($("#form_incluir")[0]);
-      datos.append("accion", "incluir");
+      datos.append("accion", "modificar");
       enviaAjax(datos, "").then((respuesta) => {
         muestraMensaje(
           "Éxito",
-          "El rol se ha agregado exitosamente.",
+          "El rol se ha modificado exitosamente.",
           "success"
         );
         $("#modalCrear").modal("hide");
         cargaListadoRoles();
-      });
+      })
     }
   });
 
   $("#btnModificar").on("click", function () {
     if (validarEnvio("#f2")) {
       const datos = new FormData($("#f2")[0]);
-      enviaAjax(datos,"").then((respuesta)=>{
+      enviaAjax(datos, "").then((respuesta) => {
         muestraMensaje(
           "Éxito",
           "El rol se ha modificado exitosamente.",
@@ -100,7 +114,7 @@ $(document).ready(function () {
     const datos = new FormData();
     datos.append("accion", "consultar_rol");
     datos.append("id_rol", id_rol);
-    enviaAjax(datos,"").then((respuesta)=>{
+    enviaAjax(datos, "").then((respuesta) => {
       llenarFormularioModificar(respuesta.permisos);
       $("#modalCrear").modal("show");
     });
@@ -135,16 +149,14 @@ $(document).ready(function () {
                     <td class='d-none'>${rol.id_rol}</td>
                     <td class='align-middle text-capitalize'>${rol.nombre}</td>
                     <td class='align-middle'>
-                    ${
-                      actualizar === 1
-                        ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
-                        : ""
-                    }
-                    ${
-                      eliminar === 1
-                        ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
-                        : ""
-                    }                        
+                    ${actualizar === 1
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          : ""
+        }
+                    ${eliminar === 1
+          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+          : ""
+        }                        
                     </td>
                 </tr>
             `;
