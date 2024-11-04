@@ -118,9 +118,9 @@
                                         <div id="stelefono" class="invalid-feedback"></div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="correo" class="form-label">Correo:</label>
-                                        <input type="email" class="form-control" id="correo" name="correo">
-                                        <div id="scorreo" class="invalid-feedback"></div>
+                                        <label for="correo_electronico" class="form-label">Correo:</label>
+                                        <input type="email" class="form-control" id="correo_electronico" name="correo_electronico">
+                                        <div id="scorreo_electronico" class="invalid-feedback"></div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="grado_instruccion" class="form-label">Grado de Instrucción:</label>

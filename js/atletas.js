@@ -116,7 +116,6 @@ $(document).ready(function () {
       form.find(`#fecha_nacimiento${sufijo}`),
       form.find(`#sfecha_nacimiento${sufijo}`)
     );
-
     return esValido;
   }
 

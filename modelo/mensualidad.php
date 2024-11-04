@@ -1,6 +1,4 @@
 <?php
-require_once('modelo/datos.php');
-require_once('modelo/bitacora.php');
 class Mensualidad extends datos 
 {
     private $conexion, $id_atleta, $monto, $fecha;

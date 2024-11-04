@@ -3,8 +3,8 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "No existe el modelo.";
     exit;
 }
-require_once ("modelo/" . $p . ".php");
-require_once ("modelo/permisos.php");
+require_once("modelo/" . $p . ".php");
+require_once("modelo/permisos.php");
 $o = new Entrenador();
 $permisos_o = new Permisos();
 $permisos = $permisos_o->chequear_permisos();
@@ -13,19 +13,7 @@ if ($permisos["leer"] === 0) {
 }
 if (!empty($_POST)) {
     if ($_POST["accion"] == "incluir") {
-        $response = $o->incluir_entrenador(
-            $_POST["nombres"],
-            $_POST["apellidos"],
-            $_POST["cedula"],
-            $_POST["genero"],
-            $_POST["fecha_nacimiento"],
-            $_POST["lugar_nacimiento"],
-            $_POST["estado_civil"],
-            $_POST["telefono"],
-            $_POST["correo"],
-            $_POST["grado_instruccion"],
-            $_POST["password"]
-        );
+        $response = $o->incluir_entrenador($_POST);
         echo json_encode($response);
     } elseif ($_POST["accion"] == "modificar") {
         $password = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password_modificar"] : null;
@@ -57,9 +45,7 @@ if (!empty($_POST)) {
 }
 
 if (is_file("vista/" . $p . ".php")) {
-    require_once ("vista/" . $p . ".php");
+    require_once("vista/" . $p . ".php");
 } else {
-    require_once ("comunes/404.php");
+    require_once("comunes/404.php");
 }
-
-?>

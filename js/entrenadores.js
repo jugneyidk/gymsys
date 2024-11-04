@@ -78,8 +78,8 @@ $(document).ready(function () {
     );
     esValido &= validarKeyUp(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      form.find("#correo" + sufijo),
-      form.find("#scorreo" + sufijo),
+      form.find("#correo_electronico" + sufijo),
+      form.find("#scorreo_electronico" + sufijo),
       "Correo inválido"
     );
     esValido &= verificarFecha(
@@ -107,7 +107,7 @@ $(document).ready(function () {
         "La contraseña debe tener entre 6 y 20 caracteres"
       );
     }
-
+    console.log(esValido);
     return esValido;
   }
 
@@ -254,7 +254,7 @@ $(document).ready(function () {
       case "telefono_modificar":
         validarKeyPress(e, /^\d*$/);
         break;
-      case "correo":
+      case "correo_electronico":
       case "correo_modificar":
         validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
         break;
@@ -301,11 +301,11 @@ $(document).ready(function () {
           "El formato del teléfono debe ser 04XXXXXXXXX"
         );
         break;
-      case "correo" + sufijo:
+      case "correo_electronico" + sufijo:
         validarKeyUp(
           /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
           $(this),
-          $("#scorreo" + sufijo),
+          $("#scorreo_electronico" + sufijo),
           "Correo inválido"
         );
         break;

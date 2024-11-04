@@ -1,6 +1,4 @@
 <?php
-require_once('modelo/datos.php');
-require_once('modelo/bitacora.php');
 class Entrenador extends datos
 {
     private $conexion;
@@ -11,19 +9,19 @@ class Entrenador extends datos
         $this->conexion = $this->conecta();
     }
 
-    public function incluir_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
+    public function incluir_entrenador($datos)
     {
-        $this->nombres = $nombres;
-        $this->apellidos = $apellidos;
-        $this->cedula = $cedula;
-        $this->genero = $genero;
-        $this->fecha_nacimiento = $fecha_nacimiento;
-        $this->lugar_nacimiento = $lugar_nacimiento;
-        $this->estado_civil = $estado_civil;
-        $this->telefono = $telefono;
-        $this->correo_electronico = $correo_electronico;
-        $this->grado_instruccion = $grado_instruccion;
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $validacion = Validar::validar_datos($datos);
+        if (is_array($validacion)) {
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $validacion;
+            return $respuesta;
+        }
+        foreach ($datos as $campo => $valor) {
+            if (property_exists($this, $campo)) {
+                $this->$campo = $valor;
+            }
+        }
         return $this->incluir();
     }
 
@@ -86,7 +84,7 @@ class Entrenador extends datos
     {
         return $this->listado();
     }
-    
+
     public function eliminar_entrenador($cedula)
     {
         try {
