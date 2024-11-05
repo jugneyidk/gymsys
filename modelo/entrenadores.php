@@ -25,23 +25,52 @@ class Entrenador extends datos
         return $this->incluir();
     }
 
-    public function modificar_entrenador($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $estado_civil, $telefono, $correo_electronico, $grado_instruccion, $password)
+    public function modificar_entrenador($datos)
     {
-        $this->nombres = $nombres;
-        $this->apellidos = $apellidos;
-        $this->cedula = $cedula;
-        $this->genero = $genero;
-        $this->fecha_nacimiento = $fecha_nacimiento;
-        $this->lugar_nacimiento = $lugar_nacimiento;
-        $this->estado_civil = $estado_civil;
-        $this->telefono = $telefono;
-        $this->correo_electronico = $correo_electronico;
-        $this->grado_instruccion = $grado_instruccion;
-        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $validacion = Validar::validar_datos($datos);
+        if (is_array($validacion)) {
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $validacion;
+            return $respuesta;
+        }
+        foreach ($datos as $campo => $valor) {
+            if (property_exists($this, $campo)) {
+                $this->$campo = $valor;
+            }
+        }
         return $this->modificar();
     }
 
     public function obtener_entrenador($cedula)
+    {
+        $validacion = Validar::validar("cedula", $cedula);
+        if (!$validacion["ok"]) {
+            return $validacion;
+        }
+        if (property_exists($this, "cedula")) {
+            $this->cedula = $cedula;
+        }
+        return $this->obtener();
+    }
+
+    public function listado_entrenador()
+    {
+        return $this->listado();
+    }
+
+    public function eliminar_entrenador($cedula)
+    {
+        $validacion = Validar::validar("cedula", $cedula);
+        if (!$validacion["ok"]) {
+            return $validacion;
+        }
+        if (property_exists($this, "cedula")) {
+            $this->cedula = $cedula;
+        }
+        return $this->eliminar();
+    }
+
+    private function obtener()
     {
         try {
             $consulta = "
@@ -60,12 +89,10 @@ class Entrenador extends datos
                 INNER JOIN usuarios u ON e.cedula = u.cedula
                 WHERE u.cedula = :cedula
             ";
-            $valores = array(':cedula' => $cedula);
-
+            $valores = array(':cedula' => $this->cedula);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $entrenador = $respuesta->fetch(PDO::FETCH_ASSOC);
-
             if ($entrenador) {
                 $resultado["ok"] = true;
                 $resultado["entrenador"] = $entrenador;
@@ -73,42 +100,50 @@ class Entrenador extends datos
                 $resultado["ok"] = false;
                 $resultado["mensaje"] = "No se encontró el entrenador";
             }
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
     }
-
-    public function listado_entrenador()
-    {
-        return $this->listado();
-    }
-
-    public function eliminar_entrenador($cedula)
+    private function eliminar()
     {
         try {
+            $existe = $this->existe($this->cedula);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = $existe["mensaje"];
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "
                 DELETE FROM usuarios_roles WHERE id_usuario = :cedula;
                 DELETE FROM entrenador WHERE cedula = :cedula;
                 DELETE FROM usuarios WHERE cedula = :cedula;
             ";
-            $valores = array(':cedula' => $cedula);
+            $valores = array(':cedula' => $this->cedula);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
-            $this->desconecta();
+            $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
-
     private function incluir()
     {
         try {
+            $existe = $this->existe($this->cedula);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = $existe["mensaje"];
+                return $resultado;
+            }
             $this->conexion->beginTransaction();
             $id_rol = 1;
             $token = 0;
@@ -134,20 +169,20 @@ class Entrenador extends datos
                 ':correo' => $this->correo_electronico,
                 ':grado_instruccion' => $this->grado_instruccion,
                 ':id_rol' => $id_rol,
-                ':password' => $this->password,
+                ':password' => password_hash($this->password, PASSWORD_DEFAULT),
                 ':token' => $token
             );
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $respuesta->closeCursor();
             $this->conexion->commit();
-            $this->desconecta();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -155,7 +190,6 @@ class Entrenador extends datos
     {
         try {
             $this->conexion->beginTransaction();
-
             $consulta = "
                 UPDATE usuarios 
                 SET 
@@ -187,11 +221,9 @@ class Entrenador extends datos
                 ':correo' => $this->correo_electronico,
                 ':grado_instruccion' => $this->grado_instruccion
             );
-
             $respuesta1 = $this->conexion->prepare($consulta);
             $respuesta1->execute($valores);
             $respuesta1->closeCursor();
-
             if ($this->password !== null) {
                 $consulta_password = "
                     UPDATE usuarios_roles
@@ -200,22 +232,20 @@ class Entrenador extends datos
                 ";
                 $valores_password = array(
                     ':cedula' => $this->cedula,
-                    ':password' => $this->password
+                    ':password' => password_hash($this->password, PASSWORD_DEFAULT)
                 );
-
                 $respuesta2 = $this->conexion->prepare($consulta_password);
                 $respuesta2->execute($valores_password);
                 $respuesta2->closeCursor();
             }
-
             $this->conexion->commit();
-            $this->desconecta();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -235,17 +265,39 @@ class Entrenador extends datos
             $con = $this->conexion->prepare($consulta);
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $this->desconecta();
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_entrenadores';
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
+    private function existe($cedula)
+    {
+        try {
+            $consulta = "SELECT cedula FROM entrenador WHERE cedula = :cedula;";
+            $valores = [":cedula" => $cedula];
+            $con = $this->conexion->prepare($consulta);
+            $con->execute($valores);
+            $respuesta = $con->fetch(PDO::FETCH_ASSOC);
+            if (!$respuesta) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe ningún entrenador con esa cedula";
+            } else {
+                $resultado["ok"] = true;
+                $resultado["mensaje"] = "Ya existe un entrenador con esa cedula";
+            }
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
     public function __get($propiedad)
     {
         return $this->$propiedad;

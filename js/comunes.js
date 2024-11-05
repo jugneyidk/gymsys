@@ -1,3 +1,7 @@
+import REGEX from "./regex.js";
+
+export { REGEX };
+
 export function validarKeyPress(e, regex) {
   if (!regex.test(e.key)) {
     e.preventDefault();
@@ -11,8 +15,8 @@ export function validarKeyUp(regex, input, mensaje, textoError) {
   return isValid;
 }
 
-function modalCarga(parametro) {
-  if (parametro) {
+function modalCarga(cargando) {
+  if (cargando) {
     $("#carga").modal("show");
     $("body").addClass("carga");
   } else {
@@ -21,6 +25,25 @@ function modalCarga(parametro) {
       $("body").removeClass("carga");
     }, 100);
   }
+}
+
+export function modalListener(titulo) {
+  var modal = document.getElementById("modal");
+  modal.addEventListener("show.bs.modal", function (event) {
+    $("#modalTitulo").text(titulo);
+  });
+  modal.addEventListener("hidden.bs.modal", function (event) {
+    $("#modalTitulo").text("");
+    $("#accion").val("");
+    limpiarForm();
+  });
+}
+
+function limpiarForm() {
+  document.getElementById("f1").reset();
+  $("#f1 input").removeClass("is-valid");
+  $("#f1 input").removeClass("is-invalid");
+  $("#f1 div .invalid-feedback").text("");
 }
 
 export function enviaAjax(datos, url) {

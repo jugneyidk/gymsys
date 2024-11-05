@@ -3,6 +3,8 @@ import {
   validarKeyUp,
   enviaAjax,
   muestraMensaje,
+  REGEX,
+  modalListener,
 } from "./comunes.js";
 $(document).ready(function () {
   function carga_listado_entrenadores() {
@@ -14,6 +16,12 @@ $(document).ready(function () {
   }
 
   carga_listado_entrenadores();
+
+  modalListener("Entrenador");
+  modal.addEventListener("hidden.bs.modal", function (event) {
+    $("#modificar_contraseña_container").addClass("d-none");
+    $("#password").prop("disabled", false);
+  });
 
   function verificarFecha(fechaInput, mensaje) {
     var fecha = fechaInput.val();
@@ -49,78 +57,73 @@ $(document).ready(function () {
   function validarEnvio(formId) {
     var esValido = true;
     var form = $(formId);
-
-    var sufijo = formId === "#f2" ? "_modificar" : "";
-
     esValido &= validarKeyUp(
-      /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      form.find("#nombres" + sufijo),
-      form.find("#snombres" + sufijo),
+      REGEX.nombres.regex,
+      form.find("#nombres"),
+      form.find("#snombres"),
       "Solo letras y espacios (1-50 caracteres)"
     );
     esValido &= validarKeyUp(
-      /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      form.find("#apellidos" + sufijo),
-      form.find("#sapellidos" + sufijo),
+      REGEX.apellidos.regex,
+      form.find("#apellidos"),
+      form.find("#sapellidos"),
       "Solo letras y espacios (1-50 caracteres)"
     );
     esValido &= validarKeyUp(
-      /^\d{7,9}$/,
-      form.find("#cedula" + sufijo),
-      form.find("#scedula" + sufijo),
+      REGEX.cedula.regex,
+      form.find("#cedula"),
+      form.find("#scedula"),
       "La cédula debe tener al menos 7 números"
     );
     esValido &= validarKeyUp(
-      /^04\d{9}$/,
-      form.find("#telefono" + sufijo),
-      form.find("#stelefono" + sufijo),
+      REGEX.telefono.regex,
+      form.find("#telefono"),
+      form.find("#stelefono"),
       "El formato del teléfono debe ser 04XXXXXXXXX"
     );
     esValido &= validarKeyUp(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      form.find("#correo_electronico" + sufijo),
-      form.find("#scorreo_electronico" + sufijo),
+      REGEX.correo_electronico.regex,
+      form.find("#correo_electronico"),
+      form.find("#scorreo_electronico"),
       "Correo inválido"
     );
     esValido &= verificarFecha(
-      form.find("#fecha_nacimiento" + sufijo),
-      form.find("#sfecha_nacimiento" + sufijo)
+      form.find("#fecha_nacimiento"),
+      form.find("#sfecha_nacimiento")
     );
     esValido &= validarKeyUp(
-      /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-      form.find("#lugar_nacimiento" + sufijo),
-      form.find("#slugarnacimiento" + sufijo),
+      REGEX.lugar_nacimiento.regex,
+      form.find("#lugar_nacimiento"),
+      form.find("#slugarnacimiento"),
       "El lugar de nacimiento no puede estar vacío"
     );
     esValido &= validarKeyUp(
-      /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-      form.find("#grado_instruccion" + sufijo),
-      form.find("#sgrado_instruccion" + sufijo),
+      REGEX.grado_instruccion.regex,
+      form.find("#grado_instruccion"),
+      form.find("#sgrado_instruccion"),
       "El grado de instrucción no puede estar vacío"
     );
-
     if (formId === "#f2" && $("#modificar_contraseña").is(":checked")) {
       esValido &= validarKeyUp(
-        /^[a-zA-Z0-9@._-]{6,20}$/,
+        REGEX.password.regex,
         form.find("#password_modificar"),
         form.find("#spassword_modificar"),
         "La contraseña debe tener entre 6 y 20 caracteres"
       );
     }
-    console.log(esValido);
     return esValido;
   }
-
-  $("#f1, #f2").on("submit", function (e) {
+  $("#f1").on("submit", function (e) {
     e.preventDefault();
-    var formId = $(this).attr("id");
-    if (validarEnvio("#" + formId)) {
+    if (validarEnvio("#f1")) {
       var datos = new FormData($(this)[0]);
+      if (datos.get("accion") === "") {
+        datos.set("accion", "incluir");
+      }
       enviaAjax(datos, "").then((respuesta) => {
         muestraMensaje("Exito", "Operación realizada exitosamente.", "success");
         carga_listado_entrenadores();
-        $("#modalInscripcion").modal("hide");
-        $("#modalModificar").modal("hide");
+        $("#modal").modal("hide");
       });
     }
   });
@@ -144,12 +147,11 @@ $(document).ready(function () {
         actualizar === 1
           ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
           : ""
-      }
-                                    ${
-                                      eliminar === 1
-                                        ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
-                                        : ""
-                                    } </td>`;
+      }${
+        eliminar === 1
+          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+          : ""
+      } </td>`;
       listado_entrenador += "</tr>";
     });
     $("#listado").html(listado_entrenador);
@@ -175,18 +177,20 @@ $(document).ready(function () {
     });
   }
   function llenarFormularioModificar(entrenador) {
-    $("#f2 #nombres_modificar").val(entrenador.nombre);
-    $("#f2 #apellidos_modificar").val(entrenador.apellido);
-    $("#f2 #cedula_modificar").val(entrenador.cedula);
-    $("#f2 #genero_modificar").val(entrenador.genero);
-    $("#f2 #fecha_nacimiento_modificar").val(entrenador.fecha_nacimiento);
-    $("#f2 #lugar_nacimiento_modificar").val(entrenador.lugar_nacimiento);
-    $("#f2 #estado_civil_modificar").val(entrenador.estado_civil);
-    $("#f2 #telefono_modificar").val(entrenador.telefono);
-    $("#f2 #correo_modificar").val(entrenador.correo_electronico);
-    $("#f2 #grado_instruccion_modificar").val(entrenador.grado_instruccion);
-    $("#f2 #password_modificar").val("");
+    $("#f1 #nombres").val(entrenador.nombre);
+    $("#f1 #apellidos").val(entrenador.apellido);
+    $("#f1 #cedula").val(entrenador.cedula);
+    $("#f1 #genero").val(entrenador.genero);
+    $("#f1 #fecha_nacimiento").val(entrenador.fecha_nacimiento);
+    $("#f1 #lugar_nacimiento").val(entrenador.lugar_nacimiento);
+    $("#f1 #estado_civil").val(entrenador.estado_civil);
+    $("#f1 #telefono").val(entrenador.telefono);
+    $("#f1 #correo_electronico").val(entrenador.correo_electronico);
+    $("#f1 #grado_instruccion").val(entrenador.grado_instruccion);
+    $("#f1 #password").val("");
+    $("#f1 #password").prop("disabled", true);
     $("#modificar_contraseña").prop("checked", false);
+    $("#modificar_contraseña_container").removeClass("d-none");
   }
   function cargarDatosEntrenador(cedula) {
     var datos = new FormData();
@@ -194,7 +198,7 @@ $(document).ready(function () {
     datos.append("cedula", cedula);
     enviaAjax(datos, "").then((respuesta) => {
       llenarFormularioModificar(respuesta.entrenador);
-      $("#modalModificar").modal("show");
+      $("#modal").modal("show");
     });
   }
 
@@ -227,11 +231,11 @@ $(document).ready(function () {
 
   $("#modificar_contraseña").on("change", function () {
     if ($(this).is(":checked")) {
-      $("#password_modificar").prop("disabled", false);
+      $("#password").prop("disabled", false);
     } else {
-      $("#password_modificar").prop("disabled", true).val("");
-      $("#password_modificar").removeClass("is-valid is-invalid");
-      $("#spassword_modificar").text("");
+      $("#password").prop("disabled", true).val("");
+      $("#password").removeClass("is-valid is-invalid");
+      $("#spassword").text("");
     }
   });
 
@@ -242,117 +246,48 @@ $(document).ready(function () {
       case "apellidos":
       case "lugar_nacimiento":
       case "grado_instruccion":
-      case "nombres_modificar":
-      case "apellidos_modificar":
-      case "lugar_nacimiento_modificar":
-      case "grado_instruccion_modificar":
-        validarKeyPress(e, /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/);
+      case "nombres":
+      case "apellidos":
+      case "lugar_nacimiento":
+      case "grado_instruccion":
+        validarKeyPress(e, REGEX.keypress_letras.regex);
         break;
       case "cedula":
-      case "cedula_modificar":
+      case "cedula":
       case "telefono":
-      case "telefono_modificar":
-        validarKeyPress(e, /^\d*$/);
+      case "telefono":
+        validarKeyPress(e, REGEX.keypress_numerico.regex);
         break;
       case "correo_electronico":
-      case "correo_modificar":
-        validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
+      case "correo":
+        validarKeyPress(e, REGEX.keypress_correo.regex);
         break;
-      case "password_modificar":
-        validarKeyPress(e, /^[a-zA-Z0-9@._-]*$/);
+      case "password":
+        validarKeyPress(e, REGEX.keypress_password.regex);
         break;
     }
   });
 
   $("input").on("keyup", function () {
     var id = $(this).attr("id");
-    var formId = $(this).closest("form").attr("id");
-    var sufijo = formId === "f2" ? "_modificar" : "";
-    switch (id) {
-      case "nombres" + sufijo:
-        validarKeyUp(
-          /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-          $(this),
-          $("#snombres" + sufijo),
-          "Solo letras y espacios (1-50 caracteres)"
-        );
-        break;
-      case "apellidos" + sufijo:
-        validarKeyUp(
-          /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-          $(this),
-          $("#sapellidos" + sufijo),
-          "Solo letras y espacios (1-50 caracteres)"
-        );
-        break;
-      case "cedula" + sufijo:
-        validarKeyUp(
-          /^\d{7,9}$/,
-          $(this),
-          $("#scedula" + sufijo),
-          "La cédula debe tener al menos 7 números"
-        );
-        break;
-      case "telefono" + sufijo:
-        validarKeyUp(
-          /^04\d{9}$/,
-          $(this),
-          $("#stelefono" + sufijo),
-          "El formato del teléfono debe ser 04XXXXXXXXX"
-        );
-        break;
-      case "correo_electronico" + sufijo:
-        validarKeyUp(
-          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-          $(this),
-          $("#scorreo_electronico" + sufijo),
-          "Correo inválido"
-        );
-        break;
-      case "lugar_nacimiento" + sufijo:
-        validarKeyUp(
-          /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-          $(this),
-          $("#slugarnacimiento" + sufijo),
-          "El lugar de nacimiento no puede estar vacío"
-        );
-        break;
-      case "grado_instruccion" + sufijo:
-        validarKeyUp(
-          /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-          $(this),
-          $("#sgrado_instruccion" + sufijo),
-          "El grado de instrucción no puede estar vacío"
-        );
-        break;
-      case "password_modificar":
-        if ($("#modificar_contraseña").is(":checked")) {
-          validarKeyUp(
-            /^[a-zA-Z0-9@._-]{6,20}$/,
-            $(this),
-            $("#spassword_modificar"),
-            "La contraseña debe tener entre 6 y 20 caracteres"
-          );
-        }
-        break;
-    }
+    validarKeyUp(REGEX[id].regex, $(this), $("#s" + id), REGEX[id].mensaje);
   });
 
   $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
     var form = $(this).closest("form");
-    var sufijo = form.attr("id") === "f2" ? "_modificar" : "";
-    verificarFecha($(this), form.find("#sfecha_nacimiento" + sufijo));
+    verificarFecha($(this), form.find("#sfecha_nacimiento"));
     var edad = calcularEdad($(this).val());
-    form.find("#edad" + sufijo).val(edad);
+    form.find("#edad").val(edad);
     if (edad < 18) {
-      form.find("#representanteInfo" + sufijo).show();
+      form.find("#representanteInfo").show();
     } else {
-      form.find("#representanteInfo" + sufijo).hide();
+      form.find("#representanteInfo").hide();
     }
   });
 
   $("#tablaentrenador").on("click", ".btn-warning", function () {
     var cedula = $(this).closest("tr").find("td:first").text();
+    $("#accion").val("modificar");
     cargarDatosEntrenador(cedula);
   });
 

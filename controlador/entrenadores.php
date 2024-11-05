@@ -13,23 +13,12 @@ if ($permisos["leer"] === 0) {
 }
 if (!empty($_POST)) {
     if ($_POST["accion"] == "incluir") {
+        unset($_POST["modificar_contraseña"]);
         $response = $o->incluir_entrenador($_POST);
         echo json_encode($response);
     } elseif ($_POST["accion"] == "modificar") {
-        $password = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password_modificar"] : null;
-        $response = $o->modificar_entrenador(
-            $_POST["nombres_modificar"],
-            $_POST["apellidos_modificar"],
-            $_POST["cedula_modificar"],
-            $_POST["genero_modificar"],
-            $_POST["fecha_nacimiento_modificar"],
-            $_POST["lugar_nacimiento_modificar"],
-            $_POST["estado_civil_modificar"],
-            $_POST["telefono_modificar"],
-            $_POST["correo_modificar"],
-            $_POST["grado_instruccion_modificar"],
-            $password
-        );
+        $_POST["password"] = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password"] : null;
+        $response = $o->modificar_entrenador($_POST);
         echo json_encode($response);
     } elseif ($_POST["accion"] == "obtener_entrenador") {
         $response = $o->obtener_entrenador($_POST["cedula"]);

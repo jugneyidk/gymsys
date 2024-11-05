@@ -1,68 +1,60 @@
+import { enviaAjax } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoBitacora() {
     const datos = new FormData();
     datos.append("accion", "listado_bitacora");
-    enviaAjax(datos);
+    enviaAjax(datos, "").then((respuesta) => {
+      actualizarListadoBitacora(respuesta.respuesta);
+    });
   }
-
   cargaListadoBitacora();
 });
-function enviaAjax(datos) {
-  $.ajax({
-    async: true,
-    url: "",
-    type: "POST",
-    contentType: false,
-    data: datos,
-    processData: false,
-    cache: false,
-    beforeSend: function () {},
-    timeout: 10000,
-    success: function (respuesta) {
-      try {
-        const lee = JSON.parse(respuesta);
-        if (lee.ok) {
-          if (lee.devol === "listado_bitacora") {
-            actualizarListadoBitacora(lee.respuesta);
-          } else if (lee.devol === "consultar_accion") {
-            accion = lee.respuesta;
-            detalles = "";
-            if (accion.detalles) {
-              const detalleArray = accion.detalles
-                .split(";")
-                .filter((item) => item.trim() !== "");
-              detalleArray.forEach((detalle) => {
-                detalles = detalles + `<li>${detalle.trim()}</li>`;
-              });
-            }
-            contenido = `
+window.consultarBitacora = function (id) {
+  const datos = new FormData();
+  datos.append("accion", "consultar_accion");
+  datos.append("id_accion", id);
+  enviaAjax(datos, "").then((respuesta) => {
+    llenarDetallesAccion(respuesta.respuesta);
+  });
+};
+function llenarDetallesAccion(respuesta) {
+  var detalles = "";
+  if (respuesta.detalles) {
+    const detalleArray = respuesta.detalles
+      .split(";")
+      .filter((item) => item.trim() !== "");
+    detalleArray.forEach((detalle) => {
+      detalles = detalles + `<li>${detalle.trim()}</li>`;
+    });
+  }
+  var contenido = `
             <div class="container">
                     <div class="row my-3">
                         <div class="col text-center">
                             <span class="fw-bold">Usuario</span>
-                            <span class="d-block">${accion.id_usuario}</span>
+                            <span class="d-block">${respuesta.id_usuario}</span>
                         </div>
                         <div class="col text-center">
                             <span class="fw-bold">Fecha</span>
-                            <span class="d-block">${accion.fecha}</span>
+                            <span class="d-block">${respuesta.fecha}</span>
                         </div>
                         <div class="col text-center">
                             <span class="fw-bold">Accion</span>
-                            <span class="d-block">${accion.accion}</span>
+                            <span class="d-block">${respuesta.accion}</span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col text-center">
                             <span class="fw-bold">Registro afectado</span>
                             <span class="d-block">${
-                              accion.usuario_modificado
-                                ? accion.usuario_modificado
+                              respuesta.usuario_modificado
+                                ? respuesta.usuario_modificado
                                 : "No"
                             }</span>
                         </div>
                         <div class="col text-center">
                             <span class="fw-bold">Modulo</span>
-                            <span class="d-block">${accion.modulo}</span>
+                            <span class="d-block">${respuesta.modulo}</span>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -75,34 +67,10 @@ function enviaAjax(datos) {
                     </div>
                 </div>            
             `;
-            $("#modalBody").html(contenido);
-            $("#modal").modal("show");
-            console.log(lee.respuesta);
-          }
-        } else {
-          Swal.fire("Error", lee.mensaje, "error");
-        }
-      } catch (error) {
-        Swal.fire("Error", "Algo salió mal", "error");
-        console.log(error);
-      }
-    },
-    error: function (request, status, err) {
-      const errorMsg =
-        status === "timeout"
-          ? "Servidor ocupado, Intente de nuevo"
-          : "Error al procesar la solicitud";
-      Swal.fire("Error", errorMsg, "error");
-    },
-    complete: function () {},
-  });
+  $("#modalBody").html(contenido);
+  $("#modal").modal("show");
 }
-function consultarBitacora(id) {
-  const datos = new FormData();
-  datos.append("accion", "consultar_accion");
-  datos.append("id_accion", id);
-  enviaAjax(datos);
-}
+
 function actualizarListadoBitacora(bitacora) {
   let listadoBitacora = "";
   if ($.fn.DataTable.isDataTable("#tablabitacora")) {
@@ -131,9 +99,9 @@ function actualizarListadoBitacora(bitacora) {
                         ? `<td class='align-middle text-capitalize'>${elemento.usuario_modificado}</td>`
                         : `<td class='align-middle text-capitalize'><span class='badge bg-secondary'>No</span></td>`
                     }    
-                <td class='align-middle text-capitalize'><button class='btn btn-sm btn-warning' onclick="consultarBitacora(${
-                  elemento.id_accion
-                })">Ver</button></td>                    
+                <td class='align-middle text-capitalize'><button class='btn btn-sm btn-warning' onclick="consultarBitacora(
+                  ${elemento.id_accion}
+                )">Ver</button></td>                    
                 </tr>
             `;
   });

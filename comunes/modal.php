@@ -6,7 +6,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modalBody" id="modalBody">
-                
+                <div class="container-lg">
+                    <?php isset($formulario) ?? require_once "formularios/".$formulario.".php"; ?>
+                </div>
             </div>
         </div>
     </div>
