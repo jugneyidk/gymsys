@@ -7,7 +7,7 @@
             </div>
             <div class="modalBody" id="modalBody">
                 <div class="container-lg">
-                    <?php isset($formulario) ?? require_once "formularios/".$formulario.".php"; ?>
+                    <?php isset($formulario) ? require_once "formularios/{$formulario}.php" : null; ?>
                 </div>
             </div>
         </div>

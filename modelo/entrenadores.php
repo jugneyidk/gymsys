@@ -189,6 +189,12 @@ class Entrenador extends datos
     private function modificar()
     {
         try {
+            $existe = $this->existe($this->cedula);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = $existe["mensaje"];
+                return $resultado;
+            }
             $this->conexion->beginTransaction();
             $consulta = "
                 UPDATE usuarios 
