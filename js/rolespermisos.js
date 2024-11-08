@@ -3,6 +3,7 @@ import {
   validarKeyUp,
   enviaAjax,
   muestraMensaje,
+  REGEX
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoRoles() {
@@ -134,7 +135,15 @@ $(document).ready(function () {
         const datos = new FormData();
         datos.append("accion", "eliminar_rol");
         datos.append("id_rol", id_rol);
-        enviaAjax(datos);
+        enviaAjax(datos, "").then((respuesta) => {
+          muestraMensaje(
+            "Éxito",
+            "El rol se ha modificado exitosamente.",
+            "success"
+          );
+          $("#modalModificar").modal("hide");
+          cargaListadoRoles();
+        });
       }
     });
   }
@@ -199,7 +208,7 @@ $(document).ready(function () {
     const formId = $(this).closest("form").attr("id");
     const sufijo = formId === "f2" ? "_modificar" : "";
     const regexMap = {
-      nombre: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+      nombre: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/,
     };
 
     if (regexMap[id.replace(sufijo, "")]) {

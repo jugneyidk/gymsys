@@ -1,6 +1,6 @@
 <?php
 require_once("./comunes/regex.php");
-class Validar
+class Validar extends datos
 {
     private static $exp = REGEX;
     public static function validar($campo, $valor)
@@ -53,5 +53,26 @@ class Validar
             }
         }
         return $valida;
+    }
+
+    public static function existe($conexion, $id, $consulta)
+    {
+        try {
+            $con = $conexion->prepare($consulta);
+            $con->bindParam(1, $id);
+            $con->execute();
+            $respuesta = $con->fetch(PDO::FETCH_ASSOC);
+            if (!$respuesta) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe ningún entrenador con esa cedula";
+            } else {
+                $resultado["ok"] = true;
+                $resultado["mensaje"] = "Ya existe un entrenador con esa cedula";
+            }
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
     }
 }

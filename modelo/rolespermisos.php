@@ -40,6 +40,13 @@ class Roles extends datos
     private function incluir()
     {
         try {
+            $consulta = "SELECT id_rol FROM roles WHERE id_rol = ?;";
+            $existe = Validar::existe($this->conexion, $this->id_rol,$consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = $existe["mensaje"];
+                return $resultado;
+            }
             $this->conexion->beginTransaction();
             $consulta = "
                 INSERT INTO roles (nombre)
