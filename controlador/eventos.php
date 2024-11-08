@@ -94,8 +94,10 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['total']
             );
             echo json_encode($respuesta);
+        }elseif ($accion == 'listado_eventos_anteriores') {
+            $respuesta = $o->listado_eventos_anteriores();
+            echo json_encode($respuesta);
         }
-        
         
         exit;
     }

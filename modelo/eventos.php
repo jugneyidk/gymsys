@@ -62,14 +62,15 @@ class Eventos extends datos
         }
         return $resultado;
     }
-    
-    private function listado() {
+
+    private function listado()
+    {
         try {
             $consulta = "SELECT c.*, 
                     (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia) AS participantes, 
                     (10 - (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia)) AS cupos_disponibles
                     FROM competencia c
-                    WHERE c.estado = 'activo'";  // Filtramos solo los eventos activos
+                    WHERE c.estado = 'activo'"; 
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -81,7 +82,7 @@ class Eventos extends datos
         }
         return $resultado;
     }
-    
+
 
     public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
     {
@@ -151,6 +152,22 @@ class Eventos extends datos
         }
         return $resultado;
     }
+    public function listado_eventos_anteriores()
+    {
+        try {
+            $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() ORDER BY fecha_fin DESC LIMIT 5";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
+    }
+    
 
     public function listado_subs()
     {
@@ -206,25 +223,25 @@ class Eventos extends datos
     }
 
     public function listado_atletas_inscritos($id_competencia)
-{
-    try {
-        $consulta = "
+    {
+        try {
+            $consulta = "
             SELECT a.*, u.nombre, u.apellido, u.fecha_nacimiento, rc.id_competencia
             FROM resultado_competencia rc
             JOIN atleta a ON rc.id_atleta = a.cedula
             JOIN usuarios u ON a.cedula = u.cedula
             WHERE rc.id_competencia = :id_competencia";
-        $respuesta = $this->conexion->prepare($consulta);
-        $respuesta->execute([':id_competencia' => $id_competencia]);
-        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-        $resultado["ok"] = true;
-        $resultado["respuesta"] = $respuesta;
-    } catch (Exception $e) {
-        $resultado["ok"] = false;
-        $resultado["mensaje"] = $e->getMessage();
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([':id_competencia' => $id_competencia]);
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (Exception $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        return $resultado;
     }
-    return $resultado;
-}
 
 
     public function inscribir_atletas($id_competencia, $atletas)

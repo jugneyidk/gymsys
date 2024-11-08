@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2024 a las 06:23:30
+-- Tiempo de generación: 08-11-2024 a las 07:36:33
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -358,6 +358,13 @@ CREATE TABLE `categorias` (
   `peso_maximo` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `categorias`
+--
+
+INSERT INTO `categorias` (`id_categoria`, `nombre`, `peso_minimo`, `peso_maximo`) VALUES
+(1, 'sdffdsfds', 20.00, 50.00);
+
 -- --------------------------------------------------------
 
 --
@@ -372,8 +379,16 @@ CREATE TABLE `competencia` (
   `subs` int(5) NOT NULL,
   `lugar_competencia` varchar(100) NOT NULL,
   `fecha_inicio` date NOT NULL,
-  `fecha_fin` date NOT NULL
+  `fecha_fin` date NOT NULL,
+  `estado` enum('activo','inactivo') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `competencia`
+--
+
+INSERT INTO `competencia` (`id_competencia`, `tipo_competicion`, `nombre`, `categoria`, `subs`, `lugar_competencia`, `fecha_inicio`, `fecha_fin`, `estado`) VALUES
+(1, 1, 'hola', 1, 1, 'dsfdsdfsfds', '2024-11-09', '2023-11-08', 'activo');
 
 -- --------------------------------------------------------
 
@@ -703,6 +718,13 @@ CREATE TABLE `subs` (
   `edad_maxima` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `subs`
+--
+
+INSERT INTO `subs` (`id_sub`, `nombre`, `edad_minima`, `edad_maxima`) VALUES
+(1, 'dsffdsfds', 15, 18);
+
 -- --------------------------------------------------------
 
 --
@@ -733,6 +755,13 @@ CREATE TABLE `tipo_competencia` (
   `id_tipo_competencia` int(5) NOT NULL,
   `nombre` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_competencia`
+--
+
+INSERT INTO `tipo_competencia` (`id_tipo_competencia`, `nombre`) VALUES
+(1, 'fdsfdsfs');
 
 -- --------------------------------------------------------
 
@@ -1035,13 +1064,13 @@ ALTER TABLE `bitacora`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `competencia`
 --
 ALTER TABLE `competencia`
-  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `marcas`
@@ -1077,7 +1106,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `subs`
 --
 ALTER TABLE `subs`
-  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_atleta`
@@ -1089,7 +1118,7 @@ ALTER TABLE `tipo_atleta`
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
-  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Restricciones para tablas volcadas

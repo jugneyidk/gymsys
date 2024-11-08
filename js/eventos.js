@@ -60,7 +60,6 @@ $(document).ready(function () {
             `;
         });
     
-        // Inserta los eventos en el contenedor con el ID "lista-eventos"
         $("#lista-eventos").html(listadoEventos);
     }
     
@@ -97,6 +96,9 @@ $("#fRegistrarEvento").on("submit", function (e) {
             Swal.fire("Error", "Error en la solicitud AJAX para registrar evento", "error");
         }
     });
+});
+$('#modalEventoConsultaAnterior').on('shown.bs.modal', function () {
+    cargarEventosAnteriores();
 });
 
 $("#registrarCategoria").on("submit", function (e) {
@@ -301,7 +303,7 @@ cargarListadoCategorias();
 cargarListadoSubs();
 cargarListadoTipos();
 
-// Eventos para abrir modales y cargar listas
+ 
 $('#modalRegistrarEvento').on('show.bs.modal', function () {
     cargarListadoCategorias();
     cargarListadoSubs();
@@ -319,7 +321,7 @@ $('#modalRegistrarTipo').on('show.bs.modal', function () {
     cargarListadoTipos();
 });
 
-// Validaciones
+
 function validarKeyPress(e, regex) {
     if (!regex.test(e.key)) {
         e.preventDefault();
@@ -410,8 +412,7 @@ function validarEnvio(formId) {
 
     return esValido;
 }
-
-// Eventos para validar formularios
+ 
 $("input").on("keypress", function (e) {
     const id = $(this).attr("id");
     const regexMap = {
@@ -441,8 +442,7 @@ $("#in_date_start, #in_date_end").on("change", function () {
     const form = $(this).closest("form");
     verificarFecha($(this), form.find(`#s${this.id}`));
 });
-
-// Inscribir Participantes
+ 
 $('#modalInscribirEvento').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget);
     const idCompetencia = button.data('id');
@@ -547,7 +547,7 @@ function cerrarEvento(idCompetencia) {
                         const result = JSON.parse(respuesta);
                         if (result.ok) {
                             Swal.fire("Éxito", "Evento cerrado con éxito", "success");
-                            cargarEventos(); // Actualiza el listado de eventos
+                            cargarEventos();  
                         } else {
                             Swal.fire("Error", result.mensaje, "error");
                         }
@@ -638,8 +638,53 @@ $("#registrarEvento").on("submit", function (e) {
         }
     });
 });
+function cargarEventosAnteriores() {
+    const datos = new FormData();
+    datos.append("accion", "listado_eventos_anteriores");
 
-// Cargar atletas inscritos al abrir el modal de evento activo
+    $.ajax({
+        url: "",
+        type: "POST",
+        contentType: false,
+        data: datos,
+        processData: false,
+        cache: false,
+        success: function (respuesta) {
+            try {
+                const result = JSON.parse(respuesta);
+                if (result.ok && result.respuesta.length > 0) {
+                    actualizarListadoEventosAnteriores(result.respuesta);
+                } else {
+                    console.log("No hay eventos anteriores.");
+                   
+                }
+            } catch (error) {
+                console.error("Error al procesar la respuesta de eventos anteriores:", error);
+            }
+        },
+        error: function () {
+            console.error("Error en la solicitud AJAX para cargar eventos anteriores.");
+        }
+    });
+}
+
+function actualizarListadoEventosAnteriores(eventos) {
+    let listadoEventos = "";
+    eventos.forEach(evento => {
+        listadoEventos += `
+            <tr>
+                <td>${evento.id_competencia}</td>
+                <td>${evento.nombre}</td>
+                <td>${evento.fecha_inicio}</td>
+                <td>${evento.fecha_fin}</td>
+                <td>${evento.lugar_competencia}</td>
+                <td>${evento.estado}</td>
+            </tr>
+        `;
+    });
+ 
+    $("#tablaEventosAnteriores tbody").html(listadoEventos);
+} 
 $('#modalVerEventoActivo').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget);
     const idCompetencia = button.data('id');
@@ -676,7 +721,7 @@ $('#modalVerEventoActivo').on('show.bs.modal', function (event) {
 function actualizarTablaInscritos(atletas) {
     let filas = "";
     atletas.forEach((atleta, index) => {
-        const resultadoRegistrado = atleta.resultado_registrado; // Campo que indica si ya tiene resultados registrados
+        const resultadoRegistrado = atleta.resultado_registrado;  
 
         filas += `
             <tr>
@@ -703,8 +748,7 @@ $('#modalModificarResultados').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget);
     const idCompetencia = button.data('id-competencia');
     const idAtleta = button.data('id-atleta');
-    
-    // Petición AJAX para obtener los resultados actuales del atleta
+     
     const datos = new FormData();
     datos.append("accion", "obtener_resultados");
     datos.append("id_competencia", idCompetencia);
@@ -720,16 +764,13 @@ $('#modalModificarResultados').on('show.bs.modal', function (event) {
         success: function (respuesta) {
             try {
                 const result = JSON.parse(respuesta);
-                if (result.ok) {
-                    // Llenar los campos del formulario con los resultados existentes
+                if (result.ok) { 
                     $('#arranque_modificar').val(result.respuesta.arranque);
                     $('#envion_modificar').val(result.respuesta.envion);
                     $('#medalla_arranque_modificar').val(result.respuesta.medalla_arranque);
                     $('#medalla_envion_modificar').val(result.respuesta.medalla_envion);
                     $('#medalla_total_modificar').val(result.respuesta.medalla_total);
-                    $('#total_modificar').val(result.respuesta.total);
-
-                    // Llenar los datos del atleta en el modal
+                    $('#total_modificar').val(result.respuesta.total); 
                     $('#nombreAtletaModificarResultados').text(result.respuesta.nombre_atleta);
                     $('#cedulaAtletaModificarResultados').text(result.respuesta.cedula_atleta);
                 } else {
@@ -744,8 +785,7 @@ $('#modalModificarResultados').on('show.bs.modal', function (event) {
         }
     });
 });
-
-    // Abrir modal de registrar resultados y cargar datos del atleta
+ 
     $('#modalRegistrarResultados').on('show.bs.modal', function (event) {
         const button = $(event.relatedTarget);
         const idCompetencia = button.data('id-competencia');
@@ -754,8 +794,7 @@ $('#modalModificarResultados').on('show.bs.modal', function (event) {
         $('#formRegistrarResultados').data('id-competencia', idCompetencia);
         $('#formRegistrarResultados').data('id-atleta', idAtleta);
     });
-
-// Lógica para calcular el total automáticamente
+ 
 $('#arranque, #envion').on('input', function() {
     const arranque = parseFloat($('#arranque').val()) || 0;
     const envion = parseFloat($('#envion').val()) || 0;
@@ -799,8 +838,7 @@ $('#arranque, #envion').on('input', function() {
             }
         });
     });
-    
-    // Registrar resultados
+     
     $('#formRegistrarResultados').on('submit', function (e) {
         e.preventDefault();
         const idCompetencia = $(this).data('id-competencia');
@@ -836,6 +874,7 @@ $('#arranque, #envion').on('input', function() {
             }
         });
     });
+    
     $('#formModificarResultados').on('submit', function (e) {
         e.preventDefault();
     
