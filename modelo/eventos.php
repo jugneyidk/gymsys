@@ -266,6 +266,39 @@ class Eventos extends datos
         }
         return $resultado;
     }
+// Modelo.php
+public function obtenerCompetencia($id_competencia) {
+    try {
+        $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute([':id_competencia' => $id_competencia]);
+        $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
+        return ["ok" => true, "respuesta" => $resultado];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
+public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia) {
+    try {
+        $consulta = "UPDATE competencia SET nombre = :nombre, lugar_competencia = :ubicacion, fecha_inicio = :fecha_inicio, fecha_fin = :fecha_fin, categoria = :categoria, subs = :subs, tipo_competencia = :tipo_competencia WHERE id_competencia = :id_competencia";
+        $valores = [
+            ':id_competencia' => $id_competencia,
+            ':nombre' => $nombre,
+            ':ubicacion' => $ubicacion,
+            ':fecha_inicio' => $fecha_inicio,
+            ':fecha_fin' => $fecha_fin,
+            ':categoria' => $categoria,
+            ':subs' => $subs,
+            ':tipo_competicion' => $tipo_competencia
+        ];
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute($valores);
+        return ["ok" => true];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
 
     public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
     {

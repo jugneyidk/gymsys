@@ -7,6 +7,7 @@
     <title>Registro de Competencias - Sistema</title>
     <?php require_once("comunes/linkcss.php") ?>
     <link href="css/eventos.css" rel="stylesheet">
+
 </head>
 
 <body class="d-flex flex-column vh-100">
@@ -38,7 +39,7 @@
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalEventoConsultaAnterior">Consultar
                                                     Anteriores</a>
-                                                    
+
                                             </li>
                                         </ul>
                                     </div>
@@ -580,6 +581,74 @@
                 </div>
             </div>
         </div>
+ <!-- Modal Modificar Competencia -->
+<div class="modal fade" id="modalModificarCompetencia" tabindex="-1" aria-labelledby="modalModificarCompetenciaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-4 lead text-info" id="modalModificarCompetenciaLabel">Modificar Competencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formModificarCompetencia">
+                <div class="modal-body">
+                    <input type="hidden" id="id_competencia_modificar" name="id_competencia">
+                    <div class="mb-3">
+                        <label for="nombre_modificar" class="form-label">Nombre del Evento</label>
+                        <input type="text" class="form-control" id="nombre_modificar" name="nombre" required>
+                        <div class="invalid-feedback">El nombre es obligatorio</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ubicacion_modificar" class="form-label">Ubicación</label>
+                        <input type="text" class="form-control" id="ubicacion_modificar" name="lugar_competencia" required>
+                        <div class="invalid-feedback">La ubicación es obligatoria</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha_inicio_modificar" class="form-label">Fecha de Apertura</label>
+                            <input type="date" class="form-control" id="fecha_inicio_modificar" name="fecha_inicio" required>
+                            <div class="invalid-feedback">La fecha de inicio es obligatoria</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="fecha_fin_modificar" class="form-label">Fecha de Clausura</label>
+                            <input type="date" class="form-control" id="fecha_fin_modificar" name="fecha_fin" required>
+                            <div class="invalid-feedback">La fecha de fin es obligatoria</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="categoria_modificar" class="form-label">Categoría</label>
+                            <select id="categoria_modificar" name="categoria" class="form-select" required>
+                                <option value="" selected>Seleccione una</option>
+                                <!-- Opciones dinámicas aquí -->
+                            </select>
+                            <div class="invalid-feedback">La categoría es obligatoria</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="subs_modificar" class="form-label">Subs</label>
+                            <select id="subs_modificar" name="subs" class="form-select" required>
+                                <option value="" selected>Seleccione una</option>
+                                <!-- Opciones dinámicas aquí -->
+                            </select>
+                            <div class="invalid-feedback">El campo Subs es obligatorio</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="tipo_modificar" class="form-label">Tipo</label>
+                            <select id="tipo_modificar" name="tipo_competencia" class="form-select" required>
+                                <option value="" selected>Seleccione una</option>
+                                <!-- Opciones dinámicas aquí -->
+                            </select>
+                            <div class="invalid-feedback">El tipo de competencia es obligatorio</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Modificar">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
         <!-- Modal Consulta Anteriores Especifica Evento -->
         <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp"

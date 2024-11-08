@@ -97,7 +97,26 @@ if (is_file("vista/" . $p . ".php")) {
         }elseif ($accion == 'listado_eventos_anteriores') {
             $respuesta = $o->listado_eventos_anteriores();
             echo json_encode($respuesta);
+        }elseif ($accion == 'obtener_competencia') {
+            $id_competencia = $_POST['id_competencia'];
+            $respuesta = $o->obtenerCompetencia($id_competencia);
+            echo json_encode($respuesta);
+        } elseif ($accion == 'modificar_competencia') {
+            $respuesta = $o->modificarCompetencia(
+                $_POST['id_competencia'],
+                $_POST['nombre'],
+                $_POST['lugar_competencia'],
+                $_POST['fecha_inicio'],
+                $_POST['fecha_fin'],
+                $_POST['categoria'],
+                $_POST['subs'],
+                $_POST['tipo_competencia']
+            );
+            echo json_encode($respuesta);
         }
+        
+        
+        
         
         exit;
     }
