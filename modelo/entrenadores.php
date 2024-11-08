@@ -47,9 +47,7 @@ class Entrenador extends datos
         if (!$validacion["ok"]) {
             return $validacion;
         }
-        if (property_exists($this, "cedula")) {
-            $this->cedula = $cedula;
-        }
+        $this->cedula = $cedula;
         return $this->obtener();
     }
 
@@ -64,9 +62,7 @@ class Entrenador extends datos
         if (!$validacion["ok"]) {
             return $validacion;
         }
-        if (property_exists($this, "cedula")) {
-            $this->cedula = $cedula;
-        }
+        $this->cedula = $cedula;
         return $this->eliminar();
     }
 
@@ -109,10 +105,11 @@ class Entrenador extends datos
     private function eliminar()
     {
         try {
-            $existe = $this->existe($this->cedula);
+            $consulta = "SELECT cedula FROM entrenador WHERE cedula = ?;";
+            $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
             if (!$existe["ok"]) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = $existe["mensaje"];
+                $resultado["mensaje"] = "No existe ningún entrenador con esta cedula";
                 return $resultado;
             }
             $this->conexion->beginTransaction();
@@ -138,10 +135,15 @@ class Entrenador extends datos
     private function incluir()
     {
         try {
-            $existe = $this->existe($this->cedula);
+            $consulta = "SELECT cedula FROM entrenador WHERE cedula = ?;";
+            $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
             if ($existe["ok"]) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = $existe["mensaje"];
+                if (isset($existe["mensaje"]) && !empty($existe["mensaje"])) {
+                    $resultado["mensaje"] = $existe["mensaje"];
+                } else {
+                    $resultado["mensaje"] = "Ya existe un entrenador con esta cedula";
+                }
                 return $resultado;
             }
             $this->conexion->beginTransaction();
@@ -189,10 +191,15 @@ class Entrenador extends datos
     private function modificar()
     {
         try {
-            $existe = $this->existe($this->cedula);
+            $consulta = "SELECT cedula FROM entrenador WHERE cedula = ?;";
+            $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
             if (!$existe["ok"]) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = $existe["mensaje"];
+                if (isset($existe["mensaje"]) && !empty($existe["mensaje"])) {
+                    $resultado["mensaje"] = $existe["mensaje"];
+                } else {
+                    $resultado["mensaje"] = "No existe ningún entrenador con esta cedula";
+                }
                 return $resultado;
             }
             $this->conexion->beginTransaction();
@@ -274,29 +281,6 @@ class Entrenador extends datos
             $resultado["ok"] = true;
             $resultado["devol"] = 'listado_entrenadores';
             $resultado["respuesta"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-
-    private function existe($cedula)
-    {
-        try {
-            $consulta = "SELECT cedula FROM entrenador WHERE cedula = :cedula;";
-            $valores = [":cedula" => $cedula];
-            $con = $this->conexion->prepare($consulta);
-            $con->execute($valores);
-            $respuesta = $con->fetch(PDO::FETCH_ASSOC);
-            if (!$respuesta) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "No existe ningún entrenador con esa cedula";
-            } else {
-                $resultado["ok"] = true;
-                $resultado["mensaje"] = "Ya existe un entrenador con esa cedula";
-            }
         } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();

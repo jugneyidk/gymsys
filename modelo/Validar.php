@@ -64,10 +64,8 @@ class Validar extends datos
             $respuesta = $con->fetch(PDO::FETCH_ASSOC);
             if (!$respuesta) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = "No existe ningún entrenador con esa cedula";
             } else {
                 $resultado["ok"] = true;
-                $resultado["mensaje"] = "Ya existe un entrenador con esa cedula";
             }
         } catch (PDOException $e) {
             $resultado["ok"] = false;

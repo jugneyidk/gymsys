@@ -3,8 +3,6 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "Falta definir la clase " . $p;
     exit;
 }
-require_once ("modelo/" . $p . ".php");
-require_once ("modelo/permisos.php");
 if (is_file("vista/" . $p . ".php")) {
     $o = new Roles();
     $permisos_o = new Permisos();
@@ -57,7 +55,7 @@ if (is_file("vista/" . $p . ".php")) {
                 "dbitacora" => isset($_POST['dbitacora']) ? $_POST['dbitacora'] : 0,
             ];
             $respuesta = $o->incluir_rol(
-                $_POST['nombre'],
+                $_POST['nombre_rol'],
                 $valores
             );
             echo json_encode($respuesta);
@@ -95,14 +93,11 @@ if (is_file("vista/" . $p . ".php")) {
                 "rreportes" => isset($_POST['rreportes']) ? $_POST['rreportes'] : 0,
                 "ureportes" => isset($_POST['ureportes']) ? $_POST['ureportes'] : 0,
                 "dreportes" => isset($_POST['dreportes']) ? $_POST['dreportes'] : 0,
-                "cbitacora" => isset($_POST['cbitacora']) ? $_POST['cbitacora'] : 0,
                 "rbitacora" => isset($_POST['rbitacora']) ? $_POST['rbitacora'] : 0,
-                "ubitacora" => isset($_POST['ubitacora']) ? $_POST['ubitacora'] : 0,
-                "dbitacora" => isset($_POST['dbitacora']) ? $_POST['dbitacora'] : 0,
             ];
             $respuesta = $o->modificar_rol(
                 $_POST['id_rol'],
-                $_POST['nombre'],
+                $_POST['nombre_rol'],
                 $valores
             );
             echo json_encode($respuesta);
@@ -115,7 +110,7 @@ if (is_file("vista/" . $p . ".php")) {
         }
         exit;
     }
-    require_once ("vista/" . $p . ".php");
+    require_once("vista/" . $p . ".php");
 } else {
     echo "pagina en construccion";
 }
