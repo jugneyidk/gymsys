@@ -11,7 +11,7 @@ class Atleta extends datos
         $this->conexion = $this->conecta();
     }
 
-    public function incluir_atleta($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $password)
+    public function incluir_atleta($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $password, $cedula_representante = null, $nombre_representante = null, $telefono_representante = null, $parentesco_representante = null)
     {
         $this->nombres = $nombres;
         $this->apellidos = $apellidos;
@@ -28,15 +28,19 @@ class Atleta extends datos
         $this->entrenador_asignado = $entrenador_asignado;
         $this->password = password_hash($password, PASSWORD_DEFAULT);
 
-        return $this->incluir();
+        // Si hay un representante, incluirlo en la base de datos y asociarlo al atleta
+        if (!empty($cedula_representante)) {
+            $resultadoRepresentante = $this->incluirRepresentante($cedula_representante, $nombre_representante, $telefono_representante, $parentesco_representante);
+            if (!$resultadoRepresentante['ok']) {
+                return ['ok' => false, 'mensaje' => $resultadoRepresentante['mensaje']];
+            }
+        }
+
+
+        return $this->incluir($cedula_representante); // Pasar la cédula del representante para asociarla al atleta
     }
 
-    public function listado_atleta()
-    {
-        return $this->listado();
-    }
-
-    private function incluir()
+    private function incluir($cedula_representante = null)
     {
         try {
             $this->conexion->beginTransaction();
@@ -45,10 +49,10 @@ class Atleta extends datos
             $consulta = "
                 INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
                 VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
-                
-                INSERT INTO atleta (cedula, entrenador, tipo_atleta, peso, altura)
-                VALUES (:cedula, :id_entrenador, :tipo_atleta, :peso, :altura);
-
+    
+                INSERT INTO atleta (cedula, entrenador, tipo_atleta, peso, altura, representante)
+                VALUES (:cedula, :id_entrenador, :tipo_atleta, :peso, :altura, :representante);
+    
                 INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
                 VALUES (:cedula, :id_rol, :password, :token);
             ";
@@ -68,7 +72,8 @@ class Atleta extends datos
                 ':altura' => $this->altura,
                 ':id_rol' => $id_rol,
                 ':password' => $this->password,
-                ':token' => $token
+                ':token' => $token,
+                ':representante' => $cedula_representante // Asociar el representante si existe
             );
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
@@ -83,6 +88,14 @@ class Atleta extends datos
         }
         return $resultado;
     }
+
+
+    public function listado_atleta()
+    {
+        return $this->listado();
+    }
+
+
 
     private function listado()
     {
@@ -119,7 +132,7 @@ class Atleta extends datos
                     u.estado_civil, 
                     u.telefono, 
                     u.correo_electronico, 
-                    a.tipo_atleta, 
+                    a.tipo_atleta AS id_tipo_atleta, 
                     a.peso, 
                     a.altura, 
                     a.entrenador
@@ -145,6 +158,7 @@ class Atleta extends datos
         }
         return $resultado;
     }
+
 
     public function modificar_atleta($nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $modificar_contraseña, $password)
     {
@@ -269,6 +283,64 @@ class Atleta extends datos
         }
         return $resultado;
     }
+    public function obtenerEntrenadores()
+    {
+        try {
+            $consulta = "SELECT e.cedula, CONCAT(u.nombre, ' ', u.apellido) AS nombre_completo
+                     FROM entrenador e
+                     INNER JOIN usuarios u ON e.cedula = u.cedula";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $entrenadores = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            return ['ok' => true, 'entrenadores' => $entrenadores];
+        } catch (Exception $e) {
+            return ['ok' => false, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    public function obtenerTiposAtleta()
+    {
+        try {
+            $consulta = "SELECT id_tipo_atleta, nombre_tipo_atleta FROM tipo_atleta";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute();
+            $tiposAtleta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            return ['ok' => true, 'tipos' => $tiposAtleta];
+        } catch (Exception $e) {
+            return ['ok' => false, 'mensaje' => $e->getMessage()];
+        }
+    }
+
+    public function incluirRepresentante($cedula, $nombreCompleto, $telefono, $parentesco)
+    {
+        try {
+            $consulta = "INSERT INTO representantes (cedula, nombre_completo, telefono, parentesco) VALUES (:cedula, :nombreCompleto, :telefono, :parentesco)";
+            $valores = array(
+                ':cedula' => $cedula,
+                ':nombreCompleto' => $nombreCompleto,
+                ':telefono' => $telefono,
+                ':parentesco' => $parentesco
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            return ['ok' => true];
+        } catch (Exception $e) {
+            return ['ok' => false, 'mensaje' => $e->getMessage()];
+        }
+    }
+    public function registrarTipoAtleta($nombreTipoAtleta, $tipoCobro)
+    {
+        try { 
+            $consulta = "INSERT INTO tipo_atleta (nombre_tipo_atleta, tipo_cobro) VALUES (?, ?)";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([$nombreTipoAtleta, $tipoCobro]); 
+            return ['ok' => true];
+        } catch (Exception $e) {
+            return ['ok' => false, 'mensaje' => $e->getMessage()];
+        }
+    }
+    
+
     public function __get($propiedad)
     {
         return $this->$propiedad;

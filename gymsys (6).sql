@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2024 a las 06:05:59
+-- Tiempo de generación: 08-11-2024 a las 06:23:30
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `gymsys`
 --
-CREATE DATABASE IF NOT EXISTS `gymsys` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `gymsys`;
 
 -- --------------------------------------------------------
 
@@ -106,30 +104,31 @@ CREATE TABLE `atleta` (
   `entrenador` varchar(10) NOT NULL,
   `tipo_atleta` int(11) NOT NULL,
   `peso` decimal(6,2) NOT NULL,
-  `altura` decimal(6,2) NOT NULL
+  `altura` decimal(6,2) NOT NULL,
+  `representante` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `atleta`
 --
 
-INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`) VALUES
-('1328547', '22222222', 0, 2.00, 96.00),
-('23124144', '22222222', 1, 75.00, 24.00),
-('24244444', '22222222', 1, 75.00, 24.00),
-('2594894', '22222222', 1, 22.00, 1.00),
-('3376883', '22222222', 1, 92.00, 60.00),
-('42342344', '22222222', 1, 75.00, 24.00),
-('66456842', '22222222', 0, 21.00, 61.00),
-('664568422', '22222222', 0, 21.00, 61.00),
-('6759472', '22222222', 0, 8.00, 70.00),
-('6828158', '22222222', 1, 75.00, 24.00),
-('68281580', '22222222', 1, 75.00, 24.00),
-('68281581', '22222222', 1, 75.00, 24.00),
-('682815811', '22222222', 1, 75.00, 24.00),
-('68281582', '22222222', 1, 75.00, 24.00),
-('9252463', '22222222', 0, 73.00, 100.00),
-('99389012', '22222222', 0, 12.00, 223.00);
+INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`, `representante`) VALUES
+('1328547', '22222222', 0, 2.00, 96.00, NULL),
+('23124144', '22222222', 1, 75.00, 24.00, NULL),
+('24244444', '22222222', 1, 75.00, 24.00, NULL),
+('2594894', '22222222', 1, 22.00, 1.00, NULL),
+('3376883', '22222222', 1, 92.00, 60.00, NULL),
+('42342344', '22222222', 1, 75.00, 24.00, NULL),
+('66456842', '22222222', 0, 21.00, 61.00, NULL),
+('664568422', '22222222', 0, 21.00, 61.00, NULL),
+('6759472', '22222222', 0, 8.00, 70.00, NULL),
+('6828158', '22222222', 1, 75.00, 24.00, NULL),
+('68281580', '22222222', 1, 75.00, 24.00, NULL),
+('68281581', '22222222', 1, 75.00, 24.00, NULL),
+('682815811', '22222222', 1, 75.00, 24.00, NULL),
+('68281582', '22222222', 1, 75.00, 24.00, NULL),
+('9252463', '22222222', 0, 73.00, 100.00, NULL),
+('99389012', '22222222', 0, 12.00, 223.00, NULL);
 
 --
 -- Disparadores `atleta`
@@ -611,10 +610,18 @@ DELIMITER ;
 
 CREATE TABLE `representantes` (
   `cedula` varchar(10) NOT NULL,
-  `id_atleta` varchar(10) NOT NULL,
   `nombre_completo` varchar(100) NOT NULL,
-  `telefono` varchar(15) NOT NULL
+  `telefono` varchar(15) NOT NULL,
+  `parentesco` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `representantes`
+--
+
+INSERT INTO `representantes` (`cedula`, `nombre_completo`, `telefono`, `parentesco`) VALUES
+('28609560', 'YOOOO', '04245681343', 'saddfdsfds'),
+('28609560', 'YOOOO', '04245681343', 'saddfdsfds');
 
 -- --------------------------------------------------------
 
@@ -695,6 +702,26 @@ CREATE TABLE `subs` (
   `edad_minima` int(3) NOT NULL,
   `edad_maxima` int(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_atleta`
+--
+
+CREATE TABLE `tipo_atleta` (
+  `id_tipo_atleta` int(25) NOT NULL,
+  `nombre_tipo_atleta` varchar(25) NOT NULL,
+  `tipo_cobro` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_atleta`
+--
+
+INSERT INTO `tipo_atleta` (`id_tipo_atleta`, `nombre_tipo_atleta`, `tipo_cobro`) VALUES
+(1, 'sdfdsffds', 30),
+(2, 'hahahah', 10);
 
 -- --------------------------------------------------------
 
@@ -945,12 +972,6 @@ ALTER TABLE `permisos`
   ADD KEY `permisos_ibfk_2` (`modulo`);
 
 --
--- Indices de la tabla `representantes`
---
-ALTER TABLE `representantes`
-  ADD UNIQUE KEY `id_atleta` (`id_atleta`);
-
---
 -- Indices de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
@@ -968,6 +989,12 @@ ALTER TABLE `roles`
 --
 ALTER TABLE `subs`
   ADD PRIMARY KEY (`id_sub`);
+
+--
+-- Indices de la tabla `tipo_atleta`
+--
+ALTER TABLE `tipo_atleta`
+  ADD PRIMARY KEY (`id_tipo_atleta`);
 
 --
 -- Indices de la tabla `tipo_competencia`
@@ -1053,6 +1080,12 @@ ALTER TABLE `subs`
   MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `tipo_atleta`
+--
+ALTER TABLE `tipo_atleta`
+  MODIFY `id_tipo_atleta` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
@@ -1113,12 +1146,6 @@ ALTER TABLE `mensualidades`
 ALTER TABLE `permisos`
   ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permisos_ibfk_2` FOREIGN KEY (`modulo`) REFERENCES `modulos` (`id_modulo`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Filtros para la tabla `representantes`
---
-ALTER TABLE `representantes`
-  ADD CONSTRAINT `representantes_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `resultado_competencia`

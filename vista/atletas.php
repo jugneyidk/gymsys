@@ -41,7 +41,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="listado">
-                                        <!-- Listado dinámico de atletas -->
+
                                     </tbody>
                                 </table>
                             </div>
@@ -109,9 +109,15 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="tipo_atleta" class="form-label">Tipo de Atleta:</label>
-                                        <input type="text" class="form-control" id="tipo_atleta" name="tipo_atleta">
+                                        <select class="form-select" id="tipo_atleta" name="tipo_atleta">
+
+                                        </select>
                                         <div id="stipo_atleta" class="invalid-feedback"></div>
+                                        <p class="text-primary mt-2" id="openTipoAtletaModal" style="cursor: pointer;">
+                                            Agregar nuevo tipo de atleta</p>
                                     </div>
+
+
                                     <div class="col-md-6 mb-3">
                                         <label for="estado_civil" class="form-label">Estado Civil:</label>
                                         <select class="form-select" id="estado_civil" name="estado_civil">
@@ -133,11 +139,11 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="entrenador_asignado" class="form-label">Entrenador Asignado:</label>
-                                        <input type="text" class="form-control" id="entrenador_asignado"
-                                            name="entrenador_asignado">
+                                        <select class="form-select" id="entrenador_asignado" name="entrenador_asignado">
+
+                                        </select>
                                         <div id="sentrenador_asignado" class="invalid-feedback"></div>
                                     </div>
-                                    <!-- Campos adicionales para el representante -->
 
                                     <div class="col-md-6 mb-3">
                                         <label for="password" class="form-label">Contraseña:</label>
@@ -251,10 +257,13 @@
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="tipo_atleta_modificar" class="form-label">Tipo de Atleta:</label>
-                                        <input type="text" class="form-control" id="tipo_atleta_modificar"
+                                        <select class="form-select" id="tipo_atleta_modificar"
                                             name="tipo_atleta_modificar">
+
+                                        </select>
                                         <div id="stipo_atleta_modificar" class="invalid-feedback"></div>
                                     </div>
+
                                     <div class="col-md-6 mb-3">
                                         <label for="estado_civil_modificar" class="form-label">Estado Civil:</label>
                                         <select class="form-select" id="estado_civil_modificar"
@@ -280,10 +289,13 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="entrenador_asignado_modificar" class="form-label">Entrenador
                                             Asignado:</label>
-                                        <input type="text" class="form-control" id="entrenador_asignado_modificar"
+                                        <select class="form-select" id="entrenador_asignado_modificar"
                                             name="entrenador_asignado_modificar">
+
+                                        </select>
                                         <div id="sentrenador_asignado_modificar" class="invalid-feedback"></div>
                                     </div>
+
                                     <div class="col-md-6 mb-3">
                                         <label for="password_modificar" class="form-label">Contraseña:</label>
                                         <input type="password" class="form-control" id="password_modificar"
@@ -307,6 +319,39 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal de Registro de Tipos de Atleta -->
+            <div class="modal fade" id="modalRegistrarTipoAtleta" tabindex="-1"
+                aria-labelledby="modalRegistrarTipoAtletaLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalRegistrarTipoAtletaLabel">Registrar Tipo de Atleta</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formRegistrarTipoAtleta">
+                                <div class="mb-3">
+                                    <label for="nombre_tipo_atleta" class="form-label">Nombre del Tipo de
+                                        Atleta:</label>
+                                    <input type="text" class="form-control" id="nombre_tipo_atleta"
+                                        name="nombre_tipo_atleta">
+                                    <div id="snombre_tipo_atleta" class="invalid-feedback"></div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tipo_cobro" class="form-label">Tipo de Cobro:</label>
+                                    <input type="number" class="form-control" id="tipo_cobro" name="tipo_cobro"
+                                        step="0.01">
+                                    <div id="stipo_cobro" class="invalid-feedback"></div>
+                                </div>
+                                <button type="button" id="btnRegistrarTipoAtleta"
+                                    class="btn btn-primary">Registrar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
     <?php

@@ -12,9 +12,87 @@ $(document).ready(function () {
       actualizarListadoAtletas(respuesta.respuesta);
     });
   }
+  function cargarEntrenadores() {
+    const datos = new FormData();
+    datos.append("accion", "obtener_entrenadores");
+    enviaAjax(datos, "").then((respuesta) => {
+      if (respuesta.ok) {
+        const selectEntrenador = $("#entrenador_asignado");
+        selectEntrenador.empty(); // Limpiar opciones anteriores
+        selectEntrenador.append('<option value="">Seleccione un entrenador</option>');
 
+        respuesta.entrenadores.forEach((entrenador) => {
+          selectEntrenador.append(
+            `<option value="${entrenador.cedula}">${entrenador.nombre_completo}</option>`
+          );
+        });
+      } else {
+        console.error("Error al cargar los entrenadores:", respuesta.mensaje);
+      }
+    });
+  }
+  function cargarEntrenadoresParaModificacion(entrenadorAsignado) {
+    const datos = new FormData();
+    datos.append("accion", "obtener_entrenadores");
+    enviaAjax(datos, "").then((respuesta) => {
+      if (respuesta.ok) {
+        const selectEntrenadorModificar = $("#entrenador_asignado_modificar");
+        selectEntrenadorModificar.empty(); // Limpiar opciones anteriores
+        selectEntrenadorModificar.append('<option value="">Seleccione un entrenador</option>');
+
+        respuesta.entrenadores.forEach((entrenador) => {
+          selectEntrenadorModificar.append(
+            `<option value="${entrenador.cedula}" ${entrenador.cedula === entrenadorAsignado ? "selected" : ""
+            }>${entrenador.nombre_completo}</option>`
+          );
+        });
+      } else {
+        console.error("Error al cargar los entrenadores:", respuesta.mensaje);
+      }
+    });
+  }
+  function cargarTiposAtleta() {
+    const datos = new FormData();
+    datos.append("accion", "obtener_tipos_atleta");
+    enviaAjax(datos, "").then((respuesta) => {
+      if (respuesta.ok) {
+        const selectTipoAtleta = $("#tipo_atleta");
+        selectTipoAtleta.empty(); // Limpiar opciones anteriores
+        selectTipoAtleta.append('<option value="">Seleccione un tipo de atleta</option>');
+
+        respuesta.tipos.forEach((tipo) => {
+          selectTipoAtleta.append(
+            `<option value="${tipo.id_tipo_atleta}">${tipo.nombre_tipo_atleta}</option>`
+          );
+        });
+      } else {
+        console.error("Error al cargar los tipos de atleta:", respuesta.mensaje);
+      }
+    });
+  }
+  function cargarTiposAtletaParaModificacion(tipoAtletaAsignado) {
+    const datos = new FormData();
+    datos.append("accion", "obtener_tipos_atleta");
+    enviaAjax(datos, "").then((respuesta) => {
+      if (respuesta.ok) {
+        const selectTipoAtletaModificar = $("#tipo_atleta_modificar");
+        selectTipoAtletaModificar.empty(); // Limpiar opciones anteriores
+        selectTipoAtletaModificar.append('<option value="">Seleccione un tipo de atleta</option>');
+
+        respuesta.tipos.forEach((tipo) => {
+          selectTipoAtletaModificar.append(
+            `<option value="${tipo.id_tipo_atleta}" ${tipo.id_tipo_atleta == tipoAtletaAsignado ? "selected" : ""}>${tipo.nombre_tipo_atleta}</option>`
+          );
+        });
+      } else {
+        console.error("Error al cargar los tipos de atleta:", respuesta.mensaje);
+      }
+    });
+  }
+
+  cargarTiposAtleta();
   cargaListadoAtleta();
-
+  cargarEntrenadores();
   function verificarFecha(fechaInput, mensaje) {
     const fecha = fechaInput.val();
     const hoy = new Date();
@@ -28,8 +106,8 @@ $(document).ready(function () {
       isValid
         ? ""
         : fecha
-        ? "La fecha debe ser anterior al día actual"
-        : "La fecha de nacimiento es obligatoria"
+          ? "La fecha debe ser anterior al día actual"
+          : "La fecha de nacimiento es obligatoria"
     );
     return isValid;
   }
@@ -52,76 +130,115 @@ $(document).ready(function () {
     const sufijo = formId === "#f2" ? "_modificar" : "";
 
     const validaciones = [
-      {
-        regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-        id: "nombres",
-        errorMsg: "Solo letras y espacios (1-50 caracteres)",
-      },
-      {
-        regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-        id: "apellidos",
-        errorMsg: "Solo letras y espacios (1-50 caracteres)",
-      },
-      {
-        regex: /^\d{7,9}$/,
-        id: "cedula",
-        errorMsg: "La cédula debe tener al menos 7 números",
-      },
-      {
-        regex: /^04\d{9}$/,
-        id: "telefono",
-        errorMsg: "El formato del teléfono debe ser 04XXXXXXXXX",
-      },
-      {
-        regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-        id: "correo",
-        errorMsg: "Correo inválido",
-      },
-      {
-        regex: /^\d+(\.\d{1,2})?$/,
-        id: "peso",
-        errorMsg: "Solo números y puntos decimales",
-      },
-      {
-        regex: /^\d+(\.\d{1,2})?$/,
-        id: "altura",
-        errorMsg: "Solo números y puntos decimales",
-      },
-      {
-        regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-        id: "lugar_nacimiento",
-        errorMsg: "El lugar de nacimiento no puede estar vacío",
-      },
+        {
+            regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            id: "nombres",
+            errorMsg: "Solo letras y espacios (1-50 caracteres)",
+        },
+        {
+            regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+            id: "apellidos",
+            errorMsg: "Solo letras y espacios (1-50 caracteres)",
+        },
+        {
+            regex: /^\d{7,9}$/,
+            id: "cedula",
+            errorMsg: "La cédula debe tener al menos 7 números",
+        },
+        {
+            regex: /^04\d{9}$/,
+            id: "telefono",
+            errorMsg: "El formato del teléfono debe ser 04XXXXXXXXX",
+        },
+        {
+            regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            id: "correo",
+            errorMsg: "Correo inválido",
+        },
+        {
+            regex: /^\d+(\.\d{1,2})?$/,
+            id: "peso",
+            errorMsg: "Solo números y puntos decimales",
+        },
+        {
+            regex: /^\d+(\.\d{1,2})?$/,
+            id: "altura",
+            errorMsg: "Solo números y puntos decimales",
+        },
+        {
+            regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+            id: "lugar_nacimiento",
+            errorMsg: "El lugar de nacimiento no puede estar vacío",
+        },
     ];
 
+    // Validación de campos comunes
     validaciones.forEach(({ regex, id, errorMsg }) => {
-      esValido &= validarKeyUp(
-        regex,
-        form.find(`#${id}${sufijo}`),
-        form.find(`#s${id}${sufijo}`),
-        errorMsg
-      );
+        esValido &= validarKeyUp(
+            regex,
+            form.find(`#${id}${sufijo}`),
+            form.find(`#s${id}${sufijo}`),
+            errorMsg
+        );
     });
 
-    if (form.find("#modificar_contraseña").is(":checked")) {
-      esValido &= validarKeyUp(
-        /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
-        form.find(`#password${sufijo}`),
-        form.find(`#spassword${sufijo}`),
-        "La contraseña debe tener al menos 6 caracteres y puede incluir caracteres especiales"
-      );
+    // Verificar la edad para determinar si validar los campos de representante
+    const fechaNacimiento = form.find(`#fecha_nacimiento${sufijo}`).val();
+    const edad = calcularEdad(fechaNacimiento);
+    if (edad < 18) {
+        const validacionesRepresentante = [
+            {
+                regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+                id: "nombre_representante",
+                errorMsg: "Nombre del representante es obligatorio (1-100 caracteres)",
+            },
+            {
+                regex: /^\d{7,9}$/,
+                id: "cedula_representante",
+                errorMsg: "La cédula del representante debe tener 7-9 números",
+            },
+            {
+                regex: /^04\d{9}$/,
+                id: "telefono_representante",
+                errorMsg: "El teléfono del representante debe ser 04XXXXXXXXX",
+            },
+            {
+                regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+                id: "parentesco_representante",
+                errorMsg: "El parentesco debe ser de 1-50 caracteres",
+            },
+        ];
+
+        // Validar solo si el atleta es menor de edad
+        validacionesRepresentante.forEach(({ regex, id, errorMsg }) => {
+            esValido &= validarKeyUp(
+                regex,
+                form.find(`#${id}`),
+                form.find(`#s${id}`),
+                errorMsg
+            );
+        });
     }
 
     esValido &= verificarFecha(
-      form.find(`#fecha_nacimiento${sufijo}`),
-      form.find(`#sfecha_nacimiento${sufijo}`)
+        form.find(`#fecha_nacimiento${sufijo}`),
+        form.find(`#sfecha_nacimiento${sufijo}`)
     );
+
     return esValido;
-  }
+}
+
 
   $("#btnIncluir, #btnModificar").on("click", function (event) {
     event.preventDefault();
   });
+
+  function limpiarFormulario(formId) {
+    $(formId).find("input[type=text], input[type=email], input[type=tel], input[type=number], input[type=password], input[type=date], select").val('');
+    $(formId).find("input[type=checkbox]").prop("checked", false);
+    $(formId).find("input").removeClass("is-invalid is-valid");
+    $(formId).find(".representante").hide();
+  }
 
   $("#btnIncluir").on("click", function () {
     if (validarEnvio("#f1")) {
@@ -133,10 +250,12 @@ $(document).ready(function () {
           "success"
         );
         cargaListadoAtleta();
+        limpiarFormulario("#f1");
         $("#modalInscripcion").modal("hide");
       });
     }
   });
+
 
   $("#btnModificar").on("click", function () {
     if (validarEnvio("#f2")) {
@@ -168,16 +287,14 @@ $(document).ready(function () {
                     <td class='align-middle'>${atleta.cedula}</td>
                     <td class='align-middle'>${atleta.nombre} ${atleta.apellido}</td>
                     <td class='align-middle'>
-                    ${
-                      actualizar === 1
-                        ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
-                        : ""
-                    }
-                      ${
-                        eliminar === 1
-                          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
-                          : ""
-                      }      
+                    ${actualizar === 1
+          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          : ""
+        }
+                      ${eliminar === 1
+          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+          : ""
+        }      
                     </td>
                 </tr>
             `;
@@ -211,8 +328,15 @@ $(document).ready(function () {
     datos.append("accion", "obtener_atleta");
     datos.append("cedula", cedula);
     enviaAjax(datos, "").then((respuesta) => {
-      llenarFormularioModificar(respuesta.atleta);
-      $("#modalModificar").modal("show");
+      if (respuesta.ok) {
+        const atleta = respuesta.atleta;
+        llenarFormularioModificar(atleta);
+        // Llamada para cargar entrenadores y preseleccionar el correspondiente
+        cargarEntrenadoresParaModificacion(atleta.entrenador);
+        $("#modalModificar").modal("show");
+      } else {
+        console.error("Error al obtener los datos del atleta:", respuesta.mensaje);
+      }
     });
   }
 
@@ -251,16 +375,19 @@ $(document).ready(function () {
     $("#f2 #lugar_nacimiento_modificar").val(atleta.lugar_nacimiento);
     $("#f2 #peso_modificar").val(atleta.peso);
     $("#f2 #altura_modificar").val(atleta.altura);
-    $("#f2 #tipo_atleta_modificar").val(atleta.tipo_atleta);
     $("#f2 #estado_civil_modificar").val(atleta.estado_civil);
     $("#f2 #telefono_modificar").val(atleta.telefono);
     $("#f2 #correo_modificar").val(atleta.correo_electronico);
     $("#f2 #entrenador_asignado_modificar").val(atleta.entrenador);
 
+    // Lógica para cargar los tipos de atleta y seleccionar el correspondiente
+    cargarTiposAtletaParaModificacion(atleta.id_tipo_atleta);
+
     // Resetea y deshabilita el campo de contraseña
     $("#f2 #modificar_contraseña").prop("checked", false);
     $("#f2 #password_modificar").prop("disabled", true).val("");
   }
+
 
   function eliminarAtleta(cedula) {
     Swal.fire({
@@ -302,74 +429,94 @@ $(document).ready(function () {
   $("input").on("keypress", function (e) {
     const id = $(this).attr("id");
     const regexMap = {
-      nombres: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      apellidos: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      lugar_nacimiento: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      nombres_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      apellidos_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      lugar_nacimiento_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
-      cedula: /^\d*$/,
-      entrenador_asignado: /^\d*$/,
-      edad: /^\d*$/,
-      telefono: /^\d*$/,
-      telefono_representante: /^\d*$/,
-      cedula_modificar: /^\d*$/,
-      entrenador_asignado_modificar: /^\d*$/,
-      edad_modificar: /^\d*$/,
-      telefono_modificar: /^\d*$/,
-      telefono_representante_modificar: /^\d*$/,
-      correo: /^[a-zA-Z0-9@._-]*$/,
-      correo_modificar: /^[a-zA-Z0-9@._-]*$/,
-      peso: /^\d*\.?\d*$/,
-      altura: /^\d*\.?\d*$/,
-      peso_modificar: /^\d*\.?\d*$/,
-      altura_modificar: /^\d*\.?\d*$/,
-      password: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
-      password_modificar: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+        nombres: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        apellidos: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        lugar_nacimiento: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        nombres_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        apellidos_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        lugar_nacimiento_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        cedula: /^\d*$/,
+        entrenador_asignado: /^\d*$/,
+        edad: /^\d*$/,
+        telefono: /^\d*$/,
+        telefono_representante: /^\d*$/,
+        cedula_modificar: /^\d*$/,
+        entrenador_asignado_modificar: /^\d*$/,
+        edad_modificar: /^\d*$/,
+        telefono_modificar: /^\d*$/,
+        telefono_representante_modificar: /^\d*$/,
+        correo: /^[a-zA-Z0-9@._-]*$/,
+        correo_modificar: /^[a-zA-Z0-9@._-]*$/,
+        peso: /^\d*\.?\d*$/,
+        altura: /^\d*\.?\d*$/,
+        peso_modificar: /^\d*\.?\d*$/,
+        altura_modificar: /^\d*\.?\d*$/,
+        password: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+        password_modificar: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/,
+        nombre_representante: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+        parentesco_representante: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/
     };
 
-    if (regexMap[id]) {
-      validarKeyPress(e, regexMap[id]);
-    }
-  });
+    const fechaNacimiento = $("#fecha_nacimiento").val();
+    const edad = calcularEdad(fechaNacimiento);
 
-  $("input").on("keyup", function () {
+    // Condición adicional para campos de representante si el atleta es menor de edad
+    if (edad >= 18 && (id === "nombre_representante" || id === "cedula_representante" || id === "telefono_representante" || id === "parentesco_representante")) {
+        return; // No aplicar validación si es mayor de edad y el campo es del representante
+    }
+
+    if (regexMap[id]) {
+        validarKeyPress(e, regexMap[id]);
+    }
+});
+
+$("input").on("keyup", function () {
     const id = $(this).attr("id");
     const formId = $(this).closest("form").attr("id");
     const sufijo = formId === "f2" ? "_modificar" : "";
     const regexMap = {
-      nombres: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      apellidos: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      cedula: /^\d{7,9}$/,
-      telefono: /^04\d{9}$/,
-      telefono_representante: /^04\d{9}$/,
-      correo: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      peso: /^\d+(\.\d{1,2})?$/,
-      altura: /^\d+(\.\d{1,2})?$/,
-      lugar_nacimiento: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-      password: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
-      nombres_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      apellidos_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-      cedula_modificar: /^\d{7,9}$/,
-      telefono_modificar: /^04\d{9}$/,
-      telefono_representante_modificar: /^04\d{9}$/,
-      correo_modificar: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      peso_modificar: /^\d+(\.\d{1,2})?$/,
-      altura_modificar: /^\d+(\.\d{1,2})?$/,
-      lugar_nacimiento_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
-      password_modificar:
-        /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+        nombres: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+        apellidos: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+        cedula: /^\d{7,9}$/,
+        telefono: /^04\d{9}$/,
+        telefono_representante: /^04\d{9}$/,
+        correo: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        peso: /^\d+(\.\d{1,2})?$/,
+        altura: /^\d+(\.\d{1,2})?$/,
+        lugar_nacimiento: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+        password: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+        nombres_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+        apellidos_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+        cedula_modificar: /^\d{7,9}$/,
+        telefono_modificar: /^04\d{9}$/,
+        telefono_representante_modificar: /^04\d{9}$/,
+        correo_modificar: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+        peso_modificar: /^\d+(\.\d{1,2})?$/,
+        altura_modificar: /^\d+(\.\d{1,2})?$/,
+        lugar_nacimiento_modificar: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+        password_modificar: /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]{6,}$/,
+        nombre_representante: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+        parentesco_representante: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/
     };
 
-    if (regexMap[id.replace(sufijo, "")]) {
-      validarKeyUp(
-        regexMap[id.replace(sufijo, "")],
-        $(this),
-        $(`#s${id}`),
-        $(`#${id.replace(sufijo, "")}_error`).text()
-      );
+    const fechaNacimiento = $("#fecha_nacimiento").val();
+    const edad = calcularEdad(fechaNacimiento);
+
+    // Condición adicional para campos de representante si el atleta es menor de edad
+    if (edad >= 18 && (id === "nombre_representante" || id === "cedula_representante" || id === "telefono_representante" || id === "parentesco_representante")) {
+        return; // No aplicar validación si es mayor de edad y el campo es del representante
     }
-  });
+
+    if (regexMap[id.replace(sufijo, "")]) {
+        validarKeyUp(
+            regexMap[id.replace(sufijo, "")],
+            $(this),
+            $(`#s${id}`),
+            $(`#${id.replace(sufijo, "")}_error`).text()
+        );
+    }
+});
+
 
   $("#fecha_nacimiento, #fecha_nacimiento_modificar").on("change", function () {
     const form = $(this).closest("form");
@@ -379,4 +526,36 @@ $(document).ready(function () {
     form.find(`#edad${sufijo}`).val(edad);
     form.find(`#representanteInfo${sufijo}`).toggle(edad < 18);
   });
+  
+  $("#openTipoAtletaModal").on("click", function () {
+    $("#modalInscripcion").modal("hide");
+    $("#modalRegistrarTipoAtleta").modal("show");
+  });
+ 
+  $("#btnRegistrarTipoAtleta").on("click", function () {
+    const nombreTipo = $("#nombre_tipo_atleta").val().trim();
+    const tipoCobro = $("#tipo_cobro").val().trim();
+
+    if (!nombreTipo || !tipoCobro) {
+        alert("Por favor, complete todos los campos.");
+        return;
+    }
+
+    const datos = new FormData();
+    datos.append("accion", "registrar_tipo_atleta");
+    datos.append("nombre_tipo_atleta", nombreTipo);
+    datos.append("tipo_cobro", tipoCobro);
+ 
+    enviaAjax(datos, "").then((respuesta) => {
+        if (respuesta.ok) { 
+            cargarTiposAtleta(); 
+            $("#modalRegistrarTipoAtleta").modal("hide");
+            $("#modalInscripcion").modal("show"); 
+            $("#formRegistrarTipoAtleta")[0].reset();
+        } else {
+            alert("Error al registrar el tipo de atleta: " + respuesta.mensaje);
+        }
+    });
+});
+
 });

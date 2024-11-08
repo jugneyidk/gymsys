@@ -32,8 +32,13 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['telefono'],
                 $_POST['correo'],
                 $_POST['entrenador_asignado'],
-                $_POST['password']
+                $_POST['password'],
+                $_POST['cedula_representante'],
+                $_POST['nombre_representante'],
+                $_POST['telefono_representante'],
+                $_POST['parentesco_representante']
             );
+            
             echo json_encode($respuesta);
         } elseif ($accion == 'modificar') {
             $modificar_contraseña = isset($_POST['modificar_contraseña']) && $_POST['modificar_contraseña'] === 'on';
@@ -62,7 +67,23 @@ if (is_file("vista/" . $p . ".php")) {
         } elseif ($accion == 'obtener_atleta') {
             $respuesta = $o->obtener_atleta($_POST['cedula']);
             echo json_encode($respuesta);
-        }
+        }elseif ($accion == 'obtener_entrenadores') {
+            $respuesta = $o->obtenerEntrenadores();
+            echo json_encode($respuesta);
+            exit;
+        }elseif ($accion == 'obtener_tipos_atleta') {
+            $respuesta = $o->obtenerTiposAtleta();
+            echo json_encode($respuesta);
+            exit;
+        }elseif ($accion == 'registrar_tipo_atleta') {
+            $respuesta = $o->registrarTipoAtleta(
+                $_POST['nombre_tipo_atleta'],
+                $_POST['tipo_cobro']
+            );
+            echo json_encode($respuesta);
+            exit;
+        }        
+        
         exit;
     }
     require_once ("vista/" . $p . ".php");
