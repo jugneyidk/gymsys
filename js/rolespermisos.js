@@ -3,6 +3,7 @@ import {
   validarKeyUp,
   enviaAjax,
   muestraMensaje,
+  REGEX,
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoRoles() {
@@ -23,8 +24,8 @@ $(document).ready(function () {
     const validaciones = [
       {
         regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
-        id: "nombre",
-        errorMsg: "Solo letras y espacios (1-50 caracteres)",
+        id: "nombre_rol",
+        errorMsg: "Solo letras y espacios (3-50 caracteres)",
       },
     ];
 
@@ -41,7 +42,8 @@ $(document).ready(function () {
   }
 
   $("#btnCrearRol").on("click", function () {
-    $("#modalCrearLabel").text("Nuevo Rol");
+    $("#modalTitulo").text("Nuevo Rol");
+    $("#btnSubmit").text("Registrar Rol");
   });
   $("#btnSubmit").on("click", function (event) {
     event.preventDefault();
@@ -58,7 +60,7 @@ $(document).ready(function () {
             "El rol se ha agregado exitosamente.",
             "success"
           );
-          $("#modalCrear").modal("hide");
+          $("#modal").modal("hide");
           cargaListadoRoles();
         });
       }
@@ -71,28 +73,14 @@ $(document).ready(function () {
           "El rol se ha modificado exitosamente.",
           "success"
         );
-        $("#modalCrear").modal("hide");
-        cargaListadoRoles();
-      })
-    }
-  });
-
-  $("#btnModificar").on("click", function () {
-    if (validarEnvio("#f2")) {
-      const datos = new FormData($("#f2")[0]);
-      enviaAjax(datos, "").then((respuesta) => {
-        muestraMensaje(
-          "Éxito",
-          "El rol se ha modificado exitosamente.",
-          "success"
-        );
-        $("#modalModificar").modal("hide");
+        $("#modal").modal("hide");
         cargaListadoRoles();
       });
     }
   });
+
   function llenarFormularioModificar(permisos) {
-    $("#nombre").val(permisos[0].nombre_rol);
+    $("#nombre_rol").val(permisos[0].nombre_rol);
     permisos.forEach((modulo) => {
       let pantalla = modulo.nombre_modulo;
       $(`${"#c" + pantalla}`).prop(
@@ -116,7 +104,9 @@ $(document).ready(function () {
     datos.append("id_rol", id_rol);
     enviaAjax(datos, "").then((respuesta) => {
       llenarFormularioModificar(respuesta.permisos);
-      $("#modalCrear").modal("show");
+      $("#modal").modal("show");
+      $("#modalTitulo").text("Modificar Rol");
+      $("#btnSubmit").text("Modificar Rol");
     });
   }
   function eliminarRol(id_rol) {
@@ -134,7 +124,15 @@ $(document).ready(function () {
         const datos = new FormData();
         datos.append("accion", "eliminar_rol");
         datos.append("id_rol", id_rol);
-        enviaAjax(datos);
+        enviaAjax(datos, "").then((respuesta) => {
+          muestraMensaje(
+            "Éxito",
+            "El rol se ha eliminado exitosamente.",
+            "success"
+          );
+          $("#modalModificar").modal("hide");
+          cargaListadoRoles();
+        });
       }
     });
   }
@@ -149,14 +147,16 @@ $(document).ready(function () {
                     <td class='d-none'>${rol.id_rol}</td>
                     <td class='align-middle text-capitalize'>${rol.nombre}</td>
                     <td class='align-middle'>
-                    ${actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
-          : ""
-        }
-                    ${eliminar === 1
-          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
-          : ""
-        }                        
+                    ${
+                      actualizar === 1
+                        ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                        : ""
+                    }
+                    ${
+                      eliminar === 1
+                        ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+                        : ""
+                    }                        
                     </td>
                 </tr>
             `;
@@ -187,7 +187,7 @@ $(document).ready(function () {
   $("input").on("keypress", function (e) {
     const id = $(this).attr("id");
     const regexMap = {
-      nombre: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+      nombre_rol: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
     };
     if (regexMap[id]) {
       validarKeyPress(e, regexMap[id]);
@@ -199,7 +199,7 @@ $(document).ready(function () {
     const formId = $(this).closest("form").attr("id");
     const sufijo = formId === "f2" ? "_modificar" : "";
     const regexMap = {
-      nombre: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+      nombre_rol: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/,
     };
 
     if (regexMap[id.replace(sufijo, "")]) {
@@ -227,8 +227,8 @@ $(document).ready(function () {
     const formulario = document.getElementById("form_incluir");
     formulario.reset();
   }
-  $("#modalCrear").on("hidden.bs.modal", function () {
+  $("#modal").on("hidden.bs.modal", function () {
     limpiarFormulario();
-    $("#nombre").removeClass("is-valid");
+    $("#nombre_rol").removeClass("is-valid");
   });
 });

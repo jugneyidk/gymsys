@@ -1,5 +1,5 @@
 <?php
-    const REGEX = [
+const REGEX = [
     'nombres' => [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/',
         'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
@@ -51,5 +51,9 @@
     'grado_instruccion' => [
         'regex' => '/^[a-zA-Z](?:[a-zA-Z]* ?[a-zA-Z]+){2,49}$/',
         'mensaje' => 'El grado de instruccion no es valido'
-    ]
+    ],
+    'nombre_rol' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/',
+        'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
+    ],
 ];
