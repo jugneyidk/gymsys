@@ -55,8 +55,8 @@
                     </div>
                 </div>
             </div>
-            <?php require_once("comunes/modal.php"); ?>
         </div>
+        <?php require_once("comunes/modal.php"); ?>
     </main>
     <?php require_once("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>

@@ -31,6 +31,9 @@ class Validar extends datos
             if ($campo === 'accion' || $campo === 'modificar_contraseña') {
                 continue; // Salta a la siguiente iteración del bucle
             }
+            if (strpos($campo, 'representante') === null) {
+                continue; // Salta a la siguiente iteración del bucle
+            }
             try {
                 $resultado = self::validar($campo, $valor);
                 if (!$resultado["ok"]) {

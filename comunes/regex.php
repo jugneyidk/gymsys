@@ -4,6 +4,10 @@ const REGEX = [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/',
         'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
     ],
+    'nombre_representante' => [
+        'regex' => '/^([a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}|)$/',
+        'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
+    ],
     'apellidos' => [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/',
         'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
@@ -12,11 +16,23 @@ const REGEX = [
         'regex' => '/^\d{7,9}$/',
         'mensaje' => 'La cédula debe tener al menos 7 números'
     ],
+    'cedula_representante' => [
+        'regex' => '/^(\d{7,9}|)$/',
+        'mensaje' => 'La cédula debe tener al menos 7 números'
+    ],
     'telefono' => [
         'regex' => '/^04\d{9}$/',
         'mensaje' => 'El formato del teléfono debe ser 04XXXXXXXXX'
     ],
+    'telefono_representante' => [
+        'regex' => '/^(04\d{9}|)$/',
+        'mensaje' => 'El formato del teléfono debe ser 04XXXXXXXXX'
+    ],
     'correo_electronico' => [
+        'regex' => '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+        'mensaje' => 'Correo inválido'
+    ],
+    'correo' => [
         'regex' => '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
         'mensaje' => 'Correo inválido'
     ],
@@ -31,6 +47,10 @@ const REGEX = [
     'password' => [
         'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/',
         'mensaje' => 'La contraseña debe tener entre 8 y 15 caracteres: 1 mayuscula, 1 minuscula, 1 numero y 1 simbolo ($@$!%*?&)'
+    ],
+    'old_password' => [
+        'regex' => '/^[a-zA-Z0-9@._-]{6,20}$/',
+        'mensaje' => 'La contraseña debe tener entre 6 y 20 caracteres'
     ],
     'estado_civil' => [
         'regex' => '/^(Soltero|Casado|Divorciado|Viudo)$/',
@@ -55,5 +75,17 @@ const REGEX = [
     'nombre_rol' => [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/',
         'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
+    ],
+    'entrenador_asignado' => [
+        'regex' => '/^\d{7,9}$/',
+        'mensaje' => 'La cédula debe tener al menos 7 números'
+    ],
+    'parentesco_representante' => [
+        'regex' => '/^([a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}|)$/',
+        'mensaje' => 'Solo letras y espacios (3-50 caracteres)'
+    ],
+    'tipo_atleta' => [
+        'regex' => '/^[0-9]{1,11}$/',
+        'mensaje' => 'El tipo de atleta no es valido'
     ],
 ];

@@ -181,7 +181,7 @@ class Roles extends datos
             $existe = Validar::existe($this->conexion, $this->id_rol, $consulta);
             if (!$existe["ok"]) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = "No existe un rol con este nombre";
+                $resultado["mensaje"] = "No existe este rol";
                 return $resultado;
             }
             $this->conexion->beginTransaction();

@@ -11,6 +11,7 @@ class datos
         try {
             $this->pdo = new PDO("mysql:host=" . $this->ip . ";dbname=" . $this->bd . "", $this->usuario, $this->contrasena);
             $this->pdo->exec("SET names utf8;");
+            $_SESSION["id_usuario"] = $_SESSION["id_usuario"] ?? "22222222";
             if (isset($_SESSION["id_usuario"])) {
                 $usuario_actual = $_SESSION["id_usuario"];
                 $this->pdo->exec("SET @usuario_actual = '$usuario_actual';");

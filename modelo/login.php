@@ -1,5 +1,4 @@
 <?php
-require_once ('modelo/datos.php');
 class Login extends datos
 {
     private $conexion, $id_usuario, $password;
@@ -7,7 +6,16 @@ class Login extends datos
     {
         $this->conexion = $this->conecta();
     }
-    public function iniciar_sesion($id_usuario,$password){
+    public function iniciar_sesion($id_usuario, $password)
+    {
+        $validacion_usuario = Validar::validar("cedula", $id_usuario);
+        if (!$validacion_usuario["ok"]) {
+            return $validacion_usuario;
+        }
+        $validacion_password = Validar::validar("old_password", $password);
+        if (!$validacion_password["ok"]) {
+            return $validacion_password;
+        }
         $this->id_usuario = $id_usuario;
         $this->password = $password;
         return $this->login();
@@ -30,11 +38,11 @@ class Login extends datos
                     $respuesta['resultado'] = false;
                     $respuesta['mensaje'] = "Los datos ingresados son incorrectos";
                 }
-                $this->desconecta();
                 return $respuesta;
             } catch (Exception $e) {
                 $respuesta['resultado'] = false;
                 $respuesta['mensaje'] = $e->getMessage();
+                $this->desconecta();
                 return $respuesta;
             }
         }

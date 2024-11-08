@@ -1,8 +1,7 @@
 <?php
-
 class Asistencia extends datos
 {
-    private $conexion;
+    private $conexion, $fecha;
 
     public function __construct()
     {
@@ -26,10 +25,11 @@ class Asistencia extends datos
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["atletas"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -38,7 +38,13 @@ class Asistencia extends datos
         try {
             $asistencias = json_decode($asistencias, true);
             $this->conexion->beginTransaction();
-            $num_asistencias = count($asistencias);
+            if (is_array($asistencias) && count($asistencias) > 0) {
+                $num_asistencias = count($asistencias);
+            } else {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No hay asistencias";
+                return $resultado;
+            }
             $consulta = "IF @num_asistencias IS NULL THEN
             SET @num_asistencias = :num_asistencias;
             END IF;
@@ -58,12 +64,11 @@ class Asistencia extends datos
                     ':fecha' => $fecha,
                     ':comentario' => $asistencia['comentario']
                 ]);
-
                 $stmt->closeCursor();
             }
             $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -72,7 +77,7 @@ class Asistencia extends datos
         return $resultado;
     }
 
-    public function obtener_asistencias($fecha)
+    private function obtener()
     {
         try {
             $consulta = "
@@ -87,15 +92,26 @@ class Asistencia extends datos
                 WHERE a.fecha = :fecha
             ";
             $con = $this->conexion->prepare($consulta);
-            $con->execute([':fecha' => $fecha]);
+            $con->execute([':fecha' => $this->fecha]);
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["asistencias"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
+    public function obtener_asistencias($fecha)
+    {
+        $validacion = Validar::validar_fecha($fecha);
+        if (!$validacion) {
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = "La fecha no es valida";
+            return $respuesta;
+        }
+        $this->fecha = $fecha;
+        return $this->obtener();
+    }
 }
-?>
