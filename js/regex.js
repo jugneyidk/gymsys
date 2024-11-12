@@ -57,6 +57,10 @@ const REGEX = {
     regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
     mensaje: "",
   },
+  keypress_alfanumerico: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]*$/,
+    mensaje: "",
+  },
   keypress_numerico: {
     regex: /^\d*$/,
     mensaje: "",
@@ -88,6 +92,10 @@ const REGEX = {
   parentesco_representante: {
     regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
     mensaje: "El parentesco debe ser de 1-50 caracteres",
+  },
+  detalles: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{0,200}$/,
+    mensaje: "Solo letras, números y espacios (200 caracteres maximo)",
   },
 };
 export default REGEX;

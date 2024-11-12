@@ -1,13 +1,21 @@
 <?php
 class Asistencia extends datos
 {
-    private $conexion, $fecha;
+    private $conexion, $fecha, $asistencias;
 
     public function __construct()
     {
         $this->conexion = $this->conecta();
     }
 
+    public function guardar_asistencias($fecha, $asistencias){
+        if(!Validar::validar_fecha($fecha)){
+            return ["ok" => false, "mensaje" => "La fecha no es valida"];
+        }
+        $this->fecha = $fecha;
+        $this->asistencias = $asistencias;
+        return $this->guardar();
+    }
     public function obtener_atletas()
     {
         try {
@@ -33,10 +41,10 @@ class Asistencia extends datos
         return $resultado;
     }
 
-    public function guardar_asistencias($fecha, $asistencias)
+    private function guardar()
     {
         try {
-            $asistencias = json_decode($asistencias, true);
+            $asistencias = json_decode($this->asistencias, true);
             if (is_array($asistencias) && count($asistencias) > 0) {
                 $num_asistencias = count($asistencias);
             } else {
@@ -61,7 +69,7 @@ class Asistencia extends datos
                     ':num_asistencias' => $num_asistencias,
                     ':id_atleta' => $asistencia['id_atleta'],
                     ':asistio' => $asistencia['asistio'],
-                    ':fecha' => $fecha,
+                    ':fecha' => $this->fecha,
                     ':comentario' => $asistencia['comentario']
                 ]);
                 $stmt->closeCursor();

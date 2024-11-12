@@ -1,4 +1,4 @@
-import { validarKeyPress, validarKeyUp, enviaAjax, muestraMensaje } from "./comunes.js";
+import { validarKeyPress, validarKeyUp, enviaAjax, muestraMensaje, REGEX } from "./comunes.js";
 $(document).ready(function () {
     function cargarListadoAtletas() {
         var datos = new FormData();
@@ -14,20 +14,32 @@ $(document).ready(function () {
             muestraMensaje("Error", "Debe seleccionar una fecha", "error");
             return;
         }
-
+        var esValido = true;
         var asistencias = [];
         $('#listadoAsistencias tr').each(function () {
             var id = $(this).find('input[type="checkbox"]').data('id');
             var asistio = $(this).find('input[type="checkbox"]').is(':checked') ? 1 : 0;
             var comentario = $(this).find('input[type="text"]').val();
-
+            esValido &= validarKeyUp(
+                REGEX.detalles.regex,
+                $(this).find('input[type="text"]'),
+                $(this).find("span"),
+                REGEX.detalles.mensaje
+            );
+            if (!esValido) {
+                asistencias = [];
+                return false;
+            }
             asistencias.push({
                 id_atleta: id,
                 asistio: asistio,
                 comentario: comentario
             });
         });
-
+        if (!esValido) {
+            muestraMensaje("Error", "Los detalles no cumplen el requisito de solo letras y números hasta 200 caracteres", "error");
+            return false;
+        }
         var datos = new FormData();
         datos.append('accion', 'guardar_asistencias');
         datos.append('fecha', fecha);
@@ -45,7 +57,9 @@ $(document).ready(function () {
                             <td>${atleta.nombre}</td>
                             <td>${atleta.apellido}</td>
                             <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" /></td>
-                            <td><input type="text" class="form-control" data-id="${atleta.cedula}" /></td>
+                            <td><input type="text" class="form-control comentario" data-id="${atleta.cedula}" />
+                            <span class="invalid-feedback d-block"></span>
+                            </td>
                         </tr>
                     `;
         });
@@ -78,6 +92,7 @@ $(document).ready(function () {
             actualizarListadoAsistencias(respuesta.asistencias);
         });
     }
+
     function actualizarListadoAsistencias(asistencias, fecha) {
         var fechaSeleccionada = new Date(fecha);
         var fechaActual = new Date();
@@ -109,6 +124,14 @@ $(document).ready(function () {
     }
     $('#btnGuardarAsistencias').on('click', function () {
         enviarAsistencias();
+    });
+
+    $('body').on("keypress", 'input.comentario', function (e) {
+        validarKeyPress(e, REGEX.keypress_alfanumerico.regex);
+    });
+
+    $("body").on("keyup", "input.comentario", function () {
+        validarKeyUp(REGEX.detalles.regex, $(this), $(this).siblings("span"), REGEX.detalles.mensaje);
     });
 
     $('#fechaAsistencia').on('change', function () {

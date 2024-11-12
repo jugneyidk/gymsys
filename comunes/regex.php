@@ -88,4 +88,8 @@ const REGEX = [
         'regex' => '/^[0-9]{1,11}$/',
         'mensaje' => 'El tipo de atleta no es valido'
     ],
+    'detalles' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{0,200}$/',
+        'mensaje' => 'Solo letras, números y espacios (200 caracteres maximo)'
+    ],
 ];
