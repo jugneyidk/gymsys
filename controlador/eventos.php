@@ -3,8 +3,6 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "Falta definir la clase " . $p;
     exit;
 }
-require_once ("modelo/permisos.php");
-require_once("modelo/" . $p . ".php");
 if (is_file("vista/" . $p . ".php")) {
     $o = new Eventos();
     $permisos_o = new Permisos();

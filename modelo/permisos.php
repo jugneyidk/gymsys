@@ -12,6 +12,10 @@ class Permisos extends datos
         try {
             $this->verificarConexion();
             $this->conexion->beginTransaction();
+            if (!isset($_SESSION['rol'])) {
+                $resultado["leer"] = 0;
+                return $resultado;
+            }
             $id_rol = $_SESSION['rol'];
             $modulo = isset($_GET['p']) ? $_GET['p'] : "landing";
             $consulta = "SELECT m.id_modulo, m.nombre, p.crear, p.leer, p.actualizar, p.eliminar FROM permisos p
@@ -23,7 +27,7 @@ class Permisos extends datos
             $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
             $this->conexion->commit();
         } catch (Exception $e) {
-            echo($e->getMessage());
+            echo ($e->getMessage());
             exit;
         }
         $this->desconecta();

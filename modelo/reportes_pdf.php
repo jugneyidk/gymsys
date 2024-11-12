@@ -1,5 +1,4 @@
 <?php
-require_once('modelo/datos.php');
 require_once('lib/dompdf/autoload.inc.php');
 
 use Dompdf\Dompdf;

@@ -253,13 +253,10 @@ $(document).ready(function () {
         validarKeyPress(e, REGEX.keypress_letras.regex);
         break;
       case "cedula":
-      case "cedula":
-      case "telefono":
       case "telefono":
         validarKeyPress(e, REGEX.keypress_numerico.regex);
         break;
       case "correo_electronico":
-      case "correo":
         validarKeyPress(e, REGEX.keypress_correo.regex);
         break;
       case "password":

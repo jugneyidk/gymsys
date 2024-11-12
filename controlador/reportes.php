@@ -3,8 +3,6 @@ if (!is_file("modelo/reportes.php")) {
     echo json_encode(['error' => 'Falta definir la clase Reporte']);
     exit;
 }
-require_once ("modelo/reportes.php");
-require_once ("modelo/permisos.php");
 $o = new Reporte();
 $permisos_o = new Permisos();
 $permisos = $permisos_o->chequear_permisos();
@@ -59,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $resultados = ['error' => 'Tipo de gráfico no válido'];
                 break;
         }
-
         header('Content-Type: application/json');
         echo json_encode($resultados);
         exit;

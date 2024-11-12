@@ -1,5 +1,5 @@
 <form method="post" id="f1" autocomplete="off">
-    <input type="hidden" name="accion" id="accion" value="">
+    <input type="text" name="accion" id="accion" value="">
     <div class="row mt-3">
         <div class="col-12 col-md mb-3">
             <div class="form-floating">
@@ -52,7 +52,7 @@
                 <input type="text" class="form-control" id="lugar_nacimiento" name="lugar_nacimiento"
                     placeholder="Lugar de Nacimiento">
                 <label for="lugar_nacimiento" class="form-label">Lugar de Nacimiento</label>
-                <div id="slugarnacimiento" class="invalid-feedback"></div>
+                <div id="slugar_nacimiento" class="invalid-feedback"></div>
             </div>
         </div>
     </div>

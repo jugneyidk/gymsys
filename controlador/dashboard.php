@@ -1,26 +1,21 @@
 <?php
 
 if (is_file("vista/" . $p . ".php")) {
-
-    require_once ("modelo/permisos.php");
     $permisos_o = new Permisos();
     $permisos = $permisos_o->chequear_permisos();
-
+    if ($permisos["leer"] === 0) {
+        header("Location: .");
+    }
     if (!is_file("modelo/" . $p . ".php")) {
         echo "No existe el modelo.";
         exit;
     }
- 
-    require_once("modelo/" . $p . ".php");
     $o = new Dashboard();  
- 
     if (!empty($_POST)) {
-        if ($_POST["accion"] == "estadisticas") {
-            
+        if ($_POST["accion"] == "estadisticas") {    
             $medallas_data = $o->obtener_medallas_por_mes();
             $progreso_data = $o->obtener_progreso_semanal();
 
-           
             $response = [
                 'labels_medallas' => $medallas_data['labels'],
                 'medallas_por_mes' => $medallas_data['medallas'],

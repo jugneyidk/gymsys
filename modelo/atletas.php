@@ -2,7 +2,7 @@
 class Atleta extends datos
 {
     private $conexion;
-    private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo, $entrenador_asignado, $cedula_representante, $nombre_representante, $telefono_representante, $parentesco_representante, $password;
+    private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo_electronico, $entrenador_asignado, $cedula_representante, $nombre_representante, $telefono_representante, $parentesco_representante, $password;
 
     public function __construct()
     {
@@ -85,7 +85,7 @@ class Atleta extends datos
             $token = 0;
             $consulta = "
                 INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
-                VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);
+                VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico);
     
                 INSERT INTO atleta (cedula, entrenador, tipo_atleta, peso, altura, representante)
                 VALUES (:cedula, :id_entrenador, :tipo_atleta, :peso, :altura, :representante);
@@ -102,7 +102,7 @@ class Atleta extends datos
                 ':lugar_nacimiento' => $this->lugar_nacimiento,
                 ':estado_civil' => $this->estado_civil,
                 ':telefono' => $this->telefono,
-                ':correo' => $this->correo,
+                ':correo_electronico' => $this->correo_electronico,
                 ':id_entrenador' => $this->entrenador_asignado,
                 ':tipo_atleta' => $this->tipo_atleta,
                 ':peso' => $this->peso,
@@ -117,7 +117,7 @@ class Atleta extends datos
             $respuesta->closeCursor();
             $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -135,7 +135,7 @@ class Atleta extends datos
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
@@ -176,7 +176,7 @@ class Atleta extends datos
                 $resultado["ok"] = false;
                 $resultado["mensaje"] = "No se encontró el atleta";
             }
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
@@ -211,7 +211,7 @@ class Atleta extends datos
                     lugar_nacimiento = :lugar_nacimiento, 
                     estado_civil = :estado_civil, 
                     telefono = :telefono, 
-                    correo_electronico = :correo 
+                    correo_electronico = :correo_electronico 
                 WHERE cedula = :cedula;        
                 UPDATE atleta 
                 SET 
@@ -231,7 +231,7 @@ class Atleta extends datos
                 ':lugar_nacimiento' => $this->lugar_nacimiento,
                 ':estado_civil' => $this->estado_civil,
                 ':telefono' => $this->telefono,
-                ':correo' => $this->correo,
+                ':correo_electronico' => $this->correo_electronico,
                 ':id_entrenador' => $this->entrenador_asignado,
                 ':tipo_atleta' => $this->tipo_atleta,
                 ':peso' => $this->peso,
@@ -258,7 +258,7 @@ class Atleta extends datos
             }
             $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -289,7 +289,7 @@ class Atleta extends datos
             $respuesta->closeCursor();
             $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
@@ -306,10 +306,14 @@ class Atleta extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $entrenadores = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            return ['ok' => true, 'entrenadores' => $entrenadores];
-        } catch (Exception $e) {
-            return ['ok' => false, 'mensaje' => $e->getMessage()];
+            $resultado["ok"] = true;
+            $resultado["entrenadores"] = $entrenadores;
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $resultado;
     }
 
     public function obtenerTiposAtleta()
@@ -319,10 +323,14 @@ class Atleta extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $tiposAtleta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            return ['ok' => true, 'tipos' => $tiposAtleta];
-        } catch (Exception $e) {
-            return ['ok' => false, 'mensaje' => $e->getMessage()];
+            $resultado["ok"] = true;
+            $resultado["tipos"] = $tiposAtleta;
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $resultado;
     }
 
     public function incluirRepresentante($cedula, $nombreCompleto, $telefono, $parentesco)
@@ -343,10 +351,13 @@ class Atleta extends datos
             );
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
-            return ['ok' => true];
+            $resultado["ok"] = true;
         } catch (PDOException $e) {
-            return ['ok' => false, 'mensaje' => $e->getMessage()];
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $resultado;
     }
     public function registrarTipoAtleta($nombreTipoAtleta, $tipoCobro)
     {
@@ -354,10 +365,13 @@ class Atleta extends datos
             $consulta = "INSERT INTO tipo_atleta (nombre_tipo_atleta, tipo_cobro) VALUES (?, ?)";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute([$nombreTipoAtleta, $tipoCobro]);
-            return ['ok' => true];
-        } catch (Exception $e) {
-            return ['ok' => false, 'mensaje' => $e->getMessage()];
+            $resultado["ok"] = true;
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $resultado;
     }
 
 

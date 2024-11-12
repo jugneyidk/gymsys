@@ -61,6 +61,10 @@ const REGEX = {
     regex: /^\d*$/,
     mensaje: "",
   },
+  keypress_decimal: {
+    regex: /^[0-9.]$/,
+    mensaje: "",
+  },
   keypress_correo: {
     regex: /^[a-zA-Z0-9._%+-@]$/,
     mensaje: "",
@@ -68,6 +72,22 @@ const REGEX = {
   keypress_password: {
     regex: /^[A-Za-z\d$@$!%*?&]$/,
     mensaje: "",
+  },
+  nombre_representante: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,100}$/,
+    mensaje: "Nombre del representante es obligatorio (1-100 caracteres)",
+  },
+  cedula_representante: {
+    regex: /^\d{7,9}$/,
+    mensaje: "La cédula del representante debe tener 7-9 números",
+  },
+  telefono_representante: {
+    regex: /^04\d{9}$/,
+    mensaje: "El teléfono del representante debe ser 04XXXXXXXXX",
+  },
+  parentesco_representante: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+    mensaje: "El parentesco debe ser de 1-50 caracteres",
   },
 };
 export default REGEX;

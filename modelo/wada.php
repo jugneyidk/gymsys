@@ -1,5 +1,4 @@
 <?php
-require_once('modelo/datos.php');
 
 class WADA extends datos
 {

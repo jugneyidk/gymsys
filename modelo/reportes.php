@@ -1,6 +1,4 @@
 <?php
-require_once('datos.php');
-
 class Reporte extends datos
 {
     private $conexion;

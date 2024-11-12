@@ -37,7 +37,6 @@ class Asistencia extends datos
     {
         try {
             $asistencias = json_decode($asistencias, true);
-            $this->conexion->beginTransaction();
             if (is_array($asistencias) && count($asistencias) > 0) {
                 $num_asistencias = count($asistencias);
             } else {
@@ -45,6 +44,7 @@ class Asistencia extends datos
                 $resultado["mensaje"] = "No hay asistencias";
                 return $resultado;
             }
+            $this->conexion->beginTransaction();
             $consulta = "IF @num_asistencias IS NULL THEN
             SET @num_asistencias = :num_asistencias;
             END IF;

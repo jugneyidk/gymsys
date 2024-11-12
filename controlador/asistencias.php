@@ -3,8 +3,6 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "Falta definir la clase " . $p;
     exit;
 }
-require_once ("modelo/" . $p . ".php");
-require_once ("modelo/permisos.php");
 if (is_file("vista/" . $p . ".php")) {
     $o = new Asistencia();
     $permisos_o = new Permisos();
@@ -30,6 +28,3 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     echo "pagina en construccion";
 }
-
-
-?>

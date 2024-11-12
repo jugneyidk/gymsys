@@ -3,7 +3,6 @@ if (!is_file("modelo/" . $p . ".php")) {
   echo "No existe el modelo.";
   exit;
 }
-require_once ("modelo/" . $p . ".php");
 if (isset($_SESSION['id_usuario'])) {
   header("location: .");
 }

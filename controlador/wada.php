@@ -3,9 +3,6 @@ if (!is_file("modelo/" . $p . ".php")) {
     echo "No existe el modelo.";
     exit;
 }
-require_once ("modelo/" . $p . ".php");
-require_once ("modelo/permisos.php");
-
 $permisos_o = new Permisos();
 $permisos = $permisos_o->chequear_permisos();
 if ($permisos["leer"] === 0) {
