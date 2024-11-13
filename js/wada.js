@@ -1,38 +1,16 @@
+import { enviaAjax, muestraMensaje, modalListener, REGEX } from "./comunes.js";
 $(document).ready(function () {
   carga_listado_wada();
   cargaProximosVencer();
 
+  modalListener("WADA");
+
   function carga_listado_wada() {
     var datos = new FormData();
     datos.append("accion", "listado_wada");
-    enviaAjax(datos, actualizarTablaWada);
-  }
-
-  function enviaAjax(datos, callback) {
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      success: function (respuesta) {
-        var lee = JSON.parse(respuesta);
-        if (lee.ok) {
-          callback(lee.respuesta);
-          console.log(lee.respuesta)
-        } else {
-          Swal.fire("Error", lee.mensaje, "error");
-        }
-      },
-      error: function (xhr, status, error) {
-        Swal.fire(
-          "Error",
-          "Hubo un problema con la petición: " + error,
-          "error"
-        );
-      },
+    enviaAjax(datos, "").then((respuesta) => {
+      console.log(respuesta);
+      actualizarTablaWada(respuesta.respuesta);
     });
   }
 
@@ -40,79 +18,72 @@ $(document).ready(function () {
     var html = "";
     data.forEach(function (registro) {
       html += `<tr>
-                        <td>${registro.nombre} ${registro.apellido}</td>
-                        <td>${registro.estado === "1" ? "Cumple" : "No Cumple"
-        }</td>
-                        <td>${registro.inscrito}</td>
-                        <td>${registro.ultima_actualizacion}</td>
-                        <td>${registro.vencimiento}</td>
-                        <td>
-                        ${actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar'><i class='fa-regular fa-pen-to-square'></i></button>"
-          : ""
-        }  
-                        </td>
-                    </tr>`;
+                <td class="d-none">${registro.cedula}</td>
+                <td>${registro.nombre} ${registro.apellido}</td>
+                <td>${registro.estado === 1 ? "Cumple" : "No Cumple"}</td>
+                <td>${registro.inscrito}</td>
+                <td>${registro.ultima_actualizacion}</td>
+                <td>${registro.vencimiento}</td>
+                <td>
+                ${
+                  actualizar === 1
+                    ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                    : ""
+                }  
+                </td>
+            </tr>`;
     });
-
     if ($.fn.DataTable.isDataTable("#tablaWada")) {
       $("#tablaWada").DataTable().clear().destroy();
     }
-    $("#tablaWada").DataTable();
     $("#tablaWada tbody").html(html);
+    $("#tablaWada").DataTable();
   }
 
   function actualizarTablaProximosVencer(data) {
     var html = "";
-    console.log(data)
+    console.log(data);
     data.forEach(function (registro) {
       html += `<tr>
-                        <td>${registro.nombre} ${registro.apellido}</td>
-                        <td>${registro.cedula}</td>
-                        <td>${registro.vencimiento}</td>
-                        <td>
-                        ${actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modalModificar'><i class='fa-regular fa-pen-to-square'></i></button>"
-          : ""
-        }
-                        </td>
-                    </tr>`;
+                  <td class="d-none">${registro.cedula}</td>
+                  <td>${registro.nombre} ${registro.apellido}</td>
+                  <td>${registro.vencimiento}</td>
+                  <td>
+                  ${
+                    actualizar === 1
+                      ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                      : ""
+                  }
+                  </td>
+              </tr>`;
     });
 
     if ($.fn.DataTable.isDataTable("#tablaProximosVencer")) {
       $("#tablaProximosVencer").DataTable().clear().destroy();
     }
-    $("#tablaProximosVencer").DataTable();
     $("#tablaProximosVencer tbody").html(html);
+    $("#tablaProximosVencer").DataTable();
   }
 
   function cargaProximosVencer() {
     var datos = new FormData();
     datos.append("accion", "obtener_proximos_vencer");
-    enviaAjax(datos, actualizarTablaProximosVencer);
+    enviaAjax(datos, "").then((respuesta) => {
+      actualizarTablaProximosVencer(respuesta.respuesta);
+    });
   }
 
   $("#f1").submit(function (e) {
     e.preventDefault();
     var datos = new FormData(this);
-    datos.append("accion", "incluir");
-    enviaAjax(datos, function () {
-      Swal.fire("Éxito", "Registro añadido correctamente", "success");
-      $("#modalInscripcion").modal("hide");
+    if (datos.get("accion") === "") {
+      datos.set("accion", "incluir");
+    }
+    enviaAjax(datos, "").then(() => {
+      muestraMensaje("Exito", "La WADA se registró correctamente", "success");
       carga_listado_wada();
       cargaProximosVencer();
-    });
-  });
-
-  $("#f2").submit(function (e) {
-    e.preventDefault();
-    var datos = new FormData(this);
-    datos.append("accion", "modificar");
-    enviaAjax(datos, function () {
-      Swal.fire("Éxito", "Registro modificado correctamente", "success");
-      $("#modalModificar").modal("hide");
-      carga_listado_wada();
-      cargaProximosVencer();
+      $("#modal").modal("hide");
     });
   });
 
@@ -120,31 +91,15 @@ $(document).ready(function () {
     var datos = new FormData();
     datos.append("accion", "obtener_wada");
     datos.append("atleta", cedula);
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      success: function (respuesta) {
-        var lee = JSON.parse(respuesta);
-        if (lee.ok) {
-          var wada = lee.wada;
-          $("#atleta_modificar").val(wada.cedula);
-          $("#status_modificar").val(wada.estado);
-          $("#inscrito_modificar").val(wada.inscrito);
-          $("#ultima_actualizacion_modificar").val(wada.ultima_actualizacion);
-          $("#vencimiento_modificar").val(wada.vencimiento);
-          $("#modalModificar").modal("show");
-        } else {
-          Swal.fire("Error", lee.mensaje, "error");
-        }
-      },
-      error: function (request, status, err) {
-        Swal.fire("Error", "Error al procesar la solicitud", "error");
-      },
+    enviaAjax(datos, "").then((respuesta) => {
+      var wada = respuesta.wada;
+      $("#accion").val(wada.cedula);
+      $("#atleta").val(wada.cedula);
+      $("#status").val(wada.estado);
+      $("#inscrito").val(wada.inscrito);
+      $("#ultima_actualizacion").val(wada.ultima_actualizacion);
+      $("#vencimiento").val(wada.vencimiento);
+      $("#modal").modal("show");
     });
   };
 
@@ -174,32 +129,33 @@ $(document).ready(function () {
   function carga_atletas() {
     var datos = new FormData();
     datos.append("accion", "listado_atletas");
-    $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      success: function (respuesta) {
-        var lee = JSON.parse(respuesta);
-        if (lee.ok) {
-          var opciones = "<option value=''>Seleccione un atleta</option>";
-          lee.respuesta.forEach(function (atleta) {
-            opciones += `<option value='${atleta.cedula}'>${atleta.nombre} ${atleta.apellido}</option>`;
-          });
-          $("#atleta").html(opciones);
-          $("#atleta_modificar").html(opciones);
-        } else {
-          Swal.fire("Error", lee.mensaje, "error");
-        }
-      },
-      error: function (request, status, err) {
-        Swal.fire("Error", "Error al procesar la solicitud", "error");
-      },
+    enviaAjax(datos, "").then((respuesta) => {
+      var opciones = "<option value=''>Seleccione un atleta</option>";
+      respuesta.respuesta.forEach(function (atleta) {
+        opciones += `<option value='${atleta.cedula}'>${atleta.cedula} - ${atleta.nombre} ${atleta.apellido}</option>`;
+      });
+      $("#atleta").html(opciones);
     });
   }
 
+  $("#tablaWada,#tablaProximosVencer").on("click", ".btn-warning", function () {
+    const cedula = $(this).closest("tr").find("td:first").text();
+    console.log(cedula);
+    var datos = new FormData();
+    datos.append("accion", "obtener_wada");
+    datos.append("cedula", cedula);
+    enviaAjax(datos, "").then((respuesta) => {
+      llenarFormularioModificar(respuesta.wada);
+    });
+  });
+
+  function llenarFormularioModificar(atleta) {
+    $("#f1 #atleta").val(atleta.id_atleta);
+    $("#f1 #inscrito").val(atleta.inscrito);
+    $("#f1 #ultima_actualizacion").val(atleta.ultima_actualizacion);
+    $("#f1 #vencimiento").val(atleta.vencimiento);
+    $("#f1 #status").val(atleta.estado);
+    $("#f1 #accion").val("modificar");
+  }
   carga_atletas();
 });

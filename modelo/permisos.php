@@ -26,7 +26,7 @@ class Permisos extends datos
             $respuesta->execute($valores);
             $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
             $this->conexion->commit();
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             echo ($e->getMessage());
             exit;
         }

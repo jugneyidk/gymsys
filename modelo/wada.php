@@ -11,6 +11,9 @@ class WADA extends datos
 
     public function incluir_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento)
     {
+        if (!Validar::validar("cedula", $id_atleta)) {
+            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
+        }
         $this->id_atleta = $id_atleta;
         $this->estado = $estado;
         $this->inscrito = $inscrito;
@@ -49,6 +52,14 @@ class WADA extends datos
     private function incluir()
     {
         try {
+            $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = ?;";
+            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe la WADA de este atleta";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
                          VALUES (:id_atleta, :estado, :inscrito, :ultima_actualizacion, :vencimiento)";
             $valores = array(
@@ -60,11 +71,15 @@ class WADA extends datos
             );
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -127,16 +142,8 @@ class WADA extends datos
                     u.cedula, 
                     u.nombre, 
                     u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                    u.correo_electronico, 
-                    a.tipo_atleta, 
-                    a.peso, 
-                    a.altura, 
                     a.entrenador,
+                    w.estado,
                     w.inscrito,
                     w.vencimiento,
                     w.ultima_actualizacion

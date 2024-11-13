@@ -1,6 +1,6 @@
 <?php
 require_once("./comunes/regex.php");
-class Validar
+class Validar extends Datos
 {
     private static $exp = REGEX;
     public static function validar($campo, $valor)

@@ -203,7 +203,7 @@
             </table>
         </div>
     </div>
-    <div class="row m-2">
+    <div class="row m-3">
         <button type="button" id="btnSubmit" class="btn btn-primary btn-block">Registrar Rol</button>
     </div>
 </form>

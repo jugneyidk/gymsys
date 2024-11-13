@@ -34,7 +34,7 @@ if (!empty($_POST)) {
         );
         echo json_encode($respuesta);
     } elseif ($accion == 'obtener_wada') {
-        $respuesta = $o->obtener_wada($_POST['atleta']);
+        $respuesta = $o->obtener_wada($_POST['cedula']);
         echo json_encode($respuesta);
     } elseif ($accion == 'eliminar') {
         $respuesta = $o->eliminar_wada($_POST['atleta']);
