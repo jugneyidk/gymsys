@@ -1,6 +1,6 @@
 <?php
 require_once("./comunes/regex.php");
-class Validar extends datos
+class Validar
 {
     private static $exp = REGEX;
     public static function validar($campo, $valor)
@@ -75,5 +75,31 @@ class Validar extends datos
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
+    }
+
+    public static function validar_asistencias($asistencias)
+    {
+        foreach ($asistencias as $asistencia => $valor) {
+            if (!preg_match(self::$exp["cedula"]["regex"], $valor["id_atleta"])) {
+                return false;
+            }
+            if (gettype($valor["asistio"]) !== "integer" || $valor["asistio"] < 0 || $valor["asistio"] > 1) {
+                return false;
+            }
+            if (!preg_match(self::$exp["detalles"]["regex"], $valor["comentario"])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static function validar_fecha_mayor_que_hoy($fecha)
+    {
+        $fechaSeleccionada = new DateTime($fecha);
+        $fechaActual = new DateTime();
+        // Restablecer la hora a 00:00:00 para comparar solo la fecha
+        $fechaActual->setTime(0, 0, 0);
+        $fechaSeleccionada->setTime(0, 0, 0);
+        return $fechaSeleccionada >= $fechaActual;
     }
 }

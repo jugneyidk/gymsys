@@ -16,7 +16,10 @@ if (is_file("vista/" . $p . ".php")) {
             $respuesta = $o->obtener_atletas();
             echo json_encode($respuesta);
         } elseif ($accion == 'guardar_asistencias') {
-            $respuesta = $o->guardar_asistencias($_POST['fecha'], $_POST['asistencias']);
+            if (isset($_POST["asistencias"])) {
+                $asistencias = json_decode($_POST["asistencias"], true);
+            }
+            $respuesta = $o->guardar_asistencias($_POST['fecha'], $asistencias);
             echo json_encode($respuesta);
         } elseif ($accion == 'obtener_asistencias') {
             $respuesta = $o->obtener_asistencias($_POST['fecha']);
@@ -24,7 +27,7 @@ if (is_file("vista/" . $p . ".php")) {
         }
         exit;
     }
-    require_once ("vista/" . $p . ".php");
+    require_once("vista/" . $p . ".php");
 } else {
     echo "pagina en construccion";
 }

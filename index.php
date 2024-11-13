@@ -1,5 +1,6 @@
 <?php
 require 'vendor/autoload.php';
+date_default_timezone_set('America/Caracas');
 session_start();
 if (!empty($_GET['p'])) {
   $p = $_GET['p'];

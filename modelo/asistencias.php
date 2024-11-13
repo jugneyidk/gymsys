@@ -8,9 +8,16 @@ class Asistencia extends datos
         $this->conexion = $this->conecta();
     }
 
-    public function guardar_asistencias($fecha, $asistencias){
-        if(!Validar::validar_fecha($fecha)){
+    public function guardar_asistencias($fecha, $asistencias)
+    {
+        if (!Validar::validar_fecha($fecha)) {
             return ["ok" => false, "mensaje" => "La fecha no es valida"];
+        }
+        if (!Validar::validar_asistencias($asistencias)) {
+            return ["ok" => false, "mensaje" => "Las asistencias no son validas"];
+        }
+        if (!Validar::validar_fecha_mayor_que_hoy($fecha)) {
+            return ["ok" => false, "mensaje" => "La fecha no debe ser anterior a la de hoy"];
         }
         $this->fecha = $fecha;
         $this->asistencias = $asistencias;
@@ -44,9 +51,8 @@ class Asistencia extends datos
     private function guardar()
     {
         try {
-            $asistencias = json_decode($this->asistencias, true);
-            if (is_array($asistencias) && count($asistencias) > 0) {
-                $num_asistencias = count($asistencias);
+            if (is_array($this->asistencias) && count($this->asistencias) > 0) {
+                $num_asistencias = count($this->asistencias);
             } else {
                 $resultado["ok"] = false;
                 $resultado["mensaje"] = "No hay asistencias";
@@ -64,7 +70,7 @@ class Asistencia extends datos
                 comentario = VALUES(comentario);
             ";
             $stmt = $this->conexion->prepare($consulta);
-            foreach ($asistencias as $asistencia) {
+            foreach ($this->asistencias as $asistencia) {
                 $stmt->execute([
                     ':num_asistencias' => $num_asistencias,
                     ':id_atleta' => $asistencia['id_atleta'],
