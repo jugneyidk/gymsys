@@ -1,6 +1,8 @@
 $(document).ready(function () {
+    // Ocultar todos los filtros inicialmente
     $('#filtrosAtletas, #filtrosEntrenadores, #filtrosMensualidades, #filtrosWada, #filtrosEventos, #filtrosAsistencias').hide();
 
+    // Mostrar filtros basados en el tipo de reporte seleccionado
     $('#tipoReporte').change(function () {
         $('#filtrosAtletas, #filtrosEntrenadores, #filtrosMensualidades, #filtrosWada, #filtrosEventos, #filtrosAsistencias').hide();
         switch ($(this).val()) {
@@ -25,16 +27,18 @@ $(document).ready(function () {
         }
     });
 
+    // Manejo del evento al hacer clic en "Generar Reporte"
     $('#btnGenerarReporte').on('click', function () {
         var datos = new FormData($('#formReportes')[0]);
         datos.append('accion', 'obtener_reportes');
         enviaAjax(datos);
     });
 
+    // Función para manejar la solicitud AJAX
     function enviaAjax(datos) {
         $.ajax({
             async: true,
-            url: "",
+            url: "", // Asegúrate de configurar correctamente la URL
             type: "POST",
             contentType: false,
             data: datos,
@@ -45,9 +49,11 @@ $(document).ready(function () {
                     var lee = JSON.parse(respuesta);
                     if (lee.ok) {
                         var listado_reportes = "";
+                        // Destruir DataTable si ya existe
                         if ($.fn.DataTable.isDataTable("#tablaReportes")) {
                             $("#tablaReportes").DataTable().destroy();
                         }
+                        // Crear nuevo contenido para la tabla
                         lee.reportes.forEach((reporte) => {
                             listado_reportes += "<tr>";
                             listado_reportes += "<td>" + reporte.id + "</td>";
@@ -56,7 +62,9 @@ $(document).ready(function () {
                             listado_reportes += "<td>" + reporte.fecha + "</td>";
                             listado_reportes += "</tr>";
                         });
+                        // Insertar contenido en la tabla
                         $("#listadoReportes").html(listado_reportes);
+                        // Inicializar DataTable
                         $("#tablaReportes").DataTable({
                             language: {
                                 lengthMenu: "Mostrar _MENU_ por página",

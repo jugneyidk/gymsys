@@ -22,31 +22,32 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON a.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (isset($filtros['edadMin']) && $filtros['edadMin'] !== '') {
+                    if (!empty($filtros['edadMin'])) {
                         $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
                         $valores[':edadMin'] = $filtros['edadMin'];
                     }
-                    if (isset($filtros['edadMax']) && $filtros['edadMax'] !== '') {
+                    if (!empty($filtros['edadMax'])) {
                         $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
                         $valores[':edadMax'] = $filtros['edadMax'];
                     }
-                    if (isset($filtros['genero']) && $filtros['genero'] !== '') {
+                    if (!empty($filtros['genero'])) {
                         $consulta .= " AND u.genero = :genero";
                         $valores[':genero'] = $filtros['genero'];
                     }
-                    if (isset($filtros['tipoAtleta']) && $filtros['tipoAtleta'] !== '') {
+                    if (!empty($filtros['tipoAtleta'])) {
                         $consulta .= " AND a.tipo_atleta = :tipoAtleta";
                         $valores[':tipoAtleta'] = $filtros['tipoAtleta'];
                     }
-                    if (isset($filtros['pesoMin']) && $filtros['pesoMin'] !== '') {
+                    if (!empty($filtros['pesoMin'])) {
                         $consulta .= " AND a.peso >= :pesoMin";
                         $valores[':pesoMin'] = $filtros['pesoMin'];
                     }
-                    if (isset($filtros['pesoMax']) && $filtros['pesoMax'] !== '') {
+                    if (!empty($filtros['pesoMax'])) {
                         $consulta .= " AND a.peso <= :pesoMax";
                         $valores[':pesoMax'] = $filtros['pesoMax'];
                     }
                     break;
+
                 case 'entrenadores':
                     $consulta = "
                         SELECT e.cedula AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Entrenador' AS detalles, u.fecha_nacimiento AS fecha
@@ -54,21 +55,22 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON e.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (isset($filtros['edadMinEntrenador']) && $filtros['edadMinEntrenador'] !== '') {
+                    if (!empty($filtros['edadMinEntrenador'])) {
                         $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
                         $valores[':edadMin'] = $filtros['edadMinEntrenador'];
                     }
-                    if (isset($filtros['edadMaxEntrenador']) && $filtros['edadMaxEntrenador'] !== '') {
+                    if (!empty($filtros['edadMaxEntrenador'])) {
                         $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
                         $valores[':edadMax'] = $filtros['edadMaxEntrenador'];
                     }
-                    if (isset($filtros['gradoInstruccion']) && $filtros['gradoInstruccion'] !== '') {
+                    if (!empty($filtros['gradoInstruccion'])) {
                         $consulta .= " AND e.grado_instruccion = :gradoInstruccion";
                         $valores[':gradoInstruccion'] = $filtros['gradoInstruccion'];
                     }
                     break;
+
                 case 'mensualidades':
-                    $periodo = isset($filtros['periodoMensualidades']) ? $filtros['periodoMensualidades'] : 'mes';
+                    $periodo = !empty($filtros['periodoMensualidades']) ? $filtros['periodoMensualidades'] : 'mes';
                     $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT m.id_mensualidad AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Mensualidad' AS detalles, m.fecha AS fecha
@@ -79,8 +81,9 @@ class Reporte extends datos
                         ORDER BY m.fecha DESC
                     ";
                     break;
+
                 case 'wada':
-                    $periodo = isset($filtros['periodoWada']) ? $filtros['periodoWada'] : 'mes';
+                    $periodo = !empty($filtros['periodoWada']) ? $filtros['periodoWada'] : 'mes';
                     $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT w.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'WADA' AS detalles, w.vencimiento AS fecha
@@ -91,18 +94,20 @@ class Reporte extends datos
                         ORDER BY w.vencimiento DESC
                     ";
                     break;
+
                 case 'eventos':
-                    $periodo = isset($filtros['periodoEventos']) ? $filtros['periodoEventos'] : 'mes';
+                    $periodo = !empty($filtros['periodoEventos']) ? $filtros['periodoEventos'] : 'mes';
                     $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT c.id_competencia AS id, c.nombre AS nombre, 'Evento' AS detalles, c.fecha_inicio AS fecha
                         FROM competencia c
-                                               WHERE c.fecha_inicio >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
+                        WHERE c.fecha_inicio >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
                         ORDER BY c.fecha_inicio DESC
                     ";
                     break;
+
                 case 'asistencias':
-                    $periodo = isset($filtros['periodoAsistencias']) ? $filtros['periodoAsistencias'] : 'mes';
+                    $periodo = !empty($filtros['periodoAsistencias']) ? $filtros['periodoAsistencias'] : 'mes';
                     $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT a.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Asistencia' AS detalles, a.fecha AS fecha
@@ -120,17 +125,13 @@ class Reporte extends datos
             $reportes = $respuesta->fetchAll(PDO::FETCH_ASSOC);
 
             if ($reportes) {
-                $resultado["ok"] = true;
-                $resultado["reportes"] = $reportes;
+                return ["ok" => true, "reportes" => $reportes];
             } else {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "No se encontraron reportes";
+                return ["ok" => false, "mensaje" => "No se encontraron reportes"];
             }
         } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
+            return ["ok" => false, "mensaje" => $e->getMessage()];
         }
-        return $resultado;
     }
 
     private function getIntervalo($periodo)
@@ -168,10 +169,7 @@ class Reporte extends datos
         $respuesta = $this->conexion->query($consulta);
         $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
 
-        $labels = array_column($resultados, 'rango_edad');
-        $values = array_column($resultados, 'cantidad');
-
-        return ['labels' => $labels, 'values' => $values];
+        return ['labels' => array_column($resultados, 'rango_edad'), 'values' => array_column($resultados, 'cantidad')];
     }
 
     public function obtener_datos_genero()
@@ -187,10 +185,7 @@ class Reporte extends datos
         $respuesta = $this->conexion->query($consulta);
         $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
 
-        $labels = array_column($resultados, 'genero');
-        $values = array_column($resultados, 'cantidad');
-
-        return ['labels' => $labels, 'values' => $values];
+        return ['labels' => array_column($resultados, 'genero'), 'values' => array_column($resultados, 'cantidad')];
     }
 
     public function obtener_datos_asistencias()
@@ -206,31 +201,7 @@ class Reporte extends datos
         $respuesta = $this->conexion->query($consulta);
         $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
 
-        $labels = array_column($resultados, 'mes');
-        $values = array_column($resultados, 'cantidad');
-
-        return ['labels' => $labels, 'values' => $values];
-    }
-
-    public function obtener_datos_wada()
-    {
-        $consulta = "
-            SELECT 
-                CASE
-                    WHEN w.resultado = 'positivo' THEN 'Positivo'
-                    WHEN w.resultado = 'negativo' THEN 'Negativo'
-                END AS resultado,
-                COUNT(*) AS cantidad
-            FROM wada w
-            GROUP BY resultado
-        ";
-        $respuesta = $this->conexion->query($consulta);
-        $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-
-        $labels = array_column($resultados, 'resultado');
-        $values = array_column($resultados, 'cantidad');
-
-        return ['labels' => $labels, 'values' => $values];
+        return ['labels' => array_column($resultados, 'mes'), 'values' => array_column($resultados, 'cantidad')];
     }
 }
 ?>
