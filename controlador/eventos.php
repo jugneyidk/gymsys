@@ -10,7 +10,7 @@ if (is_file("vista/" . $p . ".php")) {
     if ($permisos["leer"] === 0) {
         header("Location: .");
     }
-    if (!empty($_POST)) {
+    if (!empty($_POST)) { 
         $accion = $_POST['accion'];
         if ($accion == 'listado_eventos') {
             $respuesta = $o->listado_eventos();
@@ -111,7 +111,13 @@ if (is_file("vista/" . $p . ".php")) {
                 $_POST['tipo_competencia']
             );
             echo json_encode($respuesta);
+        }elseif ($accion == 'eliminar_evento') {
+            $id_competencia = $_POST['id_competencia'];
+            
+            $respuesta = $o->eliminar_evento($id_competencia);
+            echo json_encode($respuesta);
         }
+        
         
         
         

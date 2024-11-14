@@ -8,7 +8,7 @@ class Eventos extends datos
     {
         $this->conexion = $this->conecta();
     }
-
+ 
     public function incluir_evento($nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia)
     {
         $this->nombre = $nombre;
@@ -29,8 +29,8 @@ class Eventos extends datos
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin) 
-                         VALUES (:tipo_competencia, :nombre, :categoria, :subs, :lugar_competencia, :fecha_inicio, :fecha_fin)";
+            $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin, estado) 
+                         VALUES (:tipo_competencia, :nombre, :categoria, :subs, :lugar_competencia, :fecha_inicio, :fecha_fin, 'activo')";
             $valores = array(
                 ':nombre' => $this->nombre,
                 ':lugar_competencia' => $this->lugar_competencia,
@@ -50,18 +50,19 @@ class Eventos extends datos
         return $resultado;
     }
     public function cerrar_evento($id_competencia)
-    {
-        try {
-            $consulta = "UPDATE competencia SET estado = 'cerrado' WHERE id_competencia = :id_competencia";
-            $stmt = $this->conexion->prepare($consulta);
-            $stmt->execute([':id_competencia' => $id_competencia]);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+{
+    try {
+        $consulta = "UPDATE competencia SET estado = 'inactivo' WHERE id_competencia = :id_competencia";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id_competencia' => $id_competencia]);
+        $resultado["ok"] = true;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
     }
+    return $resultado;
+}
+
 
     private function listado()
     {
@@ -84,9 +85,14 @@ class Eventos extends datos
     }
 
 
-    public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
-    {
+    public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo) {
         try {
+            if (empty($nombre) || strlen($nombre) < 2) {
+                throw new Exception("El nombre es inválido.");
+            }
+            if (!is_numeric($pesoMinimo) || !is_numeric($pesoMaximo) || $pesoMinimo < 0 || $pesoMaximo <= $pesoMinimo) {
+                throw new Exception("El rango de peso es inválido.");
+            }
             $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
             $valores = array(
                 ':nombre' => $nombre,
@@ -102,6 +108,7 @@ class Eventos extends datos
         }
         return $resultado;
     }
+    
 
     public function incluir_subs($nombre, $edadMinima, $edadMaxima)
     {
@@ -281,7 +288,7 @@ public function obtenerCompetencia($id_competencia) {
 
 public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia) {
     try {
-        $consulta = "UPDATE competencia SET nombre = :nombre, lugar_competencia = :ubicacion, fecha_inicio = :fecha_inicio, fecha_fin = :fecha_fin, categoria = :categoria, subs = :subs, tipo_competencia = :tipo_competencia WHERE id_competencia = :id_competencia";
+        $consulta = "UPDATE competencia SET nombre = :nombre, lugar_competencia = :ubicacion, fecha_inicio = :fecha_inicio, fecha_fin = :fecha_fin, categoria = :categoria, subs = :subs, tipo_competicion = :tipo_competencia WHERE id_competencia = :id_competencia";
         $valores = [
             ':id_competencia' => $id_competencia,
             ':nombre' => $nombre,
@@ -298,6 +305,19 @@ public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fech
     } catch (Exception $e) {
         return ["ok" => false, "mensaje" => $e->getMessage()];
     }
+}
+public function eliminar_evento($id_competencia)
+{
+    try {
+        $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id_competencia' => $id_competencia]);
+        $resultado["ok"] = true;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
+    }
+    return $resultado;
 }
 
     public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)

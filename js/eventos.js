@@ -1,5 +1,6 @@
 $(document).ready(function () {
     function cargarEventos() {
+        console.log("Recargando eventos...");
         const datos = new FormData();
         datos.append("accion", "listado_eventos");
         $.ajax({
@@ -26,14 +27,22 @@ $(document).ready(function () {
             }
         });
     }
+    
 
     function actualizarListadoEventos(eventos) {
         let listadoEventos = "";
         eventos.forEach(evento => {
             listadoEventos += `
                 <div class="col-md-3 mb-4 d-flex align-items-stretch">
-                    <div class="card border-primary">
-                        <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white"><small><strong>${evento.nombre}</strong></small></div>
+                    <div class="card border-primary position-relative">
+                        <!-- Icono de eliminar -->
+                        <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 eliminarEvento" data-id="${evento.id_competencia}" title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                        
+                        <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white">
+                            <small><strong>${evento.nombre}</strong></small>
+                        </div>
                         <div class="row g-0">
                             <div class="col-md-1 bg-primary border-end border-primary">
                                 <img src="" alt="" class="img-fluid rounded-start">
@@ -49,10 +58,9 @@ $(document).ready(function () {
                                     <div class="btn-group">
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalVerEventoActivo" data-id="${evento.id_competencia}" data-nombre="${evento.nombre}" data-inicio="${evento.fecha_inicio}" data-fin="${evento.fecha_fin}" data-ubicacion="${evento.lugar_competencia}">Ver</button>
                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirEvento" data-id="${evento.id_competencia}">Inscribir</button>
-                                         <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalModificarCompetencia" data-id="${evento.id_competencia}">Modificar</button>
-                                        <button class="btn btn-outline-danger btn-sm" data-id="${evento.id_competencia}" onclick="cerrarEvento(${evento.id_competencia})">Cerrar</button>
+                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalModificarCompetencia" data-id="${evento.id_competencia}">Modificar</button>
+                                        <button class="cerrarC btn btn-outline-danger btn-sm" data-id="${evento.id_competencia}">Cerrar</button>
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -60,9 +68,12 @@ $(document).ready(function () {
                 </div>
             `;
         });
-
+     
+        $("#lista-eventos").html(""); 
         $("#lista-eventos").html(listadoEventos);
     }
+    
+    
 
 
 
@@ -102,14 +113,42 @@ $(document).ready(function () {
     $('#modalEventoConsultaAnterior').on('shown.bs.modal', function () {
         cargarEventosAnteriores();
     });
-
     $("#registrarCategoria").on("submit", function (e) {
         e.preventDefault();
+    
+        const nombre = $('#in_categoria_nombre').val().trim();
+        const pesoMinimo = $('#in_peso_minimo').val().trim();
+        const pesoMaximo = $('#in_peso_maximo').val().trim();
+    
+        if (!nombre || nombre.length < 2) {
+            alert("El nombre de la categoría debe tener al menos 2 caracteres.");
+            $('#in_categoria_nombre').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_categoria_nombre').removeClass('is-invalid').addClass('is-valid');
+        }
+    
+        if (!pesoMinimo || isNaN(pesoMinimo) || parseFloat(pesoMinimo) < 0) {
+            alert("El peso mínimo debe ser un número válido y mayor o igual a 0.");
+            $('#in_peso_minimo').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_peso_minimo').removeClass('is-invalid').addClass('is-valid');
+        }
+    
+        if (!pesoMaximo || isNaN(pesoMaximo) || parseFloat(pesoMaximo) <= parseFloat(pesoMinimo)) {
+            alert("El peso máximo debe ser un número válido y mayor que el peso mínimo.");
+            $('#in_peso_maximo').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_peso_maximo').removeClass('is-invalid').addClass('is-valid');
+        }
+    
         const datos = new FormData(this);
         datos.append("accion", "incluir_categoria");
-
+    
         $.ajax({
-            url: "",
+            url: "",  
             type: "POST",
             contentType: false,
             data: datos,
@@ -133,14 +172,43 @@ $(document).ready(function () {
             }
         });
     });
-
+    
     $("#registrarSubs").on("submit", function (e) {
         e.preventDefault();
+    
+        const nombre = $('#in_subs_nombre').val().trim();
+        const edadMinima = $('#in_edad_minima').val().trim();
+        const edadMaxima = $('#in_edad_maxima').val().trim();
+    
+        if (!nombre || nombre.length < 2) {
+            alert("El nombre de los subs debe tener al menos 2 caracteres.");
+            $('#in_subs_nombre').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_subs_nombre').removeClass('is-invalid').addClass('is-valid');
+        }
+    
+        if (!edadMinima || isNaN(edadMinima) || parseInt(edadMinima) < 0) {
+            alert("La edad mínima debe ser un número válido y mayor o igual a 0.");
+            $('#in_edad_minima').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_edad_minima').removeClass('is-invalid').addClass('is-valid');
+        }
+    
+        if (!edadMaxima || isNaN(edadMaxima) || parseInt(edadMaxima) <= parseInt(edadMinima)) {
+            alert("La edad máxima debe ser un número válido y mayor que la edad mínima.");
+            $('#in_edad_maxima').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_edad_maxima').removeClass('is-invalid').addClass('is-valid');
+        }
+    
         const datos = new FormData(this);
         datos.append("accion", "incluir_subs");
-
+    
         $.ajax({
-            url: "",
+            url: "", 
             type: "POST",
             contentType: false,
             data: datos,
@@ -164,14 +232,25 @@ $(document).ready(function () {
             }
         });
     });
-
+    
     $("#registrarTipo").on("submit", function (e) {
         e.preventDefault();
+    
+        const nombre = $('#in_tipo_nombre').val().trim();
+    
+        if (!nombre || nombre.length < 2) {
+            alert("El nombre del tipo debe tener al menos 2 caracteres.");
+            $('#in_tipo_nombre').addClass('is-invalid');
+            return;
+        } else {
+            $('#in_tipo_nombre').removeClass('is-invalid').addClass('is-valid');
+        }
+    
         const datos = new FormData(this);
         datos.append("accion", "incluir_tipo");
-
+    
         $.ajax({
-            url: "",
+            url: "", 
             type: "POST",
             contentType: false,
             data: datos,
@@ -195,6 +274,7 @@ $(document).ready(function () {
             }
         });
     });
+    
 
     function cargarListadoCategorias() {
         const datos = new FormData();
@@ -224,12 +304,13 @@ $(document).ready(function () {
     }
 
     function actualizarListadoCategorias(categorias) {
-        let opciones = "<option selected>Seleccione una</option>";
+        let opciones = "<option value='' selected>Seleccione una</option>";
         categorias.forEach(categoria => {
             opciones += `<option value="${categoria.id_categoria}">${categoria.nombre}</option>`;
         });
-        $("#in_categoria").html(opciones);
+        $("#categoria_modificar").html(opciones);
     }
+    
 
     function cargarListadoSubs() {
         const datos = new FormData();
@@ -306,37 +387,15 @@ $(document).ready(function () {
     cargarListadoTipos();
 
     $('#modalModificarCompetencia').on('show.bs.modal', function (event) {
-        // Obtiene el botón que activó el modal
-        var button = $(event.relatedTarget);
-
-        // Extrae el `data-id` del botón
-        var idCompetencia = button.data('id');
-
-        // Asegúrate de que el id de la competencia se haya obtenido correctamente
-        if (idCompetencia) {
-            // Puedes asignar el id a un campo oculto dentro del modal o usarlo como necesites
-            $('#id_competencia_modificar').val(idCompetencia);
-        } else {
-            console.error('El id de la competencia no se encontró.');
-        }
-    });
-
-
-    $('#formModificarCompetencia').on('submit', function (e) {
-        e.preventDefault();
-        console.log('Valor de categoría:', $('#categoria_modificar').val());
-        console.log('Valor de subs:', $('#subs_modificar').val());
-        console.log('Valor de tipo:', $('#tipo_modificar').val());
-        // Validar los campos antes de enviar el formulario
-        if (!validarFormularioModificarCompetencia()) {
-            return; // Si la validación falla, no continuar con el envío
-        }
-
-        const datos = new FormData(this);
-        datos.append("accion", "modificar_competencia");
-
+        const button = $(event.relatedTarget);
+        const idCompetencia = button.data('id');
+    
+        const datos = new FormData();
+        datos.append("accion", "obtener_competencia");
+        datos.append("id_competencia", idCompetencia);
+    
         $.ajax({
-            url: "", // Cambia la URL según tu ruta de controlador si es necesario
+            url: "", 
             type: "POST",
             contentType: false,
             data: datos,
@@ -344,40 +403,41 @@ $(document).ready(function () {
             cache: false,
             success: function (respuesta) {
                 try {
-                    console.log('Respuesta recibida:', respuesta); // Log para depuración
                     const result = JSON.parse(respuesta);
-                    if (result.ok) {
-                        Swal.fire("Éxito", "Competencia modificada con éxito", "success");
-                        $('#modalModificarCompetencia').modal('hide');
-                        cargarEventos(); // Actualizar la lista de eventos
+                    if (result.ok && result.respuesta) {
+                        const competencia = result.respuesta;
+                        $('#id_competencia_modificar').val(competencia.id_competencia);
+                        $('#nombre_modificar').val(competencia.nombre);
+                        $('#ubicacion_modificar').val(competencia.lugar_competencia);
+                        $('#fecha_inicio_modificar').val(competencia.fecha_inicio);
+                        $('#fecha_fin_modificar').val(competencia.fecha_fin);
+    
+                        $('#categoria_modificar').val(competencia.categoria).change();
+                        $('#subs_modificar').val(competencia.subs).change();
+                        $('#tipo_modificar').val(competencia.tipo_competencia).change();
+    
+                        cargarDatosModificar(); 
                     } else {
-                        Swal.fire("Error", result.mensaje, "error");
+                        Swal.fire("Error", "No se pudieron cargar los datos de la competencia", "error");
                     }
                 } catch (error) {
-                    console.error("Error al procesar la respuesta de modificar:", error);
-                    Swal.fire("Error", "Hubo un error al procesar la respuesta", "error");
+                    Swal.fire("Error", "Error al procesar la respuesta", "error");
                 }
             },
             error: function () {
-                Swal.fire("Error", "Error en la solicitud AJAX para modificar la competencia", "error");
+                Swal.fire("Error", "Error en la solicitud AJAX para obtener la competencia", "error");
             }
         });
     });
+    
 
-    // Función de validación para el formulario de modificación
-    function validarFormularioModificarCompetencia() {
+    $('#formModificarCompetencia').on('submit', function (e) {
+        e.preventDefault();
+    
+      
         let esValido = true;
-
-        // Validación de campos obligatorios
+     
         const nombre = $('#nombre_modificar').val().trim();
-        const ubicacion = $('#ubicacion_modificar').val().trim();
-        const fechaInicio = $('#fecha_inicio_modificar').val().trim();
-        const fechaFin = $('#fecha_fin_modificar').val().trim();
-        const categoria = $('#categoria_modificar').val();
-        const subs = $('#subs_modificar').val();
-        const tipo = $('#tipo_modificar').val();
-
-        // Validar el campo 'Nombre'
         if (nombre === "") {
             esValido = false;
             $('#nombre_modificar').addClass('is-invalid');
@@ -386,8 +446,8 @@ $(document).ready(function () {
             $('#nombre_modificar').removeClass('is-invalid').addClass('is-valid');
             $('#nombre_modificar').next('.invalid-feedback').hide();
         }
-
-        // Validar el campo 'Ubicación'
+    
+        const ubicacion = $('#ubicacion_modificar').val().trim();
         if (ubicacion === "") {
             esValido = false;
             $('#ubicacion_modificar').addClass('is-invalid');
@@ -396,8 +456,9 @@ $(document).ready(function () {
             $('#ubicacion_modificar').removeClass('is-invalid').addClass('is-valid');
             $('#ubicacion_modificar').next('.invalid-feedback').hide();
         }
-
-        // Validar el campo 'Fecha de Inicio'
+    
+        const fechaInicio = $('#fecha_inicio_modificar').val().trim();
+        const fechaFin = $('#fecha_fin_modificar').val().trim();
         if (fechaInicio === "") {
             esValido = false;
             $('#fecha_inicio_modificar').addClass('is-invalid');
@@ -406,8 +467,7 @@ $(document).ready(function () {
             $('#fecha_inicio_modificar').removeClass('is-invalid').addClass('is-valid');
             $('#fecha_inicio_modificar').next('.invalid-feedback').hide();
         }
-
-        // Validar el campo 'Fecha de Fin'
+    
         if (fechaFin === "") {
             esValido = false;
             $('#fecha_fin_modificar').addClass('is-invalid');
@@ -416,8 +476,119 @@ $(document).ready(function () {
             $('#fecha_fin_modificar').removeClass('is-invalid').addClass('is-valid');
             $('#fecha_fin_modificar').next('.invalid-feedback').hide();
         }
-
-        // Validar el campo 'Categoría'
+    
+        const categoria = $('#categoria_modificar').val();
+        const subs = $('#subs_modificar').val();
+        const tipo = $('#tipo_modificar').val();
+        if (!categoria || categoria === "Seleccione una") {
+            esValido = false;
+            $('#categoria_modificar').addClass('is-invalid');
+            $('#categoria_modificar').next('.invalid-feedback').text('La categoría es obligatoria').show();
+        } else {
+            $('#categoria_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#categoria_modificar').next('.invalid-feedback').hide();
+        }
+    
+        if (!subs || subs === "Seleccione una") {
+            esValido = false;
+            $('#subs_modificar').addClass('is-invalid');
+            $('#subs_modificar').next('.invalid-feedback').text('El campo Subs es obligatorio').show();
+        } else {
+            $('#subs_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#subs_modificar').next('.invalid-feedback').hide();
+        }
+    
+        if (!tipo || tipo === "Seleccione una") {
+            esValido = false;
+            $('#tipo_modificar').addClass('is-invalid');
+            $('#tipo_modificar').next('.invalid-feedback').text('El tipo de competencia es obligatorio').show();
+        } else {
+            $('#tipo_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#tipo_modificar').next('.invalid-feedback').hide();
+        }
+    
+        if (!esValido) {
+            return; 
+        }
+     
+        const datos = new FormData(this);
+        datos.append("accion", "modificar_competencia");
+    
+        $.ajax({
+            url: "",
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                try {
+                    const result = JSON.parse(respuesta);
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Competencia modificada con éxito", "success");
+                        $('#modalModificarCompetencia').modal('hide');
+                        cargarEventos();  
+                    } else {
+                        Swal.fire("Error", result.mensaje, "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Error al procesar la respuesta del servidor", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Error en la solicitud AJAX para modificar la competencia", "error");
+            }
+        });
+    });
+    
+ 
+    function validarFormularioModificarCompetencia() {
+        let esValido = true;
+ 
+        const nombre = $('#nombre_modificar').val().trim();
+        const ubicacion = $('#ubicacion_modificar').val().trim();
+        const fechaInicio = $('#fecha_inicio_modificar').val().trim();
+        const fechaFin = $('#fecha_fin_modificar').val().trim();
+        const categoria = $('#categoria_modificar').val();
+        const subs = $('#subs_modificar').val();
+        const tipo = $('#tipo_modificar').val();
+ 
+        if (nombre === "") {
+            esValido = false;
+            $('#nombre_modificar').addClass('is-invalid');
+            $('#nombre_modificar').next('.invalid-feedback').text('El nombre es obligatorio').show();
+        } else {
+            $('#nombre_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#nombre_modificar').next('.invalid-feedback').hide();
+        }
+ 
+        if (ubicacion === "") {
+            esValido = false;
+            $('#ubicacion_modificar').addClass('is-invalid');
+            $('#ubicacion_modificar').next('.invalid-feedback').text('La ubicación es obligatoria').show();
+        } else {
+            $('#ubicacion_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#ubicacion_modificar').next('.invalid-feedback').hide();
+        }
+ 
+        if (fechaInicio === "") {
+            esValido = false;
+            $('#fecha_inicio_modificar').addClass('is-invalid');
+            $('#fecha_inicio_modificar').next('.invalid-feedback').text('La fecha de inicio es obligatoria').show();
+        } else {
+            $('#fecha_inicio_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#fecha_inicio_modificar').next('.invalid-feedback').hide();
+        }
+ 
+        if (fechaFin === "") {
+            esValido = false;
+            $('#fecha_fin_modificar').addClass('is-invalid');
+            $('#fecha_fin_modificar').next('.invalid-feedback').text('La fecha de fin es obligatoria').show();
+        } else {
+            $('#fecha_fin_modificar').removeClass('is-invalid').addClass('is-valid');
+            $('#fecha_fin_modificar').next('.invalid-feedback').hide();
+        }
+ 
         if (!categoria || categoria === "Seleccione una") {
             esValido = false;
             $('#categoria_modificar').addClass('is-invalid');
@@ -427,7 +598,7 @@ $(document).ready(function () {
             $('#categoria_modificar').next('.invalid-feedback').hide();
         }
 
-        // Validar el campo 'Subs'
+  
         if (!subs || subs === "Seleccione una") {
             esValido = false;
             $('#subs_modificar').addClass('is-invalid');
@@ -437,7 +608,7 @@ $(document).ready(function () {
             $('#subs_modificar').next('.invalid-feedback').hide();
         }
 
-        // Validar el campo 'Tipo de Competencia'
+      
         if (!tipo || tipo === "Seleccione una") {
             esValido = false;
             $('#tipo_modificar').addClass('is-invalid');
@@ -450,10 +621,52 @@ $(document).ready(function () {
         return esValido;
     }
 
-
+    $(document).on('click', '.eliminarEvento', function() {
+        const idCompetencia = $(this).data('id');
+    
+        Swal.fire({
+            title: '¿Estás seguro de eliminar este evento?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'No, cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const datos = new FormData();
+                datos.append("accion", "eliminar_evento");
+                datos.append("id_competencia", idCompetencia);
+    
+                $.ajax({
+                    url: "", 
+                    type: "POST",
+                    contentType: false,
+                    data: datos,
+                    processData: false,
+                    cache: false,
+                    success: function (respuesta) {
+                        try {
+                            const result = JSON.parse(respuesta);
+                            if (result.ok) { 
+                                $(`button[data-id="${idCompetencia}"]`).closest('.col-md-3').remove();
+                                Swal.fire("Éxito", "Evento eliminado con éxito", "success");
+                            } else {
+                                Swal.fire("Error", result.mensaje, "error");
+                            }
+                        } catch (error) {
+                            Swal.fire("Error", "Error al procesar la respuesta", "error");
+                        }
+                    },
+                    error: function () {
+                        Swal.fire("Error", "Error en la solicitud AJAX", "error");
+                    }
+                });
+            }
+        });
+    });
+    
     $('#modalModificarCompetencia').on('show.bs.modal', function (event) {
-        const button = $(event.relatedTarget); // Botón que activó el modal
-        const idCompetencia = button.data('id'); // Obtener el ID de la competencia del atributo data-id
+        const button = $(event.relatedTarget);  
+        const idCompetencia = button.data('id'); 
 
         if (!idCompetencia) {
             console.error("No se pudo obtener el ID de la competencia.");
@@ -464,9 +677,9 @@ $(document).ready(function () {
         datos.append("accion", "obtener_competencia");
         datos.append("id_competencia", idCompetencia);
 
-        // Realiza la solicitud AJAX para obtener los datos de la competencia
+     
         $.ajax({
-            url: "", // Cambia esto según la ruta de tu controlador
+            url: "",  
             type: "POST",
             contentType: false,
             data: datos,
@@ -617,8 +830,7 @@ $(document).ready(function () {
 
         const datosTipo = new FormData();
         datosTipo.append("accion", "listado_tipo");
-
-        // Usar Promesas para manejar múltiples solicitudes AJAX
+ 
         const solicitudes = [
             $.ajax({
                 url: "",
@@ -645,8 +857,7 @@ $(document).ready(function () {
                 cache: false
             })
         ];
-
-        // Ejecutar todas las solicitudes
+ 
         Promise.all(solicitudes)
             .then(respuestas => {
                 try {
@@ -673,8 +884,7 @@ $(document).ready(function () {
                 console.error("Error en las solicitudes AJAX para cargar datos:", error);
             });
     }
-
-    // Función para actualizar las opciones del select y seleccionar el valor predeterminado
+ 
     function actualizarOpcionesSelect(selector, opciones, valorSeleccionado) {
         let htmlOpciones = '<option value="" selected>Seleccione una</option>';
         opciones.forEach(opcion => {
@@ -684,12 +894,15 @@ $(document).ready(function () {
         $(selector).html(htmlOpciones);
     }
 
-    // Cargar las opciones cuando se abre el modal de modificación y establecer valores seleccionados
+    $(document).on('click', '.cerrarC', function() {
+        var dataId = $(this).data('id');
+        cerrarEvento(dataId);
+    });
+     
     $('#modalModificarCompetencia').on('show.bs.modal', function (event) {
         const button = $(event.relatedTarget);
         const idCompetencia = button.data('id');
-
-        // Realiza la solicitud AJAX para obtener los datos de la competencia
+ 
         const datos = new FormData();
         datos.append("accion", "obtener_competencia");
         datos.append("id_competencia", idCompetencia);
@@ -711,13 +924,12 @@ $(document).ready(function () {
                         $('#ubicacion_modificar').val(competencia.lugar_competencia);
                         $('#fecha_inicio_modificar').val(competencia.fecha_inicio);
                         $('#fecha_fin_modificar').val(competencia.fecha_fin);
-
-                        // Establecer valores seleccionados para categoría, subs y tipo
+ 
                         $('#categoria_modificar').data('valor-seleccionado', competencia.categoria);
                         $('#subs_modificar').data('valor-seleccionado', competencia.subs);
                         $('#tipo_modificar').data('valor-seleccionado', competencia.tipo_competencia);
 
-                        cargarDatosModificar(); // Cargar los select con las opciones
+                        cargarDatosModificar();  
                     } else {
                         Swal.fire("Error", "No se pudieron cargar los datos de la competencia", "error");
                     }
@@ -782,7 +994,7 @@ $(document).ready(function () {
                     const result = JSON.parse(respuesta);
                     if (result.ok) {
                         actualizarTablaAtletas(result.respuesta);
-                    } else {
+                    } else { 
                         Swal.fire("Error", "No se pudieron cargar los atletas disponibles", "error");
                     }
                 } catch (error) {
@@ -852,9 +1064,9 @@ $(document).ready(function () {
                 const datos = new FormData();
                 datos.append("accion", "cerrar_evento");
                 datos.append("id_competencia", idCompetencia);
-
+    
                 $.ajax({
-                    url: "",
+                    url: "",  
                     type: "POST",
                     contentType: false,
                     data: datos,
@@ -863,9 +1075,11 @@ $(document).ready(function () {
                     success: function (respuesta) {
                         try {
                             const result = JSON.parse(respuesta);
+                            console.log("Respuesta de cerrar evento:", result);  
                             if (result.ok) {
-                                Swal.fire("Éxito", "Evento cerrado con éxito", "success");
-                                cargarEventos();
+                              
+                                $(`div[data-id="${idCompetencia}"]`).remove();  
+                                cargarEventos();  
                             } else {
                                 Swal.fire("Error", result.mensaje, "error");
                             }
@@ -880,6 +1094,8 @@ $(document).ready(function () {
             }
         });
     }
+    
+    
 
     function actualizarTablaAtletas(atletas) {
         let tabla = $("#tablaParticipantesInscripcion tbody");
@@ -997,12 +1213,16 @@ $(document).ready(function () {
                 <td>${evento.fecha_fin}</td>
                 <td>${evento.lugar_competencia}</td>
                 <td>${evento.estado}</td>
+                <td>
+                    <button class="btn btn-outline-info btn-sm consultarEventoAnterior" data-id="${evento.id_competencia}">Consultar</button>
+                </td>
             </tr>
         `;
         });
-
+    
         $("#tablaEventosAnteriores tbody").html(listadoEventos);
     }
+    
     $('#modalVerEventoActivo').on('show.bs.modal', function (event) {
         const button = $(event.relatedTarget);
         const idCompetencia = button.data('id');
@@ -1192,7 +1412,45 @@ $(document).ready(function () {
             }
         });
     });
-
+    $(document).on('click', '.consultarEventoAnterior', function() {
+        const idCompetencia = $(this).data('id');
+    
+        const datos = new FormData();
+        datos.append("accion", "obtener_competencia");
+        datos.append("id_competencia", idCompetencia);
+    
+        $.ajax({
+            url: "",
+            type: "POST",
+            contentType: false,
+            data: datos,
+            processData: false,
+            cache: false,
+            success: function (respuesta) {
+                try {
+                    const result = JSON.parse(respuesta);
+                    if (result.ok && result.respuesta) {
+                        
+                        $('#detallesNombreEvento').text(result.respuesta.nombre);
+                        $('#detallesFechaInicio').text(result.respuesta.fecha_inicio);
+                        $('#detallesFechaFin').text(result.respuesta.fecha_fin);
+                        $('#detallesUbicacion').text(result.respuesta.lugar_competencia);
+                        $('#detallesEstado').text(result.respuesta.estado);
+     
+                        $('#modalConsultarEventoAnterior').modal('show');
+                    } else {
+                        Swal.fire("Error", "No se pudo cargar la información del evento", "error");
+                    }
+                } catch (error) {
+                    Swal.fire("Error", "Error al procesar la respuesta del servidor", "error");
+                }
+            },
+            error: function () {
+                Swal.fire("Error", "Error en la solicitud AJAX para consultar el evento", "error");
+            }
+        });
+    });
+    
     $('#formModificarResultados').on('submit', function (e) {
         e.preventDefault();
 

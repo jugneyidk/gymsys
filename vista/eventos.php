@@ -432,7 +432,7 @@
                                     <span id="nombreAtletaModificarResultados"></span><br>
                                     <label for=""><strong>Cédula:</strong></label>
                                     <span id="cedulaAtletaModificarResultados"></span><br>
-                                </div>
+                                </div> 
                                 <div class="col-md-6">
                                     <label for=""><strong>Competencia:</strong></label>
                                     <span id="nombreCompetenciaModificarResultados"></span><br>
@@ -581,6 +581,30 @@
                 </div>
             </div>
         </div>
+        <!-- Modal para Consultar Evento Anterior -->
+<div class="modal fade" id="modalConsultarEventoAnterior" tabindex="-1" aria-labelledby="modalConsultarEventoAnteriorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConsultarEventoAnteriorLabel">Detalles del Evento Anterior</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí se cargará la información del evento -->
+                <p><strong>Nombre del Evento:</strong> <span id="detallesNombreEvento"></span></p>
+                <p><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicio"></span></p>
+                <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFin"></span></p>
+                <p><strong>Ubicación:</strong> <span id="detallesUbicacion"></span></p>
+                <p><strong>Estado:</strong> <span id="detallesEstado"></span></p>
+                <!-- Puedes agregar más campos aquí según sea necesario -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
  <!-- Modal Modificar Competencia -->
 <div class="modal fade" id="modalModificarCompetencia" tabindex="-1" aria-labelledby="modalModificarCompetenciaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
