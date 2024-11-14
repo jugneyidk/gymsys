@@ -11,7 +11,6 @@ if ($permisos["leer"] === 0) {
 if (!empty($_POST)) {
     $o = new WADA();
     $accion = $_POST['accion'];
-
     if ($accion == 'incluir') {
         $respuesta = $o->incluir_wada(
             $_POST['atleta'],
@@ -37,7 +36,7 @@ if (!empty($_POST)) {
         $respuesta = $o->obtener_wada($_POST['cedula']);
         echo json_encode($respuesta);
     } elseif ($accion == 'eliminar') {
-        $respuesta = $o->eliminar_wada($_POST['atleta']);
+        $respuesta = $o->eliminar_wada($_POST['cedula']);
         echo json_encode($respuesta);
     } elseif ($accion == 'listado_atletas') {
         $respuesta = $o->listado_atletas();
@@ -51,8 +50,8 @@ if (!empty($_POST)) {
 }
 
 if (is_file("vista/" . $p . ".php")) {
-    require_once ("vista/" . $p . ".php");
+    require_once("vista/" . $p . ".php");
 } else {
-    require_once ("comunes/404.php");
+    require_once("comunes/404.php");
 }
 ?>

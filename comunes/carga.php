@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content d-flex justify-content-center align-items-center vh-100 bg-transparent border-0">
             <div class="spinner-border text-light" role="status">
-                <span class="sr-only">Cargando...</span>
+                <span class="visually-hidden">Cargando...</span>
             </div>
         </div>
     </div>

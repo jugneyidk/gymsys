@@ -7,32 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Status WADA - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
-    <link rel="stylesheet" href="css/all.min.css">
-    <style>
-        .table-wrapper {
-            max-width: 100%;
-            overflow-x: auto;
-        }
-
-        .card-custom {
-            margin: 20px 0;
-        }
-
-        .header-custom {
-            background-color: #17a2b8;
-            color: white;
-            padding: 10px;
-            font-size: 1.2em;
-        }
-
-        .modal-xl {
-            max-width: 90%;
-        }
-
-        .btn-large {
-            font-size: 1.2em;
-        }
-    </style>
 </head>
 
 <body class="d-flex flex-column vh-100">
@@ -58,24 +32,22 @@
                             endif;
                             ?>
                         </div>
-                        <div class="p-4">
-                            <h2 class="text-center mb-4">Atletas Registrados en WADA</h2>
-                            <div class="table-wrapper">
-                                <table class="table table-striped table-hover" id="tablaWada">
-                                    <thead>
-                                        <tr>
-                                            <th class="d-none">Cedula</th>
-                                            <th>Atleta</th>
-                                            <th>Status</th>
-                                            <th>Inscrito</th>
-                                            <th>Última Actualización</th>
-                                            <th>Vencimiento</th>
-                                            <th>Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="listado"></tbody>
-                                </table>
-                            </div>
+                        <h2 class="text-center mb-4">Atletas Registrados en WADA</h2>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaWada">
+                                <thead>
+                                    <tr>
+                                        <th class="d-none">Cedula</th>
+                                        <th>Atleta</th>
+                                        <th>Status</th>
+                                        <th>Inscrito</th>
+                                        <th>Última Actualización</th>
+                                        <th>Vencimiento</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listado"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -84,20 +56,18 @@
                         <div class="card-header header-custom">
                             <h3>Próximos a Vencer</h3>
                         </div>
-                        <div class="p-4">
-                            <div class="table-wrapper">
-                                <table class="table table-striped table-hover" id="tablaProximosVencer">
-                                    <thead>
-                                        <tr>
-                                            <th class="d-none">Cedula</th>
-                                            <th>Atleta</th>
-                                            <th>Vencimiento</th>
-                                            <th>Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover" id="tablaProximosVencer">
+                                <thead>
+                                    <tr>
+                                        <th class="d-none">Cedula</th>
+                                        <th>Atleta</th>
+                                        <th>Vencimiento</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -106,7 +76,7 @@
         </div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
-    <script type="text/javascript" src="datatables/datatables.min.js"></script>
+    <script src="https://cdn.datatables.net/v/bs5/dt-2.1.8/datatables.min.js"></script>
     <script type="module" src="js/wada.js"></script>
 </body>
 

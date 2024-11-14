@@ -14,7 +14,7 @@
                 <select class="form-select" id="status" name="status">
                     <option value="">Seleccione el status</option>
                     <option value="1">Cumple</option>
-                    <option value="2">No Cumple</option>
+                    <option value="0">No Cumple</option>
                 </select>
                 <div id="sstatus" class="invalid-feedback"></div>
             </div>

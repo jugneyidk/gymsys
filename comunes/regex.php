@@ -92,4 +92,8 @@ const REGEX = [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{0,200}$/',
         'mensaje' => 'Solo letras, números y espacios (200 caracteres maximo)'
     ],
+    'bool' => [
+        'regex' => '/^[01]$/',
+        'mensaje' => 'El valor booleano no es valido'
+    ],
 ];

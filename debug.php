@@ -1,5 +1,4 @@
 <?php
+require 'vendor/autoload.php';
 date_default_timezone_set("America/Caracas");
-require_once("./modelo/Validar.php");
-$asistencias = '[{"id_atleta":"682815811","asistio":0,"comentario":""},{"id_atleta":"664568422","asistio":0,"comentario":"cacapitola"},{"id_atleta":"99389012","asistio":0,"comentario":""},{"id_atleta":"68281582","asistio":0,"comentario":""},{"id_atleta":"68281581","asistio":0,"comentario":""},{"id_atleta":"68281580","asistio":0,"comentario":""},{"id_atleta":"66456842","asistio":1,"comentario":"comoguchi"},{"id_atleta":"42342344","asistio":0,"comentario":""},{"id_atleta":"42194292","asistio":0,"comentario":""},{"id_atleta":"24244444","asistio":0,"comentario":""},{"id_atleta":"23124144","asistio":1,"comentario":""},{"id_atleta":"9252463","asistio":1,"comentario":""},{"id_atleta":"7342825","asistio":0,"comentario":"melasclave"},{"id_atleta":"6828158","asistio":0,"comentario":"vadas"},{"id_atleta":"6759472","asistio":1,"comentario":"dd"},{"id_atleta":"3376883","asistio":0,"comentario":""},{"id_atleta":"3331917","asistio":0,"comentario":""},{"id_atleta":"2594894","asistio":0,"comentario":""},{"id_atleta":"1328547","asistio":0,"comentario":"d"}]';
-var_dump(Validar::validar_fecha_mayor_que_hoy("2024-11-13"));
+var_dump(Validar::validar("cedula", "sadasdas"));

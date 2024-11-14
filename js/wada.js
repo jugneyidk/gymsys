@@ -20,7 +20,11 @@ $(document).ready(function () {
       html += `<tr>
                 <td class="d-none">${registro.cedula}</td>
                 <td>${registro.nombre} ${registro.apellido}</td>
-                <td>${registro.estado === 1 ? "Cumple" : "No Cumple"}</td>
+                <td class="text-center">${
+                  registro.estado === 1
+                    ? "<span class='badge rounded-pill bg-success'><i class='fa-solid fa-check'></i></span>"
+                    : "<span class='badge rounded-pill bg-danger'><i class='fa-solid fa-x'></i></span>"
+                }</td>
                 <td>${registro.inscrito}</td>
                 <td>${registro.ultima_actualizacion}</td>
                 <td>${registro.vencimiento}</td>
@@ -30,6 +34,11 @@ $(document).ready(function () {
                     ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal'><i class='fa-regular fa-pen-to-square'></i></button>"
                     : ""
                 }  
+                ${
+                  eliminar === 1
+                    ? "<button class='btn btn-block btn-danger me-2'><i class='fa-regular fa-trash-can'></i></button>"
+                    : ""
+                }  
                 </td>
             </tr>`;
     });
@@ -37,7 +46,30 @@ $(document).ready(function () {
       $("#tablaWada").DataTable().clear().destroy();
     }
     $("#tablaWada tbody").html(html);
-    $("#tablaWada").DataTable();
+    $("#tablaWada").DataTable({
+      autoWidth: false,
+      columnDefs: [
+        {
+          targets: [6],
+          className: "text-nowrap",
+          orderable: false, // Opcional: desactiva el ordenamiento si no es necesario
+        },
+      ],
+      language: {
+        lengthMenu: "Mostrar _MENU_ por página",
+        zeroRecords: "No se encontraron registros",
+        info: "Mostrando página _PAGE_ de _PAGES_",
+        infoEmpty: "No hay registros disponibles",
+        infoFiltered: "(filtrado de _MAX_ registros totales)",
+        search: "Buscar:",
+        paginate: {
+          first: "Primera",
+          last: "Última",
+          next: "Siguiente",
+          previous: "Anterior",
+        },
+      },
+    });
   }
 
   function actualizarTablaProximosVencer(data) {
@@ -62,7 +94,22 @@ $(document).ready(function () {
       $("#tablaProximosVencer").DataTable().clear().destroy();
     }
     $("#tablaProximosVencer tbody").html(html);
-    $("#tablaProximosVencer").DataTable();
+    $("#tablaProximosVencer").DataTable({
+      "autoWidth": false,
+      language: {
+        lengthMenu: "Mostrar _MENU_ por página",
+        zeroRecords: "No se encontraron registros",
+        info: "Mostrando página _PAGE_ de _PAGES_",
+        infoEmpty: "No hay registros disponibles",
+        infoFiltered: "(filtrado de _MAX_ registros totales)",
+        search: "Buscar:",
+        paginate: {
+          next: "Siguiente",
+          previous: "Anterior",
+        },
+      },
+
+    });
   }
 
   function cargaProximosVencer() {
@@ -103,29 +150,6 @@ $(document).ready(function () {
     });
   };
 
-  window.eliminarWada = function (cedula) {
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "No podrás revertir esto",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var datos = new FormData();
-        datos.append("accion", "eliminar");
-        datos.append("atleta", cedula);
-        enviaAjax(datos, function () {
-          Swal.fire("Eliminado", "El registro ha sido eliminado", "success");
-          carga_listado_wada();
-          cargaProximosVencer();
-        });
-      }
-    });
-  };
-
   function carga_atletas() {
     var datos = new FormData();
     datos.append("accion", "listado_atletas");
@@ -146,6 +170,34 @@ $(document).ready(function () {
     datos.append("cedula", cedula);
     enviaAjax(datos, "").then((respuesta) => {
       llenarFormularioModificar(respuesta.wada);
+    });
+  });
+  $("#tablaWada").on("click", ".btn-danger", function () {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const cedula = $(this).closest("tr").find("td:first").text();
+        console.log(cedula);
+        var datos = new FormData();
+        datos.append("accion", "eliminar");
+        datos.append("cedula", cedula);
+        enviaAjax(datos, "").then((respuesta) => {
+          carga_listado_wada();
+          cargaProximosVencer();
+          muestraMensaje(
+            "Exito",
+            "La WADA se eliminó correctamente",
+            "success"
+          );
+        });
+      }
     });
   });
 

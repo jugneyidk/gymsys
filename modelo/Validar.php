@@ -1,6 +1,6 @@
 <?php
 require_once("./comunes/regex.php");
-class Validar extends Datos
+class Validar extends datos
 {
     private static $exp = REGEX;
     public static function validar($campo, $valor)
@@ -101,5 +101,49 @@ class Validar extends Datos
         $fechaActual->setTime(0, 0, 0);
         $fechaSeleccionada->setTime(0, 0, 0);
         return $fechaSeleccionada >= $fechaActual;
+    }
+    public static function validar_fechas_wada($conexion, $cedula, $inscripcion, $ultima_actualizacion, $vencimiento)
+    {
+        $consulta = "SELECT fecha_nacimiento FROM usuarios WHERE cedula = :cedula";
+        $con = $conexion->prepare($consulta);
+        $con->execute([":cedula" => $cedula]);
+        $fecha_nacimiento = $con->fetchColumn();
+        if (!$fecha_nacimiento) {
+            return ["ok" => false, "mensaje" => "El atleta no existe"];
+        }
+        foreach ([$inscripcion, $ultima_actualizacion, $fecha_nacimiento, $vencimiento] as $fecha) {
+            if (!self::validar_fecha($fecha)) {
+                return ["ok" => false, "mensaje" => "Las fechas no son válidas"];
+            }
+        }
+        // Convertir las fechas a objetos DateTime para hacer las comparaciones
+        $fecha_nacimiento_obj = new DateTime($fecha_nacimiento);
+        $fecha_inscripcion_obj = new DateTime($inscripcion);
+        $ultima_actualizacion_obj = new DateTime($ultima_actualizacion);
+        $fecha_vencimiento_obj = new DateTime($vencimiento);
+        // Validar que la inscripción se pueda realizar a partir de los 15 años
+        $edad_minima = 15;
+        $fecha_nacimiento_obj->modify("+$edad_minima years");
+        if ($fecha_inscripcion_obj < $fecha_nacimiento_obj) {
+            $mensaje_error = 'La inscripción no es válida: el atleta debe tener al menos 15 años';
+            return ["ok" => false, "mensaje" => $mensaje_error];
+        }
+        // Calcular la fecha de vencimiento (un trimestre después de la última actualización)
+        $fecha_vencimiento_esperada = clone $ultima_actualizacion_obj;
+        $fecha_vencimiento_esperada->modify('+3 months');
+        // Validar si la fecha de vencimiento es correcta
+        if ($fecha_inscripcion_obj > $ultima_actualizacion_obj) {
+            $mensaje_error = 'La inscripción no es válida: la fecha de inscripción no puede ser posterior a la ultima actualización';
+            return ["ok" => false, "mensaje" => $mensaje_error];
+        }
+        if ($fecha_vencimiento_esperada > $fecha_vencimiento_obj) {
+            $mensaje_error = 'El vencimiento no es válido: la fecha de vencimiento debe ser al menos un trimestre después de la última actualización';
+            return ["ok" => false, "mensaje" => $mensaje_error];
+        }
+        if ($fecha_inscripcion_obj > $fecha_vencimiento_esperada) {
+            $mensaje_error = 'La inscripción no es válida: la fecha de inscripción no puede ser posterior al vencimiento (trimestre después de la última actualización)';
+            return ["ok" => false, "mensaje" => $mensaje_error];
+        }
+        return ["ok" => true];
     }
 }
