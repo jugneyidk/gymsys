@@ -73,7 +73,13 @@ class Dashboard extends datos
     public function total_wadas_pendientes()
     {
         try {
-            $consulta = "SELECT COUNT(*) as total FROM wada WHERE estado = 1";
+            $consulta = "SELECT COUNT(*) as total
+            FROM atleta a
+            INNER JOIN usuarios u ON a.cedula = u.cedula
+            INNER JOIN wada w ON w.id_atleta = u.cedula
+            WHERE w.vencimiento > CURDATE() 
+            AND w.vencimiento <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
+            ORDER BY w.vencimiento DESC;";
             $respuesta = $this->conexion->query($consulta);
             $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
             return $resultado['total'];

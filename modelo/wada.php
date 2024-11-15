@@ -51,7 +51,7 @@ class WADA extends datos
 
     public function obtener_wada($id_atleta)
     {
-        if (!Validar::validar("cedula", $id_atleta)) {
+        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
             return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
         }
         $this->id_atleta = $id_atleta;
@@ -60,7 +60,7 @@ class WADA extends datos
 
     public function eliminar_wada($id_atleta)
     {
-        if (!Validar::validar("cedula", $id_atleta)) {
+        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
             return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
         }
         $this->id_atleta = $id_atleta;

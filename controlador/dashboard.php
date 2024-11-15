@@ -3,7 +3,7 @@
 if (is_file("vista/" . $p . ".php")) {
     $permisos_o = new Permisos();
     $permisos = $permisos_o->chequear_permisos();
-    if ($permisos["leer"] === 0) {
+    if (!isset($_SESSION["rol"])) {
         header("Location: .");
     }
     if (!is_file("modelo/" . $p . ".php")) {

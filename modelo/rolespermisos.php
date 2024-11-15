@@ -19,7 +19,7 @@ class Roles extends datos
         if (!$validacion["ok"]) {
             return $validacion;
         }
-        $this->nombre = $nombre_rol;
+        $this->nombre = trim($nombre_rol);
         foreach ($valores as $atributo => $valor) {
             if (property_exists($this, $atributo)) {
                 $this->$atributo = $valor;
@@ -34,7 +34,7 @@ class Roles extends datos
             return $validacion;
         }
         $this->id_rol = filter_var($id_rol, FILTER_SANITIZE_NUMBER_INT);
-        $this->nombre = $nombre_rol;
+        $this->nombre = trim($nombre_rol);
         foreach ($valores as $atributo => $valor) {
             if (property_exists($this, $atributo) && ($valor == 1 || $valor == 0)) {
                 $this->$atributo = $valor;

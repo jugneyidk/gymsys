@@ -9,7 +9,7 @@
 			$this->op = new Mensualidad();
 		}
 
-		public function testIncluir():void{
+		public function testIncluirMensualidad():void{
 
 		$resp = $this->op->incluir_mensualidad("23134144","20","2023-10-10");
 

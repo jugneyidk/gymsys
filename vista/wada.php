@@ -76,7 +76,7 @@
         </div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
-    <script src="https://cdn.datatables.net/v/bs5/dt-2.1.8/datatables.min.js"></script>
+    <script src="datatables/datatables.min.js"></script>
     <script type="module" src="js/wada.js"></script>
 </body>
 
