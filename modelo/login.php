@@ -12,7 +12,7 @@ class Login extends datos
         if (!$validacion_usuario["ok"]) {
             return $validacion_usuario;
         }
-        $validacion_password = Validar::validar("old_password", $password);
+        $validacion_password = Validar::validar("password", $password);
         if (!$validacion_password["ok"]) {
             return $validacion_password;
         }
@@ -33,13 +33,13 @@ class Login extends datos
                     session_start();
                     $_SESSION['rol'] = $resultado['id_rol'];
                     $_SESSION['id_usuario'] = $this->id_usuario;
-                    $respuesta["resultado"] = true;
+                    $respuesta["ok"] = true;
                 } else {
-                    $respuesta['resultado'] = false;
+                    $respuesta['ok'] = false;
                     $respuesta['mensaje'] = "Los datos ingresados son incorrectos";
                 }
                 return $respuesta;
-            } catch (Exception $e) {
+            } catch (PDOException $e) {
                 $respuesta['resultado'] = false;
                 $respuesta['mensaje'] = $e->getMessage();
                 $this->desconecta();

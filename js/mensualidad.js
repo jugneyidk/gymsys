@@ -56,7 +56,7 @@ $(document).ready(function () {
     var datos = new FormData();
     datos.append("accion", "listado_atletas");
     enviaAjax(datos, "").then((respuesta) => {
-      var html = '<option>Seleccione un atleta</option>';
+      var html = "<option>Seleccione un atleta</option>";
       respuesta.respuesta.forEach(function (atleta) {
         html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_atleta}">${atleta.nombre} ${atleta.apellido}</option>`;
       });
@@ -66,6 +66,7 @@ $(document).ready(function () {
 
   function inicializarDataTable(selector, pageLength = 10) {
     $(selector).DataTable({
+      lengthChange: false,
       pageLength: pageLength,
       language: {
         lengthMenu: "Mostrar _MENU_ por página",
@@ -75,8 +76,6 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
-          first: "Primera",
-          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },
@@ -110,9 +109,7 @@ $(document).ready(function () {
 
   function limpiarFormulario(formId) {
     $(formId)
-      .find(
-        "input[type=text], input[type=number], input[type=date], select"
-      )
+      .find("input[type=text], input[type=number], input[type=date], select")
       .val("");
     $(formId).find("input").removeClass("is-invalid is-valid");
   }

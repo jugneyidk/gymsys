@@ -98,7 +98,7 @@
             </div>
         </div>
     </div>
-    <div class="row m-2">
+    <div class="row mx-2 mb-3">
         <button type="submit" id="incluir" class="btn btn-primary btn-block">Enviar formulario</button>
     </div>
 </form>

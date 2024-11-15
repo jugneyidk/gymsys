@@ -227,12 +227,12 @@ $(document).ready(function () {
                     <td class='align-middle'>
                     ${
                       actualizar === 1
-                        ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                        ? "<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
                         : ""
                     }
                       ${
                         eliminar === 1
-                          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+                          ? "<button class='btn btn-block btn-danger w-auto'><i class='fa-solid fa-trash-can'></i></button>"
                           : ""
                       }      
                     </td>
@@ -251,8 +251,6 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
-          first: "Primera",
-          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },

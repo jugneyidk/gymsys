@@ -25,8 +25,8 @@ $(document).ready(function () {
                     ? "<span class='badge rounded-pill bg-success'><i class='fa-solid fa-check'></i></span>"
                     : "<span class='badge rounded-pill bg-danger'><i class='fa-solid fa-x'></i></span>"
                 }</td>
-                <td>${registro.inscrito}</td>
-                <td>${registro.ultima_actualizacion}</td>
+                <td class="d-none d-lg-table-cell">${registro.inscrito}</td>
+                <td class="d-none d-md-table-cell">${registro.ultima_actualizacion}</td>
                 <td>${registro.vencimiento}</td>
                 <td>
                 ${

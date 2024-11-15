@@ -18,7 +18,7 @@ class LoginTest extends TestCase
         // Verificar que la respuesta sea exitosa e inicie la sesion
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta["resultado"]);
+        $this->assertTrue($respuesta["ok"]);
     }
     public function testLoginNoValido() // Caso 1
     {

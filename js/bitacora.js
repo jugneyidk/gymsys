@@ -85,19 +85,23 @@ function actualizarListadoBitacora(bitacora) {
                     <td class='align-middle text-capitalize'>${
                       elemento.id_usuario
                     }</td>
-                    <td class='align-middle text-capitalize'>${
-                      elemento.accion
-                    }</td>
+                    <td class='text-center align-middle text-capitalize'><span class='w-100 badge rounded-4 bg-${
+                      elemento.accion === "Incluir"
+                        ? "primary"
+                        : elemento.accion === "Modificar"
+                        ? "warning"
+                        : "danger"
+                    }'>${elemento.accion}</span></td>
                     <td class='align-middle text-capitalize'>${
                       elemento.modulo
                     }</td>
-                    <td class='align-middle text-capitalize'>${
+                    <td class='align-middle text-capitalize d-none d-md-table-cell'>${
                       elemento.fecha
                     }</td>
                     ${
                       elemento.usuario_modificado !== null
-                        ? `<td class='align-middle text-capitalize'>${elemento.usuario_modificado}</td>`
-                        : `<td class='align-middle text-capitalize'><span class='badge bg-secondary'>No</span></td>`
+                        ? `<td class='align-middle text-capitalize d-none d-md-table-cell'>${elemento.usuario_modificado}</td>`
+                        : `<td class='align-middle text-capitalize d-none d-md-table-cell'><span class='badge bg-secondary'>No</span></td>`
                     }    
                 <td class='align-middle text-capitalize'><button class='btn btn-sm btn-warning' onclick="consultarBitacora(
                   ${elemento.id_accion}
@@ -108,6 +112,7 @@ function actualizarListadoBitacora(bitacora) {
 
   $("#listado").html(listadoBitacora);
   $("#tablabitacora").DataTable({
+    columnDefs: [{ targets: [6], orderable: false, searchable: false }],
     language: {
       lengthMenu: "Mostrar _MENU_ por página",
       zeroRecords: "No se encontraron acciones",
@@ -116,13 +121,11 @@ function actualizarListadoBitacora(bitacora) {
       infoFiltered: "(filtrado de _MAX_ registros totales)",
       search: "Buscar:",
       paginate: {
-        first: "Primera",
-        last: "Última",
         next: "Siguiente",
         previous: "Anterior",
       },
     },
-    autoWidth: true,
+    autoWidth: false,
     order: [[0, "desc"]],
     dom: '<"top"f>rt<"bottom"lp><"clear">',
   });

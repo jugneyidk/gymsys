@@ -79,7 +79,7 @@ class Roles extends datos
             (:id_rol, :moduloeventos, :ceventos, :reventos, :ueventos, :deventos),
             (:id_rol, :modulomensualidad, :cmensualidad, :rmensualidad, :umensualidad, :dmensualidad),
             (:id_rol, :modulowada, :cwada, :rwada, :uwada, :dwada),
-            (:id_rol, :moduloreportes, :creportes, :rreportes, :ureportes, :dreportes),
+            (:id_rol, :moduloreportes, :creportes, :rreportes, 0, 0),
             (:id_rol, :modulobitacora, 0, :rbitacora, 0, 0);
             ";
             $valores_permisos = array(
@@ -122,8 +122,6 @@ class Roles extends datos
                 ':moduloreportes' => 8,
                 ':creportes' => $this->creportes,
                 ':rreportes' => $this->rreportes,
-                ':ureportes' => $this->ureportes,
-                ':dreportes' => $this->dreportes,
                 ':modulobitacora' => 9,
                 ':rbitacora' => $this->rbitacora,
             );
@@ -197,7 +195,7 @@ class Roles extends datos
             (:id_rol, :moduloeventos, :ceventos, :reventos, :ueventos, :deventos),
             (:id_rol, :modulomensualidad, :cmensualidad, :rmensualidad, :umensualidad, :dmensualidad),
             (:id_rol, :modulowada, :cwada, :rwada, :uwada, :dwada),
-            (:id_rol, :moduloreportes, :creportes, :rreportes, :ureportes, :dreportes),
+            (:id_rol, :moduloreportes, :creportes, :rreportes, 0, 0),
             (:id_rol, :modulobitacora, 0, :rbitacora, 0, 0)
             ON DUPLICATE KEY UPDATE
             crear = VALUES(crear),
@@ -246,8 +244,6 @@ class Roles extends datos
                 ':moduloreportes' => 8,
                 ':creportes' => $this->creportes,
                 ':rreportes' => $this->rreportes,
-                ':ureportes' => $this->ureportes,
-                ':dreportes' => $this->dreportes,
                 ':modulobitacora' => 9,
                 ':rbitacora' => $this->rbitacora,
             );

@@ -142,14 +142,14 @@ $(document).ready(function () {
         entrenador.apellido +
         "</td>";
       listado_entrenador +=
-        "<td class='align-middle'>" + entrenador.telefono + "</td>";
+        "<td class='align-middle d-none d-md-table-cell'>" + entrenador.telefono + "</td>";
       listado_entrenador += `<td>${
         actualizar === 1
-          ? "<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+          ? "<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
           : ""
       }${
         eliminar === 1
-          ? "<button class='btn btn-block btn-danger'><i class='fa-solid fa-trash-can'></i></button>"
+          ? "<button class='btn btn-block btn-danger w-auto'><i class='fa-solid fa-trash-can'></i></button>"
           : ""
       } </td>`;
       listado_entrenador += "</tr>";
@@ -165,13 +165,11 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
-          first: "Primera",
-          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },
       },
-      autoWidth: true,
+      autoWidth: false,
       order: [[0, "desc"]],
       dom: '<"top"f>rt<"bottom"lp><"clear">',
     });

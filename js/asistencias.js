@@ -76,7 +76,7 @@ $(document).ready(function () {
                         <tr>
                             <td>${atleta.cedula}</td>
                             <td>${atleta.nombre}</td>
-                            <td>${atleta.apellido}</td>
+                            <td class="d-none d-md-table-cell">${atleta.apellido}</td>
                             <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" /></td>
                             <td><input type="text" class="form-control comentario" data-id="${atleta.cedula}" />
                             <span class="invalid-feedback d-block"></span>
@@ -94,13 +94,11 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
-          first: "Primera",
-          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },
       },
-      autoWidth: true,
+      autoWidth: false,
       order: [[0, "desc"]],
       dom: '<"top"f>rt<"bottom"lp><"clear">',
     });

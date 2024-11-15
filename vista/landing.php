@@ -16,7 +16,7 @@ Estado: medio (falta añadir detalles para que este terminada)
     <link href="css/landing.css" rel="stylesheet">
 </head>
 
-<body class="d-flex flex-column vh-100 justify-content-between">
+<body class="">
     <header>
         <?php require_once("comunes/menu.php"); ?>
     </header>
@@ -27,12 +27,24 @@ Estado: medio (falta añadir detalles para que este terminada)
             <p class="lead">Fortaleciendo cuerpo y mente, un día a la vez.</p>
             <hr class="my-4">
             <p>Te invitamos a formar parte de nuestra comunidad.</p>
-            <a class="btn btn-outline-primary btn-lg me-2" href="?p=login" role="button">Iniciar sesión</a>
-            <a class="btn btn-primary btn-lg" href="?p=registro" role="button">Registrarse</a>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-6">
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <a class="btn btn-outline-primary btn-lg flex-fill" href="?p=login" role="button">Iniciar
+                                sesión</a>
+                            <a class="btn btn-primary btn-lg flex-fill" href="?p=registro" role="button">Registrarse</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
         </div>
         <section class="row mt-5" id="servicios">
             <h2 class="text-center mb-5">Servicios</h2>
-            <div class="col d-flex align-items-stretch">
+            <div class="col-12 col-md d-flex align-items-stretch mb-3 mb-lg-0">
                 <div class="card bg-light border-0 p-3 w-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -42,7 +54,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                     </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-stretch">
+            <div class="col-12 col-md d-flex align-items-stretch  mb-3 mb-lg-0">
                 <div class="card bg-light border-0 p-3 w-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -52,7 +64,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                     </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-stretch">
+            <div class="col-12 col-md d-flex align-items-stretch  mb-3 mb-lg-0">
                 <div class="card bg-light border-0 p-3 w-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -62,7 +74,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                     </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-stretch">
+            <div class="col col col-md d-flex align-items-stretch  mb-3 mb-lg-0">
                 <div class="card bg-light border-0 p-3 w-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -72,7 +84,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                     </div>
                 </div>
             </div>
-            <div class="col d-flex align-items-stretch">
+            <div class="col col-md d-flex align-items-stretch  mb-3 mb-lg-0">
                 <div class="card bg-light border-0 p-3 w-100">
                     <div class="card-body">
                         <div class="mb-2">
@@ -85,7 +97,7 @@ Estado: medio (falta añadir detalles para que este terminada)
 
         </section>
         <section class="row mt-5">
-            <div class="col">
+            <div class="col-6 d-none d-lg-block">
                 <div class="carousel-container">
                     <div class="carousel-slide">
                         <img src="img/imagen1.jpg" alt="Imagen 1" class="active">
@@ -95,7 +107,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                     <button class="carousel-control-prev" onclick="moveSlide(-1)">&#10094;</button>
                     <button class="carousel-control-next" onclick="moveSlide(1)">&#10095;</button>
                 </div>
-            </div>            
+            </div>
             <div class="col d-flex flex-column justify-content-center">
                 <h2 class="text-center">Ubicación</h2>
                 <span>Visítanos en nuestra dirección física para más información.</span>

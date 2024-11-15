@@ -89,14 +89,14 @@
         </div>
     </div>
     <div class="row">
-        <div class="col mb-3">
+        <div class="col-12 col-md mb-3">
             <div class="form-floating">
                 <input type="text" class="form-control" id="telefono" name="telefono" placeholder="Teléfono">
                 <label for="telefono" class="form-label">Teléfono</label>
                 <div id="stelefono" class="invalid-feedback"></div>
             </div>
         </div>
-        <div class="col mb-3">
+        <div class="col-12 col-md mb-3">
             <div class="form-floating">
                 <input type="email" class="form-control" id="correo_electronico" name="correo_electronico"
                     placeholder="Correo Electrónico">
@@ -156,7 +156,7 @@
             </div>
         </div>
     </div>
-    <div class="row m-2">
+    <div class="row mx-2 mb-3">
         <button type="submit" id="incluir" class="btn btn-primary btn-block">Enviar formulario</button>
     </div>
 </form>

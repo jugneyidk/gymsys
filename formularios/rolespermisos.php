@@ -174,10 +174,10 @@
                             <input class="form-check-input" type="checkbox" name="rreportes" id="rreportes" value="1">
                         </td>
                         <td class="text-center">
-                            <input class="form-check-input" type="checkbox" name="ureportes" id="ureportes" value="1">
+                            <input class="form-check-input" type="checkbox" name="ureportes" id="ureportes" value="1" disabled>
                         </td>
                         <td class="text-center">
-                            <input class="form-check-input" type="checkbox" name="dreportes" id="dreportes" value="1">
+                            <input class="form-check-input" type="checkbox" name="dreportes" id="dreportes" value="1" disabled>
                         </td>
                     </tr>
                     <tr>
@@ -203,7 +203,7 @@
             </table>
         </div>
     </div>
-    <div class="row m-3">
+    <div class="row mx-2 mb-3">
         <button type="button" id="btnSubmit" class="btn btn-primary btn-block">Registrar Rol</button>
     </div>
 </form>

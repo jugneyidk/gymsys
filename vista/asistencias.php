@@ -5,22 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistencias Diarias - Sistema</title>
-    <?php require_once ("comunes/linkcss.php"); ?>
+    <?php require_once("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="datatables/datatables.min.css">
 </head>
 
-<body class="d-flex flex-column vh-100">
+<body class="bg-light">
     <script>
         var actualizar = <?php echo $permisos["actualizar"] ?>;
         var eliminar = <?php echo $permisos["eliminar"] ?>;
     </script>
-    <?php require_once ("comunes/menu.php"); ?>
-     <main>
-    <div class="container-lg my-4">
+    <?php require_once("comunes/menu.php"); ?>
+    <main class="container-md my-3 my-md-5">
+
         <div class="row">
-            <div class="col-12">
+            <div class="col">
                 <div class="card shadow">
-                    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Asistencias Diarias</h2>
                     </div>
                     <div class="card-body">
@@ -37,7 +37,7 @@
                                         <tr>
                                             <th>Cédula</th>
                                             <th>Nombre</th>
-                                            <th>Apellidos</th>
+                                            <th class="d-none d-md-table-cell">Apellidos</th>
                                             <th>Asistió</th>
                                             <th>Comentario</th>
                                         </tr>
@@ -46,7 +46,7 @@
                                 </table>
                             </div>
                             <?php
-                            if ($permisos["crear"] === 1):
+                            if ($permisos["crear"] === 1 && $permisos["actualizar"]):
                                 ?>
                                 <button type="button" class="btn btn-primary mt-3" id="btnGuardarAsistencias">Guardar
                                     Asistencias
@@ -59,9 +59,9 @@
                 </div>
             </div>
         </div>
-    </div>
-   </main>
-    <?php require_once ("comunes/footer.php"); ?>
+
+    </main>
+    <?php require_once("comunes/footer.php"); ?>
     <script src="datatables/datatables.min.js"></script>
     <script type="module" src="js/asistencias.js"></script>
 </body>
