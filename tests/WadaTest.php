@@ -9,7 +9,7 @@ class WADATest extends TestCase
     {
         $this->wada = new WADA();
     }
-    public function testIncluirWada() // Caso 1
+    public function testIncluirWadaExitoso() // Caso 1
     {
         $id_atleta = "42342344";
         $estado = "0";
@@ -34,6 +34,7 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La inscripción no es válida: el atleta debe tener al menos 15 años", $respuesta["mensaje"]);
     }
 
     public function testIncluirWadaYaExiste() // Caso 1
@@ -48,6 +49,7 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("Ya existe la WADA de este atleta", $respuesta["mensaje"]);
     }
     public function testIncluirWadaNoValido() // Caso 1
     {
@@ -61,8 +63,9 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La cedula del atleta no es valida", $respuesta["mensaje"]);
     }
-    public function testObtenerWada() // Caso 1
+    public function testObtenerWadaExitoso() // Caso 1
     {
         $id_atleta = "42342344";
         $respuesta = $this->wada->obtener_wada($id_atleta);
@@ -80,8 +83,9 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La cedula del atleta no es valida", $respuesta["mensaje"]);
     }
-    public function testModificarWada() // Caso 1
+    public function testModificarWadaExitoso() // Caso 1
     {
         $id_atleta = "42342344";
         $estado = "1";
@@ -96,7 +100,7 @@ class WADATest extends TestCase
     }
     public function testModificarWadaNoExiste() // Caso 1
     {
-        $id_atleta = "34234334";
+        $id_atleta = "99389012";
         $estado = "0";
         $inscrito = "2024-07-12";
         $ultima_actualizacion = "2024-07-12";
@@ -106,6 +110,7 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("No existe la WADA de este atleta", $respuesta["mensaje"]);
     }
     public function testModificarWadaNoValido() // Caso 1
     {
@@ -119,8 +124,9 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("El estado de la WADA no es valido", $respuesta["mensaje"]);
     }
-    public function testEliminarWada() // Caso 1
+    public function testEliminarWadaExitoso() // Caso 1
     {
         $id_atleta = "42342344";
         $respuesta = $this->wada->eliminar_wada($id_atleta);
@@ -137,6 +143,7 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La WADA del atleta ingresado no existe", $respuesta["mensaje"]);
     }
     public function testEliminarWadaNoValido() // Caso 1
     {
@@ -146,6 +153,7 @@ class WADATest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La cedula del atleta no es valida", $respuesta["mensaje"]);
     }
     public function testListadoWada() // Caso 1
     {

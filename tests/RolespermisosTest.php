@@ -9,8 +9,7 @@ class RolespermisosTest extends TestCase
     {
         $this->rolespermisos = new Roles();
     }
-
-    public function testConsultarRol() // Caso 1
+    public function testConsultarRolExitoso() // Caso 1
     {
         $respuesta = $this->rolespermisos->consultar_rol("30");
 
@@ -30,7 +29,7 @@ class RolespermisosTest extends TestCase
         $this->assertFalse($respuesta["ok"]);
         $this->assertEquals("No se encontró el rol", $respuesta["mensaje"]);
     }
-    public function testIncluirRol() // Caso 1
+    public function testIncluirRolExitoso() // Caso 1
     {
         $permisos = [
             "centrenadores" => 1,
@@ -63,12 +62,7 @@ class RolespermisosTest extends TestCase
             "dwada" => 0,
             "creportes" => 1,
             "rreportes" => 1,
-            "ureportes" => 1,
-            "dreportes" => 1,
-            "cbitacora" => 1,
             "rbitacora" => 1,
-            "ubitacora" => 1,
-            "dbitacora" => 1,
         ];
         $respuesta = $this->rolespermisos->incluir_rol("Administrador", $permisos);
         // Verificar que la respuesta sea exitosa
@@ -109,12 +103,7 @@ class RolespermisosTest extends TestCase
             "dwada" => 0,
             "creportes" => 1,
             "rreportes" => 1,
-            "ureportes" => 1,
-            "dreportes" => 1,
-            "cbitacora" => 1,
             "rbitacora" => 1,
-            "ubitacora" => 1,
-            "dbitacora" => 1,
         ];
         $respuesta = $this->rolespermisos->incluir_rol("Administrador", $permisos);
         // Verificar que la respuesta sea que el rol ya existe
@@ -156,12 +145,7 @@ class RolespermisosTest extends TestCase
             "dwada" => 0,
             "creportes" => 1,
             "rreportes" => 1,
-            "ureportes" => 1,
-            "dreportes" => 1,
-            "cbitacora" => 1,
             "rbitacora" => 1,
-            "ubitacora" => 1,
-            "dbitacora" => 1,
         ];
         $respuesta = $this->rolespermisos->incluir_rol("Administrador12-", $permisos);
         // Verificar que la respuesta sea que los datos no son validos
@@ -170,9 +154,9 @@ class RolespermisosTest extends TestCase
         $this->assertFalse($respuesta["ok"]);
         $this->assertEquals("Solo letras y espacios (3-50 caracteres)", $respuesta["mensaje"]);
     }
-    public function testEliminarRol() // Caso 1
+    public function testEliminarRolExitoso() // Caso 1
     {
-        $respuesta = $this->rolespermisos->eliminar_rol("42");
+        $respuesta = $this->rolespermisos->eliminar_rol("49");
         // Verificar que la respuesta sea que el rol se eliminó
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
@@ -205,7 +189,7 @@ class RolespermisosTest extends TestCase
         $this->assertTrue($respuesta["ok"]);
         $this->assertIsArray($respuesta["roles"]);
     }
-    public function testModificarRol() // Caso 1
+    public function testModificarRolExitoso() // Caso 1
     {
         $permisos = [
             "centrenadores" => 1,
@@ -238,12 +222,7 @@ class RolespermisosTest extends TestCase
             "dwada" => 0,
             "creportes" => 1,
             "rreportes" => 1,
-            "ureportes" => 1,
-            "dreportes" => 1,
-            "cbitacora" => 1,
             "rbitacora" => 1,
-            "ubitacora" => 1,
-            "dbitacora" => 1,
         ];
         $respuesta = $this->rolespermisos->modificar_rol("45", "Rol Modificable", $permisos);
         // Verificar que la respuesta sea exitosa

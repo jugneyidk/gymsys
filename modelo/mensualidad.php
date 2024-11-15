@@ -1,33 +1,42 @@
 <?php
-class Mensualidad extends datos 
+class Mensualidad extends datos
 {
     private $conexion, $id_atleta, $monto, $fecha, $detalles;
 
     public function __construct()
     {
-        $this->conexion = $this->conecta(); 
+        $this->conexion = $this->conecta();
     }
 
     public function incluir_mensualidad($id_atleta, $monto, $fecha, $detalles)
     {
+        if (!Validar::validar("cedula",$id_atleta)["ok"]) {
+            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
+        }
+        if (!Validar::validar_fecha($fecha)) {
+            return ["ok" => false, "mensaje" => "La fecha no es valida"];
+        }
+        if (!Validar::validar("detalles",$detalles)["ok"]) {
+            return ["ok" => false, "mensaje" => "Solo letras, números y espacios (200 caracteres maximo)"];
+        }
         $this->id_atleta = $id_atleta;
         $this->monto = $monto;
         $this->fecha = $fecha;
-        $this->detalles = $detalles;
+        $this->detalles = trim($detalles);
         return $this->incluir();
     }
 
-    public function listado_mensualidades() 
+    public function listado_mensualidades()
     {
         return $this->listado();
     }
 
-    public function listado_deudores() 
+    public function listado_deudores()
     {
         return $this->listado_deudores_privado();
     }
 
-    public function listado_atletas() 
+    public function listado_atletas()
     {
         return $this->listado_atletas_privado();
     }
@@ -47,15 +56,15 @@ class Mensualidad extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $resultado["ok"] = true;
-            
-        } catch (Exception $e) {
+
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
     }
 
-    private function listado() 
+    private function listado()
     {
         try {
             $consulta = "
@@ -70,7 +79,7 @@ class Mensualidad extends datos
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
@@ -95,15 +104,15 @@ class Mensualidad extends datos
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
     }
-    
 
-    private function listado_atletas_privado() 
+
+    private function listado_atletas_privado()
     {
         try {
             $consulta = "
@@ -117,27 +126,22 @@ class Mensualidad extends datos
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
         return $resultado;
     }
 
-    public function __get($propiedad) 
+    public function __get($propiedad)
     {
         return $this->$propiedad;
     }
 
-    public function __set($propiedad, $valor) 
+    public function __set($propiedad, $valor)
     {
         $this->$propiedad = $valor;
         return $this;
-    }
-
-    public function __destruct()
-    {
-        $this->conexion = null;  
     }
 }
 ?>

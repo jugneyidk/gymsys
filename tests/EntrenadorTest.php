@@ -78,7 +78,7 @@ class EntrenadorTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertIsArray($respuesta['mensaje']);
     }
-    public function testEliminarEntrenador()
+    public function testEliminarEntrenadorExitoso()
     {
         $respuesta = $this->entrenadores->eliminar_entrenador("3145612");
         // Verificar que la respuesta indique que el entrenador se eliminó
@@ -104,7 +104,7 @@ class EntrenadorTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta['mensaje']);
     }
-    public function testObtenerEntrenador()
+    public function testObtenerEntrenadorExitoso()
     {
         $respuesta = $this->entrenadores->obtener_entrenador("22222222");
         // Verificar que la respuesta indique que el entrenador existe
@@ -131,7 +131,7 @@ class EntrenadorTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("No se encontró el entrenador", $respuesta['mensaje']);
     }
-    public function testModificarEntrenador()
+    public function testModificarEntrenadorExitoso()
     {
         $datosFormulario = [
             'cedula' => '8676719',

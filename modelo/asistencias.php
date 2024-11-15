@@ -10,6 +10,9 @@ class Asistencia extends datos
 
     public function guardar_asistencias($fecha, $asistencias)
     {
+        if (!is_array($asistencias)) {
+            $asistencias = json_decode($asistencias, true);
+        }
         if (!Validar::validar_fecha($fecha)) {
             return ["ok" => false, "mensaje" => "La fecha no es valida"];
         }

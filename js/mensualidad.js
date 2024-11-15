@@ -49,6 +49,7 @@ $(document).ready(function () {
             <td>${tipoAtletaNombre}</td>
             <td>${mensualidad.monto}</td>
             <td>${mensualidad.fecha}</td>
+            <td>${mensualidad.detalles ? mensualidad.detalles : `<span class="badge bg-secondary">Sin detalles</span>`}</td>
           </tr>`;
       });
 

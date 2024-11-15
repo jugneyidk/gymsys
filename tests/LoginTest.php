@@ -10,15 +10,26 @@ class LoginTest extends TestCase
         $this->login = new Login();
     }
 
-    public function testLogin() // Caso 1
+    public function testLoginExitoso() // Caso 1
     {
         $user = "22222222";
-        $password = "diego123";
+        $password = "Diego123*";
         $respuesta = $this->login->iniciar_sesion($user, $password);
         // Verificar que la respuesta sea exitosa e inicie la sesion
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertTrue($respuesta["ok"]);
+    }
+    public function testLoginIncorrecto() // Caso 1
+    {
+        $user = "22222222";
+        $password = "Diego123*s";
+        $respuesta = $this->login->iniciar_sesion($user, $password);
+        // Verificar que la respuesta sea exitosa e inicie la sesion
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("Los datos ingresados son incorrectos", $respuesta["mensaje"]);
     }
     public function testLoginNoValido() // Caso 1
     {

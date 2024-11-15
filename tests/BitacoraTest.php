@@ -19,7 +19,7 @@ class BitacoraTest extends TestCase
         $this->assertTrue($respuesta['ok']);
         $this->assertIsArray($respuesta['respuesta']);
     }
-    public function testConsultarAccion() // Caso 1
+    public function testConsultarAccionExitoso() // Caso 1
     {
         $respuesta = $this->bitacora->consultar_accion("23");
         // Verificar que la respuesta sea exitosa y devuelva los detalles de una accion

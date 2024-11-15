@@ -79,6 +79,9 @@ class Validar extends datos
 
     public static function validar_asistencias($asistencias)
     {
+        if (!is_array($asistencias)) {
+            return false;
+        }
         foreach ($asistencias as $asistencia => $valor) {
             if (!preg_match(self::$exp["cedula"]["regex"], $valor["id_atleta"])) {
                 return false;

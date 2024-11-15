@@ -19,7 +19,7 @@ class AsistenciaTest extends TestCase
         $this->assertTrue($respuesta['ok']);
         $this->assertIsArray($respuesta['atletas']);
     }
-    public function testObtenerAsistencias() // Caso 1
+    public function testObtenerAsistenciasExitoso() // Caso 1
     {
         $fecha = date('Y-m-d');
         $respuesta = $this->asistencia->obtener_asistencias($fecha);
@@ -33,16 +33,16 @@ class AsistenciaTest extends TestCase
     {
         $fecha = "2024-32-144";
         $respuesta = $this->asistencia->obtener_asistencias($fecha);
-        // Verificar que la respuesta sea exitosa y devuelva un array con la lista de asistencias del dia
+        // Verificar que la respuesta sea un mensaje de error
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("La fecha no es valida", $respuesta['mensaje']);
     }
-    public function testGuardarAsistencias() // Caso 1
+    public function testGuardarAsistenciasExitoso() // Caso 1
     {
         $fecha = date('Y-m-d');
-        $asistencias = '[{"id_atleta":42194292,"asistio":1,"comentario":""},{"id_atleta":664568422,"asistio":1,"comentario":""},{"id_atleta":66456842,"asistio":0,"comentario":""},{"id_atleta":682815811,"asistio":1,"comentario":""},{"id_atleta":68281582,"asistio":0,"comentario":""},{"id_atleta":68281581,"asistio":0,"comentario":""},{"id_atleta":68281580,"asistio":0,"comentario":""},{"id_atleta":42342344,"asistio":0,"comentario":""},{"id_atleta":24244444,"asistio":0,"comentario":""},{"id_atleta":23124144,"asistio":0,"comentario":""}]';
+        $asistencias = '[{"id_atleta":"682815811","asistio":0,"comentario":""},{"id_atleta":"664568422","asistio":0,"comentario":""},{"id_atleta":"99389012","asistio":0,"comentario":""},{"id_atleta":"68281582","asistio":0,"comentario":""},{"id_atleta":"68281581","asistio":1,"comentario":""},{"id_atleta":"68281580","asistio":0,"comentario":""},{"id_atleta":"66456842","asistio":0,"comentario":""},{"id_atleta":"42342344","asistio":0,"comentario":"u i io a i u i i i au"},{"id_atleta":"42194292","asistio":1,"comentario":""},{"id_atleta":"24244444","asistio":1,"comentario":""},{"id_atleta":"23124144","asistio":0,"comentario":""},{"id_atleta":"9252463","asistio":0,"comentario":""},{"id_atleta":"7342825","asistio":0,"comentario":""},{"id_atleta":"6828158","asistio":1,"comentario":""},{"id_atleta":"6759472","asistio":0,"comentario":""},{"id_atleta":"3376883","asistio":0,"comentario":""},{"id_atleta":"3331917","asistio":0,"comentario":""},{"id_atleta":"2594894","asistio":0,"comentario":""},{"id_atleta":"1328547","asistio":0,"comentario":""}]';
         $respuesta = $this->asistencia->guardar_asistencias($fecha, $asistencias);
         // Verificar que la respuesta sea exitosa y guarde la lista de asistencias
         $this->assertNotNull($respuesta);
@@ -58,6 +58,6 @@ class AsistenciaTest extends TestCase
         $this->assertNotNull($respuesta);
         $this->assertIsArray($respuesta);
         $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("No hay asistencias", $respuesta['mensaje']);
+        $this->assertEquals("Las asistencias no son validas", $respuesta['mensaje']);
     }
 }

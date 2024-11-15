@@ -21,7 +21,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Divorciado',
             'telefono' => '04265538456',
-            'correo' => 'aleale@example.com',
+            'correo_electronico' => 'aleale@example.com',
             'peso' => '62',
             'altura' => '181',
             'entrenador_asignado' => '22222222',
@@ -46,7 +46,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Divorciado',
             'telefono' => '04265538456',
-            'correo' => 'aleale@example.com',
+            'correo_electronico' => 'aleale@example.com',
             'peso' => '62',
             'altura' => '181',
             'entrenador_asignado' => '22222222',
@@ -72,7 +72,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => '',
             'telefono' => '0426-5538456',
-            'correo' => 'aleale@example.com',
+            'correo_electronico' => 'aleale@example.com',
             'peso' => 'full',
             'altura' => '181',
             'entrenador_asignado' => '',
@@ -87,7 +87,7 @@ class AtletasTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertIsArray($respuesta['mensaje']);
     }
-    public function testEliminarAtleta() // Caso 1
+    public function testEliminarAtletaExitoso() // Caso 1
     {
         // Ejecutar el método eliminar_atleta
         $respuesta = $this->atleta->eliminar_atleta("5560233");
@@ -116,7 +116,7 @@ class AtletasTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta['mensaje']);
     }
-    public function testObtenerAtleta()
+    public function testObtenerAtletaExitoso()
     {
         $respuesta = $this->atleta->obtener_atleta("1328547");
         // Verificar que la respuesta indique que el atleta existe
@@ -143,7 +143,7 @@ class AtletasTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta['mensaje']);
     }
-    public function testModificarAtleta() // Caso 1
+    public function testModificarAtletaExitoso() // Caso 1
     {
         $datosFormulario = [
             'cedula' => '1328547',
@@ -154,7 +154,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Soltero',
             'telefono' => '04265538456',
-            'correo' => 'leoleole@example.com',
+            'correo_electronico' => 'leoleole@example.com',
             'peso' => '62',
             'altura' => '178',
             'entrenador_asignado' => '22222222',
@@ -179,7 +179,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Soltero',
             'telefono' => '04265538456',
-            'correo' => 'leoleole@example.com',
+            'correo_electronico' => 'leoleole@example.com',
             'peso' => '62',
             'altura' => '178',
             'entrenador_asignado' => '22222222',
@@ -205,7 +205,7 @@ class AtletasTest extends TestCase
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Soltero',
             'telefono' => '042655322',
-            'correo' => 'leoleole@example',
+            'correo_electronico' => 'leoleole@example',
             'peso' => '',
             'altura' => 'alto',
             'entrenador_asignado' => '22222222',
