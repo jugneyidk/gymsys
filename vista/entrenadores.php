@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscripción de Entrenadores - Sistema</title>
+    <meta name="description"
+        content="Gestion de entrenadores en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
     <?php require_once("comunes/linkcss.php"); ?>
 </head>
 

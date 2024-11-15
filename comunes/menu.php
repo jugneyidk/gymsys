@@ -17,7 +17,7 @@ if (isset($_SESSION['rol'])) {
         if (isset($_SESSION["id_usuario"])):
           ?>
           <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" href="?p=dashboard"><i class="fas fa-house"></i></a>
+            <a class="nav-link" href="?p=dashboard"><i class="fas fa-house" aria-label="Página de inicio"></i></a>
           </li>
           <?php
           if (($permisos_navbar[0]["leer"] ?? false) || ($permisos_navbar[1]["leer"] ?? false) || ($permisos_navbar[2]["leer"] ?? false)):
@@ -110,7 +110,7 @@ if (isset($_SESSION['rol'])) {
           ?>
           <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-              aria-expanded="false"><i class="fa-solid fa-bell"></i></a>
+              aria-expanded="false" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i></a>
             <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
               <div class="ms-2">Notificaciones</div>
               <div class="dropdown-divider"></div>
@@ -130,7 +130,7 @@ if (isset($_SESSION['rol'])) {
             <a class="nav-link" href="?p=cerrarsesion">Cerrar sesión</a>
           </li>
           <li class="nav-item d-none d-lg-block">
-            <a class="nav-link" href="?p=cerrarsesion"><i class="fa-solid fa-right-from-bracket"></i></a>
+            <a class="nav-link" href="?p=cerrarsesion" aria-label="Cerrar sesión"><i class="fa-solid fa-right-from-bracket"></i></a>
           </li>
           <?php
         else:

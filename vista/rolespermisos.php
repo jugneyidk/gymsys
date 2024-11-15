@@ -4,10 +4,11 @@
 
 <head>
         <meta charset="UTF-8">
+        <meta name="description"
+        content="Gestion de roles y permisos en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Roles y Permisos - Sistema</title>
-        <?php require_once("comunes/linkcss.php");
-        ?>
+        <?php require_once("comunes/linkcss.php"); ?>
 </head>
 
 <body class="bg-light">

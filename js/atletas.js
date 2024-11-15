@@ -227,12 +227,12 @@ $(document).ready(function () {
                     <td class='align-middle'>
                     ${
                       actualizar === 1
-                        ? "<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal'><i class='fa-regular fa-pen-to-square'></i></button>"
+                        ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar atleta ${atleta.cedula}'><i class='fa-regular fa-pen-to-square'></i></button>`
                         : ""
                     }
                       ${
                         eliminar === 1
-                          ? "<button class='btn btn-block btn-danger w-auto'><i class='fa-solid fa-trash-can'></i></button>"
+                          ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar atleta ${atleta.cedula}'><i class='fa-solid fa-trash-can'></i></button>`
                           : ""
                       }      
                     </td>

@@ -19,6 +19,9 @@ class Mensualidad extends datos
         if (!Validar::validar("detalles",$detalles)["ok"]) {
             return ["ok" => false, "mensaje" => "Solo letras, números y espacios (200 caracteres maximo)"];
         }
+        if (!filter_var($monto, FILTER_VALIDATE_FLOAT)){
+            return ["ok" => false, "mensaje" => "El monto no es un numero valido"];
+        }
         $this->id_atleta = $id_atleta;
         $this->monto = $monto;
         $this->fecha = $fecha;
@@ -44,6 +47,7 @@ class Mensualidad extends datos
     private function incluir()
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
                          VALUES (:id_atleta, :monto, :fecha, :detalles)";
             $valores = array(
@@ -52,15 +56,17 @@ class Mensualidad extends datos
                 ':fecha' => $this->fecha,
                 ':detalles' => $this->detalles
             );
-
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
-
         } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -83,6 +89,7 @@ class Mensualidad extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -108,6 +115,7 @@ class Mensualidad extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -130,6 +138,7 @@ class Mensualidad extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -144,4 +153,3 @@ class Mensualidad extends datos
         return $this;
     }
 }
-?>

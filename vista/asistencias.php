@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="description"
+        content="Gestion de asistencias de atletas en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asistencias Diarias - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>

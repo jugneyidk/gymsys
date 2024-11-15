@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema</title>
+    <title>Login - Gimnasio de Halterofilia 'Eddie Suarez'</title>
     <?php require_once("comunes/linkcss.php"); ?>
     <link href="css/login.css" rel="stylesheet">
 </head>

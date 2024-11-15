@@ -2,7 +2,7 @@
     <div class="container text-center ">
         <div class="row">
             <div class="col-md-4">
-                <h5>Contacto</h5>
+                <span class="h5">Contacto</span>
                 <ul class="list-unstyled">
                     <li>
                         <a href="mailto:jugneycontacto@gmail.com" class="text-decoration-none">
@@ -17,7 +17,7 @@
                 </ul>
             </div>
             <div class="col-md-4">
-                <h5>Ayuda</h5>
+                <span class="h5">Ayuda</span>
                 <ul class="list-unstyled">
                     <li>
                         <a href="?p=faq" class="text-decoration-none">
@@ -32,7 +32,7 @@
                 </ul>
             </div>
             <div class="col-md-4">
-                <h5>Más</h5>
+                <span class="h5">Más</span>
                 <ul class="list-unstyled">
                     <li>
                         <a href="#!" class="text-decoration-none">

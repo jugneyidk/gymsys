@@ -21,7 +21,7 @@ if (!empty($_POST)) {
             $_POST['id_atleta'],
             $_POST['monto'],
             $_POST['fecha'],
-            $_POST['detalles']
+            $_POST['detalles'] ?? null
         );
         echo json_encode($respuesta);
     }
@@ -47,4 +47,3 @@ if (is_file("vista/" . $p . ".php")) {
 } else {
     require_once("comunes/404.php");
 }
-?>

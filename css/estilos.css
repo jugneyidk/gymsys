@@ -228,3 +228,39 @@ footer {
   bottom: 0;
   width: 100%;
 }
+
+.btn-contacto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  font-size: 13px;
+  border-radius: 5px;
+  text-decoration: none;
+  color: white;
+  background-color: #007bff; /* Color predeterminado para el botón */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 140px; /* Tamaño fijo para los botones */
+}
+
+.btn-contacto i {
+  margin-right: 5px;
+}
+
+/* Estilos específicos para cada botón */
+.btn-contacto:first-of-type {
+  background-color: #db4437; /* Color de fondo para el correo (Gmail) */
+}
+
+.btn-contacto:last-of-type {
+  background-color: #25d366; /* Color de fondo para WhatsApp */
+}
+
+.btn-contacto:first-of-type:hover {
+  background-color: #c23321;
+}
+
+.btn-contacto:last-of-type:hover {
+  background-color: #1ebd55;
+}

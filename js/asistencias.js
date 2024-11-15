@@ -77,8 +77,8 @@ $(document).ready(function () {
                             <td>${atleta.cedula}</td>
                             <td>${atleta.nombre}</td>
                             <td class="d-none d-md-table-cell">${atleta.apellido}</td>
-                            <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" /></td>
-                            <td><input type="text" class="form-control comentario" data-id="${atleta.cedula}" />
+                            <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
+                            <td><input type="text" class="form-control comentario" data-id="${atleta.nombre}" aria-label='Comentario de asistencia del atleta ${atleta.nombre}'/>
                             <span class="invalid-feedback d-block"></span>
                             </td>
                         </tr>

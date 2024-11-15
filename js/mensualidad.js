@@ -94,6 +94,7 @@ $(document).ready(function () {
 
   function inicializarDataTable(selector, pageLength = 10) {
     $(selector).DataTable({
+      lengthChange: false,
       pageLength: pageLength,
       language: {
         lengthMenu: "Mostrar _MENU_ por página",
@@ -103,8 +104,6 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
-          first: "Primera",
-          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },
@@ -116,9 +115,7 @@ $(document).ready(function () {
     var cedula = $(this).data("cedula");
     var nombre = $(this).data("nombre");
     var tipo = $(this).data("tipo");
-    $("#atleta")
-      .html(`<option value="${cedula}">${nombre}</option>`)
-      .val(cedula);
+    $("#atleta").val(cedula);
     var monto = calcularMonto(tipo);
     $("#monto").val(monto);
   });
@@ -140,7 +137,7 @@ $(document).ready(function () {
     $(formId)
       .find("input[type=text], input[type=number], input[type=date], select")
       .val("");
-    $(formId).find("input").removeClass("is-invalid is-valid");
+    $(formId).find("input, select").removeClass("is-invalid is-valid");
   }
 
   function calcularMonto(tipo) {
