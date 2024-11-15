@@ -1,18 +1,19 @@
 <?php
 class Mensualidad extends datos 
 {
-    private $conexion, $id_atleta, $monto, $fecha;
+    private $conexion, $id_atleta, $monto, $fecha, $detalles;
 
     public function __construct()
     {
         $this->conexion = $this->conecta(); 
     }
 
-    public function incluir_mensualidad($id_atleta, $monto, $fecha)
+    public function incluir_mensualidad($id_atleta, $monto, $fecha, $detalles)
     {
         $this->id_atleta = $id_atleta;
         $this->monto = $monto;
         $this->fecha = $fecha;
+        $this->detalles = $detalles;
         return $this->incluir();
     }
 
@@ -34,12 +35,13 @@ class Mensualidad extends datos
     private function incluir()
     {
         try {
-            $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha) 
-                         VALUES (:id_atleta, :monto, :fecha)";
+            $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
+                         VALUES (:id_atleta, :monto, :fecha, :detalles)";
             $valores = array(
                 ':id_atleta' => $this->id_atleta,
                 ':monto' => $this->monto,
-                ':fecha' => $this->fecha
+                ':fecha' => $this->fecha,
+                ':detalles' => $this->detalles
             );
 
             $respuesta = $this->conexion->prepare($consulta);
@@ -57,7 +59,7 @@ class Mensualidad extends datos
     {
         try {
             $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha
+                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha, m.detalles
                 FROM mensualidades m
                 INNER JOIN atleta a ON m.id_atleta = a.cedula
                 INNER JOIN usuarios u ON a.cedula = u.cedula
@@ -132,9 +134,10 @@ class Mensualidad extends datos
         $this->$propiedad = $valor;
         return $this;
     }
+
     public function __destruct()
     {
-        $this->conexion = null;  // Esto cierra la conexión
+        $this->conexion = null;  
     }
 }
 ?>

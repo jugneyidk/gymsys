@@ -63,6 +63,12 @@
                                         <input type="number" class="form-control" id="monto" name="monto">
                                         <div id="smonto" class="invalid-feedback"></div>
                                     </div>
+                                
+  <div class="mb-3">
+    <label for="detalles" class="form-label">Detalles</label>
+    <input type="text" class="form-control" id="detalles" name="detalles" maxlength="20" minlength="4">
+    <div id="sdetalles" class="invalid-feedback"></div>
+  </div>
                                     <div class="mb-3">
                                         <label for="fecha" class="form-label">Fecha:</label>
                                         <input type="date" class="form-control" id="fecha" name="fecha">
@@ -95,6 +101,7 @@
                                         <th>Tipo</th>
                                         <th>Monto</th>
                                         <th>Fecha</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody id="listadoPagosRegistrados">
@@ -105,6 +112,23 @@
                 </div>
             </div>
         </div>
+
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>

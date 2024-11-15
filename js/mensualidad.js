@@ -1,6 +1,6 @@
 import { muestraMensaje, enviaAjax } from "./comunes.js";
+
 $(document).ready(function () {
-  // Cargar listado de deudores y atletas sin registro
   cargaListadoDeudores();
   cargaListadoMensualidades();
   cargaAtletas();
@@ -11,16 +11,21 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       var html = "";
       respuesta.respuesta.forEach(function (deudor) {
-        html += `
-                    <tr>
-                        <td>${deudor.nombre} ${deudor.apellido}</td>
-                        <td>${deudor.cedula}</td>
-                        <td>${deudor.tipo_atleta}</td>
-                        <td>
-                            <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_atleta}">Seleccionar</button>
-                        </td>
-                    </tr>`;
+        // Validación para excluir deudores con tipo_atleta igual a 0 o null
+        if (deudor.tipo_atleta && deudor.tipo_atleta !== 0) {
+          var tipoAtletaNombre = obtenerNombreTipoAtleta(deudor.tipo_atleta);
+          html += `
+            <tr>
+              <td>${deudor.nombre} ${deudor.apellido}</td>
+              <td>${deudor.cedula}</td>
+              <td>${tipoAtletaNombre}</td>
+              <td>
+                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_atleta}">Seleccionar</button>
+              </td>
+            </tr>`;
+        }
       });
+
       if ($.fn.DataTable.isDataTable("#tablaDeudores")) {
         $("#tablaDeudores").DataTable().destroy();
       }
@@ -35,15 +40,18 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       var html = "";
       respuesta.respuesta.forEach(function (mensualidad) {
+        // Obtener el nombre del tipo de atleta en lugar de mostrar el ID
+        var tipoAtletaNombre = obtenerNombreTipoAtleta(mensualidad.tipo);
         html += `
-                    <tr>
-                        <td>${mensualidad.nombre} ${mensualidad.apellido}</td>
-                        <td>${mensualidad.cedula}</td>
-                        <td>${mensualidad.tipo}</td>
-                        <td>${mensualidad.monto}</td>
-                        <td>${mensualidad.fecha}</td>
-                    </tr>`;
+          <tr>
+            <td>${mensualidad.nombre} ${mensualidad.apellido}</td>
+            <td>${mensualidad.cedula}</td>
+            <td>${tipoAtletaNombre}</td>
+            <td>${mensualidad.monto}</td>
+            <td>${mensualidad.fecha}</td>
+          </tr>`;
       });
+
       if ($.fn.DataTable.isDataTable("#tablaPagosRegistrados")) {
         $("#tablaPagosRegistrados").DataTable().destroy();
       }
@@ -56,17 +64,35 @@ $(document).ready(function () {
     var datos = new FormData();
     datos.append("accion", "listado_atletas");
     enviaAjax(datos, "").then((respuesta) => {
-      var html = "<option>Seleccione un atleta</option>";
+      var html = '<option>Seleccione un atleta</option>';
       respuesta.respuesta.forEach(function (atleta) {
-        html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_atleta}">${atleta.nombre} ${atleta.apellido}</option>`;
+        // Validación para excluir atletas con tipo_atleta igual a 0 o null
+        if (atleta.tipo_atleta && atleta.tipo_atleta !== 0) {
+          var tipoAtletaNombre = obtenerNombreTipoAtleta(atleta.tipo_atleta);
+          html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_atleta}">${atleta.nombre} ${atleta.apellido} - ${tipoAtletaNombre}</option>`;
+        }
       });
       $("#atleta").html(html);
     });
   }
 
+  function obtenerNombreTipoAtleta(tipoId) {
+    switch (tipoId) {
+      case 1:
+        return "Obrero";
+      case 2:
+        return "Externo";
+      case 3:
+        return "Universidad No Halterofilia";
+      case 4:
+        return "Universidad Obreros";
+      default:
+        return "Desconocido";
+    }
+  }
+
   function inicializarDataTable(selector, pageLength = 10) {
     $(selector).DataTable({
-      lengthChange: false,
       pageLength: pageLength,
       language: {
         lengthMenu: "Mostrar _MENU_ por página",
@@ -76,6 +102,8 @@ $(document).ready(function () {
         infoFiltered: "(filtrado de _MAX_ registros totales)",
         search: "Buscar:",
         paginate: {
+          first: "Primera",
+          last: "Última",
           next: "Siguiente",
           previous: "Anterior",
         },
@@ -131,21 +159,9 @@ $(document).ready(function () {
 
   function validarEnvio() {
     var esValido = true;
-    esValido &= verificarCampoVacio(
-      $("#atleta"),
-      $("#satleta"),
-      "El atleta es obligatorio"
-    );
-    esValido &= verificarCampoVacio(
-      $("#monto"),
-      $("#smonto"),
-      "El monto es obligatorio"
-    );
-    esValido &= verificarCampoVacio(
-      $("#fecha"),
-      $("#sfecha"),
-      "La fecha es obligatoria"
-    );
+    esValido &= verificarCampoVacio($("#atleta"), $("#satleta"), "El atleta es obligatorio");
+    esValido &= verificarCampoVacio($("#monto"), $("#smonto"), "El monto es obligatorio");
+    esValido &= verificarCampoVacio($("#fecha"), $("#sfecha"), "La fecha es obligatoria");
     return esValido;
   }
 
