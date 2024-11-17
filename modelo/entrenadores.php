@@ -100,6 +100,7 @@ class Entrenador extends datos
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
     private function eliminar()
@@ -279,7 +280,6 @@ class Entrenador extends datos
             $con->execute();
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
-            $resultado["devol"] = 'listado_entrenadores';
             $resultado["respuesta"] = $respuesta;
         } catch (PDOException $e) {
             $resultado["ok"] = false;

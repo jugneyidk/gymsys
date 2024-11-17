@@ -107,10 +107,12 @@
     </div>
     <div class="row">
         <div class="col-md-6 mb-3 d-none" id="modificar_contraseña_container">
-            <div class="form-check form-switch">
-                <label for="modificar_contraseña" class="form-check-label">Modificar Contraseña:</label>
-                <input type="checkbox" class="form-check-input" id="modificar_contraseña" name="modificar_contraseña"
-                    placeholder="Contraseña">
+            <div class="w-100 h-100 d-flex align-items-center justify-content-center">
+                <div class="form-check form-switch mb-0">
+                    <label for="modificar_contraseña" class="form-check-label">Modificar Contraseña</label>
+                    <input type="checkbox" class="form-check-input" id="modificar_contraseña"
+                        name="modificar_contraseña" placeholder="Contraseña">
+                </div>
             </div>
         </div>
         <div class="col mb-3">

@@ -62,14 +62,6 @@ a {
 .form-control {
   margin-bottom: 10px;
 }
-footer {
-  font-size: 0.8rem;
-  color: #ffffff;
-  background-color: #343a40;
-
-  text-align: center;
-  padding: 1rem;
-}
 
 /*fin login*/
 
@@ -99,13 +91,6 @@ footer {
 }
 
 /*fin 404*/
-
-/*footer*/
-
-footer a {
-  color: azure;
-}
-/*fin footer*/
 
 /*imagenes carrusel*/
 .carousel-container {
@@ -219,16 +204,6 @@ body {
   min-height: 100vh; /* Asegura que el cuerpo ocupe toda la altura de la ventana */
 }
 
-footer {
-  background-color: #343a40;
-  color: #ffffff;
-  text-align: center;
-  padding: 1rem;
-  position: relative; /* Elimina cualquier problema de superposición */
-  bottom: 0;
-  width: 100%;
-}
-
 .btn-contacto {
   display: flex;
   align-items: center;
@@ -263,4 +238,17 @@ footer {
 
 .btn-contacto:last-of-type:hover {
   background-color: #1ebd55;
+}
+.navbar .nav-link {
+  border-radius: 12px;
+  color: white;
+}
+
+.navbar .nav-link:hover {
+  background-color: rgb(37 79 151 / 45%);
+}
+
+.navbar-nav .nav-link.active,
+.navbar-nav .nav-link.show {
+  background-color: rgba(28, 61, 119, 0.45);
 }

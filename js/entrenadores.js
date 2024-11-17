@@ -142,14 +142,16 @@ $(document).ready(function () {
         entrenador.apellido +
         "</td>";
       listado_entrenador +=
-        "<td class='align-middle d-none d-md-table-cell'>" + entrenador.telefono + "</td>";
+        "<td class='align-middle d-none d-md-table-cell'>" +
+        entrenador.telefono +
+        "</td>";
       listado_entrenador += `<td>${
         actualizar === 1
-          ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar entrenador ${entrenador.cedula}'><i class='fa-regular fa-pen-to-square'></i></button>`
+          ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Entrenador"><i class='fa-regular fa-pen-to-square'></i></button>`
           : ""
       }${
         eliminar === 1
-          ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar entrenador ${entrenador.cedula}'><i class='fa-solid fa-trash-can'></i></button>`
+          ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Entrenador"><i class='fa-solid fa-trash-can'></i></button>`
           : ""
       } </td>`;
       listado_entrenador += "</tr>";

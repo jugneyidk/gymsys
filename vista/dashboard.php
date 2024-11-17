@@ -137,7 +137,7 @@
                                 <?php foreach ($ultimas_acciones as $accion): ?>
                                     <li class="list-group-item">
                                         <strong><?php echo $accion['nombre'] . ' ' . $accion['apellido']; ?></strong>
-                                        realizó la acción <strong><?php echo $accion['accion']; ?></strong>.
+                                        realizó la acción <strong><?php echo $accion['accion']; ?></strong> en el modulo <strong><?php echo $accion['modulo']; ?></strong>.
                                         <small class="text-muted"><?php echo $accion['fecha']; ?></small>
                                     </li>
                                 <?php endforeach; ?>

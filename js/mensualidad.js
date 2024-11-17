@@ -11,16 +11,15 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       var html = "";
       respuesta.respuesta.forEach(function (deudor) {
-        // Validación para excluir deudores con tipo_atleta igual a 0 o null
-        if (deudor.tipo_atleta && deudor.tipo_atleta !== 0) {
-          var tipoAtletaNombre = obtenerNombreTipoAtleta(deudor.tipo_atleta);
+        // Validación para excluir deudores sin nombre_tipo_atleta
+        if (deudor.nombre_tipo_atleta) {
           html += `
             <tr>
               <td>${deudor.nombre} ${deudor.apellido}</td>
               <td>${deudor.cedula}</td>
-              <td>${tipoAtletaNombre}</td>
+              <td>${deudor.nombre_tipo_atleta}</td>
               <td>
-                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_atleta}">Seleccionar</button>
+                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_cobro}">Seleccionar</button>
               </td>
             </tr>`;
         }
@@ -40,16 +39,18 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       var html = "";
       respuesta.respuesta.forEach(function (mensualidad) {
-        // Obtener el nombre del tipo de atleta en lugar de mostrar el ID
-        var tipoAtletaNombre = obtenerNombreTipoAtleta(mensualidad.tipo);
         html += `
           <tr>
             <td>${mensualidad.nombre} ${mensualidad.apellido}</td>
             <td>${mensualidad.cedula}</td>
-            <td>${tipoAtletaNombre}</td>
+            <td>${mensualidad.nombre_tipo_atleta}</td>
             <td>${mensualidad.monto}</td>
             <td>${mensualidad.fecha}</td>
-            <td>${mensualidad.detalles ? mensualidad.detalles : `<span class="badge bg-secondary">Sin detalles</span>`}</td>
+            <td>${
+              mensualidad.detalles
+                ? mensualidad.detalles
+                : `<span class="badge bg-secondary">Sin detalles</span>`
+            }</td>
           </tr>`;
       });
 
@@ -65,31 +66,15 @@ $(document).ready(function () {
     var datos = new FormData();
     datos.append("accion", "listado_atletas");
     enviaAjax(datos, "").then((respuesta) => {
-      var html = '<option>Seleccione un atleta</option>';
+      var html = "<option>Seleccione un atleta</option>";
       respuesta.respuesta.forEach(function (atleta) {
         // Validación para excluir atletas con tipo_atleta igual a 0 o null
-        if (atleta.tipo_atleta && atleta.tipo_atleta !== 0) {
-          var tipoAtletaNombre = obtenerNombreTipoAtleta(atleta.tipo_atleta);
-          html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_atleta}">${atleta.nombre} ${atleta.apellido} - ${tipoAtletaNombre}</option>`;
+        if (atleta.nombre_tipo_atleta) {
+          html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_cobro}">${atleta.nombre} ${atleta.apellido} - ${atleta.nombre_tipo_atleta}</option>`;
         }
       });
       $("#atleta").html(html);
     });
-  }
-
-  function obtenerNombreTipoAtleta(tipoId) {
-    switch (tipoId) {
-      case 1:
-        return "Obrero";
-      case 2:
-        return "Externo";
-      case 3:
-        return "Universidad No Halterofilia";
-      case 4:
-        return "Universidad Obreros";
-      default:
-        return "Desconocido";
-    }
   }
 
   function inicializarDataTable(selector, pageLength = 10) {
@@ -113,11 +98,9 @@ $(document).ready(function () {
 
   $("#tablaDeudores").on("click", ".btn-seleccionar", function () {
     var cedula = $(this).data("cedula");
-    var nombre = $(this).data("nombre");
     var tipo = $(this).data("tipo");
     $("#atleta").val(cedula);
-    var monto = calcularMonto(tipo);
-    $("#monto").val(monto);
+    $("#monto").val(tipo);
   });
 
   $("#registrarPago").on("click", function () {
@@ -140,26 +123,23 @@ $(document).ready(function () {
     $(formId).find("input, select").removeClass("is-invalid is-valid");
   }
 
-  function calcularMonto(tipo) {
-    switch (tipo) {
-      case 1: // Obreros
-        return 0;
-      case 2: // Externos
-        return 10;
-      case 3: // Universidad no Halterofilia
-        return 5;
-      case 4: // Universidad Obreros
-        return 0;
-      default:
-        return 0;
-    }
-  }
-
   function validarEnvio() {
     var esValido = true;
-    esValido &= verificarCampoVacio($("#atleta"), $("#satleta"), "El atleta es obligatorio");
-    esValido &= verificarCampoVacio($("#monto"), $("#smonto"), "El monto es obligatorio");
-    esValido &= verificarCampoVacio($("#fecha"), $("#sfecha"), "La fecha es obligatoria");
+    esValido &= verificarCampoVacio(
+      $("#atleta"),
+      $("#satleta"),
+      "El atleta es obligatorio"
+    );
+    esValido &= verificarCampoVacio(
+      $("#monto"),
+      $("#smonto"),
+      "El monto es obligatorio"
+    );
+    esValido &= verificarCampoVacio(
+      $("#fecha"),
+      $("#sfecha"),
+      "La fecha es obligatoria"
+    );
     return esValido;
   }
 

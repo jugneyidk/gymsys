@@ -24,7 +24,7 @@ class Dashboard extends datos
     public function obtener_ultimas_acciones()
     {
         try {
-            $consulta = "SELECT b.accion, b.fecha, u.nombre, u.apellido 
+            $consulta = "SELECT b.accion, b.fecha, u.nombre, u.apellido, b.modulo 
                          FROM bitacora b
                          JOIN usuarios u ON b.id_usuario = u.cedula
                          ORDER BY b.fecha DESC LIMIT 3"; 

@@ -37,7 +37,6 @@ class Permisos extends datos
     public function permisos_nav()
     {
         try {
-            $this->conexion->beginTransaction();
             $id_rol = $_SESSION['rol'];
             $consulta = "SELECT m.id_modulo, m.nombre, p.leer FROM permisos p
                             INNER JOIN modulos m ON p.modulo = m.id_modulo
@@ -46,7 +45,7 @@ class Permisos extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
             $permisos = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $this->conexion->commit();
+            $this->desconecta();
             return $permisos;
         } catch (Exception $e) {
         }

@@ -18,13 +18,10 @@ class Bitacora extends datos
     private function listado()
     {
         try {
-            $this->conexion->beginTransaction();
             $consulta = "SELECT id_accion, id_usuario, accion, modulo, usuario_modificado, fecha FROM `bitacora` ORDER BY id_accion DESC";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute();
             $listado = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $respuesta->closeCursor();
-            $this->conexion->commit();
             $resultado["ok"] = true;
             $resultado["devol"] = "listado_bitacora";
             $resultado["respuesta"] = $listado;

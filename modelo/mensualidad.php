@@ -10,16 +10,16 @@ class Mensualidad extends datos
 
     public function incluir_mensualidad($id_atleta, $monto, $fecha, $detalles)
     {
-        if (!Validar::validar("cedula",$id_atleta)["ok"]) {
+        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
             return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
         }
         if (!Validar::validar_fecha($fecha)) {
             return ["ok" => false, "mensaje" => "La fecha no es valida"];
         }
-        if (!Validar::validar("detalles",$detalles)["ok"]) {
+        if (!Validar::validar("detalles", $detalles)["ok"]) {
             return ["ok" => false, "mensaje" => "Solo letras, números y espacios (200 caracteres maximo)"];
         }
-        if (!filter_var($monto, FILTER_VALIDATE_FLOAT)){
+        if (!filter_var($monto, FILTER_VALIDATE_FLOAT)) {
             return ["ok" => false, "mensaje" => "El monto no es un numero valido"];
         }
         $this->id_atleta = $id_atleta;
@@ -74,10 +74,11 @@ class Mensualidad extends datos
     {
         try {
             $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, m.tipo, m.monto, m.fecha, m.detalles
+                SELECT u.cedula, u.nombre, u.apellido, m.monto, m.fecha, m.detalles, t.nombre_tipo_atleta
                 FROM mensualidades m
                 INNER JOIN atleta a ON m.id_atleta = a.cedula
                 INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
                 ORDER BY m.fecha DESC
             ";
             $con = $this->conexion->prepare($consulta);
@@ -97,9 +98,10 @@ class Mensualidad extends datos
     {
         try {
             $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                SELECT u.cedula, u.nombre, u.apellido, t.nombre_tipo_atleta, t.tipo_cobro
                 FROM atleta a
                 INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
                 LEFT JOIN mensualidades m ON a.cedula = m.id_atleta 
                   AND m.fecha >= DATE_FORMAT(NOW(), '%Y-%m-01') 
                   AND m.fecha <= LAST_DAY(NOW())
@@ -124,9 +126,10 @@ class Mensualidad extends datos
     {
         try {
             $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, a.tipo_atleta
+                SELECT u.cedula, u.nombre, u.apellido, t.nombre_tipo_atleta, t.tipo_cobro
                 FROM atleta a
                 INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
                 ORDER BY u.cedula DESC
             ";
             $con = $this->conexion->prepare($consulta);

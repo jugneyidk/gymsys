@@ -336,6 +336,7 @@ class Atleta extends datos
     public function incluirRepresentante($cedula, $nombreCompleto, $telefono, $parentesco)
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO representantes (cedula, nombre_completo, telefono, parentesco) VALUES (:cedula, :nombreCompleto, :telefono, :parentesco)";
             // $consulta = "INSERT INTO representantes (cedula, nombre_completo, telefono, parentesco) 
             //     VALUES (:cedula, :nombreCompleto, :telefono, :parentesco)
@@ -351,8 +352,11 @@ class Atleta extends datos
             );
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
@@ -362,11 +366,15 @@ class Atleta extends datos
     public function registrarTipoAtleta($nombreTipoAtleta, $tipoCobro)
     {
         try {
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO tipo_atleta (nombre_tipo_atleta, tipo_cobro) VALUES (?, ?)";
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute([$nombreTipoAtleta, $tipoCobro]);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
         } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }

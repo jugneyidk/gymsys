@@ -16,11 +16,11 @@ class Asistencia extends datos
         if (!Validar::validar_fecha($fecha)) {
             return ["ok" => false, "mensaje" => "La fecha no es valida"];
         }
-        if (!Validar::validar_asistencias($asistencias)) {
-            return ["ok" => false, "mensaje" => "Las asistencias no son validas"];
-        }
         if (!Validar::validar_fecha_mayor_que_hoy($fecha)) {
             return ["ok" => false, "mensaje" => "La fecha no debe ser anterior a la de hoy"];
+        }
+        if (!Validar::validar_asistencias($asistencias)) {
+            return ["ok" => false, "mensaje" => "Las asistencias no son validas"];
         }
         $this->fecha = $fecha;
         $this->asistencias = $asistencias;

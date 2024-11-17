@@ -45,8 +45,8 @@ const REGEX = [
         'mensaje' => 'Solo números y puntos decimales'
     ],
     'password' => [
-    'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[\]{};:\'",.<>?])[A-Za-z\d!@#$%^&*()_\-+=\[\]{};:\'",.<>?]{8,15}$/',
-    'mensaje' => 'La contraseña debe tener entre 8 y 15 caracteres, incluyendo al menos 1 mayúscula, 1 minúscula, 1 número y 1 símbolo especial.'
+        'regex' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])([A-Za-z\d$@$!%*?&]|[^ ]){8,15}$/',
+        'mensaje' => 'La contraseña debe tener entre 8 y 15 caracteres: 1 mayuscula, 1 minuscula, 1 numero y 1 simbolo ($@$!%*?&)'
     ],
     'old_password' => [
         'regex' => '/^[a-zA-Z0-9@._-]{6,20}$/',
