@@ -33,7 +33,7 @@
                                             <option value="asistencias">Asistencias</option>
                                         </select>
                                     </div>
-                                    <!-- Filtros específicos para cada reporte -->
+                                
                                     <div id="filtrosAtletas" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
@@ -70,7 +70,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Filtros específicos para Entrenadores -->
+                                   
                                     <div id="filtrosEntrenadores" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
@@ -92,7 +92,33 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Más secciones de filtros como en la estructura original -->
+                                 
+                                    <div id="filtrosEventos" class="col-12">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="fechaInicioEventos" class="form-label">Fecha de Inicio:</label>
+                                                <input type="date" class="form-control" id="fechaInicioEventos" name="fechaInicioEventos">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="fechaFinEventos" class="form-label">Fecha de Fin:</label>
+                                                <input type="date" class="form-control" id="fechaFinEventos" name="fechaFinEventos">
+                                            </div>
+                                        </div>
+                                    </div>
+                                   
+                                    <div id="filtrosMensualidades" class="col-12">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="fechaInicioMensualidades" class="form-label">Fecha de Inicio:</label>
+                                                <input type="date" class="form-control" id="fechaInicioMensualidades" name="fechaInicioMensualidades">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="fechaFinMensualidades" class="form-label">Fecha de Fin:</label>
+                                                <input type="date" class="form-control" id="fechaFinMensualidades" name="fechaFinMensualidades">
+                                            </div>
+                                        </div>
+                                    </div>
+                                 
                                     <div class="col-12">
                                         <button type="button" class="btn btn-primary" id="btnGenerarReporte">Generar Reporte</button>
                                     </div>
@@ -116,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Sección de gráficos -->
+          
             <div class="row my-4">
                 <div class="col-12">
                     <h3>Reportes Estadísticos</h3>

@@ -1,4 +1,6 @@
 <?php
+require_once("datos.php");
+
 class Reporte extends datos
 {
     private $conexion;
@@ -6,6 +8,9 @@ class Reporte extends datos
     public function __construct()
     {
         $this->conexion = $this->conecta();
+        if (!$this->conexion) {
+            die("Error en la conexión a la base de datos");
+        }
     }
 
     public function obtener_reportes($tipoReporte, $filtros)
@@ -70,53 +75,61 @@ class Reporte extends datos
                     break;
 
                 case 'mensualidades':
-                    $periodo = !empty($filtros['periodoMensualidades']) ? $filtros['periodoMensualidades'] : 'mes';
-                    $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT m.id_mensualidad AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Mensualidad' AS detalles, m.fecha AS fecha
                         FROM mensualidades m
                         INNER JOIN atleta a ON m.id_atleta = a.cedula
                         INNER JOIN usuarios u ON a.cedula = u.cedula
-                        WHERE m.fecha >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
-                        ORDER BY m.fecha DESC
+                        WHERE 1=1
                     ";
+                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                        $consulta .= " AND m.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+                    }
                     break;
 
                 case 'wada':
-                    $periodo = !empty($filtros['periodoWada']) ? $filtros['periodoWada'] : 'mes';
-                    $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT w.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'WADA' AS detalles, w.vencimiento AS fecha
                         FROM wada w
                         INNER JOIN atleta a ON w.id_atleta = a.cedula
                         INNER JOIN usuarios u ON a.cedula = u.cedula
-                        WHERE w.vencimiento >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
-                        ORDER BY w.vencimiento DESC
+                        WHERE 1=1
                     ";
+                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                        $consulta .= " AND w.vencimiento BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+                    }
                     break;
 
                 case 'eventos':
-                    $periodo = !empty($filtros['periodoEventos']) ? $filtros['periodoEventos'] : 'mes';
-                    $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT c.id_competencia AS id, c.nombre AS nombre, 'Evento' AS detalles, c.fecha_inicio AS fecha
                         FROM competencia c
-                        WHERE c.fecha_inicio >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
-                        ORDER BY c.fecha_inicio DESC
+                        WHERE 1=1
                     ";
+                    if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
+                        $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
+                        $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
+                        $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
+                    }
                     break;
 
                 case 'asistencias':
-                    $periodo = !empty($filtros['periodoAsistencias']) ? $filtros['periodoAsistencias'] : 'mes';
-                    $intervalo = $this->getIntervalo($periodo);
                     $consulta = "
                         SELECT a.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Asistencia' AS detalles, a.fecha AS fecha
                         FROM asistencias a
                         INNER JOIN atleta at ON a.id_atleta = at.cedula
                         INNER JOIN usuarios u ON at.cedula = u.cedula
-                        WHERE a.fecha >= DATE_SUB(CURDATE(), INTERVAL $intervalo)
-                        ORDER BY a.fecha DESC
+                        WHERE 1=1
                     ";
+                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                        $consulta .= " AND a.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+                    }
                     break;
             }
 
@@ -134,74 +147,36 @@ class Reporte extends datos
         }
     }
 
-    private function getIntervalo($periodo)
+    public function obtener_resultados_competencias($filtros)
     {
-        switch ($periodo) {
-            case 'mes':
-                return '1 MONTH';
-            case 'trimestre':
-                return '3 MONTH';
-            case 'año':
-                return '1 YEAR';
-            case 'semana':
-                return '1 WEEK';
-            default:
-                return '1 MONTH';
+        try {
+            $consulta = "
+                SELECT c.nombre AS nombreEvento, CONCAT(u.nombre, ' ', u.apellido) AS nombreAtleta, r.arranque, r.envion, r.total
+                FROM resultado_competencia r
+                INNER JOIN competencia c ON r.id_competencia = c.id_competencia
+                INNER JOIN atleta a ON r.id_atleta = a.cedula
+                INNER JOIN usuarios u ON a.cedula = u.cedula
+                WHERE 1=1
+            ";
+            $valores = [];
+
+            if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
+                $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
+                $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
+                $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
+            }
+
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+
+            if ($resultados) {
+                return ["ok" => true, "resultados" => $resultados];
+            } else {
+                return ["ok" => false, "mensaje" => "No se encontraron resultados de competencias"];
+            }
+        } catch (Exception $e) {
+            return ["ok" => false, "mensaje" => $e->getMessage()];
         }
     }
-
-    public function obtener_datos_edad_atletas()
-    {
-        $consulta = "
-            SELECT 
-                CASE
-                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 10 AND 20 THEN '10-20'
-                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 21 AND 30 THEN '21-30'
-                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 31 AND 40 THEN '31-40'
-                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 41 AND 50 THEN '41-50'
-                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) > 50 THEN '51+'
-                END AS rango_edad,
-                COUNT(*) AS cantidad
-            FROM atleta a
-            INNER JOIN usuarios u ON a.cedula = u.cedula
-            GROUP BY rango_edad
-        ";
-        $respuesta = $this->conexion->query($consulta);
-        $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-
-        return ['labels' => array_column($resultados, 'rango_edad'), 'values' => array_column($resultados, 'cantidad')];
-    }
-
-    public function obtener_datos_genero()
-    {
-        $consulta = "
-            SELECT 
-                u.genero,
-                COUNT(*) AS cantidad
-            FROM usuarios u
-            INNER JOIN atleta a ON u.cedula = a.cedula
-            GROUP BY u.genero
-        ";
-        $respuesta = $this->conexion->query($consulta);
-        $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-
-        return ['labels' => array_column($resultados, 'genero'), 'values' => array_column($resultados, 'cantidad')];
-    }
-
-    public function obtener_datos_asistencias()
-    {
-        $consulta = "
-            SELECT 
-                DATE_FORMAT(a.fecha, '%Y-%m') AS mes,
-                COUNT(*) AS cantidad
-            FROM asistencias a
-            GROUP BY mes
-            ORDER BY mes
-        ";
-        $respuesta = $this->conexion->query($consulta);
-        $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-
-        return ['labels' => array_column($resultados, 'mes'), 'values' => array_column($resultados, 'cantidad')];
-    }
 }
-?>
