@@ -17,8 +17,8 @@
                 <div class="container-lg mt-4">
                     <div class="row">
                         <!-- Atletas -->
-                        <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                            <div class="card text-white bg-primary">
+                        <div class="col-12 col-sm-6 col-lg-3 mb-3 d-flex align-items-stretch">
+                            <div class="card text-white bg-primary flex-grow-1">
                                 <div class="card-header"><i class="fas fa-users"></i> Atletas</div>
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo $atletas; ?></h5>
@@ -27,8 +27,8 @@
                             </div>
                         </div>
                         <!-- Entrenadores -->
-                        <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                            <div class="card text-white bg-success">
+                        <div class="col-12 col-sm-6 col-lg-3 mb-3 d-flex align-items-stretch">
+                            <div class="card text-white bg-success flex-grow-1">
                                 <div class="card-header"><i class="fas fa-user-friends"></i> Entrenadores</div>
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo $entrenadores; ?></h5>
@@ -37,8 +37,8 @@
                             </div>
                         </div>
                         <!-- Reportes -->
-                        <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                            <div class="card text-white bg-warning">
+                        <div class="col-12 col-sm-6 col-lg-3 mb-3 d-flex align-items-stretch">
+                            <div class="card text-white bg-warning flex-grow-1">
                                 <div class="card-header"><i class="fas fa-chart-line"></i> Reportes</div>
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo $reportes; ?></h5>
@@ -48,8 +48,8 @@
                         </div>
 
                         <!-- WADA -->
-                        <div class="col-12 col-sm-6 col-lg-3 mb-3">
-                            <div class="card text-white bg-danger">
+                        <div class="col-12 col-sm-6 col-lg-3 mb-3 d-flex align-items-stretch">
+                            <div class="card text-white bg-danger flex-grow-1">
                                 <div class="card-header"><i class="fas fa-cogs"></i> WADA</div>
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo $wadas_pendientes; ?></h5>
@@ -60,11 +60,13 @@
 
                     </div>
                 </div>
-                <div class="col-12 col-lg-4">
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-4">
                     <h5>Estadísticas de Desarrollo de Atletas</h5>
                     <canvas id="myChart"></canvas>
                 </div>
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-md-6 col-lg-4">
                     <h5>Estadísticas de Desarrollo de Atletas</h5>
                     <canvas id="myChart1"></canvas>
                 </div>
@@ -72,7 +74,8 @@
                     <h5>Progreso Semanal de Atletas</h5>
                     <canvas id="progressChart"></canvas>
                 </div>
-
+            </div>
+            <div class="row">
                 <div class="col-12 col-md-6 col-lg-5">
                     <h4>Últimos Atletas Registrados</h4>
                     <div class="card">
@@ -105,7 +108,7 @@
                         </div>
                     </div>
                 </div>
-
+    
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="mt-3 mt-lg-0">
                         <h4>Notificaciones</h4>
@@ -121,12 +124,12 @@
                                     </div>
                                     <span class="text-muted">Hace 3 mins</span>
                                 </li>
-
+    
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-2 col-lg-4">
+                <div class="col-12 col-lg-4">
                     <div class="mt-3 mt-lg-0">
                         <h4>Actividad Reciente</h4>
                         <div class="card w-100">
@@ -137,7 +140,8 @@
                                 <?php foreach ($ultimas_acciones as $accion): ?>
                                     <li class="list-group-item">
                                         <strong><?php echo $accion['nombre'] . ' ' . $accion['apellido']; ?></strong>
-                                        realizó la acción <strong><?php echo $accion['accion']; ?></strong> en el modulo <strong><?php echo $accion['modulo']; ?></strong>.
+                                        realizó la acción <strong><?php echo $accion['accion']; ?></strong> en el modulo
+                                        <strong><?php echo $accion['modulo']; ?></strong>.
                                         <small class="text-muted"><?php echo $accion['fecha']; ?></small>
                                     </li>
                                 <?php endforeach; ?>
@@ -146,6 +150,7 @@
                     </div>
                 </div>
             </div>
+
     </main>
     <?php require_once("comunes/footer.php"); ?>
 

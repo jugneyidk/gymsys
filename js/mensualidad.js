@@ -15,11 +15,11 @@ $(document).ready(function () {
         if (deudor.nombre_tipo_atleta) {
           html += `
             <tr>
-              <td>${deudor.nombre} ${deudor.apellido}</td>
-              <td>${deudor.cedula}</td>
-              <td>${deudor.nombre_tipo_atleta}</td>
-              <td>
-                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_cobro}">Seleccionar</button>
+              <td class="align-middle">${deudor.nombre} ${deudor.apellido}</td>
+              <td class="align-middle">${deudor.cedula}</td>
+              <td class="align-middle">${deudor.nombre_tipo_atleta}</td>
+              <td class="align-middle">
+                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_cobro}" data-tooltip="tooltip" title="Seleccionar atleta" aria-label="Seleccionar atleta ${deudor.nombre} ${deudor.apellido}"><i class="fa-solid fa-up-right-from-square"></i></button>
               </td>
             </tr>`;
         }
@@ -41,12 +41,14 @@ $(document).ready(function () {
       respuesta.respuesta.forEach(function (mensualidad) {
         html += `
           <tr>
-            <td>${mensualidad.nombre} ${mensualidad.apellido}</td>
-            <td>${mensualidad.cedula}</td>
-            <td>${mensualidad.nombre_tipo_atleta}</td>
-            <td>${mensualidad.monto}</td>
-            <td>${mensualidad.fecha}</td>
-            <td>${
+            <td class="align-middle">${mensualidad.nombre} ${
+          mensualidad.apellido
+        }</td>
+            <td class="align-middle">${mensualidad.cedula}</td>
+            <td class="align-middle">${mensualidad.nombre_tipo_atleta}</td>
+            <td class="align-middle">${mensualidad.monto}</td>
+            <td class="align-middle">${mensualidad.fecha}</td>
+            <td class="align-middle">${
               mensualidad.detalles
                 ? mensualidad.detalles
                 : `<span class="badge bg-secondary">Sin detalles</span>`

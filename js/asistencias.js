@@ -74,12 +74,11 @@ $(document).ready(function () {
     atletas.forEach(function (atleta) {
       listado += `
                         <tr>
-                            <td>${atleta.cedula}</td>
-                            <td>${atleta.nombre}</td>
-                            <td class="d-none d-md-table-cell">${atleta.apellido}</td>
-                            <td><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
-                            <td><input type="text" class="form-control comentario" data-id="${atleta.nombre}" aria-label='Comentario de asistencia del atleta ${atleta.nombre}'/>
-                            <span class="invalid-feedback d-block"></span>
+                            <td class="align-middle">${atleta.cedula}</td>
+                            <td class="align-middle">${atleta.nombre}</td>
+                            <td class="d-none d-md-table-cell align-middle">${atleta.apellido}</td>
+                            <td class="align-middle"><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
+                            <td class="align-middle"><input type="text" class="form-control comentario" data-id="${atleta.nombre}" aria-label='Comentario de asistencia del atleta ${atleta.nombre}'/>
                             </td>
                         </tr>
                     `;

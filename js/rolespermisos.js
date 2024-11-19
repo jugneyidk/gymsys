@@ -149,12 +149,12 @@ $(document).ready(function () {
                     <td class='align-middle'>
                     ${
                       actualizar === 1
-                        ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar rol ${rol.nombre}'><i class='fa-regular fa-pen-to-square'></i></button>`
+                        ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar rol ${rol.nombre}' data-tooltip="tooltip" title="Modificar rol"><i class='fa-regular fa-pen-to-square'></i></button>`
                         : ""
                     }
                     ${
                       eliminar === 1
-                        ? `<button class='btn btn-block btn-danger w-auto'><i class='fa-solid fa-trash-can' aria-label='Eliminar rol ${rol.nombre}'></i></button>`
+                        ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar rol ${rol.nombre}' data-tooltip="tooltip" title="Eliminar rol"><i class='fa-solid fa-trash-can'></i></button>`
                         : ""
                     }                        
                     </td>
