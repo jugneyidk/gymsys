@@ -7,6 +7,7 @@ if (is_file("vista/" . $p . ".php")) {
     $o = new Asistencia();
     $permisos_o = new Permisos();
     $permisos = $permisos_o->chequear_permisos();
+    $notificaciones_o = new Notificaciones();
     if ($permisos["leer"] === 0) {
         header("Location: .");
     }

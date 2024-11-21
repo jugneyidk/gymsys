@@ -1,8 +1,9 @@
-import { enviaAjax, muestraMensaje, modalListener, REGEX } from "./comunes.js";
+import { enviaAjax, muestraMensaje, modalListener, REGEX, obtenerNotificaciones } from "./comunes.js";
 $(document).ready(function () {
   carga_listado_wada();
   cargaProximosVencer();
-
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   modalListener("WADA");
 
   function carga_listado_wada() {

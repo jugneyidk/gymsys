@@ -1,9 +1,16 @@
-import { muestraMensaje, enviaAjax, validarKeyUp, REGEX } from "./comunes.js";
-
+import {
+  muestraMensaje,
+  enviaAjax,
+  validarKeyUp,
+  REGEX,
+  obtenerNotificaciones,
+} from "./comunes.js";
 $(document).ready(function () {
   cargaListadoDeudores();
   cargaListadoMensualidades();
   cargaAtletas();
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   function cargaListadoDeudores() {
     var datos = new FormData();
     datos.append("accion", "listado_deudores");

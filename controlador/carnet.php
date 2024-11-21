@@ -13,7 +13,8 @@ if (!empty($_GET["id"])) {
         exit;
     }
     // Guardar o mostrar el carné
-    header('Content-Type: image/png');
+    header("Content-Disposition: Inline; filename=$cedula.png");
+    header("Content-Type: image/png");
     imagepng($carnet["imagen"]); // Enviar al navegador
     // Liberar memoria
     imagedestroy($carnet["imagen"]);

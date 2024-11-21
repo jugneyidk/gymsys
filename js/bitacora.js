@@ -1,4 +1,4 @@
-import { enviaAjax } from "./comunes.js";
+import { enviaAjax, obtenerNotificaciones } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoBitacora() {
     const datos = new FormData();
@@ -7,6 +7,8 @@ $(document).ready(function () {
       actualizarListadoBitacora(respuesta.respuesta);
     });
   }
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   cargaListadoBitacora();
 });
 window.consultarBitacora = function (id) {

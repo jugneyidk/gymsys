@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-11-2024 a las 04:37:54
+-- Tiempo de generación: 22-11-2024 a las 00:24:09
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -1184,6 +1184,45 @@ INSERT INTO `modulos` (`id_modulo`, `nombre`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `notificaciones`
+--
+
+CREATE TABLE `notificaciones` (
+  `id` int(11) NOT NULL,
+  `id_usuario` varchar(10) NOT NULL,
+  `titulo` text NOT NULL,
+  `mensaje` text DEFAULT NULL,
+  `leida` tinyint(1) NOT NULL DEFAULT 0,
+  `objetivo` varchar(20) NOT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `notificaciones`
+--
+
+INSERT INTO `notificaciones` (`id`, `id_usuario`, `titulo`, `mensaje`, `leida`, `objetivo`, `fecha_creacion`) VALUES
+(1, '22222222', 'Se vencerá la WADA', 'La wada del atleta Jugney Vargas se vencerá en 15 dias.', 1, 'wada', '2024-11-21 07:37:24'),
+(2, '22222222', 'Yeyeyeyeye', 'el carro en sport pluuuuus', 1, 'asistencias', '2024-11-20 13:33:00'),
+(3, '22222222', 'winwonjo', 'el preñao', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(4, '22222222', 'Yeyeyeyeye', 'el carro en sport pluuuuus', 1, 'asistencias', '2024-11-20 13:33:00'),
+(5, '22222222', 'winwonjo', 'el preñao', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(6, '22222222', 'winwonjo', 'el preñao', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(7, '22222222', 'Yeyeyeyeye', 'el carro en sport pluuuuus', 1, 'asistencias', '2024-11-20 13:33:00'),
+(8, '22222222', 'la vinotinto no sirve pa media mrd', 'sumalda es cumpa de su forme ade actuar ah ah ah solo me acuedo de como era por detras', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(9, '22222222', 'Se vencerá la WADA', 'La wada del atleta Jugney Vargas se vencerá en 15 dias.sada', 1, 'wada', '2024-11-21 07:37:24'),
+(10, '22222222', 'Yeyeyeyeyeggg', 'el carro en sport pluuuuusr', 1, 'asistencias', '2024-11-20 13:33:00'),
+(11, '22222222', 'winwonjofas', 'el preñao231', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(12, '22222222', 'Yeyeyeyeyesad', 'el carro en sport pluuuuus213123', 1, 'asistencias', '2024-11-20 13:33:00'),
+(13, '22222222', 'winwonjodad', 'el preñao31', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(14, '22222222', 'winwonjoasd', 'el preñaovv', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(15, '22222222', 'Yeyeyeyeyemsdmm', 'el carro en sport pluuuuusmdmm', 1, 'asistencias', '2024-11-20 13:33:00'),
+(16, '22222222', 'la vinotinto no sirve pa media mrdmdghmdh', 'sumalda es cumpa de su forme ade actuar ah ah ah solo me acuedo de como era podghmmdhgr detras', 1, 'rolespermisos', '2024-11-21 10:40:38'),
+(18, '22222222', 'yeyeye', 'spopluuuu', 1, 'asistencias', '2024-11-21 14:13:19');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `permisos`
 --
 
@@ -1781,6 +1820,13 @@ ALTER TABLE `modulos`
   ADD PRIMARY KEY (`id_modulo`);
 
 --
+-- Indices de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_usuario` (`id_usuario`);
+
+--
 -- Indices de la tabla `permisos`
 --
 ALTER TABLE `permisos`
@@ -1878,6 +1924,12 @@ ALTER TABLE `modulos`
   MODIFY `id_modulo` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
 -- AUTO_INCREMENT de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
@@ -1956,6 +2008,12 @@ ALTER TABLE `marcas`
 --
 ALTER TABLE `mensualidades`
   ADD CONSTRAINT `mensualidades_ibfk_1` FOREIGN KEY (`id_atleta`) REFERENCES `atleta` (`cedula`) ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `permisos`

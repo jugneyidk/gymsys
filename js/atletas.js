@@ -5,6 +5,7 @@ import {
   muestraMensaje,
   REGEX,
   modalListener,
+  obtenerNotificaciones
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoAtleta() {
@@ -15,6 +16,8 @@ $(document).ready(function () {
     });
   }
   modalListener("Atleta");
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   modal.addEventListener("hidden.bs.modal", function (event) {
     $("#modificar_contraseña_container").addClass("d-none");
     $("#password").prop("disabled", false);
@@ -380,8 +383,8 @@ $(document).ready(function () {
       case "telefono_representante":
         validarKeyPress(e, REGEX.keypress_numerico.regex);
         break;
-        case "peso":
-          case "altura":
+      case "peso":
+      case "altura":
         validarKeyPress(e, REGEX.keypress_decimal.regex);
         break;
       case "correo_electronico":

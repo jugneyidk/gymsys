@@ -3,6 +3,7 @@ import {
   validarKeyUp,
   enviaAjax,
   muestraMensaje,
+  obtenerNotificaciones,
   REGEX,
 } from "./comunes.js";
 $(document).ready(function () {
@@ -13,6 +14,8 @@ $(document).ready(function () {
       actualizarListadoAtletas(respuesta.atletas);
     });
   }
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   function enviarAsistencias() {
     var fecha = $("#fechaAsistencia").val();
     if (!fecha) {

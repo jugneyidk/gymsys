@@ -5,6 +5,7 @@ import {
   muestraMensaje,
   REGEX,
   modalListener,
+  obtenerNotificaciones
 } from "./comunes.js";
 $(document).ready(function () {
   function carga_listado_entrenadores() {
@@ -14,7 +15,8 @@ $(document).ready(function () {
       actualizarListadoEntrenadores(respuesta.respuesta);
     });
   }
-
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   carga_listado_entrenadores();
 
   modalListener("Entrenador");

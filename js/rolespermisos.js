@@ -4,6 +4,7 @@ import {
   enviaAjax,
   muestraMensaje,
   REGEX,
+  obtenerNotificaciones
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoRoles() {
@@ -13,7 +14,8 @@ $(document).ready(function () {
       actualizarListadoRoles(respuesta.roles);
     });
   }
-
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   cargaListadoRoles();
 
   function validarEnvio(formId) {

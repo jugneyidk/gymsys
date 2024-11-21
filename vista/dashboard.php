@@ -155,7 +155,7 @@
     <?php require_once("comunes/footer.php"); ?>
 
     <script src="js/chart.min.js"></script>
-    <script src="js/menu.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 
 </html>

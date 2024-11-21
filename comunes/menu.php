@@ -4,6 +4,10 @@ if (isset($_SESSION['rol'])) {
   $permisos_navbar = $permisos_o->permisos_nav();
 }
 ?>
+<script>
+  var idUsuario = <?= $_SESSION["id_usuario"] ?>;
+  var pagina = 1;
+</script>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="?p=landing">Gimnasio Eddie Suarez UPTAEB</a>
@@ -112,13 +116,15 @@ if (isset($_SESSION['rol'])) {
           endif;
           ?>
           <li class="nav-item dropdown d-none d-lg-block">
-            <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-              aria-expanded="false" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i></a>
-            <div class="dropdown-menu dropdown-menu-end" data-bs-popper="static">
-              <div class="ms-2">Notificaciones</div>
-              <div class="dropdown-divider"></div>
-            </div>
+            <a class="nav-link px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
+              aria-expanded="false" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i>
+              <span
+                class="position-absolute top-25 start-75 translate-middle badge rounded-circle p-2 bg-danger border border-light d-none"
+                id="contador-notificaciones">
+                <span class="visually-hidden">Notificaciones sin leer</span>
+              </span>
             </a>
+            <?php require_once "comunes/notificaciones.php"; ?>
           </li>
           <li class="nav-item dropdown d-lg-none">
             <a class="nav-link ps-3" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
@@ -149,3 +155,4 @@ if (isset($_SESSION['rol'])) {
     </div>
   </div>
 </nav>
+<?php require_once "comunes/modal_notificaciones.php" ?>
