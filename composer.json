@@ -11,7 +11,9 @@
         }
     ],
     "autoload": {
-        "classmap": ["modelo"]
+        "classmap": [
+            "modelo/"
+        ]
     },
     "require-dev": {
         "phpunit/phpunit": "11"
