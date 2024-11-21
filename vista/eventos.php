@@ -56,10 +56,8 @@
 
                 </div>
             </div>
-        </div> <!-- Cerrando div container -->
-
-        <!-- Modales -->
-        <!-- Modal Registrar Evento -->
+        </div>  
+ 
         <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento"
             tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -134,15 +132,13 @@
                             <input type="submit" class="btn btn-primary" value="Registrar" type="button">
                             <input type="reset" class="btn btn-warning" value="Limpiar" type="button">
                             <button class="btn btn-danger" data-bs-dismiss="modal" type="button">Cancelar</button>
-                            <!-- Corregido el botón -->
+                          
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-
-        <!-- Modales de Registro para Categorias, Subs y Tipos -->
-        <!-- Modal Registrar Categoria -->
+ 
         <div class="modal" id="modalRegistrarCategoria" aria-hidden="true" aria-labelledby="modalRegistrarCategoria"
             tabindex="-1">
             <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -176,8 +172,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal Registrar Subs -->
+ 
         <div class="modal" id="modalRegistrarSubs" aria-hidden="true" aria-labelledby="modalRegistrarSubs"
             tabindex="-1">
             <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -211,8 +206,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal Registrar Tipo -->
+ 
         <div class="modal" id="modalRegistrarTipo" aria-hidden="true" aria-labelledby="modalRegistrarTipo"
             tabindex="-1">
             <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -221,7 +215,7 @@
                         <h1 class="modal-title fs-5">Registrar Tipo</h1>
                         <button class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form id="registrarTipo" method="post" action="#">
+                    <form id="registrarTipo" method="post">
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col">
@@ -234,145 +228,126 @@
                         <div class="modal-footer">
                             <input type="submit" class="btn px-2 btn-primary" value="Registrar">
                             <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
+                            <button type="button" class="btn btn-primary btn-sm" id="btnConsultarTipos">Consultar Tipos</button>
                             <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        <div class="modal" id="modalEditarTipo" tabindex="-1" aria-labelledby="modalEditarTipoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarTipoLabel">Editar Tipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="formEditarTipo">
+                <div class="modal-body">
+                    <input type="hidden" id="id_tipo_editar" name="id_tipo">
+                    <div class="mb-3">
+                        <label for="nombre_tipo_editar" class="form-label">Nombre del Tipo</label>
+                        <input type="text" class="form-control" id="nombre_tipo_editar" name="nombre" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-        <!-- Modal Ver Evento Activo -->
-        <div class="modal" id="modalVerEventoActivo" aria-hidden="true" aria-labelledby="modalVerEventoActivo"
-            tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Ver Evento Activo</h1>
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal fade" id="modalVerEventoActivo" tabindex="-1" aria-labelledby="modalVerEventoActivoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalVerEventoActivoLabel">Detalles del Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <h6><strong>Nombre:</strong> <span id="detallesNombreEvento"></span></h6>
+                <h6><strong>Fecha:</strong> <span id="detallesFechaInicio"></span> - <span id="detallesFechaFin"></span></h6>
+                <h6><strong>Ubicación:</strong> <span id="detallesUbicacion"></span></h6>
+                <h6><strong>Estado:</strong> <span id="detallesEstado"></span></h6>
+                <hr>
+                <h5>Atletas Inscritos</h5>
+                <table class="table table-bordered" id="tablaAtletasInscritos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Cédula</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modalInscribirEvento" tabindex="-1" aria-labelledby="modalInscribirEventoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-4 lead text-info" id="modalInscribirEventoLabel">Inscribir Participante</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for=""><strong>Nombre del Evento:</strong></label>
+                        <span id="nombreEventoInscripcion"></span><br>
+                        <label for=""><strong>Fecha de Inicio:</strong></label>
+                        <span id="fechaInicioEventoInscripcion"></span><br>
                     </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col">
-                                <span class="lead fs-4 text-info"><strong>Informacion del Evento</strong></span>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col">
-                                <label for="" class="form-label">Nombre del Evento:</label>
-                                <span class=""><u>Evento Activo</u></span><br>
-                                <label for="" class="form-label">Fecha de Inicio:</label>
-                                <span class=""><u><?php echo date("d/m/y") ?></u></span><br>
-                            </div>
-                            <div class="col">
-                                <label for="" class="form-label">Ubicacion:</label>
-                                <span><u>Gimnasio UPTAEB</u></span><br>
-                                <label for="" class="form-label">Fecha de Clausura:</label>
-                                <span class=""><u><?php echo date("d/m/y") ?></u></span><br>
-                            </div>
-                        </div>
-                        <div class="row my-3">
-                            <div class="col table-responsive">
-                                <table id="tablaParticipantes" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Nombre</th>
-                                            <th scope="col">Cedula</th>
-                                            <th scope="col">Edad</th>
-                                            <th scope="col">Peso</th>
-                                            <th scope="col">Altura</th>
-                                            <th scope="col">Op</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Juan Jimenez</td>
-                                            <td>25.123.231</td>
-                                            <td>18</td>
-                                            <td>55 kg</td>
-                                            <td>1.35 cm</td>
-                                            <td><button class="btn btn-primary btn-sm" data-bs-toggle="modal"
-                                                    data-bs-target="#modalParicipante">Ver</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>Ricardo Sanchez</td>
-                                            <td>30.315.412</td>
-                                            <td>20</td>
-                                            <td>60 kg</td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                    <div class="col-md-6">
+                        <label for=""><strong>Ubicación:</strong></label>
+                        <span id="ubicacionEventoInscripcion"></span><br>
+                        <label for=""><strong>Fecha de Clausura:</strong></label>
+                        <span id="fechaFinEventoInscripcion"></span><br>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
+                </div>
+
+                <div class="row my-3">
+                    <div class="table-responsive">
+                        <table id="tablaParticipantesInscripcion" class="table table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nombre</th>
+                                    <th>Cédula</th>
+                                    <th>Peso</th>
+                                    <th>Edad</th>
+                                    <th>Seleccionar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                               
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Modal Inscribir Evento -->
-        <div class="modal fade" id="modalInscribirEvento" tabindex="-1" aria-labelledby="modalInscribirEventoLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title fs-4 lead text-info" id="modalInscribirEventoLabel">Inscribir
-                            Participante</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for=""><strong>Nombre del Evento:</strong></label>
-                                <span id="nombreEventoInscripcion"></span><br>
-                                <label for=""><strong>Fecha de Inicio:</strong></label>
-                                <span id="fechaInicioEventoInscripcion"></span><br>
-                            </div>
-                            <div class="col-md-6">
-                                <label for=""><strong>Ubicación:</strong></label>
-                                <span id="ubicacionEventoInscripcion"></span><br>
-                                <label for=""><strong>Fecha de Clausura:</strong></label>
-                                <span id="fechaFinEventoInscripcion"></span><br>
-                            </div>
-                        </div>
-
-                        <div class="row my-3">
-                            <div class="table-responsive">
-                                <table id="tablaParticipantesInscripcion" class="table table-bordered">
-                                    <thead class="table-primary">
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Nombre</th>
-                                            <th scope="col">Cédula</th>
-                                            <th scope="col">Edad</th>
-                                            <th scope="col">Peso</th>
-                                            <th scope="col">Altura</th>
-                                            <th scope="col">Seleccionar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- Datos dinámicos aquí -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <form id="formInscribirAtletas">
-                        <div class="modal-footer">
-                            <input type="submit" class="btn btn-primary" value="Inscribir">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                    </form>
+            <form id="formInscribirAtletas">
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Inscribir">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                 </div>
-            </div>
+            </form>
         </div>
+    </div>
+</div>
 
-        <!-- Modal Consulta Anteriores Evento -->
+ 
         <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true"
             aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -384,7 +359,7 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col my-3 mx-2">
-                                <!-- Tabla de eventos anteriores -->
+                               
                                 <div id="eventosAnteriores" class="mt-3">
                                     <h3 class="lead text-info">Eventos Anteriores</h3>
                                     <table id="tablaEventosAnteriores" class="table table-bordered">
@@ -399,7 +374,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <!-- Aquí se insertarán dinámicamente los eventos -->
+                                         
                                         </tbody>
                                     </table>
                                 </div>
@@ -413,8 +388,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal para Modificar Resultados de los Atletas -->
+ 
         <div class="modal fade" id="modalModificarResultados" tabindex="-1"
             aria-labelledby="modalModificarResultadosLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -500,8 +474,7 @@
                 </div>
             </div>
         </div>
-
-        <!-- Modal para Registrar Resultados de los Atletas -->
+ 
         <div class="modal fade" id="modalRegistrarResultados" tabindex="-1"
             aria-labelledby="modalRegistrarResultadosLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -581,7 +554,7 @@
                 </div>
             </div>
         </div>
-        <!-- Modal para Consultar Evento Anterior -->
+
 <div class="modal fade" id="modalConsultarEventoAnterior" tabindex="-1" aria-labelledby="modalConsultarEventoAnteriorLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -590,13 +563,13 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Aquí se cargará la información del evento -->
+               
                 <p><strong>Nombre del Evento:</strong> <span id="detallesNombreEvento"></span></p>
                 <p><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicio"></span></p>
                 <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFin"></span></p>
                 <p><strong>Ubicación:</strong> <span id="detallesUbicacion"></span></p>
                 <p><strong>Estado:</strong> <span id="detallesEstado"></span></p>
-                <!-- Puedes agregar más campos aquí según sea necesario -->
+            
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -604,8 +577,7 @@
         </div>
     </div>
 </div>
-
- <!-- Modal Modificar Competencia -->
+ 
 <div class="modal fade" id="modalModificarCompetencia" tabindex="-1" aria-labelledby="modalModificarCompetenciaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -643,7 +615,7 @@
                             <label for="categoria_modificar" class="form-label">Categoría</label>
                             <select id="categoria_modificar" name="categoria" class="form-select" required>
                                 <option value="" selected>Seleccione una</option>
-                                <!-- Opciones dinámicas aquí -->
+                               
                             </select>
                             <div class="invalid-feedback">La categoría es obligatoria</div>
                         </div>
@@ -651,7 +623,7 @@
                             <label for="subs_modificar" class="form-label">Subs</label>
                             <select id="subs_modificar" name="subs" class="form-select" required>
                                 <option value="" selected>Seleccione una</option>
-                                <!-- Opciones dinámicas aquí -->
+                               
                             </select>
                             <div class="invalid-feedback">El campo Subs es obligatorio</div>
                         </div>
@@ -659,7 +631,7 @@
                             <label for="tipo_modificar" class="form-label">Tipo</label>
                             <select id="tipo_modificar" name="tipo_competencia" class="form-select" required>
                                 <option value="" selected>Seleccione una</option>
-                                <!-- Opciones dinámicas aquí -->
+                              
                             </select>
                             <div class="invalid-feedback">El tipo de competencia es obligatorio</div>
                         </div>
@@ -674,7 +646,7 @@
     </div>
 </div>
 
-        <!-- Modal Consulta Anteriores Especifica Evento -->
+      
         <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp"
             tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -730,8 +702,10 @@
         </div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
     <script type="text/javascript" src="datatables/datatables.min.js"></script>
     <script type="text/javascript" src="js/eventos.js"></script>
+   
 </body>
 
 </html>

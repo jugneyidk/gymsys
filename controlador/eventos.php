@@ -52,19 +52,23 @@ if (is_file("vista/" . $p . ".php")) {
         } elseif ($accion == 'listado_tipo') {
             $respuesta = $o->listado_tipo();
             echo json_encode($respuesta);
-        } elseif ($accion == 'listado_atletas_disponibles') {
-            $respuesta = $o->listado_atletas_disponibles($_POST['id_competencia']);
-            echo json_encode($respuesta);
         } elseif ($accion == 'listado_atletas_inscritos') {
             $respuesta = $o->listado_atletas_inscritos($_POST['id_competencia']);
             echo json_encode($respuesta);
-        } elseif ($accion == 'inscribir_atletas') {
-            $respuesta = $o->inscribir_atletas(
-                $_POST['id_competencia'],
-                isset($_POST['atleta']) ? $_POST['atleta'] : []
-            );
+        }elseif ($accion == 'inscribir_atletas') {
+            file_put_contents("debug.log", print_r($_POST, true), FILE_APPEND); 
+        
+            $id_competencia = $_POST['id_competencia'] ?? null;
+            $atletas = $_POST['atletas'] ?? [];
+        
+            if (!$id_competencia || empty($atletas)) {
+                echo json_encode(["ok" => false, "mensaje" => "Datos insuficientes para inscribir."]);
+                exit;
+            }
+        
+            $respuesta = $o->inscribir_atletas($id_competencia, $atletas);
             echo json_encode($respuesta);
-        } elseif ($accion == 'registrar_resultados') {
+        }elseif ($accion == 'registrar_resultados') {
             $respuesta = $o->registrar_resultados(
                 $_POST['id_competencia'],
                 $_POST['id_atleta'],
@@ -116,11 +120,14 @@ if (is_file("vista/" . $p . ".php")) {
             
             $respuesta = $o->eliminar_evento($id_competencia);
             echo json_encode($respuesta);
-        }
-        
-        
-        
-        
+        } elseif ($accion == 'listado_atletas_disponibles') {
+            $id_categoria = $_POST['id_categoria'];
+            $id_sub = $_POST['id_sub'];
+            $id_competencia = $_POST['id_competencia'];  
+            $respuesta = $o->listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia);
+            echo json_encode($respuesta);
+        }        
+           
         
         exit;
     }

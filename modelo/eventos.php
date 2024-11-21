@@ -62,27 +62,33 @@ class Eventos extends datos
     }
     return $resultado;
 }
-
-
-    private function listado()
-    {
-        try {
-            $consulta = "SELECT c.*, 
-                    (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia) AS participantes, 
-                    (10 - (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia)) AS cupos_disponibles
+private function listado()
+{
+    try {
+        $consulta = "SELECT 
+                        c.id_competencia,
+                        c.nombre,
+                        c.categoria,  
+                        c.subs,  
+                        c.lugar_competencia,
+                        c.fecha_inicio,
+                        c.fecha_fin,
+                        (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia) AS participantes,
+                        (10 - (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia)) AS cupos_disponibles
                     FROM competencia c
-                    WHERE c.estado = 'activo'"; 
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+                    WHERE c.estado = 'activo'";
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute();
+        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+
+        $resultado["ok"] = true;
+        $resultado["respuesta"] = $respuesta;
+    } catch (Exception $e) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
     }
+    return $resultado;
+}
 
 
     public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo) {
@@ -208,27 +214,6 @@ class Eventos extends datos
         return $resultado;
     }
 
-    public function listado_atletas_disponibles($id_competencia)
-    {
-        try {
-            $consulta = "
-                SELECT a.*, u.nombre, u.apellido, u.fecha_nacimiento
-                FROM atleta a
-                LEFT JOIN resultado_competencia rc ON a.cedula = rc.id_atleta AND rc.id_competencia = :id_competencia
-                JOIN usuarios u ON a.cedula = u.cedula
-                WHERE rc.id_atleta IS NULL";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_competencia' => $id_competencia]);
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
-    }
-
     public function listado_atletas_inscritos($id_competencia)
     {
         try {
@@ -252,27 +237,37 @@ class Eventos extends datos
 
 
     public function inscribir_atletas($id_competencia, $atletas)
-    {
-        try {
-            $this->conexion->beginTransaction();
-            foreach ($atletas as $id_atleta) {
-                $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
-                $valores = array(
-                    ':id_competencia' => $id_competencia,
-                    ':id_atleta' => $id_atleta
-                );
-                $respuesta = $this->conexion->prepare($consulta);
-                $respuesta->execute($valores);
-            }
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
+{
+    try {
+        $this->conexion->beginTransaction(); 
+
+        if (is_string($atletas)) {
+            $atletas = json_decode($atletas, true);
         }
-        return $resultado;
+
+        if (!is_array($atletas)) {
+            throw new Exception("El formato de los datos de atletas no es válido.");
+        }
+
+        foreach ($atletas as $id_atleta) {
+            $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
+            $valores = array(
+                ':id_competencia' => $id_competencia,
+                ':id_atleta' => $id_atleta
+            );
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->execute($valores);
+        }
+
+        $this->conexion->commit();  
+        return ["ok" => true, "mensaje" => "Atletas inscritos correctamente."];
+    } catch (Exception $e) {
+        $this->conexion->rollBack();  
+        return ["ok" => false, "mensaje" => $e->getMessage()];
     }
+}
+
+    
 // Modelo.php
 public function obtenerCompetencia($id_competencia) {
     try {
@@ -288,7 +283,15 @@ public function obtenerCompetencia($id_competencia) {
 
 public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia) {
     try {
-        $consulta = "UPDATE competencia SET nombre = :nombre, lugar_competencia = :ubicacion, fecha_inicio = :fecha_inicio, fecha_fin = :fecha_fin, categoria = :categoria, subs = :subs, tipo_competicion = :tipo_competencia WHERE id_competencia = :id_competencia";
+        $consulta = "UPDATE competencia 
+                     SET nombre = :nombre, 
+                         lugar_competencia = :ubicacion, 
+                         fecha_inicio = :fecha_inicio, 
+                         fecha_fin = :fecha_fin, 
+                         categoria = :categoria, 
+                         subs = :subs, 
+                         tipo_competicion = :tipo_competencia 
+                     WHERE id_competencia = :id_competencia";
         $valores = [
             ':id_competencia' => $id_competencia,
             ':nombre' => $nombre,
@@ -297,7 +300,7 @@ public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fech
             ':fecha_fin' => $fecha_fin,
             ':categoria' => $categoria,
             ':subs' => $subs,
-            ':tipo_competicion' => $tipo_competencia
+            ':tipo_competencia' => $tipo_competencia
         ];
         $respuesta = $this->conexion->prepare($consulta);
         $respuesta->execute($valores);
@@ -306,12 +309,18 @@ public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fech
         return ["ok" => false, "mensaje" => $e->getMessage()];
     }
 }
+
 public function eliminar_evento($id_competencia)
 {
-    try {
+    try { 
+        $consultaRelacionada = "DELETE FROM resultado_competencia WHERE id_competencia = :id_competencia";
+        $stmtRelacionada = $this->conexion->prepare($consultaRelacionada);
+        $stmtRelacionada->execute([':id_competencia' => $id_competencia]);
+ 
         $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
         $stmt = $this->conexion->prepare($consulta);
         $stmt->execute([':id_competencia' => $id_competencia]);
+
         $resultado["ok"] = true;
     } catch (Exception $e) {
         $resultado["ok"] = false;
@@ -320,33 +329,94 @@ public function eliminar_evento($id_competencia)
     return $resultado;
 }
 
-    public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
+
+public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
+{
+    try {
+        $consulta = "
+            UPDATE resultado_competencia 
+            SET arranque = :arranque, 
+                envion = :envion, 
+                medalla_arranque = :medalla_arranque, 
+                medalla_envion = :medalla_envion, 
+                medalla_total = :medalla_total, 
+                total = :total 
+            WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
+        $valores = array(
+            ':id_competencia' => $id_competencia,
+            ':id_atleta' => $id_atleta,
+            ':arranque' => $arranque,
+            ':envion' => $envion,
+            ':medalla_arranque' => $medalla_arranque,
+            ':medalla_envion' => $medalla_envion,
+            ':medalla_total' => $medalla_total,
+            ':total' => $total
+        );
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute($valores);
+        return ["ok" => true, "mensaje" => "Resultados registrados correctamente."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
+    public function listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia)
     {
         try {
-            $consulta = "
-                UPDATE resultado_competencia 
-                SET arranque = :arranque, envion = :envion, medalla_arranque = :medalla_arranque, medalla_envion = :medalla_envion, medalla_total = :medalla_total, total = :total 
-                WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
-            $valores = array(
-                ':id_competencia' => $id_competencia,
-                ':id_atleta' => $id_atleta,
-                ':arranque' => $arranque,
-                ':envion' => $envion,
-                ':medalla_arranque' => $medalla_arranque,
-                ':medalla_envion' => $medalla_envion,
-                ':medalla_total' => $medalla_total,
-                ':total' => $total
-            );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
+            
+            $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
+            $stmtCategoria = $this->conexion->prepare($consultaCategoria);
+            $stmtCategoria->execute([':id_categoria' => $id_categoria]);
+            $categoria = $stmtCategoria->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$categoria) {
+                throw new Exception("Categoría no encontrada.");
+            }
+     
+            $consultaSub = "SELECT edad_minima, edad_maxima FROM subs WHERE id_sub = :id_sub";
+            $stmtSub = $this->conexion->prepare($consultaSub);
+            $stmtSub->execute([':id_sub' => $id_sub]);
+            $sub = $stmtSub->fetch(PDO::FETCH_ASSOC);
+    
+            if (!$sub) {
+                throw new Exception("Subcategoría no encontrada.");
+            }
+     
+            $consultaAtletas = "
+                SELECT 
+                    a.cedula AS id_atleta,
+                    u.nombre,
+                    u.apellido,
+                    a.peso,
+                    u.fecha_nacimiento
+                FROM atleta a
+                JOIN usuarios u ON a.cedula = u.cedula
+                WHERE a.peso BETWEEN :peso_minimo AND :peso_maximo
+                  AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN :edad_minima AND :edad_maxima
+                  AND NOT EXISTS (
+                      SELECT 1 
+                      FROM resultado_competencia rc 
+                      WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula
+                  )";
+    
+            $stmtAtletas = $this->conexion->prepare($consultaAtletas);
+            $stmtAtletas->execute([
+                ':peso_minimo' => $categoria['peso_minimo'],
+                ':peso_maximo' => $categoria['peso_maximo'],
+                ':edad_minima' => $sub['edad_minima'],
+                ':edad_maxima' => $sub['edad_maxima'],
+                ':id_competencia' => $id_competencia
+            ]);
+    
+            $atletas = $stmtAtletas->fetchAll(PDO::FETCH_ASSOC);
+    
+            return ["ok" => true, "respuesta" => $atletas];
         } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
+            return ["ok" => false, "mensaje" => $e->getMessage()];
         }
-        return $resultado;
     }
-
+    
+    
     public function __get($propiedad)
     {
         return $this->$propiedad;
@@ -359,6 +429,6 @@ public function eliminar_evento($id_competencia)
     }
     public function __destruct()
     {
-        $this->conexion = null;  // Esto cierra la conexión
+        $this->conexion = null;  
     }
 }
