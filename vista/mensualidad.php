@@ -75,7 +75,7 @@
                                         <input type="date" class="form-control" id="fecha" name="fecha">
                                         <div id="sfecha" class="invalid-feedback"></div>
                                     </div>
-                                    <button type="button" class="btn btn-primary w-100" id="registrarPago"
+                                    <button type="submit" class="btn btn-primary w-100" id="registrarPago"
                                         name="registrarPago">Registrar Pago</button>
                                 </div>
                             </form>

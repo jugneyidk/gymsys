@@ -12,7 +12,6 @@ class Validar extends datos
         if ($campo === "password" && $valor === null) {
             return $respuesta;
         }
-        // $campo = str_replace('_modificar', '', $campo);
         if (isset(self::$exp[$campo])) {
             $regex = self::$exp[$campo]['regex'];
             $mensaje = self::$exp[$campo]['mensaje'];

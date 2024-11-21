@@ -97,5 +97,9 @@ const REGEX = {
     regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{0,200}$/,
     mensaje: "Solo letras, números y espacios (200 caracteres maximo)",
   },
+  monto: {
+    regex: /^\d+(\.\d{1,2})?$/,
+    mensaje: "Solo números y dos decimales",
+  },
 };
 export default REGEX;

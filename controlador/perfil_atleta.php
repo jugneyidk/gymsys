@@ -5,6 +5,7 @@ if (!is_file("modelo/" . $p . ".php")) {
 }
 if (!empty($_GET["id"])) {
   $o = new PerfilAtleta();
+  $permisos_o = new Permisos();
   $cedula = $_GET['id'];
   $atleta = $o->obtener_atleta($cedula);
 } else {

@@ -1,7 +1,7 @@
 <div class="container-fluid mt-auto bg-dark">
     <div class="container">
         <footer class="row row-cols-3 py-5">
-            <div class="col">
+            <div class="col-12 col-md mb-3 mb-md-0">
                 <span class="text-white h5 mb-2 d-inline-block">Contacto</span>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
@@ -16,7 +16,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col">
+            <div class="col-12 col-md mb-3 mb-md-0">
                 <span class="text-white h5 mb-2 d-inline-block">Ayuda</span>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
@@ -31,7 +31,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col">
+            <div class="col-12 col-md mb-3 mb-md-0">
                 <span class="text-white h5 mb-2 d-inline-block">Más</span>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">

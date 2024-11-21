@@ -116,7 +116,6 @@ $(document).ready(function () {
     const hoy = new Date();
     const fechaNac = new Date(fecha);
     const isValid = fecha && fechaNac <= hoy;
-
     fechaInput
       .toggleClass("is-invalid", !isValid)
       .toggleClass("is-valid", isValid);

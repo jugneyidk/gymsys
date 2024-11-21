@@ -1,10 +1,9 @@
-import { muestraMensaje, enviaAjax } from "./comunes.js";
+import { muestraMensaje, enviaAjax, validarKeyUp, REGEX } from "./comunes.js";
 
 $(document).ready(function () {
   cargaListadoDeudores();
   cargaListadoMensualidades();
   cargaAtletas();
-
   function cargaListadoDeudores() {
     var datos = new FormData();
     datos.append("accion", "listado_deudores");
@@ -72,13 +71,12 @@ $(document).ready(function () {
       respuesta.respuesta.forEach(function (atleta) {
         // Validación para excluir atletas con tipo_atleta igual a 0 o null
         if (atleta.nombre_tipo_atleta) {
-          html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_cobro}">${atleta.nombre} ${atleta.apellido} - ${atleta.nombre_tipo_atleta}</option>`;
+          html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_cobro}">${atleta.nombre} ${atleta.apellido} - ${atleta.cedula}</option>`;
         }
       });
       $("#atleta").html(html);
     });
   }
-
   function inicializarDataTable(selector, pageLength = 10) {
     $(selector).DataTable({
       lengthChange: false,
@@ -97,7 +95,6 @@ $(document).ready(function () {
       },
     });
   }
-
   $("#tablaDeudores").on("click", ".btn-seleccionar", function () {
     var cedula = $(this).data("cedula");
     var tipo = $(this).data("tipo");
@@ -105,55 +102,69 @@ $(document).ready(function () {
     $("#monto").val(tipo);
   });
 
-  $("#registrarPago").on("click", function () {
+  $("#registrarPago").on("click", function (e) {
+    e.preventDefault();
     if (validarEnvio()) {
-      var datos = new FormData($("#formPago")[0]);
-      datos.append("accion", "incluir");
-      enviaAjax(datos, "").then(() => {
-        muestraMensaje("Éxito", "Pago registrado con éxito", "success");
-        cargaListadoDeudores();
-        cargaListadoMensualidades();
-        limpiarFormulario("#formPago");
+      Swal.fire({
+        title: "¿Estás seguro que deseas registrar esta mensualidad?",
+        text: "No podrás revertir esto!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Registrar",
+        cancelButtonText: "Cancelar",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          var datos = new FormData($("#formPago")[0]);
+          datos.append("accion", "incluir");
+          enviaAjax(datos, "").then(() => {
+            muestraMensaje("Éxito", "Pago registrado con éxito", "success");
+            cargaListadoDeudores();
+            cargaListadoMensualidades();
+            limpiarFormulario("#formPago");
+          });
+        }
       });
     }
   });
-
   function limpiarFormulario(formId) {
     $(formId)
       .find("input[type=text], input[type=number], input[type=date], select")
       .val("");
     $(formId).find("input, select").removeClass("is-invalid is-valid");
   }
-
   function validarEnvio() {
     var esValido = true;
-    esValido &= verificarCampoVacio(
-      $("#atleta"),
-      $("#satleta"),
-      "El atleta es obligatorio"
+    const form = $("#formPago");
+    const fecha = $("#fecha").val();
+    esValido &= validarKeyUp(
+      REGEX.cedula.regex,
+      form.find(`#atleta`),
+      form.find(`#satleta`),
+      "Debe elegir un atleta"
     );
-    esValido &= verificarCampoVacio(
-      $("#monto"),
-      $("#smonto"),
-      "El monto es obligatorio"
+    esValido &= validarKeyUp(
+      REGEX.monto.regex,
+      form.find(`#monto`),
+      form.find(`#smonto`),
+      REGEX.monto.mensaje
     );
-    esValido &= verificarCampoVacio(
-      $("#fecha"),
-      $("#sfecha"),
-      "La fecha es obligatoria"
+    esValido &= validarKeyUp(
+      REGEX.detalles.regex,
+      form.find(`#detalles`),
+      form.find(`#sdetalles`),
+      REGEX.detalles.mensaje
     );
+    var fechaValida = validarFecha(fecha);
+    if (!fechaValida) {
+      $("#sfecha").text("La fecha no es valida");
+      return false;
+    }
     return esValido;
   }
-
-  function verificarCampoVacio(input, mensaje, textoError) {
-    if (input.val().trim() === "") {
-      input.removeClass("is-valid").addClass("is-invalid");
-      mensaje.text(textoError);
-      return false;
-    } else {
-      input.removeClass("is-invalid").addClass("is-valid");
-      mensaje.text("");
-      return true;
-    }
+  function validarFecha(fecha) {
+    const date = new Date(fecha);
+    return !isNaN(date.getTime());
   }
 });

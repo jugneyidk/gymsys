@@ -19,26 +19,30 @@ $(document).ready(function () {
     data.forEach(function (registro) {
       html += `<tr>
                 <td class="d-none">${registro.cedula}</td>
-                <td>${registro.nombre} ${registro.apellido}</td>
-                <td class="text-center">${
+                <td class="align-middle">${registro.nombre} ${
+        registro.apellido
+      }</td>
+                <td class="text-center align-middle">${
                   registro.estado === 1
-                    ? `<span class='badge rounded-pill bg-success' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} se cumple' role='img'><i class='fa-solid fa-check'></i></span>`
-                    : `<span class='badge rounded-pill bg-danger' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} no se cumple' role='img'><i class='fa-solid fa-x'></i></span>`
+                    ? `<span class='badge rounded-pill bg-success' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} se cumple' role='img' data-tooltip='tooltip' title="Cumple"><i class='fa-solid fa-check'></i></span>`
+                    : `<span class='badge rounded-pill bg-danger' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} no se cumple' role='img' data-tooltip='tooltip' title="No Cumple"><i class='fa-solid fa-x'></i></span>`
                 }</td>
-                <td class="d-none d-lg-table-cell">${registro.inscrito}</td>
-                <td class="d-none d-md-table-cell">${
+                <td class="d-none d-lg-table-cell align-middle">${
+                  registro.inscrito
+                }</td>
+                <td class="d-none d-md-table-cell align-middle">${
                   registro.ultima_actualizacion
                 }</td>
-                <td>${registro.vencimiento}</td>
-                <td>
+                <td class="align-middle">${registro.vencimiento}</td>
+                <td class="align-middle">
                 ${
                   actualizar === 1
-                    ? `<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}'><i class='fa-regular fa-pen-to-square'></i></button>`
+                    ? `<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}' data-tooltip='tooltip' title='Modificar WADA'><i class='fa-regular fa-pen-to-square'></i></button>`
                     : ""
                 }  
                 ${
                   eliminar === 1
-                    ? `<button class='btn btn-block btn-danger me-2' aria-label='Eliminar WADA del atleta ${registro.nombre} ${registro.apellido}'><i class='fa-regular fa-trash-can'></i></button>`
+                    ? `<button class='btn btn-block btn-danger me-2' aria-label='Eliminar WADA del atleta ${registro.nombre} ${registro.apellido}' data-tooltip='tooltip' title='Eliminar WADA'><i class='fa-regular fa-trash-can'></i></button>`
                     : ""
                 }  
                 </td>
@@ -54,7 +58,7 @@ $(document).ready(function () {
         {
           targets: [6],
           className: "text-nowrap",
-          orderable: false, // Opcional: desactiva el ordenamiento si no es necesario
+          orderable: false,
         },
       ],
       language: {
@@ -73,25 +77,25 @@ $(document).ready(function () {
       },
     });
   }
-
   function actualizarTablaProximosVencer(data) {
     var html = "";
     console.log(data);
     data.forEach(function (registro) {
       html += `<tr>
                   <td class="d-none">${registro.cedula}</td>
-                  <td>${registro.nombre} ${registro.apellido}</td>
-                  <td>${registro.vencimiento}</td>
-                  <td>
+                  <td class="align-middle">${registro.nombre} ${
+        registro.apellido
+      }</td>
+                  <td class="align-middle">${registro.vencimiento}</td>
+                  <td class="align-middle">
                   ${
                     actualizar === 1
-                      ? `<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}'><i class='fa-regular fa-pen-to-square'></i></button>`
+                      ? `<button class='btn btn-block btn-warning me-2' data-bs-toggle='modal' data-bs-target='#modal' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}' data-tooltip='tooltip' title='Modificar WADA'><i class='fa-regular fa-pen-to-square'></i></button>`
                       : ""
                   }
                   </td>
               </tr>`;
     });
-
     if ($.fn.DataTable.isDataTable("#tablaProximosVencer")) {
       $("#tablaProximosVencer").DataTable().clear().destroy();
     }

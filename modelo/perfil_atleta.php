@@ -36,11 +36,13 @@ class PerfilAtleta extends datos
                     a.tipo_atleta AS id_tipo_atleta, 
                     a.peso, 
                     a.altura, 
-                    a.entrenador
+                    a.entrenador, 
+                    ue.nombre AS nombre_entrenador, 
+                    CONCAT(ue.nombre, ' ', ue.apellido) AS nombre_entrenador
                 FROM atleta a
                 INNER JOIN usuarios u ON a.cedula = u.cedula
-                WHERE u.cedula = :cedula
-            ";
+                LEFT JOIN usuarios ue ON a.entrenador = ue.cedula
+                WHERE u.cedula = :cedula;";
             $valores = array(':cedula' => $this->cedula);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);

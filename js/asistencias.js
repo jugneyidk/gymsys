@@ -13,7 +13,6 @@ $(document).ready(function () {
       actualizarListadoAtletas(respuesta.atletas);
     });
   }
-
   function enviarAsistencias() {
     var fecha = $("#fechaAsistencia").val();
     if (!fecha) {
@@ -77,7 +76,7 @@ $(document).ready(function () {
                             <td class="align-middle">${atleta.cedula}</td>
                             <td class="align-middle">${atleta.nombre}</td>
                             <td class="d-none d-md-table-cell align-middle">${atleta.apellido}</td>
-                            <td class="align-middle"><input type="checkbox" class="form-check-input" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
+                            <td class="align-middle form-switch"><input type="checkbox" class="form-check-input ms-0" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
                             <td class="align-middle"><input type="text" class="form-control comentario" data-id="${atleta.nombre}" aria-label='Comentario de asistencia del atleta ${atleta.nombre}'/>
                             </td>
                         </tr>
