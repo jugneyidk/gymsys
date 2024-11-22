@@ -91,49 +91,141 @@ private function listado()
 }
 
 
-    public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo) {
-        try {
-            if (empty($nombre) || strlen($nombre) < 2) {
-                throw new Exception("El nombre es inválido.");
-            }
-            if (!is_numeric($pesoMinimo) || !is_numeric($pesoMaximo) || $pesoMinimo < 0 || $pesoMaximo <= $pesoMinimo) {
-                throw new Exception("El rango de peso es inválido.");
-            }
-            $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
-            $valores = array(
-                ':nombre' => $nombre,
-                ':pesoMinimo' => $pesoMinimo,
-                ':pesoMaximo' => $pesoMaximo
-            );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
+public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
+{
+    try {
+        if (empty($nombre) || strlen($nombre) < 2) {
+            throw new Exception("El nombre es inválido.");
         }
-        return $resultado;
+        if (!is_numeric($pesoMinimo) || !is_numeric($pesoMaximo) || $pesoMinimo < 0 || $pesoMaximo <= $pesoMinimo) {
+            throw new Exception("El rango de peso es inválido.");
+        }
+
+        $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
+        $valores = [
+            ':nombre' => $nombre,
+            ':pesoMinimo' => $pesoMinimo,
+            ':pesoMaximo' => $pesoMaximo
+        ];
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute($valores);
+
+        return ["ok" => true, "mensaje" => "Categoría registrada con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
     }
-    
+}
+
+public function modificar_categoria($id, $nombre, $pesoMinimo, $pesoMaximo)
+{
+    try {
+        if (empty($nombre) || strlen($nombre) < 2) {
+            throw new Exception("El nombre es inválido.");
+        }
+        if (!is_numeric($pesoMinimo) || !is_numeric($pesoMaximo) || $pesoMinimo < 0 || $pesoMaximo <= $pesoMinimo) {
+            throw new Exception("El rango de peso es inválido.");
+        }
+
+        $consulta = "UPDATE categorias 
+                     SET nombre = :nombre, peso_minimo = :pesoMinimo, peso_maximo = :pesoMaximo 
+                     WHERE id_categoria = :id";
+        $valores = [
+            ':id' => $id,
+            ':nombre' => $nombre,
+            ':pesoMinimo' => $pesoMinimo,
+            ':pesoMaximo' => $pesoMaximo
+        ];
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute($valores);
+
+        return ["ok" => true, "mensaje" => "Categoría modificada con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+public function eliminar_categoria($id)
+{
+    try {
+        $consulta = "DELETE FROM categorias WHERE id_categoria = :id";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id' => $id]);
+
+        return ["ok" => true, "mensaje" => "Categoría eliminada con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
 
     public function incluir_subs($nombre, $edadMinima, $edadMaxima)
-    {
-        try {
-            $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) VALUES (:nombre, :edadMinima, :edadMaxima)";
-            $valores = array(
-                ':nombre' => $nombre,
-                ':edadMinima' => $edadMinima,
-                ':edadMaxima' => $edadMaxima
-            );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultado["ok"] = true;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
+{
+    try {
+        if (empty($nombre) || strlen($nombre) < 2) {
+            throw new Exception("El nombre es inválido.");
         }
-        return $resultado;
+        if (!is_numeric($edadMinima) || !is_numeric($edadMaxima) || $edadMinima < 0 || $edadMaxima <= $edadMinima) {
+            throw new Exception("El rango de edad es inválido.");
+        }
+
+        $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
+                     VALUES (:nombre, :edadMinima, :edadMaxima)";
+        $valores = [
+            ':nombre' => $nombre,
+            ':edadMinima' => $edadMinima,
+            ':edadMaxima' => $edadMaxima
+        ];
+
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute($valores);
+
+        return ["ok" => true, "mensaje" => "Sub registrado con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
     }
+}
+public function modificar_sub($id, $nombre, $edadMinima, $edadMaxima)
+{
+    try {
+        if (empty($nombre) || strlen($nombre) < 2) {
+            throw new Exception("El nombre es inválido.");
+        }
+        if (!is_numeric($edadMinima) || !is_numeric($edadMaxima) || $edadMinima < 0 || $edadMaxima <= $edadMinima) {
+            throw new Exception("El rango de edad es inválido.");
+        }
+
+        $consulta = "UPDATE subs 
+                     SET nombre = :nombre, edad_minima = :edadMinima, edad_maxima = :edadMaxima 
+                     WHERE id_sub = :id";
+        $valores = [
+            ':id' => $id,
+            ':nombre' => $nombre,
+            ':edadMinima' => $edadMinima,
+            ':edadMaxima' => $edadMaxima
+        ];
+
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute($valores);
+
+        return ["ok" => true, "mensaje" => "Sub modificado con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
+public function eliminar_sub($id)
+{
+    try {
+        $consulta = "DELETE FROM subs WHERE id_sub = :id";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id' => $id]);
+
+        return ["ok" => true, "mensaje" => "Sub eliminado con éxito."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
+
 
     public function incluir_tipo($nombre)
     {
@@ -329,6 +421,38 @@ public function eliminar_evento($id_competencia)
     return $resultado;
 }
 
+public function eliminar_tipo($id_tipo) {
+    try {
+        $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id_tipo' => $id_tipo]);
+        return ["ok" => true];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
+public function modificar_tipo($id_tipo, $nombre) {
+    try {
+        $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':nombre' => $nombre, ':id_tipo' => $id_tipo]);
+        return ["ok" => true];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+public function verificar_relacion_tipo($id_tipo) {
+    try {
+        $consulta = "SELECT COUNT(*) AS total FROM competencia WHERE tipo_competicion = :id_tipo";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute([':id_tipo' => $id_tipo]);
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        return ["ok" => true, "existe" => $resultado["total"] > 0];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
 
 public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
 {

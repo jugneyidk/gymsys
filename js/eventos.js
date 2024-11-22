@@ -230,10 +230,16 @@ $(document).ready(function () {
     function cargarListadoTipos() {
         const datos = new FormData();
         datos.append("accion", "listado_tipo");
+    
         realizarAjax("", datos, (result) => {
-            actualizarListadoTipos(result.respuesta);
+            if (result.ok) {
+                actualizarTablaTipos(result.respuesta);
+            } else {
+                Swal.fire("Error", result.mensaje || "Error al consultar los tipos", "error");
+            }
         });
     }
+    
 
     function actualizarListadoTipos(tipos) {
         let opciones = "<option selected>Seleccione una</option>";
@@ -441,7 +447,284 @@ $(document).ready(function () {
             }
         });
     });
- 
+    $("#formRegistrarSubs").on("submit", function (e) {
+        e.preventDefault();
+    
+        const nombre = $("#in_subs_nombre").val().trim();
+        const edadMinima = parseInt($("#in_edad_minima").val());
+        const edadMaxima = parseInt($("#in_edad_maxima").val());
+    
+        if (!nombre || isNaN(edadMinima) || isNaN(edadMaxima) || edadMinima >= edadMaxima) {
+            Swal.fire("Error", "Por favor, complete los campos correctamente.", "error");
+            return;
+        }
+    
+        const datos = new FormData(this);
+        datos.append("accion", "incluir_subs");
+    
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                Swal.fire("Éxito", "Sub registrado con éxito", "success");
+                $("#formRegistrarSubs")[0].reset();  
+                cargarListadoSubs(); 
+            } else {
+                Swal.fire("Error", result.mensaje || "No se pudo registrar el sub", "error");
+            }
+        });
+    });
+    $("#btnConsultarSubs").on("click", function () {
+        cargarListadoSubs2();  
+        $("#contenedorTablaSubs").show();  
+    });
+    function cargarListadoSubs2() {
+        const datos = new FormData();
+        datos.append("accion", "listado_subs");
+    
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                actualizarTablaSubs(result.respuesta);  
+            } else {
+                Swal.fire("Error", result.mensaje || "Error al consultar los subs", "error");
+            }
+        });
+    }
+    function actualizarTablaSubs(subs) {
+        const tbody = $("#tablaSubs tbody");
+        tbody.empty(); 
+    
+        subs.forEach((sub, index) => {
+            tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${sub.nombre}</td>
+                    <td>${sub.edad_minima}</td>
+                    <td>${sub.edad_maxima}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btnEditarSub" data-id="${sub.id_sub}" data-nombre="${sub.nombre}" data-edad-minima="${sub.edad_minima}" data-edad-maxima="${sub.edad_maxima}">Editar</button>
+                        <button class="btn btn-danger btn-sm btnEliminarSub" data-id="${sub.id_sub}">Eliminar</button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+    $(document).on("click", ".btnEliminarSub", function () {
+        const idSub = $(this).data("id");
+    
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará el sub seleccionado.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "No, cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const datos = new FormData();
+                datos.append("accion", "eliminar_sub");
+                datos.append("id_sub", idSub);
+    
+                realizarAjax("", datos, (result) => {
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Sub eliminado con éxito", "success");
+                        cargarListadoSubs(); 
+                    } else {
+                        Swal.fire("Error", result.mensaje || "Error al eliminar el sub", "error");
+                    }
+                });
+            }
+        });
+    });
+    
+    $(document).on("click", ".btnEditarSub", function () {
+        const idSub = $(this).data("id");
+        const nombre = $(this).data("nombre");
+        const edadMinima = $(this).data("edad-minima");
+        const edadMaxima = $(this).data("edad-maxima");
+    
+        Swal.fire({
+            title: "Editar Sub",
+            html: `
+                <label for="nombreSub">Nombre:</label>
+                <input id="nombreSub" class="swal2-input" value="${nombre}">
+                <label for="edadMinima">Edad Mínima:</label>
+                <input id="edadMinima" class="swal2-input" type="number" value="${edadMinima}">
+                <label for="edadMaxima">Edad Máxima:</label>
+                <input id="edadMaxima" class="swal2-input" type="number" value="${edadMaxima}">
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+                const nuevoNombre = document.getElementById("nombreSub").value;
+                const nuevaEdadMinima = document.getElementById("edadMinima").value;
+                const nuevaEdadMaxima = document.getElementById("edadMaxima").value;
+    
+                if (!nuevoNombre || nuevaEdadMinima === "" || nuevaEdadMaxima === "") {
+                    Swal.showValidationMessage("Todos los campos son obligatorios");
+                }
+                if (parseInt(nuevaEdadMinima) >= parseInt(nuevaEdadMaxima)) {
+                    Swal.showValidationMessage("La edad mínima debe ser menor que la máxima");
+                }
+    
+                return { nuevoNombre, nuevaEdadMinima, nuevaEdadMaxima };
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const datos = new FormData();
+                datos.append("accion", "modificar_sub");
+                datos.append("id_sub", idSub);
+                datos.append("nombre", result.value.nuevoNombre);
+                datos.append("edadMinima", result.value.nuevaEdadMinima);
+                datos.append("edadMaxima", result.value.nuevaEdadMaxima);
+    
+                realizarAjax("", datos, (result) => {
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Sub modificado con éxito", "success");
+                        cargarListadoSubs(); // Recargar la tabla
+                    } else {
+                        Swal.fire("Error", result.mensaje || "Error al modificar el sub", "error");
+                    }
+                });
+            }
+        });
+    });
+    $("#formRegistrarCategoria").on("submit", function (e) {
+        e.preventDefault();
+        const datos = new FormData(this);
+        datos.append("accion", "incluir_categoria");
+    
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                Swal.fire("Éxito", "Categoría registrada con éxito.", "success");
+                cargarListadoCategorias2();
+                $("#formRegistrarCategoria")[0].reset();
+            } else {
+                Swal.fire("Error", result.mensaje || "Error al registrar la categoría.", "error");
+            }
+        });
+    });
+    function cargarListadoCategorias2() {
+        const datos = new FormData();
+        datos.append("accion", "listado_categoria");
+    
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                actualizarTablaCategorias(result.respuesta);
+            } else {
+                Swal.fire("Error", result.mensaje || "Error al consultar las categorías.", "error");
+            }
+        });
+    }
+    
+    function actualizarTablaCategorias(categorias) {
+        const tbody = $("#tablaCategorias tbody");
+        tbody.empty();
+    
+        categorias.forEach((categoria, index) => {
+            tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${categoria.nombre}</td>
+                    <td>${categoria.peso_minimo}</td>
+                    <td>${categoria.peso_maximo}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btnEditarCategoria" 
+                            data-id="${categoria.id_categoria}" 
+                            data-nombre="${categoria.nombre}" 
+                            data-peso-minimo="${categoria.peso_minimo}" 
+                            data-peso-maximo="${categoria.peso_maximo}">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btnEliminarCategoria" 
+                            data-id="${categoria.id_categoria}">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+    
+    $(document).on("click", ".btnEditarCategoria", function () {
+        const id = $(this).data("id");
+        const nombre = $(this).data("nombre");
+        const pesoMinimo = $(this).data("peso-minimo");
+        const pesoMaximo = $(this).data("peso-maximo");
+    
+        Swal.fire({
+            title: "Editar Categoría",
+            html: `
+                <input id="nuevoNombre" class="swal2-input" placeholder="Nombre" value="${nombre}">
+                <input id="nuevoPesoMinimo" class="swal2-input" type="number" placeholder="Peso Mínimo" value="${pesoMinimo}">
+                <input             id="nuevoPesoMaximo" class="swal2-input" type="number" placeholder="Peso Máximo" value="${pesoMaximo}">
+        `,
+        showCancelButton: true,
+        confirmButtonText: "Guardar",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+            const nuevoNombre = document.getElementById("nuevoNombre").value;
+            const nuevoPesoMinimo = document.getElementById("nuevoPesoMinimo").value;
+            const nuevoPesoMaximo = document.getElementById("nuevoPesoMaximo").value;
+
+            if (!nuevoNombre || nuevoNombre.length < 2) {
+                Swal.showValidationMessage("El nombre es inválido.");
+            } else if (!nuevoPesoMinimo || !nuevoPesoMaximo || nuevoPesoMinimo < 0 || nuevoPesoMaximo <= nuevoPesoMinimo) {
+                Swal.showValidationMessage("El rango de peso es inválido.");
+            } else {
+                return {
+                    nombre: nuevoNombre,
+                    pesoMinimo: nuevoPesoMinimo,
+                    pesoMaximo: nuevoPesoMaximo
+                };
+            }
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const datos = new FormData();
+            datos.append("accion", "modificar_categoria");
+            datos.append("id_categoria", id);
+            datos.append("nombre", result.value.nombre);
+            datos.append("pesoMinimo", result.value.pesoMinimo);
+            datos.append("pesoMaximo", result.value.pesoMaximo);
+
+            realizarAjax("", datos, (respuesta) => {
+                if (respuesta.ok) {
+                    Swal.fire("Éxito", "Categoría modificada con éxito.", "success");
+                    cargarListadoCategorias();
+                } else {
+                    Swal.fire("Error", respuesta.mensaje || "Error al modificar la categoría.", "error");
+                }
+            });
+        }
+    });
+});
+$(document).on("click", ".btnEliminarCategoria", function () {
+    const idCategoria = $(this).data("id");
+
+    Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esta acción eliminará la categoría seleccionada.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "No, cancelar"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const datos = new FormData();
+            datos.append("accion", "eliminar_categoria");
+            datos.append("id_categoria", idCategoria);
+
+            realizarAjax("", datos, (respuesta) => {
+                if (respuesta.ok) {
+                    Swal.fire("Éxito", "Categoría eliminada con éxito.", "success");
+                    cargarListadoCategorias();
+                } else {
+                    Swal.fire("Error", respuesta.mensaje || "Error al eliminar la categoría.", "error");
+                }
+            });
+        }
+    });
+});
+
+    
     $("#arranque, #envion").on("input", function () {
         const arranque = parseInt($("#arranque").val()) || 0;
         const envion = parseInt($("#envion").val()) || 0;
@@ -574,9 +857,7 @@ $('#modalInscribirEvento').on('show.bs.modal', function (event) {
     $('#modalRegistrarTipo').on('show.bs.modal', function () {
         cargarListadoTipos();
     });
-    $('#registrarTipo').on('submit', function (event) {
-        event.preventDefault();
-    });
+    
     $('#modalModificarCompetencia').on('show.bs.modal', function (event) {
         const button = $(event.relatedTarget);  
         const idCompetencia = button.data('id'); 
@@ -598,8 +879,162 @@ $('#modalInscribirEvento').on('show.bs.modal', function (event) {
             $('#tipo_modificar').val(competencia.tipo_competicion).change();
         });
     });
+    $("#formRegistrarTipo").on("submit", function (e) {
+        e.preventDefault();
+        const nombre = $("#in_tipo_nombre").val().trim();
     
+        if (!nombre) {
+            Swal.fire("Error", "El nombre del tipo no puede estar vacío.", "error");
+            return;
+        }
     
+        const datos = new FormData(this);
+        datos.append("accion", "incluir_tipo");
+    
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                Swal.fire("Éxito", "Tipo registrado con éxito", "success");
+                $("#in_tipo_nombre").val(""); 
+                cargarListadoTipos();  
+                $("#modalRegistrarTipo").modal("hide");
+            } else {
+                Swal.fire("Error", result.mensaje || "No se pudo registrar el tipo", "error");
+            }
+        });
+    });
+     
+    $("#btnConsultarTipos").on("click", function () {
+        cargarListadoTipos2();  
+        $("#contenedorTablaTipos").show();  
+    });
+ 
+    function cargarListadoTipos2() {
+        const datos = new FormData();
+        datos.append("accion", "listado_tipo");
+
+        realizarAjax("", datos, (result) => {
+            if (result.ok) {
+                actualizarTablaTipos(result.respuesta);  
+            } else {
+                Swal.fire("Error", result.mensaje || "Error al consultar los tipos", "error");
+            }
+        });
+    }
+    function cargarListadoTipos() {
+        const datos = new FormData();
+        datos.append("accion", "listado_tipo");
+        realizarAjax("", datos, (result) => {
+            actualizarListadoTipos(result.respuesta);
+        });
+    }
+    function actualizarTablaTipos(tipos) {
+        const tbody = $("#tablaTipos tbody");
+        tbody.empty();  
+    
+        tipos.forEach((tipo, index) => {
+            tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${tipo.nombre}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btnEditarTipo" 
+                                data-id="${tipo.id_tipo_competencia}" 
+                                data-nombre="${tipo.nombre}">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btnEliminarTipo" 
+                                data-id="${tipo.id_tipo_competencia}">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `);
+        });
+    
+        if (tipos.length === 0) {
+            tbody.append("<tr><td colspan='3'>No hay tipos registrados.</td></tr>");
+        }
+    }
+    
+    $(document).on("click", ".btnEliminarTipo", function () {
+        const idTipo = $(this).data("id");
+    
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará el tipo seleccionado.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "No, cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const datos = new FormData();
+                datos.append("accion", "eliminar_tipo");
+                datos.append("id_tipo", idTipo);
+    
+                realizarAjax("", datos, (result) => {
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Tipo eliminado con éxito", "success");
+                        cargarListadoTipos();  
+                    } else {
+                        Swal.fire("Error", result.mensaje || "Error al eliminar el tipo", "error");
+                    }
+                });
+            }
+        });
+    });
+    
+
+    $(document).on("click", ".btnEditarTipo", function () {
+        const idTipo = $(this).data("id");
+        const nombreTipo = $(this).data("nombre");
+    
+        Swal.fire({
+            title: "Editar Tipo",
+            input: "text",
+            inputValue: nombreTipo,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+            preConfirm: (nuevoNombre) => {
+                if (!nuevoNombre) {
+                    Swal.showValidationMessage("El nombre no puede estar vacío.");
+                }
+                return nuevoNombre;
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const datos = new FormData();
+                datos.append("accion", "modificar_tipo");
+                datos.append("id_tipo", idTipo);
+                datos.append("nombre", result.value);
+    
+                realizarAjax("", datos, (result) => {
+                    if (result.ok) {
+                        Swal.fire("Éxito", "Tipo modificado con éxito", "success");
+                        cargarListadoTipos(); 
+                    } else {
+                        Swal.fire("Error", result.mensaje || "Error al modificar el tipo", "error");
+                    }
+                });
+            }
+        });
+    });
+    
+    $("#btnRegresar").on("click", function () {
+        $("#modalRegistrarTipo").modal("hide");  
+        $("#modalRegistrarEvento").modal("show");  
+    });
+    $("#btnRegresarSubs").on("click", function () {
+        $("#modalRegistrarSubs").modal("hide");  
+        $("#modalRegistrarEvento").modal("show");  
+    });
+    $('#modalRegistrarCategoria').on('show.bs.modal', function () {
+        cargarListadoCategorias();
+    });
+    $("#btnConsultarCategorias").on("click", function () {
+        cargarListadoCategorias2();
+    });
     
     cargarEventos();
     cargarListadoCategorias();

@@ -139,102 +139,161 @@
             </div>
         </div>
  
-        <div class="modal" id="modalRegistrarCategoria" aria-hidden="true" aria-labelledby="modalRegistrarCategoria"
-            tabindex="-1">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Registrar Categoria</h1>
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal fade" id="modalRegistrarCategoria" tabindex="-1" aria-labelledby="modalRegistrarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fs-4 lead text-info" id="modalRegistrarCategoriaLabel">Registrar Categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRegistrarCategoria">
+                    <div class="mb-3">
+                        <label for="in_categoria_nombre" class="form-label">Nombre de la Categoría</label>
+                        <input type="text" class="form-control" id="in_categoria_nombre" name="nombre" placeholder="Ingrese el nombre de la categoría" required>
                     </div>
-                    <form id="registrarCategoria" method="post" action="#">
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="in_categoria_nombre" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_categoria_nombre"
-                                        name="nombre">
-                                    <label for="in_peso_minimo" class="form-label">Peso Minimo</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_peso_minimo"
-                                        name="pesoMinimo">
-                                    <label for="in_peso_maximo" class="form-label">Peso Maximo</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_peso_maximo"
-                                        name="pesoMaximo">
-                                </div>
-                            </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="in_peso_minimo" class="form-label">Peso Mínimo</label>
+                            <input type="number" class="form-control" id="in_peso_minimo" name="pesoMinimo" placeholder="Peso mínimo en kg" required>
                         </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                            <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
-                            <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
+                        <div class="col-md-6 mb-3">
+                            <label for="in_peso_maximo" class="form-label">Peso Máximo</label>
+                            <input type="number" class="form-control" id="in_peso_maximo" name="pesoMaximo" placeholder="Peso máximo en kg" required>
                         </div>
-                    </form>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary me-2">Registrar</button>
+                        <button type="reset" class="btn btn-warning me-2">Limpiar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <h5 class="fs-5 text-info mb-0">Categorías Registradas</h5>
+                    <button id="btnConsultarCategorias" class="btn btn-info btn-sm">Consultar Categorías</button>
+                </div>
+                <div class="table-responsive mt-3" id="contenedorTablaCategorias" style="display: none;">
+                    <table class="table table-bordered" id="tablaCategorias">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Peso Mínimo</th>
+                                <th>Peso Máximo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody> 
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
         </div>
+    </div>
+</div>
+
+
+
  
-        <div class="modal" id="modalRegistrarSubs" aria-hidden="true" aria-labelledby="modalRegistrarSubs"
-            tabindex="-1">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Registrar Subs</h1>
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form id="registrarSubs" method="post" action="#">
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="in_subs_nombre" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_subs_nombre"
-                                        name="nombre">
-                                    <label for="in_edad_minima" class="form-label">Edad Minima</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_edad_minima"
-                                        name="edadMinima">
-                                    <label for="in_edad_maxima" class="form-label">Edad Maxima</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_edad_maxima"
-                                        name="edadMaxima">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                            <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
-                            <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="modal fade" id="modalRegistrarSubs" tabindex="-1" aria-labelledby="modalRegistrarSubsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRegistrarSubsLabel">Registrar Subs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
+            <div class="modal-body">
+             
+                <form id="formRegistrarSubs">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="in_subs_nombre" class="form-label">Nombre del Sub</label>
+                            <input type="text" class="form-control" id="in_subs_nombre" name="nombre" placeholder="Ingrese el nombre del sub" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="in_edad_minima" class="form-label">Edad Mínima</label>
+                            <input type="number" class="form-control" id="in_edad_minima" name="edadMinima" min="0" placeholder="0" required>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="in_edad_maxima" class="form-label">Edad Máxima</label>
+                            <input type="number" class="form-control" id="in_edad_maxima" name="edadMaxima" min="1" placeholder="0" required>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="button" id="btnConsultarSubs" class="btn btn-info">Consultar Subs</button>
+                        <button type="button" id="btnRegresarSubs" class="btn btn-secondary">Regresar</button>
+                    </div>
+                </form>
  
-        <div class="modal" id="modalRegistrarTipo" aria-hidden="true" aria-labelledby="modalRegistrarTipo"
-            tabindex="-1">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5">Registrar Tipo</h1>
-                        <button class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form id="registrarTipo" method="post">
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col">
-                                    <label for="in_tipo_nombre" class="form-label">Descripcion</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_tipo_nombre"
-                                        name="nombre">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <input type="submit" class="btn px-2 btn-primary" value="Registrar">
-                            <input type="reset" class="btn px-2 btn-danger" value="Limpiar">
-                            <button type="button" class="btn btn-primary btn-sm" id="btnConsultarTipos">Consultar Tipos</button>
-                            <button class="btn btn-warning px-2" data-bs-dismiss="modal">Regresar</button>
-                        </div>
-                    </form>
+                <div id="contenedorTablaSubs" class="mt-4" style="display: none;">
+                    <h5 class="text-info">Subs Registrados</h5>
+                    <table class="table table-bordered" id="tablaSubs">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Edad Mínima</th>
+                                <th>Edad Máxima</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                     
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+ 
+        <div class="modal fade" id="modalRegistrarTipo" tabindex="-1" aria-labelledby="modalRegistrarTipoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalRegistrarTipoLabel">Registrar Tipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+         
+                <form id="formRegistrarTipo">
+                    <div class="mb-3">
+                        <label for="in_tipo_nombre" class="form-label">Nombre del Tipo</label>
+                        <input type="text" class="form-control" id="in_tipo_nombre" name="nombre" placeholder="Ingrese el nombre del tipo" required>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="button" id="btnConsultarTipos" class="btn btn-info">Consultar Tipos</button>
+                        <button type="button" id="btnRegresar" class="btn btn-secondary">Regresar</button>
+                    </div>
+                </form>
+ 
+                <div id="contenedorTablaTipos" class="mt-4" style="display: none;">
+                    <h5 class="text-info">Tipos Registrados</h5>
+                    <table class="table table-bordered" id="tablaTipos">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Nombre</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                         
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
         <div class="modal" id="modalEditarTipo" tabindex="-1" aria-labelledby="modalEditarTipoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -253,12 +312,12 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
         <div class="modal fade" id="modalVerEventoActivo" tabindex="-1" aria-labelledby="modalVerEventoActivoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">

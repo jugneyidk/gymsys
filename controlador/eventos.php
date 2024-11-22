@@ -126,7 +126,59 @@ if (is_file("vista/" . $p . ".php")) {
             $id_competencia = $_POST['id_competencia'];  
             $respuesta = $o->listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia);
             echo json_encode($respuesta);
-        }        
+        } elseif ($accion == 'eliminar_tipo') {
+            $id_tipo = $_POST['id_tipo'];
+            $verificacion = $o->verificar_relacion_tipo($id_tipo);
+        
+            if (!$verificacion["ok"]) {
+                echo json_encode(["ok" => false, "mensaje" => $verificacion["mensaje"]]);
+                exit;
+            }
+        
+            if ($verificacion["existe"]) {
+                echo json_encode(["ok" => false, "mensaje" => "No se puede eliminar este tipo porque está relacionado con competencias existentes."]);
+                exit;
+            }
+        
+            $respuesta = $o->eliminar_tipo($id_tipo);
+            echo json_encode($respuesta);
+        }elseif ($accion == 'modificar_tipo') {
+            $respuesta = $o->modificar_tipo($_POST['id_tipo'], $_POST['nombre']);
+            echo json_encode($respuesta);
+        }elseif ($accion === 'eliminar_sub') {
+            $respuesta = $o->eliminar_sub($_POST['id_sub']);
+            echo json_encode($respuesta);
+        }elseif ($accion === 'modificar_sub') {
+            $respuesta = $o->modificar_sub(
+                $_POST['id_sub'],
+                $_POST['nombre'],
+                $_POST['edadMinima'],
+                $_POST['edadMaxima']
+            );
+            echo json_encode($respuesta);
+        }elseif ($accion === 'incluir_categoria') {
+            $respuesta = $o->incluir_categoria(
+                $_POST['nombre'],
+                $_POST['pesoMinimo'],
+                $_POST['pesoMaximo']
+            );
+            echo json_encode($respuesta);
+        }elseif ($accion === 'modificar_categoria') {
+            $respuesta = $o->modificar_categoria(
+                $_POST['id_categoria'],
+                $_POST['nombre'],
+                $_POST['pesoMinimo'],
+                $_POST['pesoMaximo']
+            );
+            echo json_encode($respuesta);
+        }
+        
+        elseif ($accion === 'eliminar_categoria') {
+            $respuesta = $o->eliminar_categoria($_POST['id_categoria']);
+            echo json_encode($respuesta);
+        }
+        
+              
            
         
         exit;
