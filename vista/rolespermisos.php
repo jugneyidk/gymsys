@@ -5,7 +5,7 @@
 <head>
         <meta charset="UTF-8">
         <meta name="description"
-        content="Gestion de roles y permisos en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
+                content="Gestion de roles y permisos en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Roles y Permisos - Sistema</title>
         <?php require_once("comunes/linkcss.php"); ?>
@@ -24,16 +24,29 @@
                                         <div
                                                 class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
                                                 <h2 class="mb-0">Gestionar Roles y Permisos</h2>
-                                                <?php
-                                                if ($permisos["crear"] === 1):
-                                                        ?>
-                                                        <button type="button" class="btn btn-light" data-bs-toggle="modal"
-                                                                data-bs-target="#modal" id="btnCrearRol">
-                                                                Crear Rol+
-                                                        </button>
+                                                <div>
                                                         <?php
-                                                endif;
-                                                ?>
+                                                        if ($permisos["actualizar"] === 1):
+                                                        ?>
+                                                                <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
+                                                                        data-bs-target="#modalAsignarRol" id="btnAsignarRol">
+                                                                        Asignar Rol
+                                                                </button>
+                                                        <?php
+                                                        endif;
+                                                        ?>
+                                                        <?php
+                                                        if ($permisos["crear"] === 1):
+                                                        ?>
+                                                                <button type="button" class="btn btn-light" data-bs-toggle="modal"
+                                                                        data-bs-target="#modal" id="btnCrearRol">
+                                                                        Crear Rol+
+                                                                </button>
+                                                        <?php
+                                                        endif;
+                                                        ?>
+
+                                                </div>
                                         </div>
                                         <div class="card-body">
                                                 <h3 class="text-center mb-2">Roles</h3>

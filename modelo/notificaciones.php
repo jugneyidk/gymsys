@@ -112,7 +112,7 @@ class Notificaciones extends datos
                 INNER JOIN usuarios u ON n.id_usuario = u.cedula
                 WHERE n.id_usuario = :id_usuario 
                 ORDER BY id DESC
-                LIMIT 5;";
+                LIMIT 4;";
             $con = $this->conexion->prepare($consulta);
             $con->execute([':id_usuario' => $_SESSION["id_usuario"]]);
             $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);

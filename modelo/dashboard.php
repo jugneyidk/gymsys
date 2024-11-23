@@ -13,26 +13,86 @@ class Dashboard extends datos
             $consulta = "SELECT u.cedula, u.nombre, u.apellido, u.genero, u.fecha_nacimiento 
                          FROM usuarios u
                          JOIN atleta a ON u.cedula = a.cedula
-                         ORDER BY u.cedula DESC LIMIT 2";  
+                         ORDER BY u.cedula DESC LIMIT 2";
             $respuesta = $this->conexion->query($consulta);
             return $respuesta->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             return [];
         }
     }
- 
+
+    public function obtener_ultimas_notificaciones()
+    {
+        try {
+            $consulta = "SELECT 
+                    id,
+                    titulo,
+                    mensaje,
+                    leida,
+                    objetivo,
+                    fecha_creacion
+                FROM notificaciones n
+                INNER JOIN usuarios u ON n.id_usuario = u.cedula
+                WHERE n.id_usuario = :id_usuario 
+                ORDER BY id DESC
+                LIMIT 3;";
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute([":id_usuario" => $_SESSION["id_usuario"]]);
+            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($respuesta as $clave => $notificacion) {
+                $respuesta[$clave]["fecha_corta"] = $this->calcular_tiempo_fecha($notificacion["fecha_creacion"]);
+            }
+        } catch (PDOException $e) {
+            $respuesta = $e->getMessage();
+        }
+        $this->desconecta();
+        return $respuesta;
+    }
+
+    private function calcular_tiempo_fecha($fecha_creacion)
+    {
+        $ahora = new DateTime();
+        $fecha = new DateTime($fecha_creacion);
+        $diferencia = $ahora->getTimestamp() - $fecha->getTimestamp(); // Diferencia en segundos
+        if ($diferencia < 60) {
+            // Menos de 1 minuto
+            return "Hace $diferencia segundos";
+        } elseif ($diferencia < 3600) {
+            // Menos de 1 hora
+            $minutos = floor($diferencia / 60);
+            return "Hace $minutos minuto" . ($minutos > 1 ? "s" : "");
+        } elseif ($diferencia < 86400) {
+            // Menos de 1 día
+            $horas = floor($diferencia / 3600);
+            return "Hace $horas hora" . ($horas > 1 ? "s" : "");
+        } elseif ($diferencia < 7 * 86400) {
+            // Menos de 1 semana
+            $dias = floor($diferencia / 86400);
+            return "Hace $dias día" . ($dias > 1 ? "s" : "");
+        } else {
+            // Fecha completa para más de una semana
+            return $fecha->format('d/m/Y'); // Cambia el formato según tus necesidades
+        }
+    }
+
     public function obtener_ultimas_acciones()
     {
         try {
             $consulta = "SELECT b.accion, b.fecha, u.nombre, u.apellido, b.modulo 
                          FROM bitacora b
                          JOIN usuarios u ON b.id_usuario = u.cedula
-                         ORDER BY b.fecha DESC LIMIT 3"; 
-            $respuesta = $this->conexion->query($consulta);
-            return $respuesta->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return [];
+                         ORDER BY b.fecha DESC LIMIT 3";
+            $resultado = $this->conexion->query($consulta);
+            $resultado->execute();
+            $respuesta = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($respuesta as $clave => $accion) {
+                $respuesta[$clave]["fecha_corta"] = $this->calcular_tiempo_fecha($accion["fecha"]);
+            }
+        } catch (PDOException $e) {
+            $respuesta = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
     public function total_atletas()
     {
@@ -45,7 +105,7 @@ class Dashboard extends datos
             return 0;
         }
     }
- 
+
     public function total_entrenadores()
     {
         try {
@@ -57,7 +117,7 @@ class Dashboard extends datos
             return 0;
         }
     }
- 
+
     public function total_reportes()
     {
         try {
@@ -69,7 +129,7 @@ class Dashboard extends datos
             return 0;
         }
     }
- 
+
     public function total_wadas_pendientes()
     {
         try {
@@ -87,7 +147,7 @@ class Dashboard extends datos
             return 0;
         }
     }
- 
+
     public function obtener_medallas_por_mes()
     {
         try {
@@ -96,11 +156,11 @@ class Dashboard extends datos
                          GROUP BY MONTH(fecha_competencia)";
             $respuesta = $this->conexion->query($consulta);
             $datos = $respuesta->fetchAll(PDO::FETCH_ASSOC);
- 
+
             $labels = [];
             $medallas_por_mes = [];
             foreach ($datos as $dato) {
-                $mes = $this->getNombreMes($dato['mes']);  
+                $mes = $this->getNombreMes($dato['mes']);
                 $labels[] = $mes;
                 $medallas_por_mes[] = $dato['total_medallas'];
             }
@@ -110,7 +170,7 @@ class Dashboard extends datos
             return ['labels' => [], 'medallas' => []];
         }
     }
- 
+
     public function obtener_progreso_semanal()
     {
         try {
@@ -119,7 +179,7 @@ class Dashboard extends datos
                          GROUP BY semana";
             $respuesta = $this->conexion->query($consulta);
             $datos = $respuesta->fetchAll(PDO::FETCH_ASSOC);
- 
+
             $labels = [];
             $progreso_semanal = [];
             foreach ($datos as $dato) {
@@ -132,7 +192,7 @@ class Dashboard extends datos
             return ['labels' => [], 'progreso' => []];
         }
     }
- 
+
     private function getNombreMes($mes)
     {
         $meses = [

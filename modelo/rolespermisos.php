@@ -120,8 +120,8 @@ class Roles extends datos
                 ':uwada' => $this->uwada,
                 ':dwada' => $this->dwada,
                 ':moduloreportes' => 8,
-                ':creportes' => $this->creportes,
-                ':rreportes' => $this->rreportes,
+                ':creportes' => (int) ($this->creportes == 1 || $this->rreportes == 1),
+                ':rreportes' => (int) ($this->creportes == 1 || $this->rreportes == 1),
                 ':modulobitacora' => 9,
                 ':rbitacora' => $this->rbitacora,
             );
@@ -242,8 +242,8 @@ class Roles extends datos
                 ':uwada' => $this->uwada,
                 ':dwada' => $this->dwada,
                 ':moduloreportes' => 8,
-                ':creportes' => $this->creportes,
-                ':rreportes' => $this->rreportes,
+                ':creportes' => (int) ($this->creportes == 1 || $this->rreportes == 1),
+                ':rreportes' => (int) ($this->creportes == 1 || $this->rreportes == 1),
                 ':modulobitacora' => 9,
                 ':rbitacora' => $this->rbitacora,
             );

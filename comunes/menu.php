@@ -3,11 +3,13 @@ require_once("modelo/permisos.php");
 if (isset($_SESSION['rol'])) {
   $permisos_navbar = $permisos_o->permisos_nav();
 }
+if (isset($_SESSION["id_usuario"])) {
+  echo "<script>
+    var idUsuario = {$_SESSION['id_usuario']};
+    var pagina = 1;
+    </script>";
+}
 ?>
-<script>
-  var idUsuario = <?= $_SESSION["id_usuario"] ?>;
-  var pagina = 1;
-</script>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="?p=landing">Gimnasio Eddie Suarez UPTAEB</a>
@@ -19,105 +21,105 @@ if (isset($_SESSION['rol'])) {
       <ul class="navbar-nav">
         <?php
         if (isset($_SESSION["id_usuario"])):
-          ?>
+        ?>
           <li class="nav-item d-none d-lg-block">
-            <a class="nav-link<?php echo $p == in_array($p, ["", "dashboard"]) ? " active" : "" ?>" href="?p=dashboard"
-              <?php echo in_array($p, ["", "dashboard"]) ? "aria-current='page'" : "" ?>><i class="fas fa-house"
+            <a class="nav-link<?= $p == in_array($p, ["", "dashboard"]) ? " active" : "" ?>" href="?p=dashboard"
+              <?= in_array($p, ["", "dashboard"]) ? "aria-current='page'" : "" ?>><i class="fas fa-house"
                 aria-label="Página de inicio"></i></a>
           </li>
           <?php
           if (($permisos_navbar[0]["leer"] ?? false) || ($permisos_navbar[1]["leer"] ?? false) || ($permisos_navbar[2]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle ps-3 ps-lg-2<?php echo in_array($p, ["atletas", "entrenadores", "rolespermisos"]) ? " active" : "" ?>"
+              <a class="nav-link dropdown-toggle ps-3 ps-lg-2<?= in_array($p, ["atletas", "entrenadores", "rolespermisos"]) ? " active" : "" ?>"
                 data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">Gestionar
                 Usuarios</a>
               <div class="dropdown-menu" data-bs-popper="static">
                 <?php
                 if (($permisos_navbar[0]["leer"] ?? false)):
-                  ?>
-                  <a class="dropdown-item<?php echo $p == "entrenadores" ? " active" : "" ?>" href="?p=entrenadores" <?php echo $p == "entrenadores" ? "aria-current='page'" : "" ?>>Entrenadores</a>
-                  <?php
+                ?>
+                  <a class="dropdown-item<?= $p == "entrenadores" ? " active" : "" ?>" href="?p=entrenadores" <?= $p == "entrenadores" ? "aria-current='page'" : "" ?>>Entrenadores</a>
+                <?php
                 endif;
                 ?>
                 <?php
                 if (($permisos_navbar[1]["leer"] ?? false)):
-                  ?>
-                  <a class="dropdown-item<?php echo $p == "atletas" ? " active" : "" ?>" href="?p=atletas" <?php echo $p == "atletas" ? "aria-current='page'" : "" ?>>Atletas</a>
-                  <?php
+                ?>
+                  <a class="dropdown-item<?= $p == "atletas" ? " active" : "" ?>" href="?p=atletas" <?= $p == "atletas" ? "aria-current='page'" : "" ?>>Atletas</a>
+                <?php
                 endif;
                 ?>
                 <?php
                 if (($permisos_navbar[2]["leer"] ?? false)):
-                  ?>
+                ?>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item<?php echo $p == "rolespermisos" ? " active" : "" ?>" href="?p=rolespermisos" <?php echo $p == "rolespermisos" ? "aria-current='page'" : "" ?>>Roles y permisos</a>
-                  <?php
+                  <a class="dropdown-item<?= $p == "rolespermisos" ? " active" : "" ?>" href="?p=rolespermisos" <?= $p == "rolespermisos" ? "aria-current='page'" : "" ?>>Roles y permisos</a>
+                <?php
                 endif;
                 ?>
               </div>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[3]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "asistencias" ? " active" : "" ?>" href="?p=asistencias" <?php echo $p == "asistencias" ? "aria-current='page'" : "" ?>>Asistencias</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "asistencias" ? " active" : "" ?>" href="?p=asistencias" <?= $p == "asistencias" ? "aria-current='page'" : "" ?>>Asistencias</a>
             </li>
 
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[4]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "eventos" ? " active" : "" ?>" href="?p=eventos" <?php echo $p == "eventos" ? "aria-current='page'" : "" ?>>Eventos</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "eventos" ? " active" : "" ?>" href="?p=eventos" <?= $p == "eventos" ? "aria-current='page'" : "" ?>>Eventos</a>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[5]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "mensualidad" ? " active" : "" ?>" href="?p=mensualidad" <?php echo $p == "mensualidad" ? "aria-current='page'" : "" ?>>Mensualidad</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "mensualidad" ? " active" : "" ?>" href="?p=mensualidad" <?= $p == "mensualidad" ? "aria-current='page'" : "" ?>>Mensualidad</a>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[6]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "wada" ? " active" : "" ?>" href="?p=wada" <?php echo $p == "wada" ? "aria-current='page'" : "" ?>>WADA</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "wada" ? " active" : "" ?>" href="?p=wada" <?= $p == "wada" ? "aria-current='page'" : "" ?>>WADA</a>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[7]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "reportes" ? " active" : "" ?>" href="?p=reportes" <?php echo $p == "reportes" ? "aria-current='page'" : "" ?>>Reportes</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "reportes" ? " active" : "" ?>" href="?p=reportes" <?= $p == "reportes" ? "aria-current='page'" : "" ?>>Reportes</a>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <?php
           if (($permisos_navbar[8]["leer"] ?? false)):
-            ?>
+          ?>
             <li class="nav-item">
-              <a class="nav-link ps-3 ps-lg-2<?php echo $p == "bitacora" ? " active" : "" ?>" href="?p=bitacora" <?php echo $p == "bitacora" ? "aria-current='page'" : "" ?>>Bitacora</a>
+              <a class="nav-link ps-3 ps-lg-2<?= $p == "bitacora" ? " active" : "" ?>" href="?p=bitacora" <?= $p == "bitacora" ? "aria-current='page'" : "" ?>>Bitacora</a>
             </li>
-            <?php
+          <?php
           endif;
           ?>
           <li class="nav-item dropdown d-none d-lg-block">
             <a class="nav-link px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-              aria-expanded="false" aria-label="Notificaciones"><i class="fa-solid fa-bell"></i>
+              aria-expanded="false" aria-label="Notificaciones" title="Notificaciones"><i class="fa-solid fa-bell"></i>
               <span
                 class="position-absolute top-25 start-75 translate-middle badge rounded-circle p-2 bg-danger border border-light d-none"
                 id="contador-notificaciones">
@@ -140,15 +142,15 @@ if (isset($_SESSION['rol'])) {
           </li>
           <li class="nav-item d-none d-lg-block">
             <a class="nav-link" href="?p=cerrarsesion" aria-label="Cerrar sesión"><i
-                class="fa-solid fa-right-from-bracket"></i></a>
+                class="fa-solid fa-right-from-bracket" title="Cerrar sesión"></i></a>
           </li>
-          <?php
+        <?php
         else:
-          ?>
+        ?>
           <li class="nav-item">
             <a class="nav-link ps-3" href="?p=login">Iniciar sesión</a>
           </li>
-          <?php
+        <?php
         endif;
         ?>
       </ul>

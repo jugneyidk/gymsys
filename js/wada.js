@@ -28,7 +28,7 @@ $(document).ready(function () {
                     ? `<span class='badge rounded-pill bg-success' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} se cumple' role='img' data-tooltip='tooltip' title="Cumple"><i class='fa-solid fa-check'></i></span>`
                     : `<span class='badge rounded-pill bg-danger' aria-label='Estado WADA del atleta ${registro.nombre} ${registro.apellido} no se cumple' role='img' data-tooltip='tooltip' title="No Cumple"><i class='fa-solid fa-x'></i></span>`
                 }</td>
-                <td class="d-none d-lg-table-cell align-middle">${
+                <td class="d-none d-xxl-table-cell align-middle">${
                   registro.inscrito
                 }</td>
                 <td class="d-none d-md-table-cell align-middle">${

@@ -19,7 +19,7 @@
     <?php require_once("comunes/menu.php"); ?>
     <main class="container-md my-3 my-md-5">
         <div class="row">
-            <div class="col-12 col-lg-8">
+            <div class="col-12 col-xxl-8">
                 <div class="card shadow ">
                     <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
                         <h2 class="mb-0">Gestionar WADA</h2>
@@ -34,7 +34,7 @@
                         ?>
                     </div>
                     <div class="card-body">
-                        <h3 class="text-center mb-2">Atletas Registrados en WADA</h3>
+                        <h3 class="text-center mb-2">Atletas Registrados en <attr title="Agencia Mundial Anti-dopaje">WADA</attr></h3>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover" id="tablaWada">
                                 <thead>
@@ -42,7 +42,7 @@
                                         <th class="d-none">Cedula</th>
                                         <th>Atleta</th>
                                         <th>Status</th>
-                                        <th class="d-none d-lg-table-cell">Inscrito</th>
+                                        <th class="d-none d-xxl-table-cell">Inscrito</th>
                                         <th class="d-none d-md-table-cell">Última Actualización</th>
                                         <th>Vencimiento</th>
                                         <th>Acción</th>
@@ -54,7 +54,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+            <div class="col-12 col-xxl-4 mt-3 mt-xxl-0">
                 <div class="card shadow">
                     <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
                         <h2 class="text-center mb-0">Próximos a Vencer</h2>
