@@ -156,6 +156,36 @@ public function eliminar_categoria($id)
     }
 }
 
+public function modificar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
+{
+    try {
+        $consulta = "
+            UPDATE resultado_competencia 
+            SET arranque = :arranque, 
+                envion = :envion, 
+                medalla_arranque = :medalla_arranque, 
+                medalla_envion = :medalla_envion, 
+                medalla_total = :medalla_total, 
+                total = :total 
+            WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
+        $valores = array(
+            ':id_competencia' => $id_competencia,
+            ':id_atleta' => $id_atleta,
+            ':arranque' => $arranque,
+            ':envion' => $envion,
+            ':medalla_arranque' => $medalla_arranque,
+            ':medalla_envion' => $medalla_envion,
+            ':medalla_total' => $medalla_total,
+            ':total' => $total
+        );
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute($valores);
+        return ["ok" => true, "mensaje" => "Resultados modificados correctamente."];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
+
 
     public function incluir_subs($nombre, $edadMinima, $edadMaxima)
 {
@@ -306,26 +336,33 @@ public function eliminar_sub($id)
         return $resultado;
     }
 
-    public function listado_atletas_inscritos($id_competencia)
-    {
-        try {
-            $consulta = "
-            SELECT a.*, u.nombre, u.apellido, u.fecha_nacimiento, rc.id_competencia
+   public function listado_atletas_inscritos($id_competencia)
+{
+    try {
+        $consulta = "
+            SELECT 
+                a.cedula AS id_atleta,
+                u.nombre,
+                u.apellido,
+                rc.arranque,
+                rc.envion,
+                rc.medalla_arranque,
+                rc.medalla_envion,
+                rc.medalla_total,
+                rc.total
             FROM resultado_competencia rc
             JOIN atleta a ON rc.id_atleta = a.cedula
             JOIN usuarios u ON a.cedula = u.cedula
             WHERE rc.id_competencia = :id_competencia";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_competencia' => $id_competencia]);
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        return $resultado;
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute([':id_competencia' => $id_competencia]);
+        $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+
+        return ["ok" => true, "respuesta" => $respuesta];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
     }
+}
 
 
     public function inscribir_atletas($id_competencia, $atletas)

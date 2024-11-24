@@ -31,7 +31,7 @@
                     <div class="form-group">
                         <div class="d-flex justify-content-between">
                             <label for="password">Contraseña:</label>
-                            <small><a href="#"
+                            <small><a href="?p=recovery"
                                     class="link-primary link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
                                     tabindex="3">Olvidé
                                     mi contraseña</a></small>

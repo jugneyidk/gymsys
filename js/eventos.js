@@ -61,21 +61,30 @@ $(document).ready(function () {
     function actualizarTablaAtletasInscritos(atletas, idCompetencia) {
         let filas = "";
         atletas.forEach((atleta, index) => {
+            const tieneResultados = atleta.arranque || atleta.envion; // Revisamos si tiene resultados
             filas += `
                 <tr>
                     <td>${index + 1}</td>
                     <td>${atleta.nombre} ${atleta.apellido}</td>
-                    <td>${atleta.cedula}</td>
+                    <td>${atleta.id_atleta}</td>
                     <td>
                         <button 
-                            class="btn btn-outline-primary btn-sm registrarResultados" 
+                            class="btn btn-outline-primary btn-sm ${tieneResultados ? "modificarResultados" : "registrarResultados"}" 
                             data-bs-toggle="modal" 
-                            data-bs-target="#modalRegistrarResultados" 
+                            data-bs-target="#${tieneResultados ? "modalModificarResultados" : "modalRegistrarResultados"}" 
                             data-id-competencia="${idCompetencia}" 
-                            data-id-atleta="${atleta.id_atleta}" 
+                            data-id-atleta="${atleta.cedula}" 
                             data-nombre="${atleta.nombre} ${atleta.apellido}" 
-                            data-cedula="${atleta.cedula}">
-                            Introducir Resultados
+                            data-cedula="${atleta.cedula}"
+                            ${tieneResultados ? `
+                                data-arranque="${atleta.arranque}" 
+                                data-envion="${atleta.envion}" 
+                                data-medalla-arranque="${atleta.medalla_arranque}" 
+                                data-medalla-envion="${atleta.medalla_envion}" 
+                                data-medalla-total="${atleta.medalla_total}" 
+                                data-total="${atleta.total}"` : ""}
+                        >
+                            ${tieneResultados ? "Modificar Resultados" : "Registrar Resultados"}
                         </button>
                     </td>
                 </tr>`;
@@ -88,6 +97,37 @@ $(document).ready(function () {
         $("#tablaAtletasInscritos tbody").html(filas);
     }
     
+    $(document).on("click", ".modificarResultados", function () {
+        const idCompetencia = $(this).data("id-competencia");
+        const idAtleta = $(this).data("id-atleta");
+     
+        $("#id_competencia_modificar").val(idCompetencia);
+        $("#id_atleta_modificar").val(idAtleta);
+        $("#arranque_modificar").val($(this).data("arranque"));
+        $("#envion_modificar").val($(this).data("envion"));
+        $("#medalla_arranque_modificar").val($(this).data("medalla-arranque"));
+        $("#medalla_envion_modificar").val($(this).data("medalla-envion"));
+        $("#medalla_total_modificar").val($(this).data.data("medalla-total"));
+    $("#total_modificar").val($(this).data("total"));
+});
+
+$("#formModificarResultados").on("submit", function (e) {
+    e.preventDefault();
+
+    const datos = new FormData(this);
+    datos.append("accion", "modificar_resultados");
+
+    realizarAjax("", datos, (result) => {
+        if (result.ok) {
+            Swal.fire("Éxito", result.mensaje, "success");
+            $("#modalModificarResultados").modal("hide");
+            cargarAtletasInscritos($("#id_competencia_modificar").val()); // Recargar la tabla
+        } else {
+            Swal.fire("Error", result.mensaje || "Error al modificar los resultados.", "error");
+        }
+    });
+});
+
     
     function actualizarListadoEventos(eventos) {
         let listadoEventos = "";
@@ -594,13 +634,14 @@ $(document).ready(function () {
         realizarAjax("", datos, (result) => {
             if (result.ok) {
                 Swal.fire("Éxito", "Categoría registrada con éxito.", "success");
-                cargarListadoCategorias2();
+                cargarListadoCategorias2();  
                 $("#formRegistrarCategoria")[0].reset();
             } else {
                 Swal.fire("Error", result.mensaje || "Error al registrar la categoría.", "error");
             }
         });
     });
+    
     function cargarListadoCategorias2() {
         const datos = new FormData();
         datos.append("accion", "listado_categoria");
@@ -608,11 +649,13 @@ $(document).ready(function () {
         realizarAjax("", datos, (result) => {
             if (result.ok) {
                 actualizarTablaCategorias(result.respuesta);
+                $("#contenedorTablaCategorias").show();
             } else {
                 Swal.fire("Error", result.mensaje || "Error al consultar las categorías.", "error");
             }
         });
     }
+    
     
     function actualizarTablaCategorias(categorias) {
         const tbody = $("#tablaCategorias tbody");
@@ -642,6 +685,7 @@ $(document).ready(function () {
             `);
         });
     }
+    
     
     $(document).on("click", ".btnEditarCategoria", function () {
         const id = $(this).data("id");

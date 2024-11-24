@@ -4,7 +4,7 @@ date_default_timezone_set('America/Caracas');
 session_start();
 if (!empty($_GET['p'])) {
   $p = $_GET['p'];
-  if (!isset($_SESSION['id_usuario']) && ($p != "login") && ($p !="perfil_atleta") && ($p !="carnet")) {
+  if (!isset($_SESSION['id_usuario']) && ($p != "login") && ($p !="perfil_atleta") && ($p !="carnet") && ($p !="recovery") && ($p !="reestablecer")) {
     header("Location: ?p=login");
   }
 } else {

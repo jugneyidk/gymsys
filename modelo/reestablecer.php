@@ -1,6 +1,6 @@
 <?php
 use PHPMailer\PHPMailer\PHPMailer;
-
+use Dompdf\Dompdf;
 require_once 'vendor/autoload.php';
 
 require_once 'lib/PHPMailer/src/Exception.php';
@@ -138,7 +138,7 @@ class Recuperacion extends datos
     public function obtener_email_por_token($token)
     {
         try {
-            $consulta = "SELECT * FROM `reset` WHERE token = :token";
+            $consulta = "SELECT email FROM `reset` WHERE token = :token";
             $resultado = $this->conexion->prepare($consulta);
             $resultado->execute([':token' => $token]);
     
@@ -157,34 +157,18 @@ class Recuperacion extends datos
     public function restablecer_contrasena($email, $nueva_contrasena)
     {
         try {
-            // Buscar la cédula (id_usuario) asociada al correo en la tabla `usuarios`
-            $consulta = "SELECT cedula FROM usuarios WHERE correo_electronico = :email";
-            $resultado = $this->conexion->prepare($consulta);
-            $resultado->execute([':email' => $email]);
-            $usuario = $resultado->fetch(PDO::FETCH_ASSOC);
-    
-            if (!$usuario) {
-                return ["ok" => false, "mensaje" => "No se encontró un usuario asociado a este correo."];
-            }
-    
-            // Obtener la cédula (id_usuario)
-            $id_usuario = $usuario['cedula'];
-    
-            // Actualizar la contraseña en la tabla `usuarios_roles`
             $hash_password = password_hash($nueva_contrasena, PASSWORD_BCRYPT);
-            $consulta = "UPDATE usuarios_roles SET password = :password WHERE id_usuario = :id_usuario";
-            $valores = [':password' => $hash_password, ':id_usuario' => $id_usuario];
+            $consulta = "UPDATE usuarios_roles SET password = :password WHERE id_usuario = :email";
+            $valores = [':password' => $hash_password, ':email' => $email];
             $resultado = $this->conexion->prepare($consulta);
             $resultado->execute($valores);
-    
-            // Eliminar el token asociado al correo en la tabla `reset`
-            $consulta = "DELETE FROM `reset` WHERE email = :email";
-            $this->conexion->prepare($consulta)->execute([':email' => $email]);
-    
+
+            $this->conexion->prepare("DELETE FROM `reset` WHERE email = :email")
+                ->execute([':email' => $email]);
+
             return ["ok" => true, "mensaje" => "Contraseña restablecida con éxito"];
         } catch (PDOException $e) {
-            return ["ok" => false, "mensaje" => "Error: " . $e->getMessage()];
+            return ["ok" => false, "mensaje" => $e->getMessage()];
         }
     }
-    
 }
