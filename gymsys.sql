@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 22-11-2024 a las 00:24:09
+-- Tiempo de generación: 24-11-2024 a las 23:00:08
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `gymsys`
 --
-CREATE DATABASE IF NOT EXISTS `gymsys` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `gymsys`;
 
 -- --------------------------------------------------------
 
@@ -988,7 +986,9 @@ CREATE TABLE `categorias` (
 --
 
 INSERT INTO `categorias` (`id_categoria`, `nombre`, `peso_minimo`, `peso_maximo`) VALUES
-(1, 'sdffdsfds', 20.00, 50.00);
+(1, 'sdffdsfds', 20.00, 50.00),
+(2, 'dsfdsfds', 50.00, 81.00),
+(3, 'fdsfdsfs', 50.00, 100.00);
 
 -- --------------------------------------------------------
 
@@ -1400,6 +1400,29 @@ INSERT INTO `representantes` (`cedula`, `nombre_completo`, `telefono`, `parentes
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `reset`
+--
+
+CREATE TABLE `reset` (
+  `id` int(11) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `cedula` varchar(10) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expira` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reset`
+--
+
+INSERT INTO `reset` (`id`, `email`, `cedula`, `token`, `expira`) VALUES
+(28, 'soykuuhaku@gmail.com', '22222222', '06ecf5e03edf15ca22548707fde981d7', '2024-11-24 16:03:56'),
+(29, 'soykuuhaku@gmail.com', '22222222', 'c8ac0f1c741d359f78937634df70d472', '2024-11-24 16:04:17'),
+(30, 'soykuuhaku@gmail.com', '22222222', '92bb2ab92e0f8b48428ad037c3a148e4', '2024-11-24 16:15:23');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `resultado_competencia`
 --
 
@@ -1408,9 +1431,9 @@ CREATE TABLE `resultado_competencia` (
   `id_atleta` varchar(10) NOT NULL,
   `arranque` varchar(255) NOT NULL,
   `envion` varchar(255) NOT NULL,
-  `medalla_arranque` varchar(255) NOT NULL,
-  `medalla_envion` varchar(255) NOT NULL,
-  `medalla_total` int(5) NOT NULL,
+  `medalla_arranque` enum('oro','plata','bronce','ninguna') DEFAULT NULL,
+  `medalla_envion` enum('oro','plata','bronce','ninguna') DEFAULT NULL,
+  `medalla_total` enum('oro','plata','bronce','ninguna') DEFAULT NULL,
   `total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -1419,7 +1442,7 @@ CREATE TABLE `resultado_competencia` (
 --
 
 INSERT INTO `resultado_competencia` (`id_competencia`, `id_atleta`, `arranque`, `envion`, `medalla_arranque`, `medalla_envion`, `medalla_total`, `total`) VALUES
-(1, '1328547', '3', '7', 'ninguna', 'ninguna', 0, 10.00);
+(1, '1328547', '3', '7', 'ninguna', 'ninguna', 'oro', 10.00);
 
 -- --------------------------------------------------------
 
@@ -1491,7 +1514,8 @@ CREATE TABLE `subs` (
 --
 
 INSERT INTO `subs` (`id_sub`, `nombre`, `edad_minima`, `edad_maxima`) VALUES
-(1, 'dsffdsfds', 15, 18);
+(1, 'dsffdsfds', 15, 17),
+(2, 'sub17', 14, 17);
 
 -- --------------------------------------------------------
 
@@ -1542,7 +1566,8 @@ CREATE TABLE `tipo_competencia` (
 --
 
 INSERT INTO `tipo_competencia` (`id_tipo_competencia`, `nombre`) VALUES
-(1, 'fdsfdsfs');
+(1, 'fdsfdsfs'),
+(4, 'preñao');
 
 -- --------------------------------------------------------
 
@@ -1568,25 +1593,25 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
 ('1328547', 'Leoleo', 'Herrera', 'Masculino', '1990-01-01', 'Ciudad', 'Soltero', '04265538456', 'leoleole@example.com'),
-('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Casado', '04245681341', 'dsfdsfd@gmail.com'),
-('23124144', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('24244444', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Casado', '04245681341', 'soykuuhaku@gmail.com'),
+('23124144', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comdfds'),
+('24244444', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comfdgfdgfd'),
 ('2517624', 'Facilis officia quo ', 'Illum sit nostrud d', 'Masculino', '1987-09-15', 'Nisi officiis explic', 'Casado', '04744313188', 'webyrajic@mailinator.com'),
 ('2594894', 'Repudiandae harum do', 'Voluptatem et labori', 'Masculino', '1992-09-17', 'Molestiae officia ad', 'Divorciado', '04844940895', 'sikylydig@mailinator.com'),
 ('28609560', 'jugney', 'vargas', 'Masculino', '2002-07-15', 'dsdj', 'Soltero', '04245681343', 'KJSHJSHKJH@GMAIL.COM'),
 ('3331917', 'Tenetur consectetur', 'Reprehenderit et aut', 'Masculino', '2010-10-13', 'Voluptatem Dolorem ', 'Soltero', '04718299227', 'tixazec@mailinator.com'),
 ('3376883', 'Id voluptas rerum c', 'Velit in blanditiis ', 'Masculino', '2004-12-27', 'Maiores fugiat aut ', 'Casado', '04534055751', 'zazehoz@mailinator.com'),
 ('42194292', 'Deserunt est sit vol', 'Cupiditate cum imped', 'Masculino', '1995-09-27', 'Exercitation cumque ', 'Casado', '04474026776', 'pobejozasa@mailinator.com'),
-('42342344', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('42342344', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comss'),
 ('4412968', 'Lorem nisi nobis id', 'Ratione cupiditate e', 'Masculino', '2010-06-07', 'Accusamus do sed nat', 'Casado', '04193003130', 'tewuvijo@mailinator.com'),
 ('66456842', 'Est pariatur Nihil ', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
-('664568422', 'Est pariatur miguel', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.com'),
+('664568422', 'Est pariatur miguel', 'Non et non molestias', 'Femenino', '2003-01-13', 'Ex qui architecto to', 'Viudo', '04823255865', 'nudob@mailinator.comfrgf'),
 ('6759472', 'Minima adipisci anim', 'Non aliquam voluptat', 'Masculino', '1995-11-03', 'Sed deserunt quis as', 'Casado', '04418277535', 'pise@mailinator.com'),
 ('6828158', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('68281580', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('68281581', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('682815811', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '2015-09-15', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
-('68281582', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.com'),
+('68281580', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comfdgfdgfdcc'),
+('68281581', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comdfgfdg'),
+('682815811', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '2015-09-15', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comvv'),
+('68281582', 'Et magni est odio m', 'Ea velit impedit o', 'Masculino', '1996-03-04', 'Ut quaerat eveniet ', 'Viudo', '04436386697', 'zuda@mailinator.comfghnbd'),
 ('7194639', 'Dolor deleniti non l', 'Ad magnam qui repreh', 'Masculino', '2018-12-01', 'Officiis ducimus co', 'Casado', '04721685737', 'bifuliki@mailinator.com'),
 ('7342825', 'Consequat Vero amet', 'Tenetur sapiente non', 'Masculino', '1972-03-11', 'Obcaecati quis adipi', 'Soltero', '04879275761', 'votopy@mailinator.com'),
 ('8578689', 'Ipsa non modi eum p', 'Beatae perferendis v', 'Femenino', '2015-03-28', 'Quis sequi illo et p', 'Soltero', '04954211873', 'wylin@mailinator.com'),
@@ -1657,7 +1682,7 @@ CREATE TABLE `usuarios_roles` (
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
 ('1328547', 0, 'Password123$', '0'),
-('22222222', 30, '$2y$10$89FdUQPC.NPKsWTvCKTZyeYVSB1mzeGFsLGpsv8ms6PfW1d6lcmwa', '0'),
+('22222222', 30, '$2y$10$hsNGdgLpo4hJzbboYhNt9.HEmkJHGJ81RpX6r..Cd05ya0wNCUlJa', '0'),
 ('23124144', 0, '$2y$10$.U6xdgWQPqo4HJbgPmi.u.j.6XZzLH46HiGXdB5lIS19BATJIKaCa', '0'),
 ('24244444', 0, '$2y$10$AlnDESIrQ20GjFP2bL5G5eXc.FAXQsbITN.Z1VSxpOf2EtaIaU6Oq', '0'),
 ('2517624', 1, '$2y$10$FgILLleAxEHPjdia6vXFx.7EZ96T7utWeeCeAmgypvd0E4lx9Dww6', '0'),
@@ -1834,6 +1859,14 @@ ALTER TABLE `permisos`
   ADD KEY `permisos_ibfk_2` (`modulo`);
 
 --
+-- Indices de la tabla `reset`
+--
+ALTER TABLE `reset`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cedula` (`cedula`),
+  ADD KEY `email` (`email`);
+
+--
 -- Indices de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
@@ -1868,7 +1901,8 @@ ALTER TABLE `tipo_competencia`
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD PRIMARY KEY (`cedula`);
+  ADD PRIMARY KEY (`cedula`),
+  ADD UNIQUE KEY `correo_unico` (`correo_electronico`);
 
 --
 -- Indices de la tabla `usuarios_roles`
@@ -1897,7 +1931,7 @@ ALTER TABLE `bitacora`
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `competencia`
@@ -1930,6 +1964,12 @@ ALTER TABLE `notificaciones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
+-- AUTO_INCREMENT de la tabla `reset`
+--
+ALTER TABLE `reset`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
 -- AUTO_INCREMENT de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
@@ -1945,7 +1985,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `subs`
 --
 ALTER TABLE `subs`
-  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_atleta`
@@ -1957,7 +1997,7 @@ ALTER TABLE `tipo_atleta`
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
-  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
@@ -2021,6 +2061,13 @@ ALTER TABLE `notificaciones`
 ALTER TABLE `permisos`
   ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permisos_ibfk_2` FOREIGN KEY (`modulo`) REFERENCES `modulos` (`id_modulo`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `reset`
+--
+ALTER TABLE `reset`
+  ADD CONSTRAINT `reset_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `usuarios` (`cedula`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `reset_ibfk_2` FOREIGN KEY (`email`) REFERENCES `usuarios` (`correo_electronico`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `resultado_competencia`
