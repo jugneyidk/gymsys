@@ -179,4 +179,107 @@ class Reporte extends datos
             return ["ok" => false, "mensaje" => $e->getMessage()];
         }
     }
+
+    public function obtenerDatosEstadisticos($tipo)
+    {
+        try {
+            switch ($tipo) {
+                case 'edadAtletas':
+                    $sql = "SELECT 
+                                CASE 
+         WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 0 AND 18 THEN '0-18'
+                                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 19 AND 30 THEN '19-30'
+                                    WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 31 AND 45 THEN '31-45'
+                                    ELSE '46+' 
+                                END AS rango_edad,
+                                COUNT(*) AS cantidad
+                            FROM atleta a
+                            INNER JOIN usuarios u ON a.cedula = u.cedula
+                            GROUP BY rango_edad";
+                    break;
+
+                case 'generoAtletas':
+                    $sql = "SELECT u.genero AS genero, COUNT(*) AS cantidad
+                            FROM atleta a
+                            INNER JOIN usuarios u ON a.cedula = u.cedula
+                            GROUP BY u.genero";
+                    break;
+
+                default:
+                    return ["ok" => false, "mensaje" => "Tipo de reporte no válido"];
+            }
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->execute();
+            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (Exception $e) {
+            return ["ok" => false, "mensaje" => $e->getMessage()];
+        }
+    }
+    public function obtenerProgresoAsistenciasMensuales()
+    {
+        try {
+            $sql = "
+                SELECT 
+                    DATE_FORMAT(fecha, '%Y-%m') AS mes,
+                    COUNT(*) AS total_asistencias
+                FROM asistencias
+                WHERE asistio = 1
+                GROUP BY DATE_FORMAT(fecha, '%Y-%m')
+                ORDER BY fecha;
+            ";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->execute();
+
+            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (Exception $e) {
+            return ["ok" => false, "mensaje" => $e->getMessage()];
+        }
+    }
+
+    public function obtenerCumplimientoWADA()
+    {
+        try {
+            $sql = "
+            SELECT 
+                CASE 
+                    WHEN estado = 1 THEN 'Cumplen'
+                    ELSE 'No Cumplen'
+                END AS cumplimiento,
+                COUNT(*) AS cantidad
+            FROM wada
+            GROUP BY cumplimiento;
+        ";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->execute();
+            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (Exception $e) {
+            return ["ok" => false, "mensaje" => $e->getMessage()];
+        }
+    }
+
+    public function obtenerVencimientosWADA()
+    {
+        try {
+            $sql = "
+            SELECT 
+                id_atleta,
+                DATE_FORMAT(vencimiento, '%Y-%m-%d') AS fecha_vencimiento
+            FROM wada
+            WHERE 
+                MONTH(vencimiento) = MONTH(CURDATE()) 
+                AND YEAR(vencimiento) = YEAR(CURDATE());
+        ";
+
+            $stmt = $this->conexion->prepare($sql);
+            $stmt->execute();
+            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+        } catch (Exception $e) {
+            return ["ok" => false, "mensaje" => $e->getMessage()];
+        }
+    }
+
+
 }

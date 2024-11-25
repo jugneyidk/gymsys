@@ -58,6 +58,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($respuesta);
             exit();
         }
+        if ($accion === 'obtenerDatosEstadisticos') {
+            $tipo = $_POST['tipo'] ?? '';
+            $respuesta = $o->obtenerDatosEstadisticos($tipo);
+            header('Content-Type: application/json');
+            echo json_encode($respuesta);
+            exit();
+        }
+        if ($accion === 'obtenerProgresoAsistencias') {
+            $respuesta = $o->obtenerProgresoAsistenciasMensuales();
+            header('Content-Type: application/json');
+            echo json_encode($respuesta);
+            exit();
+        }
+        if ($accion === 'obtenerCumplimientoWADA') {
+            $respuesta = $o->obtenerCumplimientoWADA();
+            header('Content-Type: application/json');
+            echo json_encode($respuesta);
+            exit();
+        }
+
+        if ($accion === 'obtenerVencimientosWADA') {
+            $respuesta = $o->obtenerVencimientosWADA();
+            header('Content-Type: application/json');
+            echo json_encode($respuesta);
+            exit();
+        }
     }
 }
 

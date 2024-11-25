@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="datatables/datatables.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body class="d-flex flex-column vh-100">
     <?php require_once("comunes/menu.php"); ?>
 
@@ -33,7 +35,7 @@
                                             <option value="asistencias">Asistencias</option>
                                         </select>
                                     </div>
-                                
+
                                     <div id="filtrosAtletas" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
@@ -70,20 +72,24 @@
                                             </div>
                                         </div>
                                     </div>
-                                   
+
                                     <div id="filtrosEntrenadores" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label for="edadMinEntrenador" class="form-label">Edad Mínima:</label>
-                                                <input type="number" class="form-control" id="edadMinEntrenador" name="edadMinEntrenador">
+                                                <input type="number" class="form-control" id="edadMinEntrenador"
+                                                    name="edadMinEntrenador">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label for="edadMaxEntrenador" class="form-label">Edad Máxima:</label>
-                                                <input type="number" class="form-control" id="edadMaxEntrenador" name="edadMaxEntrenador">
+                                                <input type="number" class="form-control" id="edadMaxEntrenador"
+                                                    name="edadMaxEntrenador">
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label for="gradoInstruccion" class="form-label">Grado de Instrucción:</label>
-                                                <select class="form-select" id="gradoInstruccion" name="gradoInstruccion">
+                                                <label for="gradoInstruccion" class="form-label">Grado de
+                                                    Instrucción:</label>
+                                                <select class="form-select" id="gradoInstruccion"
+                                                    name="gradoInstruccion">
                                                     <option value="">Todos</option>
                                                     <option value="Primaria">Primaria</option>
                                                     <option value="Secundaria">Secundaria</option>
@@ -92,35 +98,43 @@
                                             </div>
                                         </div>
                                     </div>
-                                 
+
                                     <div id="filtrosEventos" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label for="fechaInicioEventos" class="form-label">Fecha de Inicio:</label>
-                                                <input type="date" class="form-control" id="fechaInicioEventos" name="fechaInicioEventos">
+                                                <label for="fechaInicioEventos" class="form-label">Fecha de
+                                                    Inicio:</label>
+                                                <input type="date" class="form-control" id="fechaInicioEventos"
+                                                    name="fechaInicioEventos">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label for="fechaFinEventos" class="form-label">Fecha de Fin:</label>
-                                                <input type="date" class="form-control" id="fechaFinEventos" name="fechaFinEventos">
+                                                <input type="date" class="form-control" id="fechaFinEventos"
+                                                    name="fechaFinEventos">
                                             </div>
                                         </div>
                                     </div>
-                                   
+
                                     <div id="filtrosMensualidades" class="col-12">
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label for="fechaInicioMensualidades" class="form-label">Fecha de Inicio:</label>
-                                                <input type="date" class="form-control" id="fechaInicioMensualidades" name="fechaInicioMensualidades">
+                                                <label for="fechaInicioMensualidades" class="form-label">Fecha de
+                                                    Inicio:</label>
+                                                <input type="date" class="form-control" id="fechaInicioMensualidades"
+                                                    name="fechaInicioMensualidades">
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label for="fechaFinMensualidades" class="form-label">Fecha de Fin:</label>
-                                                <input type="date" class="form-control" id="fechaFinMensualidades" name="fechaFinMensualidades">
+                                                <label for="fechaFinMensualidades" class="form-label">Fecha de
+                                                    Fin:</label>
+                                                <input type="date" class="form-control" id="fechaFinMensualidades"
+                                                    name="fechaFinMensualidades">
                                             </div>
                                         </div>
                                     </div>
-                                 
+
                                     <div class="col-12">
-                                        <button type="button" class="btn btn-primary" id="btnGenerarReporte">Generar Reporte</button>
+                                        <button type="button" class="btn btn-primary" id="btnGenerarReporte">Generar
+                                            Reporte</button>
                                     </div>
                                 </div>
                             </form>
@@ -142,34 +156,52 @@
                     </div>
                 </div>
             </div>
-          
+
             <div class="row my-4">
                 <div class="col-12">
                     <h3>Reportes Estadísticos</h3>
                     <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <h4>Distribución de Edad de Atletas</h4>
-                            <canvas id="edadAtletasChart"></canvas>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div class="card-body" style="width:60%; height:100%">
+                                <h4>Distribución de Edad de Atletas</h4>
+                                <canvas id="edadAtletasChart"></canvas>
+                            </div>
+                            <div class="card-body" style="width:30%">
+                                <h4>Proporción de Género</h4>
+                                <canvas id="generoChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-4">
+
+                    </div>
+                    <div class="card shadow mb-4">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div class="card-body" style="width:50%; ">
+                                <h4>Progreso de Asistencias Mensuales</h4>
+                                <canvas id="asistenciasChart"></canvas>
+                            </div>
+                            <div class="card-body" style="width:20%; ">
+                                <h4>Cumplimiento de WADA</h4>
+                                <canvas id="wadaChart"></canvas>
+                            </div>
                         </div>
                     </div>
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <h4>Proporción de Género</h4>
-                            <canvas id="generoChart"></canvas>
+                            <h4>Pruebas WADA Próximas a Vencer</h4>
+                            <table class="table table-striped" id="tablaVencimientos">
+                                <thead>
+                                    <tr>
+                                        <th>Atleta</th>
+                                        <th>Fecha de Vencimiento</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <h4>Progreso de Asistencias Mensuales</h4>
-                            <canvas id="asistenciasChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <h4>Resultados de Pruebas WADA</h4>
-                            <canvas id="wadaChart"></canvas>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -178,4 +210,5 @@
     <script src="datatables/datatables.min.js"></script>
     <script type="module" src="js/reportes.js"></script>
 </body>
+
 </html>

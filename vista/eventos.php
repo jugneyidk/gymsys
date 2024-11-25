@@ -859,9 +859,9 @@
         </div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
-    <script type="text/javascript" src="js/jquery.min.js"></script>
-    <script type="text/javascript" src="datatables/datatables.min.js"></script>
-    <script type="text/javascript" src="js/eventos.js"></script>
+    <script  src="js/jquery.min.js"></script>
+    <script  src="datatables/datatables.min.js"></script>
+    <script type="module" src="js/eventos.js"></script>
 
 </body>
 
