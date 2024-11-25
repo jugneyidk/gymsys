@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-11-2024 a las 13:01:05
+-- Tiempo de generación: 25-11-2024 a las 13:34:44
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -101,6 +101,13 @@ CREATE TABLE `atleta` (
   `altura` decimal(6,2) NOT NULL,
   `representante` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `atleta`
+--
+
+INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`, `representante`) VALUES
+('26846371', '22222222', 4, 58.00, 178.00, '2122554');
 
 --
 -- Disparadores `atleta`
@@ -606,7 +613,8 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
-('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Casado', '04245681341', 'soykuuhaku@gmail.com');
+('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Casado', '04245681341', 'soykuuhaku@gmail.com'),
+('26846371', 'Diego', 'Salazar', 'Masculino', '2000-05-16', 'Nostrum et eos dese', 'Soltero', '04664073259', 'ryvin@mailinator.com');
 
 --
 -- Disparadores `usuarios`
@@ -670,7 +678,8 @@ CREATE TABLE `usuarios_roles` (
 --
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
-('22222222', 2, '$2y$10$hsNGdgLpo4hJzbboYhNt9.HEmkJHGJ81RpX6r..Cd05ya0wNCUlJa', '0');
+('22222222', 2, '$2y$10$hsNGdgLpo4hJzbboYhNt9.HEmkJHGJ81RpX6r..Cd05ya0wNCUlJa', '0'),
+('26846371', 0, '$2y$10$8SfB9eQknUxTiiEzY2Wb9urV3eLk1omrN647oUgawaG9mlPlTzMbu', '0');
 
 --
 -- Disparadores `usuarios_roles`
@@ -729,6 +738,13 @@ CREATE TABLE `wada` (
   `ultima_actualizacion` date NOT NULL,
   `estado` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `wada`
+--
+
+INSERT INTO `wada` (`id_atleta`, `inscrito`, `vencimiento`, `ultima_actualizacion`, `estado`) VALUES
+('26846371', '2024-11-25', '2024-12-10', '2024-11-25', 1);
 
 --
 -- Disparadores `wada`
@@ -925,7 +941,7 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=758;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=761;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
@@ -961,7 +977,7 @@ ALTER TABLE `modulos`
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `reset`
