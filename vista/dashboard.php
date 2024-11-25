@@ -85,52 +85,56 @@
                             <?php
                             if (!empty($ultimas_notificaciones)):
                                 foreach ($ultimas_notificaciones as $notificacion): ?>
-                                    <li class="list-group-item d-flex justify-content-between<?= !$notificacion["leida"] ? " list-group-item-warning" : "" ?>">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between<?= !$notificacion["leida"] ? " list-group-item-warning" : "" ?>">
                                         <div>
                                             <strong><?= $notificacion['titulo']; ?></strong>
                                             <small class="d-block"><?= $notificacion['mensaje']; ?></small>
                                         </div>
-                                        <small class="text-muted text-nowrap" title="<?= $notificacion["fecha_creacion"] ?>"><?= $notificacion['fecha_corta']; ?></small>
+                                        <small class="text-muted text-nowrap"
+                                            title="<?= $notificacion["fecha_creacion"] ?>"><?= $notificacion['fecha_corta']; ?></small>
                                     </li>
                                 <?php endforeach;
                             else: ?>
                                 <li class="list-group-item d-flex justify-content-center align-items-center h-100">
                                     <span class="h6 text-muted">No hay notificaciones</span>
                                 </li>
-                            <?php
+                                <?php
                             endif; ?>
                         </ul>
                     </div>
                 </div>
-                <div class="col-12 col-lg-6 d-flex align-self-stretch my-4">
-                    <div class="card w-100">
-                        <div class="card-header">
-                            <i class="fas fa-history"></i> Actividad Reciente
-                        </div>
-                        <ul class="list-group list-group-flush card-body p-0 d-flex justify-content-center">
-                            <?php
-                            if (!empty($ultimas_acciones)):
-                                foreach ($ultimas_acciones as $accion): ?>
-                                    <li class="list-group-item d-flex">
-                                        <div class="text-wrap">
-                                            <strong><?php echo $accion['nombre'] . ' ' . $accion['apellido']; ?></strong>
-                                            realizó la acción <strong><?php echo $accion['accion']; ?></strong> en el modulo
-                                            <strong><?php echo $accion['modulo']; ?></strong>.
-                                        </div>
-                                        <small class="text-muted text-nowrap" title="<?= $accion["fecha"] ?>"><?= $accion['fecha_corta']; ?></small>
+                <?php if (isset($ultimas_acciones) && $ultimas_acciones["leer"]): ?>
+                    <div class="col-12 col-lg-6 d-flex align-self-stretch my-4">
+                        <div class="card w-100">
+                            <div class="card-header">
+                                <i class="fas fa-history"></i> Actividad Reciente
+                            </div>
+                            <ul class="list-group list-group-flush card-body p-0 d-flex justify-content-center">
+                                <?php
+                                if (!empty($ultimas_acciones["acciones"])):
+                                    foreach ($ultimas_acciones["acciones"] as $accion): ?>
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <div class="text-wrap">
+                                                <strong><?php echo $accion['nombre'] . ' ' . $accion['apellido']; ?></strong>
+                                                realizó la acción <strong><?php echo $accion['accion']; ?></strong> en el modulo
+                                                <strong><?php echo $accion['modulo']; ?></strong>.
+                                            </div>
+                                            <small class="text-muted text-nowrap"
+                                                title="<?= $accion["fecha"] ?>"><?= $accion['fecha_corta']; ?></small>
+                                        </li>
+                                    <?php endforeach;
+                                else: ?>
+                                    <li class="list-group-item d-flex justify-content-center align-items-center">
+                                        <span class="h6 text-muted">No hay actividad reciente</span>
                                     </li>
-                                <?php endforeach;
-                            else: ?>
-                                <li class="list-group-item d-flex justify-content-center align-items-center">
-                                    <span class="h6 text-muted">No hay actividad reciente</span>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="col">
-                    <h4>Últimos Atletas Registrados</h4>
-                    <div class="card">
+                <?php endif; ?>
+                <div class="col d-flex align-self-stretch my-4">
+                    <div class="card w-100">
                         <div class="card-header">
                             <i class="fas fa-table"></i> Tabla de Atletas
                         </div>

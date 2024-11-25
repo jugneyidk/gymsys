@@ -30,7 +30,7 @@
                                         <th>Nombre</th>
                                         <th>Cédula</th>
                                         <th>Tipo</th>
-                                        <th>Acción</th>
+                                        <?= $permisos["crear"] ? "<th id='columnaAccion'>Acción</th>" : "" ?>
                                     </tr>
                                 </thead>
                                 <tbody id="listadoDeudores">

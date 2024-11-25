@@ -300,3 +300,19 @@ function calcularTiempoNotificacion(fecha_creacion) {
     return fecha.toLocaleDateString();
   }
 }
+
+export function validarFecha(fecha) {
+  fecha = fecha.trim();
+  const regex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+  if (!regex.test(fecha)) {
+    return false;
+  }
+  const [year, month, day] = fecha.split("-").map(Number);
+  // Verificar si es una fecha válida del calendario
+  const date = new Date(year, month - 1, day);
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+}

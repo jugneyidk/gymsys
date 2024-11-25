@@ -24,9 +24,13 @@ $(document).ready(function () {
               <td class="align-middle">${deudor.nombre} ${deudor.apellido}</td>
               <td class="align-middle">${deudor.cedula}</td>
               <td class="align-middle">${deudor.nombre_tipo_atleta}</td>
-              <td class="align-middle">
+              ${
+                $("#columnaAccion").length > 0
+                  ? `<td class="align-middle">
                 <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_cobro}" data-tooltip="tooltip" title="Seleccionar atleta" aria-label="Seleccionar atleta ${deudor.nombre} ${deudor.apellido}"><i class="fa-solid fa-up-right-from-square"></i></button>
-              </td>
+              </td>`
+                  : ""
+              }
             </tr>`;
         }
       });

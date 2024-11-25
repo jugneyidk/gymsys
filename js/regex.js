@@ -101,5 +101,41 @@ const REGEX = {
     regex: /^\d+(\.\d{1,2})?$/,
     mensaje: "Solo números y dos decimales",
   },
+  in_nombre: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/,
+    mensaje: "El nombre del evento debe ser letras y/o números (entre 3 y 100 caracteres)",
+  },
+  in_ubicacion: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/,
+    mensaje: "La ubicación debe ser letras y/o números (entre 3 y 100 caracteres)",
+  },
+  in_categoria_nombre: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,50}$/,
+    mensaje: "El nombre de la categoria debe ser letras y/o números (entre 3 y 50 caracteres)",
+  },
+  in_peso_minimo: {
+    regex: /^\d+(\.\d{1,2})?$/,
+    mensaje: "Solo números y puntos decimales",
+  },
+  in_peso_maximo: {
+    regex: /^\d+(\.\d{1,2})?$/,
+    mensaje: "Solo números y puntos decimales",
+  },
+  in_subs_nombre: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/,
+    mensaje: "El nombre del evento debe ser letras y/o números (entre 3 y 50 caracteres)",
+  },
+  in_edad_minima: {
+    regex: /^\d{1,2}?$/,
+    mensaje: "La edad mínima no es válida",
+  },
+  in_edad_maxima: {
+    regex: /^\d{1,2}?$/,
+    mensaje: "La edad máxima no es válida",
+  },
+  in_tipo_nombre: {
+    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/,
+    mensaje: "El nombre del tipo de evento debe ser letras y/o números (entre 3 y 50 caracteres)",
+  },
 };
 export default REGEX;

@@ -4,7 +4,7 @@ import {
   enviaAjax,
   muestraMensaje,
   REGEX,
-  obtenerNotificaciones
+  obtenerNotificaciones,
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoRoles() {
@@ -21,8 +21,6 @@ $(document).ready(function () {
   function validarEnvio(formId) {
     let esValido = true;
     const form = $(formId);
-    const sufijo = formId === "#f2" ? "_modificar" : "";
-
     const validaciones = [
       {
         regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
@@ -30,16 +28,14 @@ $(document).ready(function () {
         errorMsg: "Solo letras y espacios (3-50 caracteres)",
       },
     ];
-
     validaciones.forEach(({ regex, id, errorMsg }) => {
       esValido &= validarKeyUp(
         regex,
-        form.find(`#${id}${sufijo}`),
-        form.find(`#s${id}${sufijo}`),
+        form.find(`#${id}`),
+        form.find(`#s${id}`),
         errorMsg
       );
     });
-
     return esValido;
   }
 
@@ -76,6 +72,29 @@ $(document).ready(function () {
           "success"
         );
         $("#modal").modal("hide");
+        cargaListadoRoles();
+      });
+    }
+  });
+  $("#f1").on("submit", function (e) {
+    e.preventDefault();
+    let regexCedula = /^\d{7,9}$/;
+    let regexId = /^\d{1,50}$/;
+    if (
+      !regexCedula.test($("#cedula").val()) ||
+      !regexId.test($("#id_rol_asignar").val())
+    ) {
+      muestraMensaje("Error", "Los valores ingresados no son validos", "error");
+    } else {
+      const datos = new FormData($("#f1")[0]);
+      datos.append("accion", "asignar_rol");
+      enviaAjax(datos, "").then((respuesta) => {
+        muestraMensaje(
+          "Éxito",
+          "El rol se ha asignado exitosamente.",
+          "success"
+        );
+        $("#modalAsignarRol").modal("hide");
         cargaListadoRoles();
       });
     }
@@ -140,6 +159,7 @@ $(document).ready(function () {
   }
   function actualizarListadoRoles(roles) {
     let listadoRoles = "";
+    let selectRoles = "";
     if ($.fn.DataTable.isDataTable("#tablaroles")) {
       $("#tablaroles").DataTable().destroy();
     }
@@ -162,9 +182,11 @@ $(document).ready(function () {
                     </td>
                 </tr>
             `;
+      selectRoles += `<option value="${rol.id_rol}">${rol.nombre}</option>`;
     });
-
     $("#listado").html(listadoRoles);
+    $("#id_rol_asignar").html(selectRoles);
+    $("#id_rol_asignar").val(0);
     $("#tablaroles").DataTable({
       columnDefs: [{ targets: [2], orderable: false, searchable: false }],
       language: {
@@ -188,27 +210,96 @@ $(document).ready(function () {
     const id = $(this).attr("id");
     const regexMap = {
       nombre_rol: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]*$/,
+      cedula: /^\d*$/,
     };
     if (regexMap[id]) {
       validarKeyPress(e, regexMap[id]);
     }
   });
-
+  function consultarUsuario(datos, url) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        async: true,
+        url: url, // URL pasada como argumento
+        type: "POST",
+        contentType: false,
+        data: datos,
+        processData: false,
+        cache: false,
+        timeout: 10000,
+        beforeSend: function () {
+          $("#cedula").removeClass("is-valid");
+          $("#cedula").removeClass("is-invalid");
+          $("#spinner-usuario").removeClass("d-none");
+          $("#id_rol_asignar").val(0);
+          $("#nombreUsuario").addClass("bg-secondary");
+          $("#nombreUsuario").removeClass("bg-primary");
+          $("#nombreUsuario").text("No seleccionado");
+        },
+        success: function (respuesta) {
+          try {
+            const datosParseados = JSON.parse(respuesta);
+            resolve(datosParseados);
+          } catch (error) {
+            reject("Error al parsear la respuesta JSON");
+          }
+        },
+        error: function (request, status) {
+          const errorMsg =
+            status === "timeout"
+              ? "Servidor ocupado, intente de nuevo"
+              : "Error al procesar la solicitud";
+          muestraMensaje("Error", errorMsg, "error");
+          reject(errorMsg);
+        },
+        complete: function () {
+          $("#spinner-usuario").addClass("d-none");
+        },
+      });
+    });
+  }
   $("input").on("keyup", function () {
     const id = $(this).attr("id");
-    const formId = $(this).closest("form").attr("id");
-    const sufijo = formId === "f2" ? "_modificar" : "";
     const regexMap = {
       nombre_rol: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}$/,
+      cedula: /^\d{7,9}$/,
     };
-
-    if (regexMap[id.replace(sufijo, "")]) {
+    if (regexMap[id]) {
       validarKeyUp(
-        regexMap[id.replace(sufijo, "")],
+        regexMap[id],
         $(this),
         $(`#s${id}`),
-        $(`#${id.replace(sufijo, "")}_error`).text()
+        id == "nombre_rol"
+          ? "El nombre del rol debe ser entre 3 y 50 caracteres"
+          : "La cedula cédula debe tener al menos 7 números"
       );
+    }
+  });
+  $("#cedula").on("keyup", function () {
+    let regex = /^\d{7,9}$/;
+    if (regex.test($(this).val())) {
+      const id = $(this).attr("id");
+      const datos = new FormData($("#f1")[0]);
+      datos.append("accion", "consultar_rol_usuario");
+      consultarUsuario(datos, "").then((respuesta) => {
+        if (!respuesta.ok && respuesta.mensaje) {
+          muestraMensaje("Error", respuesta.mensaje, "error");
+        }
+        if (respuesta.ok) {
+          $("#nombreUsuario").text(
+            `${respuesta.usuario.nombre} ${respuesta.usuario.apellido}`
+          );
+          $("#nombreUsuario").removeClass("bg-secondary");
+          $("#nombreUsuario").addClass("bg-primary");
+          $("#id_rol_asignar").val(respuesta.usuario.id_rol);
+          $("#cedula").removeClass("is-invalid");
+          $("#cedula").addClass("is-valid");
+        } else {
+          $("#cedula").addClass("is-invalid");
+        }
+      });
+    } else {
+      $("#id_rol_asignar").val(0);
     }
   });
 

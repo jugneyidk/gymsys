@@ -78,16 +78,26 @@ class Dashboard extends datos
     public function obtener_ultimas_acciones()
     {
         try {
+            $leer_bitacora = "SELECT p.leer FROM permisos p 
+                            INNER JOIN usuarios_roles ur ON ur.id_usuario = :cedula
+                            WHERE p.id_rol = ur.id_rol AND p.modulo = 9";
+            $permiso = $this->conexion->prepare($leer_bitacora);
+            $permiso->execute([":cedula" => $_SESSION["id_usuario"]]);
+            $permiso = $permiso->fetch(PDO::FETCH_ASSOC);
+            if (empty($permiso) || !$permiso["leer"]) {
+                return $permiso;
+            }
             $consulta = "SELECT b.accion, b.fecha, u.nombre, u.apellido, b.modulo 
                          FROM bitacora b
                          JOIN usuarios u ON b.id_usuario = u.cedula
                          ORDER BY b.fecha DESC LIMIT 3";
             $resultado = $this->conexion->query($consulta);
             $resultado->execute();
-            $respuesta = $resultado->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($respuesta as $clave => $accion) {
-                $respuesta[$clave]["fecha_corta"] = $this->calcular_tiempo_fecha($accion["fecha"]);
+            $respuesta["acciones"] = $resultado->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($respuesta["acciones"] as $clave => $accion) {
+                $respuesta["acciones"][$clave]["fecha_corta"] = $this->calcular_tiempo_fecha($accion["fecha"]);
             }
+            $respuesta["leer"] = true;
         } catch (PDOException $e) {
             $respuesta = $e->getMessage();
         }

@@ -250,7 +250,7 @@ class Atleta extends datos
                 ";
                 $valores_password = array(
                     ':cedula' => $this->cedula,
-                    ':password' => $this->password
+                    ':password' => password_hash($this->password, PASSWORD_DEFAULT)
                 );
                 $respuesta2 = $this->conexion->prepare($consulta_password);
                 $respuesta2->execute($valores_password);

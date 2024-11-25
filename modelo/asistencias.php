@@ -26,6 +26,14 @@ class Asistencia extends datos
         $this->asistencias = $asistencias;
         return $this->guardar();
     }
+    public function eliminar_asistencias($fecha)
+    {
+        if (!Validar::validar_fecha($fecha)) {
+            return ["ok" => false, "mensaje" => "La fecha no es valida"];
+        }
+        $this->fecha = $fecha;
+        return $this->eliminar();
+    }
     public function obtener_atletas()
     {
         try {
@@ -114,6 +122,27 @@ class Asistencia extends datos
             $resultado["ok"] = true;
             $resultado["asistencias"] = $respuesta;
         } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
+    private function eliminar()
+    {
+        try {
+            $this->conexion->beginTransaction();
+            $consulta = "
+                DELETE 
+                FROM asistencias
+                WHERE fecha = :fecha;";
+            $con = $this->conexion->prepare($consulta);
+            $con->execute([':fecha' => $this->fecha]);
+            $con->closeCursor();
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }

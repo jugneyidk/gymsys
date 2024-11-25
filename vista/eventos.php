@@ -7,58 +7,37 @@
     <title>Registro de Competencias - Sistema</title>
     <?php require_once("comunes/linkcss.php") ?>
     <link href="css/eventos.css" rel="stylesheet">
-
 </head>
 
-<body class="d-flex flex-column vh-100">
+<body class="bg-light">
+    <script>
+        var actualizar = <?php echo $permisos["actualizar"] ?>;
+        var eliminar = <?php echo $permisos["eliminar"] ?>;
+    </script>
     <?php require_once("comunes/menu.php"); ?>
-    <main>
-        <div class="container mb-5">
-            <div class="row">
-                <div class="col">
-                    <p class="mt-2 lead fs-1 text-info"><strong>Eventos</strong></p>
-                    <div class="row">
-                        <div class="col">
-                            <nav class="navbar navbar-expand-lg border rounded bg-info mt-2 shadow">
-                                <div class="container-fluid">
-                                    <span class="navbar-brand lead text-white" disabled><strong>Opciones</strong></span>
-                                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                                        aria-expanded="false" aria-label="Toggle navigation">
-                                        <span class="navbar-toggler-icon"></span>
-                                    </button>
-                                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                            <li class="nav-item">
-                                                <button class="btn btn-outline-light mx-2 rounded-1"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalRegistrarEvento">Registrar</button>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a href="" class="btn btn-outline-light mx-2 rounded-1"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#modalEventoConsultaAnterior">Consultar
-                                                    Anteriores</a>
+    <main class="container-md my-3 my-md-5">
+        <div class="row">
 
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </nav>
-                        </div>
-                    </div>
+            <div class="d-flex justify-content-between align-items-center bg-dark text-white shadow rounded p-3">
+                <h2 class="mb-0">Eventos</h2>
+                <div>
+                    <?php if ($permisos["crear"] == 1): ?>
+                        <button class="btn btn-light" data-bs-toggle="modal"
+                            data-bs-target="#modalRegistrarEvento">Registrar</button>
+                    <?php endif; ?>
+                    <button class="btn btn-outline-light" data-bs-toggle="modal"
+                        data-bs-target="#modalEventoConsultaAnterior">Consultar
+                        Anteriores</button>
                 </div>
             </div>
-            <div class="container">
 
-                <p class="lead mt-2"><strong>Eventos activos</strong></p>
-                <div id="lista-eventos" class="row">
-
-                </div>
+        </div>
+        <div class="row">
+            <p class="lead mt-3"><strong>Eventos activos</strong></p>
+            <div id="lista-eventos" class="row">
             </div>
         </div>
-
-        <div class="modal" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento"
+        <div class="modal fade" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento"
             tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
@@ -69,64 +48,75 @@
                     <form id="fRegistrarEvento" method="post" action="#">
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col">
-                                    <label for="in_nombre" class="form-label">Nombre del Evento</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_nombre"
-                                        name="nombre">
-                                    <div class="invalid-feedback">Nombre del evento es obligatorio</div>
-                                    <label for="in_ubicacion" class="form-label">Ubicación</label>
-                                    <input type="text" class="form-control form-control-sm" id="in_ubicacion"
-                                        name="lugar_competencia">
-                                    <div class="invalid-feedback">Ubicación es obligatoria</div>
-                                    <div class="row">
-                                        <div class="col">
-                                            <label for="in_date_start" class="form-label">Fecha de Apertura</label>
-                                            <input type="date" id="in_date_start" class="form-control form-control-sm"
-                                                name="fecha_inicio">
-                                            <div class="invalid-feedback">Fecha de apertura es obligatoria</div>
-                                        </div>
-                                        <div class="col">
-                                            <label for="in_date_end" class="form-label">Fecha de Clausura</label>
-                                            <input type="date" id="in_date_end" class="form-control form-control-sm"
-                                                name="fecha_fin">
-                                            <div class="invalid-feedback">Fecha de clausura es obligatoria</div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_nombre" name="nombre"
+                                            placeholder="Nombre del Evento">
+                                        <label for="in_nombre" class="form-label">Nombre del Evento</label>
+                                        <div class="invalid-feedback" id="sin_nombre">Nombre del evento es obligatorio
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="in_categoria" class="form-label">Categoria</label>
-                                        <select id="in_categoria" name="categoria"
-                                            class="form-select form-control form-select-sm">
-                                            <option selected>Seleccione una</option>
-                                        </select>
-                                        <div class="invalid-feedback">Categoría es obligatoria</div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_ubicacion"
+                                            name="lugar_competencia" placeholder="Ubicación">
+                                        <label for="in_ubicacion" class="form-label">Ubicación</label>
+                                        <div class="invalid-feedback" id="sin_ubicacion">Ubicación es obligatoria</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <label for="in_date_start" class="form-label">Fecha de Apertura</label>
+                                    <input type="date" id="in_date_start" class="form-control" name="fecha_inicio">
+                                    <div class="invalid-feedback">Fecha de apertura es obligatoria</div>
+                                </div>
+                                <div class="col">
+                                    <label for="in_date_end" class="form-label">Fecha de Clausura</label>
+                                    <input type="date" id="in_date_end" class="form-control" name="fecha_fin">
+                                    <div class="invalid-feedback">Fecha de clausura es obligatoria</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="in_categoria" class="form-label">Categoria</label>
+                                    <select id="in_categoria" name="categoria" class="form-select form-control">
+                                        <option selected>Seleccione una</option>
+                                    </select>
+                                    <div class="invalid-feedback">Categoría es obligatoria</div>
+                                    <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
                                         <button class="btn btn-link" data-bs-toggle="modal"
                                             data-bs-target="#modalRegistrarCategoria" type="button">Registrar
                                             Categoria</button>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="in_subs" class="form-label">Subs</label>
-                                        <select id="in_subs" name="subs"
-                                            class="form-select form-control form-select-sm">
-                                            <option selected>Seleccione una</option>
-                                        </select>
-                                        <div class="invalid-feedback">Subs es obligatorio</div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="in_subs" class="form-label">Subs</label>
+                                    <select id="in_subs" name="subs" class="form-select form-control">
+                                        <option selected>Seleccione una</option>
+                                    </select>
+                                    <div class="invalid-feedback">Subs es obligatorio</div>
+                                    <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
                                         <button class="btn btn-link" data-bs-toggle="modal"
                                             data-bs-target="#modalRegistrarSubs" type="button">Registrar Subs</button>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="in_tipo" class="form-label">Tipo</label>
-                                        <select id="in_tipo" name="tipo_competencia"
-                                            class="form-select form-control form-select-sm">
-                                            <option selected>Seleccione una</option>
-                                        </select>
-                                        <div class="invalid-feedback">Tipo es obligatorio</div>
+                                    <?php endif; ?>
+
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="in_tipo" class="form-label">Tipo</label>
+                                    <select id="in_tipo" name="tipo_competencia" class="form-select form-control">
+                                        <option selected>Seleccione una</option>
+                                    </select>
+                                    <div class="invalid-feedback">Tipo es obligatorio</div>
+                                    <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
                                         <button class="btn btn-link" data-bs-toggle="modal"
                                             data-bs-target="#modalRegistrarTipo" type="button">Registrar Tipo</button>
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
+
                         </div>
                         <div class="modal-footer">
                             <input type="submit" class="btn btn-primary" value="Registrar" type="button">
@@ -152,20 +142,29 @@
                         <!-- Formulario para registrar categorías -->
                         <form id="formRegistrarCategoria">
                             <div class="mb-3">
-                                <label for="in_categoria_nombre" class="form-label">Nombre de la Categoría</label>
-                                <input type="text" class="form-control" id="in_categoria_nombre" name="nombre"
-                                    placeholder="Ingrese el nombre de la categoría" required>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="in_categoria_nombre" name="nombre"
+                                        placeholder="Nombre de la categoría">
+                                    <label for="in_categoria_nombre" class="form-label">Nombre de la categoría</label>
+                                    <div class="invalid-feedback" id="sin_categoria_nombre"></div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="in_peso_minimo" class="form-label">Peso Mínimo</label>
-                                    <input type="number" class="form-control" id="in_peso_minimo" name="pesoMinimo"
-                                        placeholder="Peso mínimo en kg" required>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_peso_minimo" name="pesoMinimo"
+                                            placeholder="Peso mínimo">
+                                        <label for="in_peso_minimo" class="form-label">Peso mínimo</label>
+                                        <div class="invalid-feedback" id="sin_peso_minimo"></div>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="in_peso_maximo" class="form-label">Peso Máximo</label>
-                                    <input type="number" class="form-control" id="in_peso_maximo" name="pesoMaximo"
-                                        placeholder="Peso máximo en kg" required>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_peso_maximo" name="pesoMaximo"
+                                            placeholder="Peso Máximo">
+                                        <label for="in_peso_maximo" class="form-label">Peso Máximo</label>
+                                        <div class="invalid-feedback" id="sin_peso_maximo"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
@@ -219,24 +218,34 @@
                         <form id="formRegistrarSubs">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="in_subs_nombre" class="form-label">Nombre del Sub</label>
-                                    <input type="text" class="form-control" id="in_subs_nombre" name="nombre"
-                                        placeholder="Ingrese el nombre del sub" required>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_subs_nombre" name="nombre"
+                                            placeholder="Nombre del Sub">
+                                        <label for="in_subs_nombre" class="form-label">Nombre del Sub</label>
+                                        <div class="invalid-feedback" id="sin_subs_nombre"></div>
+                                    </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="in_edad_minima" class="form-label">Edad Mínima</label>
-                                    <input type="number" class="form-control" id="in_edad_minima" name="edadMinima"
-                                        min="0" placeholder="0" required>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_edad_minima" name="edadMinima"
+                                            placeholder="Edad Mínima">
+                                        <label for="in_edad_minima" class="form-label">Edad Mínima</label>
+                                        <div class="invalid-feedback" id="sin_edad_minima"></div>
+                                    </div>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="in_edad_maxima" class="form-label">Edad Máxima</label>
-                                    <input type="number" class="form-control" id="in_edad_maxima" name="edadMaxima"
-                                        min="1" placeholder="0" required>
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" id="in_edad_maxima" name="edadMaxima"
+                                            placeholder="Edad Máxima">
+                                        <label for="in_edad_maxima" class="form-label">Edad Máxima</label>
+                                        <div class="invalid-feedback" id="sin_edad_maxima"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-primary">Registrar</button>
-                                <button type="button" id="btnConsultarSubs" class="btn btn-info">Consultar Subs</button>
+                                <button type="button" id="btnConsultarSubs" class="btn btn-info">Consultar
+                                    Subs</button>
                                 <button type="button" id="btnRegresarSubs" class="btn btn-secondary">Regresar</button>
                             </div>
                         </form>
@@ -276,9 +285,12 @@
 
                         <form id="formRegistrarTipo">
                             <div class="mb-3">
-                                <label for="in_tipo_nombre" class="form-label">Nombre del Tipo</label>
-                                <input type="text" class="form-control" id="in_tipo_nombre" name="nombre"
-                                    placeholder="Ingrese el nombre del tipo" required>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="in_tipo_nombre" name="nombre"
+                                        placeholder="Nombre del Tipo">
+                                    <label for="in_tipo_nombre" class="form-label">Nombre del Tipo</label>
+                                    <div class="invalid-feedback" id="sin_tipo_nombre"></div>
+                                </div>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <button type="submit" class="btn btn-primary">Registrar</button>
@@ -425,7 +437,7 @@
         </div>
 
 
-        <div class="modal" id="modalEventoConsultaAnterior" aria-hidden="true"
+        <div class="modal fade" id="modalEventoConsultaAnterior" aria-hidden="true"
             aria-labelledby="modalEventoConsultaAnterior" tabindex="-1">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
@@ -505,7 +517,8 @@
                             </div>
                             <div class="row mt-3">
                                 <div class="col-md-4">
-                                    <label for="medalla_arranque_modificar" class="form-label">Medalla Arranque</label>
+                                    <label for="medalla_arranque_modificar" class="form-label">Medalla
+                                        Arranque</label>
                                     <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select"
                                         required>
                                         <option value="oro">Oro</option>
@@ -537,7 +550,8 @@
                             </div>
                             <div class="row mt-3">
                                 <div class="col-md-12">
-                                    <label for="total_modificar" class="form-label">Total (Arranque + Envión)</label>
+                                    <label for="total_modificar" class="form-label">Total (Arranque +
+                                        Envión)</label>
                                     <input type="number" class="form-control" id="total_modificar" name="total"
                                         readonly>
                                 </div>
@@ -637,16 +651,17 @@
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalConsultarEventoAnteriorLabel">Detalles del Evento Anterior</h5>
+                        <h5 class="modal-title" id="modalConsultarEventoAnteriorLabel">Detalles del Evento Anterior
+                        </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
 
-                        <p><strong>Nombre del Evento:</strong> <span id="detallesNombreEvento"></span></p>
-                        <p><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicio"></span></p>
-                        <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFin"></span></p>
-                        <p><strong>Ubicación:</strong> <span id="detallesUbicacion"></span></p>
-                        <p><strong>Estado:</strong> <span id="detallesEstado"></span></p>
+                        <p><strong>Nombre del Evento:</strong> <span id="detallesNombreEventoAnterior"></span></p>
+                        <p><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicioAnterior"></span></p>
+                        <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFinAnterior"></span></p>
+                        <p><strong>Ubicación:</strong> <span id="detallesUbicacionAnterior"></span></p>
+                        <p><strong>Estado:</strong> <span id="detallesEstadoAnterior"></span></p>
 
                     </div>
                     <div class="modal-footer">
@@ -756,7 +771,8 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <label for="medalla_arranque_modificar" class="form-label">Medalla Arranque</label>
+                                    <label for="medalla_arranque_modificar" class="form-label">Medalla
+                                        Arranque</label>
                                     <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select"
                                         required>
                                         <option value="oro">Oro</option>
@@ -788,7 +804,8 @@
                             </div>
                             <div class="row mb-3">
                                 <div class="col-md-12">
-                                    <label for="total_modificar" class="form-label">Total (Arranque + Envión)</label>
+                                    <label for="total_modificar" class="form-label">Total (Arranque +
+                                        Envión)</label>
                                     <input type="number" class="form-control" id="total_modificar" name="total"
                                         readonly>
                                 </div>
@@ -859,8 +876,8 @@
         </div>
     </main>
     <?php require_once("comunes/footer.php"); ?>
-    <script  src="js/jquery.min.js"></script>
-    <script  src="datatables/datatables.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="datatables/datatables.min.js"></script>
     <script type="module" src="js/eventos.js"></script>
 
 </body>

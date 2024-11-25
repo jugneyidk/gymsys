@@ -24,6 +24,17 @@
                 <div class="card shadow">
                     <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                         <h2 class="mb-0">Asistencias Diarias</h2>
+                        <div>
+                            <?php
+                            if ($permisos["eliminar"] === 1):
+                                ?>
+                                <button type="button" class="btn btn-danger" id="btnEliminarAsistencias">
+                                    Eliminar asistencias del dia
+                                </button>
+                                <?php
+                            endif;
+                            ?>
+                        </div>
                     </div>
                     <div class="card-body">
                         <form id="formAsistencias">

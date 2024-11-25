@@ -60,4 +60,23 @@ class AsistenciaTest extends TestCase
         $this->assertFalse($respuesta['ok']);
         $this->assertEquals("Las asistencias no son validas", $respuesta['mensaje']);
     }
+    public function testEliminarAsistenciasExitoso() // Caso 1
+    {
+        $fecha = date('Y-m-d');
+        $respuesta = $this->asistencia->eliminar_asistencias($fecha);
+        // Verificar que la respuesta sea exitosa
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertTrue($respuesta['ok']);
+    }
+    public function testEliminarAsistenciasNoValido() // Caso 1
+    {
+        $fecha = "fecha";
+        $respuesta = $this->asistencia->eliminar_asistencias($fecha);
+        // Verificar que la respuesta sea que la fecha no es valida
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta['ok']);
+        $this->assertEquals("La fecha no es valida", $respuesta['mensaje']);
+    }
 }

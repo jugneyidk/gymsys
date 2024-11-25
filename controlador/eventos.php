@@ -20,15 +20,7 @@ if (is_file("vista/" . $p . ".php")) {
                 break;
 
             case 'incluir_evento':
-                $respuesta = $o->incluir_evento(
-                    $_POST['nombre'],
-                    $_POST['lugar_competencia'],
-                    $_POST['fecha_inicio'],
-                    $_POST['fecha_fin'],
-                    $_POST['categoria'],
-                    $_POST['subs'],
-                    $_POST['tipo_competencia']
-                );
+                $respuesta = $o->incluir_evento($_POST);
                 echo json_encode($respuesta);
                 break;
 

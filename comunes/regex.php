@@ -96,4 +96,16 @@ const REGEX = [
         'regex' => '/^[01]$/',
         'mensaje' => 'El valor booleano no es valido'
     ],
+    'nombre_evento' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/',
+        'mensaje' => 'El nombre del evento debe ser letras y/o números (entre 3 y 100 caracteres)'
+    ],
+    'lugar_competencia' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/',
+        'mensaje' => 'La ubicación debe ser letras y/o números (entre 3 y 100 caracteres)'
+    ],
+    'nombre_categoria' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,50}$/',
+        'mensaje' => 'El nombre de la categoria debe ser letras y/o números (entre 3 y 50 caracteres)'
+    ],
 ];

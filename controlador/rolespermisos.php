@@ -46,6 +46,12 @@ if (is_file("vista/" . $p . ".php")) {
         } elseif ($accion == 'consultar_rol') {
             $respuesta = $o->consultar_rol($_POST['id_rol']);
             echo json_encode($respuesta);
+        } elseif ($accion == 'asignar_rol') {
+            $respuesta = $o->asignar_rol($_POST['cedula'], $_POST['id_rol_asignar']);
+            echo json_encode($respuesta);
+        } elseif ($accion == 'consultar_rol_usuario') {
+            $respuesta = $o->consultar_rol_usuario($_POST['cedula']);
+            echo json_encode($respuesta);
         }
         exit;
     }

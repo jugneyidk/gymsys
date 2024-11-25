@@ -284,4 +284,56 @@ class RolespermisosTest extends TestCase
         $this->assertFalse($respuesta["ok"]);
         $this->assertEquals("Solo letras y espacios (3-50 caracteres)", $respuesta["mensaje"]);
     }
+    public function testAsignarRolExitoso() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->asignar_rol("1328547", "45");
+        // Verificar que la respuesta sea exitosa
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertTrue($respuesta["ok"]);
+    }
+    public function testAsignarRolNoValido() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->asignar_rol("133", "");
+        // Verificar que la respuesta sea no valida
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta["mensaje"]);
+    }
+    public function testAsignarRolNoExiste() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->asignar_rol("1328547", "863");
+        // Verificar que la respuesta sea que no existe el rol
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("No existe este rol", $respuesta["mensaje"]);
+    }
+    public function testConsultarRolUsuarioExitoso() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->consultar_rol_usuario("1328547");
+        // Verificar que la respuesta sea exitosa
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertTrue($respuesta["ok"]);
+        $this->assertIsArray($respuesta["usuario"]);
+    }
+    public function testConsultarRolUsuarioNoExiste() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->consultar_rol_usuario("1343547");
+        // Verificar que la respuesta sea False
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta["ok"]);
+    }
+    public function testConsultarRolUsuarioNoValido() // Caso 1
+    {
+        $respuesta = $this->rolespermisos->consultar_rol_usuario("1435s47");
+        // Verificar que la respuesta sea False
+        $this->assertNotNull($respuesta);
+        $this->assertIsArray($respuesta);
+        $this->assertFalse($respuesta["ok"]);
+        $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta["mensaje"]);
+    }
 }

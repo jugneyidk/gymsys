@@ -5,6 +5,7 @@ import {
   muestraMensaje,
   obtenerNotificaciones,
   REGEX,
+  validarFecha,
 } from "./comunes.js";
 $(document).ready(function () {
   function cargarListadoAtletas() {
@@ -12,6 +13,10 @@ $(document).ready(function () {
     datos.append("accion", "obtener_atletas");
     enviaAjax(datos, "").then((respuesta) => {
       actualizarListadoAtletas(respuesta.atletas);
+      if (!$("fechaAsistencia").val()) {
+        $("#fechaAsistencia").val(new Date().toISOString().split("T")[0]);
+        obtenerAsistencias($("#fechaAsistencia").val());
+      }
     });
   }
   obtenerNotificaciones(idUsuario);
@@ -153,6 +158,38 @@ $(document).ready(function () {
 
   $("#btnGuardarAsistencias").on("click", function () {
     enviarAsistencias();
+  });
+  $("#btnEliminarAsistencias").on("click", function () {
+    let fecha = $("#fechaAsistencia").val();
+    if (!validarFecha(fecha)) {
+      muestraMensaje("Error", "La fecha no es válida", "error");
+      return false;
+    }
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar!",
+      cancelButtonText: "Cancelar",
+      scrollbarPadding: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const datos = new FormData();
+        datos.append("accion", "eliminar_asistencias");
+        datos.append("fecha", fecha);
+        enviaAjax(datos, "").then(() => {
+          muestraMensaje(
+            "Eliminado!",
+            "Las asistencias fueron eliminadas",
+            "success"
+          );
+          obtenerAsistencias(fecha);
+        });
+      }
+    });
   });
 
   $("body").on("keypress", "input.comentario", function (e) {

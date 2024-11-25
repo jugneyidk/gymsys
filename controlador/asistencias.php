@@ -25,6 +25,9 @@ if (is_file("vista/" . $p . ".php")) {
         } elseif ($accion == 'obtener_asistencias') {
             $respuesta = $o->obtener_asistencias($_POST['fecha']);
             echo json_encode($respuesta);
+        } elseif ($accion == 'eliminar_asistencias') {
+            $respuesta = $o->eliminar_asistencias($_POST['fecha']);
+            echo json_encode($respuesta);
         }
         exit;
     }

@@ -2,7 +2,7 @@
 class Roles extends datos
 {
     private $conexion;
-    private $id_rol, $nombre, $centrenadores, $rentrenadores, $uentrenadores, $dentrenadores, $catletas, $ratletas, $uatletas, $datletas, $crolespermisos, $rrolespermisos, $urolespermisos, $drolespermisos, $casistencias, $rasistencias, $uasistencias, $dasistencias, $ceventos, $reventos, $ueventos, $deventos, $cmensualidad, $rmensualidad, $umensualidad, $dmensualidad, $cwada, $rwada, $uwada, $dwada, $creportes, $rreportes, $ureportes, $dreportes, $rbitacora;
+    private $cedula, $id_rol, $nombre, $centrenadores, $rentrenadores, $uentrenadores, $dentrenadores, $catletas, $ratletas, $uatletas, $datletas, $crolespermisos, $rrolespermisos, $urolespermisos, $drolespermisos, $casistencias, $rasistencias, $uasistencias, $dasistencias, $ceventos, $reventos, $ueventos, $deventos, $cmensualidad, $rmensualidad, $umensualidad, $dmensualidad, $cwada, $rwada, $uwada, $dwada, $creportes, $rreportes, $ureportes, $dreportes, $rbitacora;
 
     public function __construct()
     {
@@ -12,6 +12,25 @@ class Roles extends datos
     {
         $this->id_rol = filter_var($id_rol, FILTER_SANITIZE_NUMBER_INT);
         return $this->consultar();
+    }
+    public function consultar_rol_usuario($cedula)
+    {
+        $validacion = Validar::validar("cedula", $cedula);
+        if (!$validacion["ok"]) {
+            return $validacion;
+        }
+        $this->cedula = $cedula;
+        return $this->consultar_usuario();
+    }
+    public function asignar_rol($cedula, $id_rol)
+    {
+        $validacion = Validar::validar("cedula", $cedula);
+        if (!$validacion["ok"]) {
+            return $validacion;
+        }
+        $this->id_rol = filter_var($id_rol, FILTER_SANITIZE_NUMBER_INT);
+        $this->cedula = $cedula;
+        return $this->asignar();
     }
     public function incluir_rol($nombre_rol, $valores)
     {
@@ -42,6 +61,7 @@ class Roles extends datos
         }
         return $this->modificar();
     }
+
     public function eliminar_rol($id_rol)
     {
         $this->id_rol = filter_var($id_rol, FILTER_SANITIZE_NUMBER_INT);
@@ -172,6 +192,35 @@ class Roles extends datos
         $this->desconecta();
         return $resultado;
     }
+    private function consultar_usuario()
+    {
+        try {
+            $consulta = "SELECT 
+                    r.nombre AS nombre_rol, 
+                    u.nombre, 
+                    u.apellido, 
+                    ur.id_rol
+                FROM usuarios u
+                INNER JOIN usuarios_roles ur ON ur.id_usuario = u.cedula
+                INNER JOIN roles r ON r.id_rol = ur.id_rol
+                WHERE u.cedula = :cedula;";
+            $valores = array(':cedula' => $this->cedula);
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $usuario = $respuesta->fetch(PDO::FETCH_ASSOC);
+            if ($usuario) {
+                $resultado["ok"] = true;
+                $resultado["usuario"] = $usuario;
+            } else {
+                $resultado["ok"] = false;
+            }
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
     private function modificar()
     {
         try {
@@ -186,22 +235,53 @@ class Roles extends datos
             $consulta = "
             UPDATE roles SET nombre = :nombre
             WHERE id_rol = :id_rol;
-            INSERT INTO permisos (id_rol, modulo, crear, leer, actualizar, eliminar)
-            VALUES 
-            (:id_rol, :moduloentrenadores, :centrenadores, :rentrenadores, :uentrenadores, :dentrenadores),
-            (:id_rol, :moduloatletas, :catletas, :ratletas, :uatletas, :datletas),
-            (:id_rol, :modulorolespermisos, :crolespermisos, :rrolespermisos, :urolespermisos, :drolespermisos),
-            (:id_rol, :moduloasistencias, :casistencias, :rasistencias, :uasistencias, :dasistencias),
-            (:id_rol, :moduloeventos, :ceventos, :reventos, :ueventos, :deventos),
-            (:id_rol, :modulomensualidad, :cmensualidad, :rmensualidad, :umensualidad, :dmensualidad),
-            (:id_rol, :modulowada, :cwada, :rwada, :uwada, :dwada),
-            (:id_rol, :moduloreportes, :creportes, :rreportes, 0, 0),
-            (:id_rol, :modulobitacora, 0, :rbitacora, 0, 0)
-            ON DUPLICATE KEY UPDATE
-            crear = VALUES(crear),
-            leer = VALUES(leer),
-            actualizar = VALUES(actualizar),
-            eliminar = VALUES(eliminar);
+            UPDATE permisos
+            SET 
+                crear = CASE modulo
+                    WHEN :moduloentrenadores THEN :centrenadores
+                    WHEN :moduloatletas THEN :catletas
+                    WHEN :modulorolespermisos THEN :crolespermisos
+                    WHEN :moduloasistencias THEN :casistencias
+                    WHEN :moduloeventos THEN :ceventos
+                    WHEN :modulomensualidad THEN :cmensualidad
+                    WHEN :modulowada THEN :cwada
+                    WHEN :moduloreportes THEN :creportes
+                    WHEN :modulobitacora THEN 0
+                END,
+                leer = CASE modulo
+                    WHEN :moduloentrenadores THEN :rentrenadores
+                    WHEN :moduloatletas THEN :ratletas
+                    WHEN :modulorolespermisos THEN :rrolespermisos
+                    WHEN :moduloasistencias THEN :rasistencias
+                    WHEN :moduloeventos THEN :reventos
+                    WHEN :modulomensualidad THEN :rmensualidad
+                    WHEN :modulowada THEN :rwada
+                    WHEN :moduloreportes THEN :rreportes
+                    WHEN :modulobitacora THEN :rbitacora
+                END,
+                actualizar = CASE modulo
+                    WHEN :moduloentrenadores THEN :uentrenadores
+                    WHEN :moduloatletas THEN :uatletas
+                    WHEN :modulorolespermisos THEN :urolespermisos
+                    WHEN :moduloasistencias THEN :uasistencias
+                    WHEN :moduloeventos THEN :ueventos
+                    WHEN :modulomensualidad THEN :umensualidad
+                    WHEN :modulowada THEN :uwada
+                    WHEN :moduloreportes THEN 0
+                    WHEN :modulobitacora THEN 0
+                END,
+                eliminar = CASE modulo
+                    WHEN :moduloentrenadores THEN :dentrenadores
+                    WHEN :moduloatletas THEN :datletas
+                    WHEN :modulorolespermisos THEN :drolespermisos
+                    WHEN :moduloasistencias THEN :dasistencias
+                    WHEN :moduloeventos THEN :deventos
+                    WHEN :modulomensualidad THEN :dmensualidad
+                    WHEN :modulowada THEN :dwada
+                    WHEN :moduloreportes THEN 0
+                    WHEN :modulobitacora THEN 0
+                END
+            WHERE id_rol = :id_rol;
             ";
             $valores_permisos = array(
                 ':nombre' => $this->nombre,
@@ -249,6 +329,42 @@ class Roles extends datos
             );
             $respuesta1 = $this->conexion->prepare($consulta);
             $respuesta1->execute($valores_permisos);
+            $respuesta1->closeCursor();
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
+    private function asignar()
+    {
+        try {
+            $consulta = "SELECT cedula FROM usuarios WHERE cedula = ?;";
+            $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe este usuario";
+                return $resultado;
+            }
+            $consulta = "SELECT id_rol FROM roles WHERE id_rol = ?;";
+            $existe = Validar::existe($this->conexion, $this->id_rol, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe este rol";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
+            $consulta = "UPDATE usuarios_roles 
+                SET 
+                    id_rol = :id_rol
+                WHERE id_usuario = :cedula;";
+            $valores = [":cedula" => $this->cedula, ":id_rol" => $this->id_rol];
+            $respuesta1 = $this->conexion->prepare($consulta);
+            $respuesta1->execute($valores);
             $respuesta1->closeCursor();
             $this->conexion->commit();
             $resultado["ok"] = true;
