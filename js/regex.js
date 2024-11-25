@@ -123,7 +123,7 @@ const REGEX = {
   },
   in_subs_nombre: {
     regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,100}$/,
-    mensaje: "El nombre del evento debe ser letras y/o números (entre 3 y 50 caracteres)",
+    mensaje: "El nombre de la sub debe ser letras y/o números (entre 3 y 50 caracteres)",
   },
   in_edad_minima: {
     regex: /^\d{1,2}?$/,

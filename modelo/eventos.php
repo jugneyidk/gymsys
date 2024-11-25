@@ -25,6 +25,9 @@ class Eventos extends datos
         if (!Validar::validar_fecha($datos["fecha_fin"])) {
             return ["ok" => false, "mensaje" => "La fecha de clausura no es valida"];
         }
+        if ($datos["fecha_inicio"] > $datos["fecha_fin"]) {
+            return ["ok" => false, "mensaje" => "La fecha de inicio no puede ser mayor que la fecha de fin"];
+        }
         if (!filter_var($datos["categoria"], FILTER_VALIDATE_INT)) {
             return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
         }
@@ -198,6 +201,13 @@ class Eventos extends datos
                 $resultado["mensaje"] = "No existe esta categoria";
                 return $resultado;
             }
+            $consulta = "SELECT id_categoria FROM categorias WHERE nombre = ? AND id_categoria != '$id';";
+            $existe = Validar::existe($this->conexion, $nombre, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe una categoria con este nombre";
+                return $resultado;
+            }
             $validacion = Validar::validar("nombre_categoria", $nombre);
             if (!$validacion["ok"]) {
                 return $validacion;
@@ -242,7 +252,7 @@ class Eventos extends datos
             if (!filter_var($id, FILTER_VALIDATE_INT)) {
                 return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
             }
-            $consulta = "SELECT categoria FROM categorias WHERE id_categoria = ?;";
+            $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = ?;";
             $existe = Validar::existe($this->conexion, $id, $consulta);
             if (!$existe["ok"]) {
                 $resultado["ok"] = false;
@@ -268,6 +278,17 @@ class Eventos extends datos
     public function modificar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
     {
         try {
+            if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de competencia no es un valor válido"];
+            }
+            $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = ? AND id_atleta = '$id_atleta';";
+            $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Este atleta o competencia no existe";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "
             UPDATE resultado_competencia 
             SET arranque = :arranque, 
@@ -287,25 +308,45 @@ class Eventos extends datos
                 ':medalla_total' => $medalla_total,
                 ':total' => $total
             );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            return ["ok" => true, "mensaje" => "Resultados modificados correctamente."];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $resultado = $this->conexion->prepare($consulta);
+            $resultado->execute($valores);
+            $resultado->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
 
     public function incluir_subs($nombre, $edadMinima, $edadMaxima)
     {
         try {
-            if (empty($nombre) || strlen($nombre) < 2) {
-                throw new Exception("El nombre es inválido.");
+            $validacion = Validar::validar("nombre_sub", $nombre);
+            if (!$validacion["ok"]) {
+                return $validacion;
             }
-            if (!is_numeric($edadMinima) || !is_numeric($edadMaxima) || $edadMinima < 0 || $edadMaxima <= $edadMinima) {
-                throw new Exception("El rango de edad es inválido.");
+            if (!filter_var($edadMinima, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La edad mínima no es un valor válido"];
             }
-
+            if (!filter_var($edadMaxima, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La edad máxima no es un valor válido"];
+            }
+            if ($edadMaxima <= $edadMinima) {
+                return ["ok" => false, "mensaje" => "La edad máxima no puede ser menor o igual a la edad mínima"];
+            }
+            $consulta = "SELECT id_sub FROM subs WHERE nombre = ?;";
+            $existe = Validar::existe($this->conexion, $nombre, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe una sub con este nombre";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
                      VALUES (:nombre, :edadMinima, :edadMaxima)";
             $valores = [
@@ -313,25 +354,53 @@ class Eventos extends datos
                 ':edadMinima' => $edadMinima,
                 ':edadMaxima' => $edadMaxima
             ];
-
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute($valores);
-
-            return ["ok" => true, "mensaje" => "Sub registrado con éxito."];
+            $stmt->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
         } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
     public function modificar_sub($id, $nombre, $edadMinima, $edadMaxima)
     {
         try {
-            if (empty($nombre) || strlen($nombre) < 2) {
-                throw new Exception("El nombre es inválido.");
+            if (!filter_var($id, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la sub no es válido"];
             }
-            if (!is_numeric($edadMinima) || !is_numeric($edadMaxima) || $edadMinima < 0 || $edadMaxima <= $edadMinima) {
-                throw new Exception("El rango de edad es inválido.");
+            $validacion = Validar::validar("nombre_sub", $nombre);
+            if (!$validacion["ok"]) {
+                return $validacion;
             }
-
+            if (!filter_var($edadMinima, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La edad mínima no es un valor válido"];
+            }
+            if (!filter_var($edadMaxima, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La edad máxima no es un valor válido"];
+            }
+            if ($edadMaxima <= $edadMinima) {
+                return ["ok" => false, "mensaje" => "La edad máxima no puede ser menor o igual a la edad mínima"];
+            }
+            $consulta = "SELECT id_sub FROM subs WHERE id_sub = ?;";
+            $existe = Validar::existe($this->conexion, $id, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta sub no existe";
+                return $resultado;
+            }
+            $consulta = "SELECT id_sub FROM subs WHERE nombre = ?;";
+            $existe = Validar::existe($this->conexion, $id, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe una sub con este nombre";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "UPDATE subs 
                      SET nombre = :nombre, edad_minima = :edadMinima, edad_maxima = :edadMaxima 
                      WHERE id_sub = :id";
@@ -341,43 +410,76 @@ class Eventos extends datos
                 ':edadMinima' => $edadMinima,
                 ':edadMaxima' => $edadMaxima
             ];
-
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute($valores);
-
-            return ["ok" => true, "mensaje" => "Sub modificado con éxito."];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $stmt->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
     public function eliminar_sub($id)
     {
         try {
+            if (!filter_var($id, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la sub no es válido"];
+            }
+            $consulta = "SELECT id_sub FROM subs WHERE id_sub = ?;";
+            $existe = Validar::existe($this->conexion, $id, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta sub no existe";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "DELETE FROM subs WHERE id_sub = :id";
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute([':id' => $id]);
-
-            return ["ok" => true, "mensaje" => "Sub eliminado con éxito."];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $stmt->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
-
-
 
     public function incluir_tipo($nombre)
     {
         try {
+            $validacion = Validar::validar("nombre_evento", $nombre);
+            if (!$validacion["ok"]) {
+                return $validacion;
+            }
+            $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = ?;";
+            $existe = Validar::existe($this->conexion, $nombre, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe este tipo de competencia";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
             $valores = array(':nombre' => $nombre);
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute($valores);
+            $respuesta->closeCursor();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -390,10 +492,11 @@ class Eventos extends datos
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
     public function listado_eventos_anteriores()
@@ -405,10 +508,11 @@ class Eventos extends datos
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -422,10 +526,11 @@ class Eventos extends datos
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -438,10 +543,11 @@ class Eventos extends datos
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
             $resultado["ok"] = true;
             $resultado["respuesta"] = $respuesta;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
@@ -466,27 +572,39 @@ class Eventos extends datos
             $respuesta = $this->conexion->prepare($consulta);
             $respuesta->execute([':id_competencia' => $id_competencia]);
             $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+            $resultado["ok"] = true;
+            $resultado["respuesta"] = $respuesta;
+        } catch (PDOException $e) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
 
-            return ["ok" => true, "respuesta" => $respuesta];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
         }
+        $this->desconecta();
+        return $resultado;
     }
 
 
     public function inscribir_atletas($id_competencia, $atletas)
     {
         try {
-            $this->conexion->beginTransaction();
-
-            if (is_string($atletas)) {
-                $atletas = json_decode($atletas, true);
+            if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
             }
-
+            if (!is_string($atletas)) {
+                throw new Exception("El formato de los datos de atletas no es válido.");
+            }
+            $atletas = json_decode($atletas, true);
             if (!is_array($atletas)) {
                 throw new Exception("El formato de los datos de atletas no es válido.");
             }
-
+            $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta competencia no existe";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             foreach ($atletas as $id_atleta) {
                 $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
                 $valores = array(
@@ -495,37 +613,97 @@ class Eventos extends datos
                 );
                 $stmt = $this->conexion->prepare($consulta);
                 $stmt->execute($valores);
+                $stmt->closeCursor();
             }
-
             $this->conexion->commit();
-            return ["ok" => true, "mensaje" => "Atletas inscritos correctamente."];
-        } catch (Exception $e) {
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
             $this->conexion->rollBack();
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
+
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
-
-    // Modelo.php
     public function obtenerCompetencia($id_competencia)
     {
         try {
+            if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
+            }
+            $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta competencia no existe";
+                return $resultado;
+            }
             $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_competencia' => $id_competencia]);
-            $resultado = $respuesta->fetch(PDO::FETCH_ASSOC);
-            return ["ok" => true, "respuesta" => $resultado];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $resultado = $this->conexion->prepare($consulta);
+            $resultado->execute([':id_competencia' => $id_competencia]);
+            $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
+            $respuesta["ok"] = true;
+            $respuesta["respuesta"] = $resultado;
+        } catch (PDOException $e) {
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
-    public function modificarCompetencia($id_competencia, $nombre, $ubicacion, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia)
+    public function modificarCompetencia($id_competencia, $nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia)
     {
         try {
+            if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
+            }
+            $validacion = Validar::validar("nombre_evento", $nombre);
+            if (!$validacion["ok"]) {
+                return $validacion;
+            }
+            $validacion = Validar::validar("lugar_competencia", $lugar_competencia);
+            if (!$validacion["ok"]) {
+                return $validacion;
+            }
+            if (!Validar::validar_fecha($fecha_inicio)) {
+                return ["ok" => false, "mensaje" => "La fecha de apertura no es valida"];
+            }
+            if (!Validar::validar_fecha($fecha_fin)) {
+                return ["ok" => false, "mensaje" => "La fecha de clausura no es valida"];
+            }
+            if ($fecha_inicio > $fecha_fin) {
+                return ["ok" => false, "mensaje" => "La fecha de inicio no puede ser mayor que la fecha de fin"];
+            }
+            if (!filter_var($categoria, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
+            }
+            if (!filter_var($subs, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "La sub no es un valor válido"];
+            }
+            if (!filter_var($tipo_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El tipo de competencia no es un valor válido"];
+            }
+            $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta competencia no existe";
+                return $resultado;
+            }
+            $consulta = "SELECT id_competencia FROM competencia WHERE nombre = ? AND id_competencia != '$id_competencia';";
+            $existe = Validar::existe($this->conexion, $nombre, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe una competencia con este nombre";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "UPDATE competencia 
                      SET nombre = :nombre, 
-                         lugar_competencia = :ubicacion, 
+                         lugar_competencia = :lugar_competencia, 
                          fecha_inicio = :fecha_inicio, 
                          fecha_fin = :fecha_fin, 
                          categoria = :categoria, 
@@ -535,74 +713,148 @@ class Eventos extends datos
             $valores = [
                 ':id_competencia' => $id_competencia,
                 ':nombre' => $nombre,
-                ':ubicacion' => $ubicacion,
+                ':lugar_competencia' => $lugar_competencia,
                 ':fecha_inicio' => $fecha_inicio,
                 ':fecha_fin' => $fecha_fin,
                 ':categoria' => $categoria,
                 ':subs' => $subs,
                 ':tipo_competencia' => $tipo_competencia
             ];
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            return ["ok" => true];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $resultado = $this->conexion->prepare($consulta);
+            $resultado->execute($valores);
+            $resultado->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
     public function eliminar_evento($id_competencia)
     {
         try {
+            if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
+            }
+            $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Esta competencia no existe";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consultaRelacionada = "DELETE FROM resultado_competencia WHERE id_competencia = :id_competencia";
             $stmtRelacionada = $this->conexion->prepare($consultaRelacionada);
             $stmtRelacionada->execute([':id_competencia' => $id_competencia]);
-
             $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute([':id_competencia' => $id_competencia]);
-
+            $stmt->closeCursor();
+            $this->conexion->commit();
             $resultado["ok"] = true;
-        } catch (Exception $e) {
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
             $resultado["ok"] = false;
             $resultado["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
         return $resultado;
     }
 
     public function eliminar_tipo($id_tipo)
     {
         try {
+            if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
+            }
+            $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Este tipo de competencia no existe";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute([':id_tipo' => $id_tipo]);
-            return ["ok" => true];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $stmt->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
     public function modificar_tipo($id_tipo, $nombre)
     {
         try {
+            if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
+            }
+            $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Este tipo de competencia no existe";
+                return $resultado;
+            }
+            $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = ? AND id_tipo_competencia != '$id_tipo';";
+            $existe = Validar::existe($this->conexion, $nombre, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe un tipo de competencia con este nombre";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
             $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute([':nombre' => $nombre, ':id_tipo' => $id_tipo]);
-            return ["ok" => true];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $stmt->closeCursor();
+            $this->conexion->commit();
+            $respuesta["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
     public function verificar_relacion_tipo($id_tipo)
     {
         try {
+            if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
+                return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
+            }
+            $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
+            $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Este tipo de competencia no existe";
+                return $resultado;
+            }
             $consulta = "SELECT COUNT(*) AS total FROM competencia WHERE tipo_competicion = :id_tipo";
             $stmt = $this->conexion->prepare($consulta);
             $stmt->execute([':id_tipo' => $id_tipo]);
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-            return ["ok" => true, "existe" => $resultado["total"] > 0];
+            $respuesta["ok"] = true;
+            $respuesta["existe"] = $resultado["total"] > 0;
         } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
+            $respuesta["ok"] = false;
+            $respuesta["mensaje"] = $e->getMessage();
         }
+        $this->desconecta();
+        return $respuesta;
     }
 
     public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
@@ -638,7 +890,6 @@ class Eventos extends datos
     public function listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia)
     {
         try {
-
             $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
             $stmtCategoria = $this->conexion->prepare($consultaCategoria);
             $stmtCategoria->execute([':id_categoria' => $id_categoria]);

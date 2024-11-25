@@ -108,4 +108,12 @@ const REGEX = [
         'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,50}$/',
         'mensaje' => 'El nombre de la categoria debe ser letras y/o números (entre 3 y 50 caracteres)'
     ],
+    'nombre_sub' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,50}$/',
+        'mensaje' => 'El nombre de la sub debe ser letras y/o números (entre 3 y 50 caracteres)'
+    ],
+    'nombre_tipo' => [
+        'regex' => '/^[a-zA-ZáéíóúÁÉÍÓÚ\s\d]{3,50}$/',
+        'mensaje' => 'El nombre del tipo de evento debe ser letras y/o números (entre 3 y 50 caracteres)'
+    ],
 ];

@@ -1049,7 +1049,6 @@ $(document).ready(function () {
 
   $(document).on("click", ".btnEliminarTipo", function () {
     const idTipo = $(this).data("id");
-
     Swal.fire({
       title: "¿Estás seguro?",
       text: "Esta acción eliminará el tipo seleccionado.",
@@ -1065,6 +1064,7 @@ $(document).ready(function () {
         enviaAjax(datos, "").then((result) => {
           Swal.fire("Éxito", "Tipo de evento eliminado con éxito", "success");
           cargarListadoTipos();
+          cargarListadoTipos2();
         });
       }
     });

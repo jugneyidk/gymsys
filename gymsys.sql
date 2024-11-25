@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-11-2024 a las 23:00:08
+-- Tiempo de generación: 25-11-2024 a las 12:45:36
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `gymsys`
 --
+CREATE DATABASE IF NOT EXISTS `gymsys` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `gymsys`;
 
 -- --------------------------------------------------------
 
@@ -40,126 +42,87 @@ CREATE TABLE `asistencias` (
 
 INSERT INTO `asistencias` (`id_atleta`, `asistio`, `fecha`, `comentario`) VALUES
 ('1328547', 0, '2024-11-12', 'd'),
-('1328547', 0, '2024-11-13', 'd'),
-('1328547', 0, '2024-11-15', ''),
-('1328547', 0, '2024-11-20', ''),
 ('23124144', 0, '2024-10-27', ''),
 ('23124144', 0, '2024-10-28', ''),
 ('23124144', 0, '2024-11-08', ''),
 ('23124144', 0, '2024-11-09', ''),
 ('23124144', 1, '2024-11-12', ''),
-('23124144', 1, '2024-11-13', ''),
-('23124144', 0, '2024-11-15', ''),
-('23124144', 0, '2024-11-20', ''),
 ('24244444', 0, '2024-10-27', ''),
 ('24244444', 0, '2024-10-28', ''),
 ('24244444', 0, '2024-11-08', ''),
 ('24244444', 0, '2024-11-09', ''),
 ('24244444', 0, '2024-11-12', ''),
-('24244444', 0, '2024-11-13', ''),
-('24244444', 1, '2024-11-15', ''),
-('24244444', 1, '2024-11-20', ''),
 ('2594894', 0, '2024-11-12', ''),
-('2594894', 0, '2024-11-13', ''),
-('2594894', 0, '2024-11-15', ''),
-('2594894', 0, '2024-11-20', ''),
 ('3331917', 0, '2024-11-12', ''),
-('3331917', 0, '2024-11-13', ''),
-('3331917', 0, '2024-11-15', ''),
-('3331917', 0, '2024-11-20', ''),
 ('3376883', 0, '2024-11-12', ''),
-('3376883', 0, '2024-11-13', ''),
-('3376883', 0, '2024-11-15', ''),
-('3376883', 0, '2024-11-20', ''),
 ('42194292', 1, '2024-11-08', ''),
 ('42194292', 1, '2024-11-09', ''),
 ('42194292', 0, '2024-11-12', ''),
-('42194292', 0, '2024-11-13', ''),
-('42194292', 1, '2024-11-15', ''),
-('42194292', 0, '2024-11-20', ''),
 ('42342344', 0, '2024-10-27', ''),
 ('42342344', 0, '2024-10-28', ''),
 ('42342344', 0, '2024-11-08', ''),
 ('42342344', 0, '2024-11-09', ''),
 ('42342344', 0, '2024-11-12', ''),
-('42342344', 0, '2024-11-13', ''),
-('42342344', 0, '2024-11-15', 'u i io a i u i i i au'),
-('42342344', 0, '2024-11-20', ''),
 ('66456842', 0, '2024-10-27', ''),
 ('66456842', 0, '2024-10-28', ''),
 ('66456842', 0, '2024-11-08', ''),
 ('66456842', 0, '2024-11-09', ''),
 ('66456842', 1, '2024-11-12', 'comoguchi'),
-('66456842', 1, '2024-11-13', 'comoguchi'),
-('66456842', 0, '2024-11-15', ''),
-('66456842', 0, '2024-11-20', ''),
 ('664568422', 0, '2024-10-27', ''),
 ('664568422', 0, '2024-10-28', 'lerololelole'),
 ('664568422', 1, '2024-11-08', ''),
 ('664568422', 1, '2024-11-09', ''),
 ('664568422', 0, '2024-11-12', ''),
-('664568422', 0, '2024-11-13', ''),
-('664568422', 0, '2024-11-15', ''),
-('664568422', 0, '2024-11-20', ''),
 ('6759472', 1, '2024-11-12', 'dd'),
-('6759472', 1, '2024-11-13', 'dd'),
-('6759472', 0, '2024-11-15', ''),
-('6759472', 0, '2024-11-20', ''),
 ('6828158', 0, '2024-11-12', 'vadas'),
-('6828158', 0, '2024-11-13', 'vadas'),
-('6828158', 1, '2024-11-15', ''),
-('6828158', 0, '2024-11-20', ''),
 ('68281580', 0, '2024-10-27', ''),
 ('68281580', 0, '2024-10-28', ''),
 ('68281580', 0, '2024-11-08', ''),
 ('68281580', 0, '2024-11-09', ''),
 ('68281580', 0, '2024-11-12', ''),
-('68281580', 0, '2024-11-13', ''),
-('68281580', 0, '2024-11-15', ''),
-('68281580', 1, '2024-11-20', ''),
 ('68281581', 0, '2024-10-27', ''),
 ('68281581', 1, '2024-10-28', ''),
 ('68281581', 0, '2024-11-08', ''),
 ('68281581', 0, '2024-11-09', ''),
 ('68281581', 0, '2024-11-12', ''),
-('68281581', 0, '2024-11-13', ''),
-('68281581', 1, '2024-11-15', ''),
-('68281581', 1, '2024-11-20', ''),
 ('682815811', 1, '2024-10-27', ''),
 ('682815811', 0, '2024-10-28', ''),
 ('682815811', 1, '2024-11-08', ''),
 ('682815811', 1, '2024-11-09', ''),
 ('682815811', 0, '2024-11-12', ''),
-('682815811', 0, '2024-11-13', ''),
-('682815811', 0, '2024-11-15', ''),
-('682815811', 1, '2024-11-20', ''),
 ('68281582', 1, '2024-10-27', ''),
 ('68281582', 1, '2024-10-28', ''),
 ('68281582', 0, '2024-11-08', ''),
 ('68281582', 0, '2024-11-09', ''),
 ('68281582', 1, '2024-11-12', ''),
-('68281582', 0, '2024-11-13', ''),
-('68281582', 0, '2024-11-15', ''),
-('68281582', 1, '2024-11-20', ''),
 ('7342825', 0, '2024-11-12', 'melasclave'),
-('7342825', 0, '2024-11-13', 'melasclave'),
-('7342825', 0, '2024-11-15', ''),
-('7342825', 0, '2024-11-20', ''),
 ('9252463', 1, '2024-11-12', ''),
-('9252463', 1, '2024-11-13', ''),
-('9252463', 0, '2024-11-15', ''),
-('9252463', 0, '2024-11-20', ''),
 ('99389012', 0, '2024-10-27', ''),
 ('99389012', 0, '2024-10-28', 'jejeje'),
 ('99389012', 1, '2024-11-08', ''),
-('99389012', 0, '2024-11-12', ''),
-('99389012', 0, '2024-11-13', ''),
-('99389012', 0, '2024-11-15', ''),
-('99389012', 0, '2024-11-20', '');
+('99389012', 0, '2024-11-12', '');
 
 --
 -- Disparadores `asistencias`
 --
+DELIMITER $$
+CREATE TRIGGER `after_asistencias_delete` AFTER DELETE ON `asistencias` FOR EACH ROW BEGIN
+    IF @registro_bitacora IS NULL THEN
+        SET @registro_bitacora = 1;
+
+        -- Insertar un solo registro en la bitácora
+        INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+        VALUES (
+            'Eliminar', 
+            'Asistencias', 
+            @usuario_actual, 
+            OLD.FECHA, 
+            CONCAT('Se eliminaron las asistencias del día: ', OLD.fecha)
+        );
+    END IF;
+END
+$$
+DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_asistencias_insert` AFTER INSERT ON `asistencias` FOR EACH ROW BEGIN
     IF @num_asistencias = 1 THEN
@@ -966,7 +929,33 @@ INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_
 (692, '22222222', 'Incluir', 'Mensualidad', '66456842', 'Se agregó la mensualidad del Atleta con ID: 66456842 para la fecha 2024-11-20', '2024-11-21 00:35:53'),
 (693, '22222222', 'Incluir', 'Mensualidad', '3376883', 'Se agregó la mensualidad del Atleta con la cedula: 3376883 para la fecha 2024-11-19', '2024-11-21 01:24:10'),
 (694, '22222222', 'Incluir', 'Mensualidad', '68281581', 'Se agregó la mensualidad del Atleta con la cedula: 68281581 para la fecha 2024-11-20', '2024-11-21 01:26:53'),
-(695, '22222222', 'Incluir', 'Asistencias', '2024-11-20', 'Se agregó asistencias para la fecha: 2024-11-20', '2024-11-21 02:15:09');
+(695, '22222222', 'Incluir', 'Asistencias', '2024-11-20', 'Se agregó asistencias para la fecha: 2024-11-20', '2024-11-21 02:15:09'),
+(696, '22222222', 'Modificar', 'Roles', '1328547', 'Rol del usuario cambiado de \"Atleta\" a \"rol prueba\"; ', '2024-11-25 04:57:01'),
+(697, '22222222', 'Modificar', 'Roles', '1328547', 'Rol del usuario cambiado de \"rol prueba\" a \"Rol Modificable\"; ', '2024-11-25 05:12:24'),
+(698, '22222222', 'Modificar', 'Roles', 'rol', ' Modulo rolespermisos - leer: No -> Si;  Modulo asistencias - leer: No -> Si;  Modulo reportes - crear: No -> Si;  Modulo reportes - leer: No -> Si; ', '2024-11-25 05:58:45'),
+(699, '22222222', 'Incluir', 'Asistencias', '2024-11-25', 'Se agregó asistencias para la fecha: 2024-11-25', '2024-11-25 06:03:22'),
+(700, '22222222', 'Modificar', 'Atletas', '1328547', '', '2024-11-25 06:11:10'),
+(701, '22222222', 'Modificar', 'Roles', '1328547', 'Contraseña del usuario fue modificada.; ', '2024-11-25 06:11:10'),
+(702, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo mensualidad - crear: Si -> No; ', '2024-11-25 06:11:47'),
+(703, '1328547', 'Modificar', 'Asistencias', '2024-11-25', 'Cambio la asistencia de 682815811: No -> Si; ', '2024-11-25 06:19:09'),
+(704, '1328547', 'Modificar', 'Asistencias', '2024-11-25', 'Cambio la asistencia de 68281582: No -> Si; ', '2024-11-25 06:19:09'),
+(705, '1328547', 'Modificar', 'Asistencias', '2024-11-25', 'Cambio la asistencia de 682815811: Si -> No; ', '2024-11-25 06:19:51'),
+(706, '1328547', 'Modificar', 'Asistencias', '2024-11-25', 'Cambio la asistencia de 68281580: No -> Si; ', '2024-11-25 06:19:51'),
+(707, '1328547', 'Modificar', 'Asistencias', '2024-11-25', 'Cambio la asistencia de 66456842: No -> Si; ', '2024-11-25 06:19:51'),
+(708, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo rolespermisos - actualizar: Si -> No; ', '2024-11-25 06:20:52'),
+(709, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo rolespermisos - leer: Si -> No;  Modulo rolespermisos - eliminar: Si -> No; ', '2024-11-25 06:21:05'),
+(710, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo bitacora - leer: Si -> No; ', '2024-11-25 06:21:31'),
+(711, '22222222', 'Incluir', 'Roles', 'Superusuario', 'Se agregó el Rol: Superusuario', '2024-11-25 06:22:47'),
+(712, '1328547', 'Eliminar', 'Asistencias', NULL, 'Se eliminaron las asistencias del día: 2024-11-15', '2024-11-25 07:24:03'),
+(713, '1328547', 'Eliminar', 'Asistencias', '2024-11-13', 'Se eliminaron las asistencias del día: 2024-11-13', '2024-11-25 07:25:10'),
+(714, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - crear: No -> Si;  Modulo eventos - leer: No -> Si; ', '2024-11-25 07:48:12'),
+(715, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - actualizar: No -> Si; ', '2024-11-25 07:49:10'),
+(716, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - eliminar: No -> Si; ', '2024-11-25 07:49:18'),
+(717, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - crear: Si -> No; ', '2024-11-25 10:17:54'),
+(718, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - actualizar: Si -> No; ', '2024-11-25 10:19:57'),
+(719, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - eliminar: Si -> No; ', '2024-11-25 10:20:37'),
+(720, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - eliminar: No -> Si; ', '2024-11-25 10:21:07'),
+(721, '22222222', 'Modificar', 'Roles', 'Rol Modificable', ' Modulo eventos - crear: No -> Si;  Modulo eventos - actualizar: No -> Si; ', '2024-11-25 10:21:18');
 
 -- --------------------------------------------------------
 
@@ -986,9 +975,8 @@ CREATE TABLE `categorias` (
 --
 
 INSERT INTO `categorias` (`id_categoria`, `nombre`, `peso_minimo`, `peso_maximo`) VALUES
-(1, 'sdffdsfds', 20.00, 50.00),
-(2, 'dsfdsfds', 50.00, 81.00),
-(3, 'fdsfdsfs', 50.00, 100.00);
+(1, 'dsfdsfds', 20.00, 51.00),
+(2, 'dsfdsfdsdsd', 50.00, 83.00);
 
 -- --------------------------------------------------------
 
@@ -1013,7 +1001,8 @@ CREATE TABLE `competencia` (
 --
 
 INSERT INTO `competencia` (`id_competencia`, `tipo_competicion`, `nombre`, `categoria`, `subs`, `lugar_competencia`, `fecha_inicio`, `fecha_fin`, `estado`) VALUES
-(1, 1, 'hola', 1, 1, 'dsfdsdfsfds', '2024-11-09', '2023-11-08', 'activo');
+(1, 1, 'hola', 1, 1, 'dsfdsdfsfds', '2024-11-09', '2023-11-08', 'activo'),
+(10, 1, 'Panamericano', 1, 1, '23232', '2024-11-24', '2024-11-25', 'activo');
 
 -- --------------------------------------------------------
 
@@ -1229,10 +1218,10 @@ INSERT INTO `notificaciones` (`id`, `id_usuario`, `titulo`, `mensaje`, `leida`, 
 CREATE TABLE `permisos` (
   `id_rol` int(50) NOT NULL,
   `modulo` int(50) NOT NULL,
-  `crear` tinyint(1) NOT NULL,
-  `leer` tinyint(1) NOT NULL,
-  `actualizar` tinyint(1) NOT NULL,
-  `eliminar` tinyint(1) NOT NULL
+  `crear` tinyint(1) NOT NULL DEFAULT 0,
+  `leer` tinyint(1) NOT NULL DEFAULT 0,
+  `actualizar` tinyint(1) NOT NULL DEFAULT 0,
+  `eliminar` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -1258,6 +1247,15 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (1, 7, 0, 0, 0, 0),
 (1, 8, 0, 0, 0, 0),
 (1, 9, 0, 0, 0, 0),
+(2, 1, 1, 1, 1, 1),
+(2, 2, 1, 1, 1, 1),
+(2, 3, 1, 1, 1, 1),
+(2, 4, 1, 1, 1, 1),
+(2, 5, 1, 1, 1, 1),
+(2, 6, 1, 1, 1, 1),
+(2, 7, 1, 1, 1, 1),
+(2, 8, 1, 1, 0, 0),
+(2, 9, 0, 1, 0, 0),
 (30, 1, 1, 1, 1, 1),
 (30, 2, 1, 1, 1, 1),
 (30, 3, 1, 1, 1, 1),
@@ -1269,21 +1267,21 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (30, 9, 0, 1, 0, 0),
 (45, 1, 1, 0, 1, 0),
 (45, 2, 0, 0, 0, 1),
-(45, 3, 0, 1, 1, 1),
+(45, 3, 0, 0, 0, 0),
 (45, 4, 1, 1, 1, 1),
-(45, 5, 0, 0, 0, 0),
-(45, 6, 1, 1, 1, 1),
+(45, 5, 1, 1, 1, 1),
+(45, 6, 0, 1, 1, 1),
 (45, 7, 0, 0, 0, 0),
 (45, 8, 1, 1, 0, 0),
-(45, 9, 0, 1, 0, 0),
+(45, 9, 0, 0, 0, 0),
 (48, 1, 0, 1, 0, 0),
-(48, 2, 0, 1, 0, 0),
-(48, 3, 0, 0, 0, 0),
-(48, 4, 0, 0, 1, 0),
-(48, 5, 0, 0, 1, 1),
-(48, 6, 0, 0, 1, 0),
-(48, 7, 1, 1, 0, 0),
-(48, 8, 0, 1, 0, 0),
+(48, 2, 1, 1, 0, 0),
+(48, 3, 1, 1, 0, 0),
+(48, 4, 1, 1, 1, 0),
+(48, 5, 1, 1, 1, 1),
+(48, 6, 1, 1, 1, 0),
+(48, 7, 1, 1, 1, 0),
+(48, 8, 1, 1, 0, 0),
 (48, 9, 0, 1, 0, 0);
 
 --
@@ -1462,6 +1460,7 @@ CREATE TABLE `roles` (
 INSERT INTO `roles` (`id_rol`, `nombre`) VALUES
 (0, 'Atleta'),
 (1, 'entrenador'),
+(2, 'Superusuario'),
 (30, 'rol prueba'),
 (45, 'Rol Modificable'),
 (48, 'rol');
@@ -1567,7 +1566,8 @@ CREATE TABLE `tipo_competencia` (
 
 INSERT INTO `tipo_competencia` (`id_tipo_competencia`, `nombre`) VALUES
 (1, 'fdsfdsfs'),
-(4, 'preñao');
+(4, 'preñao'),
+(5, 'Panamericano');
 
 -- --------------------------------------------------------
 
@@ -1681,7 +1681,7 @@ CREATE TABLE `usuarios_roles` (
 --
 
 INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUES
-('1328547', 0, 'Password123$', '0'),
+('1328547', 45, '$2y$10$h8/xIuMckNhnKiNLF5qonuzci8WXEcznTOPbqoLT05HMWm1up7MSq', '0'),
 ('22222222', 30, '$2y$10$hsNGdgLpo4hJzbboYhNt9.HEmkJHGJ81RpX6r..Cd05ya0wNCUlJa', '0'),
 ('23124144', 0, '$2y$10$.U6xdgWQPqo4HJbgPmi.u.j.6XZzLH46HiGXdB5lIS19BATJIKaCa', '0'),
 ('24244444', 0, '$2y$10$AlnDESIrQ20GjFP2bL5G5eXc.FAXQsbITN.Z1VSxpOf2EtaIaU6Oq', '0'),
@@ -1706,6 +1706,50 @@ INSERT INTO `usuarios_roles` (`id_usuario`, `id_rol`, `password`, `token`) VALUE
 ('8676719', 1, '$2y$10$TcpwA195YSsUIPzuTbW0Yu.40F1I.b1zESGqhAHHvElGO7HrtLJ9q', '0'),
 ('9252463', 0, '$2y$10$HKTnPY5Ndj4ljvylWoszouAsfl8RyRll5pSpZOUmQI7Wb9i.9SibO', '0'),
 ('99389012', 0, '$2y$10$BRdgyLi2EP6cQlyfq4eeXugzCaY0QucArbuz2b0MVjSS9dMSOG0yW', '0');
+
+--
+-- Disparadores `usuarios_roles`
+--
+DELIMITER $$
+CREATE TRIGGER `after_usuarios_roles_update` AFTER UPDATE ON `usuarios_roles` FOR EACH ROW BEGIN
+    DECLARE cambios VARCHAR(255) DEFAULT ""; 
+    IF OLD.id_rol != NEW.id_rol THEN
+    SET
+        cambios = CONCAT(
+            cambios,
+            'Rol del usuario cambiado de "',
+            (SELECT nombre FROM roles WHERE id_rol = OLD.id_rol),
+            '" a "',
+            (SELECT nombre FROM roles WHERE id_rol = NEW.id_rol),
+            '"; '
+        ) ;
+END IF ; IF OLD.password != NEW.password THEN
+SET
+    cambios = CONCAT(
+        cambios,
+        'Contraseña del usuario fue modificada.; '
+    ) ;
+END IF ; IF cambios != "" THEN
+INSERT INTO bitacora(
+    accion,
+    modulo,
+    id_usuario,
+    usuario_modificado,
+    detalles
+)
+VALUES(
+    'Modificar',
+    'Roles',
+    @usuario_actual,
+    OLD.id_usuario,
+    cambios
+) ;
+END IF ;
+SET
+    cambios = NULL ;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1925,19 +1969,19 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=696;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=722;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `competencia`
 --
 ALTER TABLE `competencia`
-  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `marcas`
@@ -1973,19 +2017,19 @@ ALTER TABLE `reset`
 -- AUTO_INCREMENT de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
-  MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id_rol` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `subs`
 --
 ALTER TABLE `subs`
-  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_atleta`
@@ -1997,7 +2041,7 @@ ALTER TABLE `tipo_atleta`
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
-  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Restricciones para tablas volcadas

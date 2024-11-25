@@ -156,7 +156,7 @@ if (is_file("vista/" . $p . ".php")) {
                 $id_tipo = $_POST['id_tipo'];
                 $verificacion = $o->verificar_relacion_tipo($id_tipo);
                 if (!$verificacion["ok"]) {
-                    echo json_encode(["ok" => false, "mensaje" => $verificacion["mensaje"]]);
+                    echo json_encode($verificacion);
                     exit;
                 }
                 if ($verificacion["existe"]) {
