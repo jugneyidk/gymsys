@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-11-2024 a las 16:49:51
+-- Tiempo de generación: 26-11-2024 a las 02:26:34
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -171,7 +171,8 @@ CREATE TABLE `bitacora` (
 
 INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_modificado`, `detalles`, `fecha`) VALUES
 (761, '22222222', 'Modificar', 'Atletas', '26846371', '', '2024-11-25 13:54:44'),
-(762, '22222222', 'Modificar', 'Atletas', '26846371', 'Nombre cambiado de \"Diego\" a \"Dieguito\"; ', '2024-11-25 13:54:51');
+(762, '22222222', 'Modificar', 'Atletas', '26846371', 'Nombre cambiado de \"Diego\" a \"Dieguito\"; ', '2024-11-25 13:54:51'),
+(763, '22222222', 'Modificar', 'Roles', 'Atleta', ' Modulo atletas - crear: No -> Si;  Modulo eventos - leer: Si -> No; ', '2024-11-25 16:00:19');
 
 -- --------------------------------------------------------
 
@@ -192,7 +193,8 @@ CREATE TABLE `categorias` (
 
 INSERT INTO `categorias` (`id_categoria`, `nombre`, `peso_minimo`, `peso_maximo`) VALUES
 (6, '61M', 61.00, 66.99),
-(7, '67M', 67.00, 72.99);
+(7, '67M', 67.00, 72.99),
+(9, '81M', 73.00, 81.99);
 
 --
 -- Disparadores `categorias`
@@ -254,7 +256,8 @@ CREATE TABLE `competencia` (
 --
 
 INSERT INTO `competencia` (`id_competencia`, `tipo_competicion`, `nombre`, `categoria`, `subs`, `lugar_competencia`, `fecha_inicio`, `fecha_fin`, `estado`) VALUES
-(11, 9, 'Campeonato Nacional', 6, 6, 'Ciudad Deportiva Lara', '2024-12-01', '2024-12-05', 'activo');
+(11, 9, 'Campeonato Nacional', 6, 6, 'Ciudad Deportiva Lara', '2024-12-01', '2024-12-05', 'activo'),
+(12, 11, 'Panamericano 2024', 6, 6, 'Caracas', '2024-11-25', '2024-11-29', 'activo');
 
 -- --------------------------------------------------------
 
@@ -432,10 +435,10 @@ CREATE TABLE `permisos` (
 
 INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `eliminar`) VALUES
 (0, 1, 0, 0, 0, 0),
-(0, 2, 0, 1, 0, 0),
+(0, 2, 1, 1, 0, 0),
 (0, 3, 0, 0, 0, 0),
 (0, 4, 0, 1, 0, 0),
-(0, 5, 0, 1, 0, 0),
+(0, 5, 0, 0, 0, 0),
 (0, 6, 0, 0, 0, 0),
 (0, 7, 0, 0, 0, 0),
 (0, 8, 0, 0, 0, 0),
@@ -613,7 +616,8 @@ CREATE TABLE `subs` (
 
 INSERT INTO `subs` (`id_sub`, `nombre`, `edad_minima`, `edad_maxima`) VALUES
 (6, 'U13', 11, 13),
-(7, 'U15', 13, 15);
+(7, 'U15', 13, 15),
+(9, 'U20', 15, 20);
 
 --
 -- Disparadores `subs`
@@ -702,7 +706,8 @@ CREATE TABLE `tipo_competencia` (
 INSERT INTO `tipo_competencia` (`id_tipo_competencia`, `nombre`) VALUES
 (9, 'Junior'),
 (11, 'Senior'),
-(12, 'Sub13');
+(12, 'Sub13'),
+(14, 'Sub23');
 
 --
 -- Disparadores `tipo_competencia`
@@ -1086,19 +1091,19 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=763;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=764;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `competencia`
 --
 ALTER TABLE `competencia`
-  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `marcas`
@@ -1146,7 +1151,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `subs`
 --
 ALTER TABLE `subs`
-  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_atleta`
@@ -1158,7 +1163,7 @@ ALTER TABLE `tipo_atleta`
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
-  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Restricciones para tablas volcadas
