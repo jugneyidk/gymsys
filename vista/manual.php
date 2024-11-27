@@ -176,6 +176,7 @@ $sub_indice = 1;
                             <ul class="dropdown-menu" aria-labelledby="gestionarMensualidadDropdown">
                                 <li><a class="dropdown-item" href="#gestionarMensualidad">Gestionar Mensualidad</a></li>
                                 <li><a class="dropdown-item" href="#registrarMensualidad">Registrar Mensualidad</a></li>
+                                <li><a class="dropdown-item" href="#eliminarMensualidad">Eliminar Mensualidad</a></li>
                                 <li><a class="dropdown-item" href="#consultarPagosRegistrados">Consultar Pagos
                                         Registrados</a></li>
                             </ul>
@@ -1000,6 +1001,24 @@ $sub_indice = 1;
                     <img src="./img/manual/51.jpg" alt="Ventana de confirmación del registro de mensualidad"
                         class="figure-img img-fluid rounded">
                     <figcaption class="figure-caption">Ventana de confirmación del registro de mensualidad.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarMensualidad">
+                <h3><?= $indice . "." . $sub_indice ?>. Eliminar Mensualidad</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Puede eliminar un pago de mensualidad de un atleta.</p>
+                <figure class="figure">
+                    <img src="./img/manual/67.jpg" alt="Botón de registro mensualidad"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de registro mensualidad.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/51.jpg" alt="Ventana de confirmación de la eliminación de mensualidad"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de confirmación de la eliminación de mensualidad.</figcaption>
                 </figure>
             </div>
             <div class="col" id="consultarPagosRegistrados">

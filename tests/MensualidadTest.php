@@ -24,8 +24,34 @@ class MensualidadTest extends TestCase
 		// Devuelve un error de que no es valido
 		$this->assertNotNull($respuesta);
 		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
+		$this->assertFalse($respuesta["ok"]);
 		$this->assertEquals("El monto no es un numero valido", $respuesta['mensaje']);
+	}
+	public function testEliminarMensualidadExitoso(): void
+	{
+		$respuesta = $this->op->eliminar_mensualidad("171");
+		// La respuesta es exitosa
+		$this->assertNotNull($respuesta);
+		$this->assertIsArray($respuesta);
+		$this->assertTrue($respuesta["ok"]);
+	}
+	public function testEliminarMensualidadNoValido(): void
+	{
+		$respuesta = $this->op->eliminar_mensualidad("mensualidad");
+		// Devuelve un error de que no es valido
+		$this->assertNotNull($respuesta);
+		$this->assertIsArray($respuesta);
+		$this->assertFalse($respuesta["ok"]);
+		$this->assertEquals("La ID de mensualidad no es válida", $respuesta['mensaje']);
+	}
+	public function testEliminarMensualidadNoExiste(): void
+	{
+		$respuesta = $this->op->eliminar_mensualidad("44");
+		// Devuelve un error de que no existe
+		$this->assertNotNull($respuesta);
+		$this->assertIsArray($respuesta);
+		$this->assertFalse($respuesta["ok"]);
+		$this->assertEquals("No existe esta mensualidad", $respuesta['mensaje']);
 	}
 	public function testListadoMensualidades(): void
 	{

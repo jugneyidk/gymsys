@@ -1,7 +1,7 @@
 <?php
 class Mensualidad extends datos
 {
-    private $conexion, $id_atleta, $monto, $fecha, $detalles;
+    private $conexion, $id, $id_atleta, $monto, $fecha, $detalles;
 
     public function __construct()
     {
@@ -27,6 +27,14 @@ class Mensualidad extends datos
         $this->fecha = $fecha;
         $this->detalles = trim($detalles);
         return $this->incluir();
+    }
+    public function eliminar_mensualidad($id)
+    {
+        if (!filter_var($id, FILTER_SANITIZE_NUMBER_INT)) {
+            return ["ok" => false, "mensaje" => "La ID de mensualidad no es válida"];
+        }
+        $this->id = $id;
+        return $this->eliminar();
     }
 
     public function listado_mensualidades()
@@ -69,12 +77,40 @@ class Mensualidad extends datos
         $this->desconecta();
         return $resultado;
     }
+    private function eliminar()
+    {
+        try {
+            $consulta = "SELECT id_mensualidad FROM mensualidades WHERE id_mensualidad = ?;";
+            $existe = Validar::existe($this->conexion, $this->id, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe esta mensualidad";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
+            $consulta = "DELETE FROM mensualidades WHERE id_mensualidad = :id";
+            $valores = array(
+                ':id' => $this->id
+            );
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
 
     private function listado()
     {
         try {
             $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, m.monto, m.fecha, m.detalles, t.nombre_tipo_atleta
+                SELECT m.id_mensualidad, u.cedula, u.nombre, u.apellido, m.monto, m.fecha, m.detalles, t.nombre_tipo_atleta
                 FROM mensualidades m
                 INNER JOIN atleta a ON m.id_atleta = a.cedula
                 INNER JOIN usuarios u ON a.cedula = u.cedula

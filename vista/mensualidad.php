@@ -103,6 +103,7 @@
                                         <th>Monto</th>
                                         <th>Fecha</th>
                                         <th>Detalles</th>
+                                        <?= $permisos["actualizar"] || $permisos["eliminar"] ? "<th id='columnaAccion'>Acción</th>" : "" ?>
                                     </tr>
                                 </thead>
                                 <tbody id="listadoPagosRegistrados">

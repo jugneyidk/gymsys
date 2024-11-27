@@ -42,6 +42,37 @@ $(document).ready(function () {
       inicializarDataTable("#tablaDeudores", 5);
     });
   }
+  $("#listadoPagosRegistrados").on("click", ".btn-danger", function () {
+    const id = $(this).data("id");
+    eliminarMensualidad(id);
+  });
+  function eliminarMensualidad(id) {
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "No podrás revertir esto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar!",
+      cancelButtonText: "Cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const datos = new FormData();
+        datos.append("accion", "eliminar_mensualidad");
+        datos.append("id", id);
+        enviaAjax(datos, "").then((respuesta) => {
+          muestraMensaje(
+            "Eliminado!",
+            "La mensualidad ha sido eliminada.",
+            "success"
+          );
+          cargaListadoMensualidades();
+          cargaListadoDeudores();
+        });
+      }
+    });
+  }
 
   function cargaListadoMensualidades() {
     var datos = new FormData();
@@ -63,6 +94,16 @@ $(document).ready(function () {
                 ? mensualidad.detalles
                 : `<span class="badge bg-secondary">Sin detalles</span>`
             }</td>
+            ${
+              actualizar || modificar
+                ? `<td class="align-middle">
+                  <button class="btn btn-danger" 
+                          data-id="${mensualidad.id_mensualidad}" data-tooltip="tooltip" data-bs-placement="top" title="Eliminar mensualidad" aria-label='Eliminar mensualidad de ${mensualidad.nombre} ${mensualidad.apellido} de la fecha ${mensualidad.fecha}'>
+                      <i class='fa-solid fa-trash-can'></i>
+                  </button>
+                </td>`
+                : null
+            }
           </tr>`;
       });
 
