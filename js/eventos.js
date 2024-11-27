@@ -5,6 +5,7 @@ import {
   muestraMensaje,
   validarKeyUp,
   validarFecha,
+  obtenerNotificaciones
 } from "./comunes.js";
 $(document).ready(function () {
   function cargarEventos() {
@@ -14,7 +15,8 @@ $(document).ready(function () {
       actualizarListadoEventos(result.respuesta);
     });
   }
-
+  obtenerNotificaciones(idUsuario);
+  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   function cargarEventosAnteriores() {
     const datos = new FormData();
     datos.append("accion", "listado_eventos_anteriores");

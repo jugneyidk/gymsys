@@ -68,7 +68,6 @@ if (is_file("vista/" . $p . ".php")) {
                 break;
 
             case 'inscribir_atletas':
-                file_put_contents("debug.log", print_r($_POST, true), FILE_APPEND);
                 $id_competencia = $_POST['id_competencia'] ?? null;
                 $atletas = $_POST['atletas'] ?? [];
                 if (!$id_competencia || empty($atletas)) {

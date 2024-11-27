@@ -6,7 +6,6 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Registro de Competencias - Sistema</title>
    <?php require_once("comunes/linkcss.php") ?>
-   <link href="css/eventos.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
