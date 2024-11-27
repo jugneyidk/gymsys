@@ -248,7 +248,7 @@ $sub_indice = 1;
                 </figure>
             </div>
             <div class="col-12">
-                <p>En la pantalla de inicio de sesión, encontrarás los siguientes campos que debes completar para
+                <p>En la pantalla de <a href="./?p=login" class="fw-bold">inicio de sesión</a>, encontrarás los siguientes campos que debes completar para
                     acceder al sistema:</p>
                 <ol>
                     <li><strong>Usuario:</strong> Ingresa el número de cédula asignado a tu usuario. Asegúrate de que el
@@ -280,7 +280,7 @@ $sub_indice = 1;
                 <?php $indice++ ?>
             </div>
             <div class="col-12">
-                <p>En la pantalla de recuperar contraseña, podrás solicitar un correo electrónico con un enlace para
+                <p>En la pantalla de <a href="./?p=recovery" class="fw-bold">recuperar contraseña</a>, podrás solicitar un correo electrónico con un enlace para
                     restablecer tu contraseña. Ten en cuenta lo siguiente:</p>
                 <ul>
                     <li>
@@ -349,7 +349,7 @@ $sub_indice = 1;
                 <?php $indice++ ?>
             </div>
             <div class="col-12">
-                <p>En la pantalla principal del <strong>Dashboard</strong> luego de iniciar sesión, se muestra
+                <p>En la pantalla principal del <strong><a href="./?p=dashboard">Dashboard</a></strong> luego de iniciar sesión, se muestra
                     información clave como el número de atletas y entrenadores registrados, las WADAs pendientes, las
                     estadísticas de medallas obtenidas, las notificaciones recientes, y las actividades recientes de la
                     bitácora. Esta vista te permite acceder rápidamente a los datos más relevantes del sistema.</p>
@@ -364,7 +364,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Entrenadores</h2>
             </div>
             <div class="col-12">
-                <p>En la pantalla de Gestionar Entrenadores, puedes ver la lista de entrenadores registrados y realizar
+                <p>En la pantalla de <a href="./?p=entrenadores" class="fw-bold">Gestionar Entrenadores</a>, puedes ver la lista de entrenadores registrados y realizar
                     las siguientes acciones: crear, modificar o eliminar registros.</p>
                 <figure class="figure">
                     <img src="./img/manual/6.jpg" alt="Pantalla de gestión de entrenadores"
@@ -446,7 +446,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Atletas</h2>
             </div>
             <div class="col-12">
-                <p>En la pantalla de Gestionar Atletas, puedes ver la lista de atletas registrados y realizar
+                <p>En la pantalla de <a href="./?p=atletas" class="fw-bold">Gestionar Atletas</a>, puedes ver la lista de atletas registrados y realizar
                     las siguientes acciones: crear, modificar o eliminar registros.</p>
                 <figure class="figure">
                     <img src="./img/manual/10.jpg" alt="Pantalla de gestión de atletas"
@@ -532,7 +532,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Roles y Permisos</h2>
             </div>
             <div class="col-12">
-                <p>En la Pantalla de <strong>Gestionar Roles y Permisos</strong>, puedes definir y modificar los roles
+                <p>En la Pantalla de <strong><a href="./?p=rolespermisos">Gestionar Roles y Permisos</a></strong>, puedes definir y modificar los roles
                     de los usuarios dentro del sistema, así como asignarles los permisos específicos que determinarán
                     qué acciones pueden realizar. Los roles y permisos son fundamentales para asegurar que los usuarios
                     tengan acceso solo a las funciones que necesitan para cumplir con sus tareas.</p>
@@ -619,7 +619,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Asistencias</h2>
             </div>
             <div class="col-12">
-                <p>En la Pantalla de <strong>Gestión de Asistencias</strong>, puedes guardar y eliminar la asistencia de
+                <p>En la Pantalla de <strong><a href="./?p=asistencias">Gestión de Asistencias</a></strong>, puedes guardar y eliminar la asistencia de
                     los atletas a los entrenamientos. Esta pantalla permite hacer un seguimiento detallado de la
                     participación de cada atleta en las sesiones de entrenamiento programadas.</p>
                 <p>Al seleccionar una fecha, se podrán observar las asistencias registradas en ese día.</p>
@@ -637,7 +637,7 @@ $sub_indice = 1;
             <div class="col-12">
                 <p>Puedes registrar la asistencia de cada atleta a un entrenamiento específico. Para hacerlo, selecciona
                     la fecha y marca los atletas que asistieron, indicando si estuvieron presentes o si se
-                    ausentaron, además de poder dejar una nota.</p>
+                    ausentaron, además de poder dejar una nota (opcional).</p>
                 <p>Si en el día ya se habían guardado asistencias, se sobreescribirán los registros guardados.</p>
                 <span class="bg-info-subtle d-block mb-3 text-info-emphasis p-2">La fecha no puede ser anterior a la
                     actual.</span>
@@ -676,7 +676,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Eventos/Competencias</h2>
             </div>
             <div class="col-12">
-                <p>En la Pantalla de <Strong>Gestionar Eventos</Strong>, puedes administrar todos los aspectos
+                <p>En la Pantalla de <Strong><a href="./?p=eventos">Gestionar Eventos</a></Strong>, puedes administrar todos los aspectos
                     relacionados con los
                     eventos y competiciones en el sistema. Esta pantalla incluye varias funciones que permiten
                     organizar e inscribir a los atletas, gestionar resultados, categorías. tipos de competencias, subs,
@@ -965,7 +965,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar Mensualidad</h2>
             </div>
             <div class="col-12">
-                <p>En la Pantalla de <strong>Gestión de Mensualidad</strong>, puedes gestionar y hacer seguimiento a los
+                <p>En la Pantalla de <strong><a href="./?p=mensualidad">Gestión de Mensualidad</a></strong>, puedes gestionar y hacer seguimiento a los
                     pagos mensuales de los atletas, asegurando que sus cuotas estén actualizadas.</p>
                 <figure class="figure">
                     <img src="./img/manual/49.jpg" alt="Pantalla de gestión de mensualidades"
@@ -1023,7 +1023,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Gestionar WADA</h2>
             </div>
             <div class="col-12">
-                <p>En la Pantalla de <strong>Gestión de WADA</strong>, puedes registrar y gestionar la información
+                <p>En la Pantalla de <strong><a href="./?p=wada">Gestión de WADA</a></strong>, puedes registrar y gestionar la información
                     relacionada con las pruebas y requisitos de la World Anti-Doping Agency (WADA) para los atletas.
                     Esta pantalla es importante para asegurar que los atletas cumplan con las normativas antidopaje y
                     para hacer un seguimiento adecuado de su estado en cuanto a las pruebas de WADA.</p>
@@ -1043,7 +1043,7 @@ $sub_indice = 1;
                     cuenta que el atleta <strong>no puede ser menor de 15 años</strong> para registrar su estado de
                     WADA. Los siguientes campos deben completarse al registrar la información de WADA:</p>
                 <ul>
-                    <li><strong>Atleta:</strong>Selecciona al atleta de una lista desplegable con los atletas
+                    <li><strong>Atleta:</strong> Selecciona al atleta de una lista desplegable con los atletas
                         registrados en el sistema.</li>
                     <li><strong>Fecha de inscripción: </strong>Registra la fecha en que el atleta fue inscrito en el
                         programa de control WADA.</li>
@@ -1118,7 +1118,7 @@ $sub_indice = 1;
                 <h2><?= $indice ?>. Consultar Bitácora</h2>
             </div>
             <div class="col-12">
-                <p>La <strong>Pantalla de Bitácora</strong> es una herramienta fundamental para realizar un seguimiento
+                <p>La <strong><a href="./?p=bitacora">Pantalla de Bitácora</a></strong> es una herramienta fundamental para realizar un seguimiento
                     de las acciones realizadas en el sistema, permitiendo auditar todas las actividades que los usuarios
                     realizan.
                 </p>
