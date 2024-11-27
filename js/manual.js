@@ -1,6 +1,36 @@
 $(document).ready(function () {
   let resultados = [];
   let indiceResultado = 0;
+
+  // Obtener todos los enlaces con href que comienzan con "#"
+  const links = document.querySelectorAll('a[href^="#"]');
+
+  // Obtener la altura del navbar sticky
+  const navbar = document.getElementById("navbar");
+  const navbarHeight = navbar.offsetHeight + 15;
+
+  // Función para manejar el scroll con offset
+  function smoothScroll(event) {
+    event.preventDefault(); // Evita el comportamiento de ancla por defecto
+
+    // Obtener el destino del enlace (id del elemento al que se va a hacer scroll)
+    const targetId = this.getAttribute("href").substring(1); // Elimina el '#' del href
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      // Realizar el desplazamiento con un offset para que no quede tapado por el navbar
+      window.scrollTo({
+        top: targetElement.offsetTop - navbarHeight, // Aplicamos el offset con la altura del navbar
+        behavior: "smooth", // Para que el desplazamiento sea suave
+      });
+    }
+  }
+
+  // Asignar el evento de clic a todos los enlaces
+  links.forEach((link) => {
+    link.addEventListener("click", smoothScroll);
+  });
+
   function normalizarTexto(texto) {
     return texto
       .normalize("NFD")

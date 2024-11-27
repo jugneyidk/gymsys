@@ -29,7 +29,7 @@ $sub_indice = 1;
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-dark bg-primary sticky-top">
+    <nav class="navbar navbar-dark bg-primary sticky-top" id="navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Manual de
                 Usuario<?= isset($permisos["nombre_rol"]) ? " - {$permisos["nombre_rol"]}" : "" ?></a>
@@ -55,9 +55,6 @@ $sub_indice = 1;
                         <li class="nav-item">
                             <a class="nav-link" href="./">Volver a la página principal</a>
                         </li>
-                        <!-- <li class="nav-item">
-                            <a class="nav-link" href="#iniciarSesion">Inicio de sesión</a>
-                        </li> -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="inicioSesionDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
@@ -66,9 +63,6 @@ $sub_indice = 1;
                             <ul class="dropdown-menu" aria-labelledby="inicioSesionDropdown">
                                 <li><a class="dropdown-item" href="#inicioSesion">Inicio de sesión</a></li>
                                 <li><a class="dropdown-item" href="#recuperarContraseña">Recuperar contraseña</a></li>
-                                <!-- <li>
-                                    <hr class="dropdown-divider">
-                                </li> -->
                             </ul>
                         </li>
                         <li class="nav-item">
