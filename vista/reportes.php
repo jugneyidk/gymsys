@@ -151,6 +151,11 @@
                                     <tbody id="listadoReportes"></tbody>
                                 </table>
                             </div>
+                            <div id="estadisticasReporte" class="mt-4">
+                                <h3>Estadísticas Generadas</h3>
+                                <ul id="listaEstadisticas"></ul>
+                            </div>
+
                             <button class="btn btn-success mt-3" id="btnDescargarPDF">Descargar PDF</button>
                         </div>
                     </div>

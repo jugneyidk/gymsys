@@ -84,6 +84,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($respuesta);
             exit();
         }
+
+if ($accion == 'obtener_reportes') {
+    $filtros = [
+        'edadMin' => $_POST['edadMin'] ?? null,
+        'edadMax' => $_POST['edadMax'] ?? null,
+        'genero' => $_POST['genero'] ?? null,
+        'pesoMin' => $_POST['pesoMin'] ?? null,
+        'pesoMax' => $_POST['pesoMax'] ?? null,
+    ];
+
+    $reportes = $o->obtener_reportes($_POST['tipoReporte'], $filtros);
+    $estadisticas = $o->obtenerEstadisticas($_POST['tipoReporte'], $filtros);
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        "ok" => $reportes["ok"] && $estadisticas["ok"],
+        "reportes" => $reportes["reportes"] ?? [],
+        "estadisticas" => $estadisticas["estadisticas"] ?? [],
+    ]);
+    exit();
+}
+
     }
 }
 

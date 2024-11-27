@@ -21,7 +21,7 @@
             </div>
 
             <div class="login-card">
-                <h2 class="text-center">Recuperar Contraseña</h2>
+                <h2 class="text-center">Reestablecer Contraseña</h2>
                 <form action="" method="POST" id="recovery-form">
                 <div class="form-group">
     <label for="email">Correo Electrónico:</label>

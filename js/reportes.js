@@ -37,6 +37,14 @@ $(document).ready(function () {
     datos.append("accion", "obtener_reportes");
     enviaAjax(datos);
   });
+  function actualizaEstadisticas(estadisticas) {
+    let html = '';
+    for (const [clave, valor] of Object.entries(estadisticas)) {
+        html += `<li>${clave.replace('_', ' ')}: ${valor}</li>`;
+    }
+    $("#listaEstadisticas").html(html);
+}
+
 
   function enviaAjax(datos) {
     $.ajax({
@@ -94,6 +102,9 @@ $(document).ready(function () {
               order: [[0, "desc"]],
               dom: '<"top"f>rt<"bottom"lp><"clear">',
             });
+            if (lee.estadisticas) {
+              actualizaEstadisticas(lee.estadisticas);
+          }
           } else {
             Swal.fire(
               "Error",
