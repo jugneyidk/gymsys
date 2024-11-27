@@ -34,7 +34,7 @@ $sub_indice = 1;
             <a class="navbar-brand" href="#">Manual de
                 Usuario<?= isset($permisos["nombre_rol"]) ? " - {$permisos["nombre_rol"]}" : "" ?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar">
+                aria-controls="offcanvasNavbar" aria-label="Menú de navegación">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
@@ -388,78 +388,561 @@ $sub_indice = 1;
                     qué acciones pueden realizar. Los roles y permisos son fundamentales para asegurar que los usuarios
                     tengan acceso solo a las funciones que necesitan para cumplir con sus tareas.</p>
                 <figure class="figure">
-                    <img src="./img/manual/10.jpg" alt="Pantalla de gestión de roles y permisos"
+                    <img src="./img/manual/13.jpg" alt="Pantalla de gestión de roles y permisos"
                         class="figure-img img-fluid rounded">
                     <figcaption class="figure-caption">Pantalla de gestión de roles y permisos.</figcaption>
                 </figure>
             </div>
-            <div class="col" id="registrarAtleta">
-                <h3><?= $indice . "." . $sub_indice ?>. Registrar Atleta</h3>
+            <div class="col" id="crearRol">
+                <h3><?= $indice . "." . $sub_indice ?>. Crear Rol</h3>
                 <?php
                 $sub_indice++; ?>
             </div>
             <div class="col-12">
-                <p>Para registrar la información de un nuevo atleta, los datos requeridos son:</p>
+                <p>Puedes crear nuevos roles personalizados, asignando un nombre definir su
+                    propósito y las acciones que pueden realizar los usuarios que pertenezcan a ese rol.</p>
+                <p>Se debe ingresar un nombre con letras y espacios, entre 3 y 50 caracteres. Además, se debe elegir
+                    dependiendo del caso, los permisos correspondientes que se desea que tenga el usuario en la lista de
+                    permisos.</p>
+                <figure class="figure">
+                    <img src="./img/manual/14.jpg" alt="Ventana de creacion de rol y selección de permisos"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de creacion de rol y selección de permisos.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="modificarRol">
+                <h3><?= $indice . "." . $sub_indice ?>. Modificar Rol</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Para Modificar la información de un rol existente, se requieren los mismos datos que en la <a
+                        href="#crearRol">creación de rol</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/15.jpg" alt="Ventana de modificación de rol"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de modificación de rol.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarRol">
+                <h3><?= $indice . "." . $sub_indice ?>. Eliminar Rol</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Para Eliminar un rol existente, haz clic en el boton "Eliminar rol"
+                    del rol que deseas eliminar y confirma la accion.</p>
+                <span class="bg-danger-subtle d-block mb-3 text-danger-emphasis p-2">No se podrá eliminar un rol si
+                    tiene usuarios asignados.</span>
+                <figure class="figure">
+                    <img src="./img/manual/16.jpg" alt="Ventana de confirmación al eliminar un rol"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de confirmación al eliminar un rol.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="asignarRol">
+                <h3><?= $indice . "." . $sub_indice ?>. Asignar Rol</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Para asignar un rol a un usuario existente, haz clic en el boton "Asignar Rol"
+                    para mostrar la ventana de asignación.</p>
+                <span class="bg-info-subtle d-block mb-3 text-info-emphasis p-2">Debes ingresar una cédula válida ya
+                    registrada para poder asignar el rol.</span>
+                <figure class="figure">
+                    <img src="./img/manual/17.jpg" alt="Botón de asignación de rol"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de asignación de rol.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/18.jpg" alt="Ventana de asignación de rol"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de asignación de rol.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="gestionarAsistencias">
+            <div class="col">
+                <h2><?= $indice ?>. Gestionar Asistencias</h2>
+            </div>
+            <div class="col-12">
+                <p>En la Pantalla de <strong>Gestión de Asistencias</strong>, puedes guardar y eliminar la asistencia de
+                    los atletas a los entrenamientos. Esta pantalla permite hacer un seguimiento detallado de la
+                    participación de cada atleta en las sesiones de entrenamiento programadas.</p>
+                <p>Al seleccionar una fecha, se podrán observar las asistencias registradas en ese día.</p>
+                <figure class="figure">
+                    <img src="./img/manual/19.jpg" alt="Pantalla de gestión de asistencias"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Pantalla de gestión de asistencias.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="guardarAsistencias">
+                <h3><?= $indice . "." . $sub_indice ?>. Guardar Asistencias</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Puedes registrar la asistencia de cada atleta a un entrenamiento específico. Para hacerlo, selecciona
+                    la fecha y marca los atletas que asistieron, indicando si estuvieron presentes o si se
+                    ausentaron, además de poder dejar una nota.</p>
+                <p>Si en el día ya se habían guardado asistencias, se sobreescribirán los registros guardados.</p>
+                <span class="bg-info-subtle d-block mb-3 text-info-emphasis p-2">La fecha no puede ser anterior a la
+                    actual.</span>
+                <figure class="figure">
+                    <img src="./img/manual/20.jpg" alt="Formulario de registro de asistencias"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Formulario de registro de asistencias.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarAsistencias">
+                <h3><?= $indice . "." . $sub_indice ?>. Eliminar Asistencias del día</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Para Eliminar las asistencias del día se debe hacer clic en el botón de "Eliminar asistencias del
+                    día".</p>
+                <span class="bg-danger-subtle d-block mb-3 text-danger-emphasis p-2">Esto eliminará todas las
+                    asistencias del día.</span>
+                <figure class="figure">
+                    <img src="./img/manual/21.jpg" alt="Botón para eliminar asistencias"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para eliminar asistencias.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/22.jpg" alt="Ventana de confirmación" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de confirmación.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="gestionarEventos">
+            <div class="col">
+                <h2><?= $indice ?>. Gestionar Eventos/Competencias</h2>
+            </div>
+            <div class="col-12">
+                <p>En la Pantalla de <Strong>Gestionar Eventos</Strong>, puedes administrar todos los aspectos
+                    relacionados con los
+                    eventos y competiciones en el sistema. Esta pantalla incluye varias funciones que permiten
+                    organizar e inscribir a los atletas, gestionar resultados, categorías. tipos de competencias, subs,
+                    así como cerrar o eliminar
+                    eventos. A continuación se detallan las principales funciones disponibles</p>
+                <figure class="figure">
+                    <img src="./img/manual/23.jpg" alt="Pantalla de gestión de eventos y competencias"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Pantalla de gestión de eventos y competencias.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="registrarEvento">
+                <h3><?= $indice . "." . $sub_indice ?>. Registrar Evento</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p> Permite crear nuevos eventos o competencias, ingresando información relevante como nombre, fecha,
+                    lugar, categoría, y otros detalles importantes.</p>
                 <ul>
-                    <li><strong>Cédula:</strong> Entre 7 y 9 dígitos numéricos.</li>
-                    <li><strong>Nombres:</strong> Solo letras y espacios, con una longitud de 3 a 50 caracteres.</li>
-                    <li><strong>Apellidos:</strong> Solo letras y espacios, con una longitud de 3 a 50 caracteres.</li>
-                    <li><strong>Género:</strong> Selecciona masculino o femenino.</li>
-                    <li><strong>Estado civil:</strong> Soltero, casado, viudo o divorciado.</li>
-                    <li><strong>Fecha de nacimiento:</strong> ingresar la fecha en formato estándar.</li>
-                    <li><strong>Lugar de nacimiento:</strong> Solo letras y espacios, hasta 100 caracteres.</li>
-                    <li><strong>Peso:</strong> Números hasta con hasta 2 decimales.</li>
-                    <li><strong>Altura:</strong> Números hasta con hasta 2 decimales.</li>
-                    <li><strong>Tipo de Atleta:</strong> El tipo de atleta asignado para el cobro de las mensualidades.
-                    </li>
-                    <li><strong>Entrenador asignado:</strong> El entrenador asignado a este atleta.</li>
-                    <li><strong>Teléfono:</strong> El formato debe ser 04XXXXXXXXX (10 dígitos, comenzando con "04").
-                    </li>
-                    <li><strong>Correo electrónico:</strong> Dirección de correo electrónico válida</li>
-                    <li><strong>Contraseña:</strong> Debe tener entre 8 y 15 caracteres, incluyendo al menos:
-                        <ul>
-                            <li>Tener entre <strong>8 y 15 caracteres</strong>.</li>
-                            <li>Incluir al menos <strong>1 letra mayúscula</strong>.</li>
-                            <li>Incluir al menos <strong>1 letra minúscula</strong>.</li>
-                            <li>Incluir al menos <strong>1 número</strong></li>
-                            <li>Incluir al menos 1 símbolo de los siguientes: <strong>$ @ ! % * ? &</strong></li>
-                        </ul>
-                    </li>
+                    <li><strong>Nombre del evento: </strong>El nombre debe contener solo letras y/o números, y su
+                        longitud debe ser de entre 3 y 100 caracteres.</li>
+                    <li><strong>Ubicación: </strong>La ubicación del evento debe incluir letras y/o números, con una
+                        longitud de entre 3 y 100 caracteres. Esto puede ser el nombre de un lugar, ciudad o gimnasio
+                        donde se realizará el evento.</li>
+                    <li><strong>Fecha de apertura: </strong>Ingresa la fecha de inicio del evento. Asegúrate de
+                        seleccionar una fecha válida para el comienzo del evento.</li>
+                    <li><strong>Fecha de clausura: </strong>La fecha de cierre del evento debe ser posterior a la fecha
+                        de apertura. Esto asegura que la duración del evento sea lógica.</li>
+                    <li><strong>Categoría: </strong>Selecciona la categoría del evento de una lista desplegable.</li>
+                    <li><strong>Subs: </strong>Selecciona la sub del evento de una lista desplegable.</li>
+                    <li><strong>Tipo de evento: </strong>Escoge el tipo de evento de una lista desplegable.</li>
                 </ul>
                 <figure class="figure">
-                    <img src="./img/manual/11.jpg" alt="Ventana de registro de atleta"
+                    <img src="./img/manual/24.jpg" alt="Formulario de registro de evento"
                         class="figure-img img-fluid rounded">
-                    <figcaption class="figure-caption">Ventana de registro de atleta.</figcaption>
+                    <figcaption class="figure-caption">Formulario de registro de evento.</figcaption>
                 </figure>
             </div>
-            <div class="col" id="modificarAtleta">
-                <h3><?= $indice . "." . $sub_indice ?>. Modificar Atleta</h3>
+            <div class="col" id="registrarCategoria">
+                <h3><?= $indice . "." . $sub_indice . ".1" ?>. Registrar Categoría</h3>
+            </div>
+            <div class="col-12">
+                <p> Permite crear una nueva categoría de peso corporal. Se debe ingresar el peso mínimo y peso máximo de
+                    la categoría, ambos valores númericos con 2 decimales.</p>
+                <figure class="figure">
+                    <img src="./img/manual/25.jpg" alt="Botón para mostrar el registro de categorías"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para mostrar el registro de categorías.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/26.jpg" alt="Ventana de registro de categorías"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de registro de categorías.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="editarCategoria">
+                <h3><?= $indice . "." . $sub_indice . ".2" ?>. Editar Categoría</h3>
+            </div>
+            <div class="col-12">
+                <p>Para editar las categorías, se debe usar el botón "Editar" de la categoría, usando los mismos datos
+                    del <a href="#registrarCategoria">registro de categorías</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/27.jpg" alt="Botón para editar categoría"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para editar categoría.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/28.jpg" alt="Ventana para editar categoría "
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para editar categoría.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarCategoria">
+                <h3><?= $indice . "." . $sub_indice . ".3" ?>. Eliminar Categoría</h3>
+            </div>
+            <div class="col-12">
+                <p>Para eliminar una categoría, se debe usar el botón "Eliminar" de la categoría correspondiente,
+                    desplegando un mensaje de confirmación.</p>
+                <figure class="figure">
+                    <img src="./img/manual/29.jpg" alt="Mensaje de confirmación al eliminar categoría "
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Mensaje de confirmación al eliminar categoría.</figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="registrarSubs">
+                <h3><?= $indice . "." . $sub_indice . ".1" ?>. Registrar Subs</h3>
+            </div>
+            <div class="col-12">
+                <p> Permite crear una nueva sub de edad. Se debe ingresar la edad mínima y edad máxima de
+                    la sub, ambos valores númericos.</p>
+                <figure class="figure">
+                    <img src="./img/manual/30.jpg" alt="Botón para mostrar el registro de subs"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para mostrar el registro de subs.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/31.jpg" alt="Ventana de registro de subs"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de registro de subs.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="editarSubs">
+                <h3><?= $indice . "." . $sub_indice . ".2" ?>. Editar Subs</h3>
+            </div>
+            <div class="col-12">
+                <p>Para editar las subs, se debe usar el botón "Editar" de la sub, usando los mismos datos
+                    del <a href="#registrarSubs">registro de subs</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/32.jpg" alt="Botón para editar sub" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para editar sub.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/33.jpg" alt="Ventana para editar sub " class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para editar sub.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarSubs">
+                <h3><?= $indice . "." . $sub_indice . ".3" ?>. Eliminar Subs</h3>
+            </div>
+            <div class="col-12">
+                <p>Para eliminar una sub, se debe usar el botón "Eliminar" de la sub correspondiente,
+                    desplegando un mensaje de confirmación.</p>
+                <figure class="figure">
+                    <img src="./img/manual/34.jpg" alt="Mensaje de confirmación al eliminar sub "
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Mensaje de confirmación al eliminar sub.</figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="registrarTipoCompetencia">
+                <h3><?= $indice . "." . $sub_indice . ".1" ?>. Registrar Tipo de Competencia</h3>
+            </div>
+            <div class="col-12">
+                <p> Permite crear un nuevo tipo de competencia. Se debe ingresar el nombre del tipo de evento, debe ser
+                    letras y/o números (entre 3 y 50 caracteres).</p>
+                <figure class="figure">
+                    <img src="./img/manual/35.jpg" alt="Botón para mostrar el registro de tipos de competencia"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para mostrar el registro de tipos de competencia.
+                    </figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/36.jpg" alt="Ventana de registro de tipos de competencia"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de registro de tipos de competencia.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="editarTipoCompetencia">
+                <h3><?= $indice . "." . $sub_indice . ".2" ?>. Editar Tipo de Competencia</h3>
+            </div>
+            <div class="col-12">
+                <p>Para editar los tipos de competencia, se debe usar el botón "Editar" el tipo de competencia, usando
+                    los mismos datos
+                    del <a href="#registrarTipoCompetencia">registro de tipos de competencia</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/37.jpg" alt="Botón para editar tipo de competencia"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para editar tipo de competencia.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/38.jpg" alt="Ventana para editar tipo de competencia "
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para editar tipo de competencia.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarTipoCompetencia">
+                <h3><?= $indice . "." . $sub_indice . ".3" ?>. Eliminar Tipo de Competencia</h3>
+            </div>
+            <div class="col-12">
+                <p>Para eliminar un tipo de competencia, se debe usar el botón "Eliminar" del tipo de competencia
+                    correspondiente,
+                    desplegando un mensaje de confirmación.</p>
+                <figure class="figure">
+                    <img src="./img/manual/39.jpg" alt="Mensaje de confirmación al eliminar el tipo de competencia "
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Mensaje de confirmación al eliminar el tipo de competencia.
+                    </figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="inscribirParticipante">
+                <h3><?= $indice . "." . $sub_indice ?>. Inscribir Atleta a una competencia</h3>
+            </div>
+            <div class="col-12">
+                <p>Desde esta pantalla puedes inscribir atletas a un evento o competencia. Para ello, seleccionas el
+                    evento y eliges los atletas que participarán en esa competencia, registrando su inscripción en el
+                    sistema.</p>
+                <span class="bg-info-subtle d-block mb-3 text-info-emphasis p-2">Para que un atleta aparezca en la lista
+                    de "Inscribir participante" debe cumplir los filtros asignados en la categoría y la sub.</span>
+                <figure class="figure">
+                    <img src="./img/manual/40.jpg" alt="Botón para inscribir un atleta en un evento"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para inscribir un atleta en un evento.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/41.jpg" alt="Ventana para elegir los participantes del evento."
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para elegir los participantes del evento.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="registrarResultados">
+                <h3><?= $indice . "." . $sub_indice . ".1" ?>. Registrar resultados de un Atleta a una competencia</h3>
+            </div>
+            <div class="col-12">
+                <p>Después de que el evento o competencia finaliza, puedes registrar los resultados de los atletas. Esto
+                    incluye detalles como las marcas obtenidas en envión, arranque y medallas.</p>
+                <figure class="figure">
+                    <img src="./img/manual/42.jpg" alt="Botón para ver el evento" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón para ver el evento.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/43.jpg"
+                        alt="Ventana para elegir a que participante se le registra el resultado."
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para elegir a que participante se le registra el
+                        resultado.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/44.jpg"
+                        alt="Ventana para introducir los resultados del atleta en la competencia."
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana para introducir los resultados del atleta en la
+                        competencia.</figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="modificarEvento">
+                <h3><?= $indice . "." . $sub_indice ?>. Modificar Evento</h3>
+            </div>
+            <div class="col-12">
+                <p>Permite editar los detalles de un evento ya creado, como cambiar la fecha, ubicación o tipo de
+                    competencia si es necesario. Se utilizan los mismos datos usados en <a href="#registrarEvento">el
+                        registro de eventos</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/45.jpg" alt="Formulario de editar evento"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Formulario de editar evento.</figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="rcerrarEvento">
+                <h3><?= $indice . "." . $sub_indice ?>. Cerrar Evento</h3>
+            </div>
+            <div class="col-12">
+                <p>Permite cerrar la competencia para removerla del listado, se utiliza cuándo un evento ya no necesita
+                    modificarse o registrar resultados.</p>
+                <span class="bg-info-subtle d-block mb-3 text-info-emphasis p-2">El evento pasa a estar en el listado de
+                    eventos anteriores.</span>
+                <figure class="figure">
+                    <img src="./img/manual/46.jpg" alt="Confirmación de cerrar evento"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Confirmación de cerrar evento.</figcaption>
+                </figure>
+            </div>
+            <?php
+            $sub_indice++; ?>
+            <div class="col" id="rcerrarEvento">
+                <h3><?= $indice . "." . $sub_indice ?>. Consultar eventos anteriores</h3>
+            </div>
+            <div class="col-12">
+                <p> Permite consultar eventos que ya pasó su fecha de clausura o fueron cerrados.</p>
+                <figure class="figure">
+                    <img src="./img/manual/47.jpg" alt="Botón de consulta de eventos anteriores"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de consulta de eventos anteriores.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/48.jpg" alt="Ventana de consulta de eventos anteriores"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de consulta de eventos anteriores.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="gestionarMensualidad">
+            <div class="col">
+                <h2><?= $indice ?>. Gestionar Mensualidad</h2>
+            </div>
+            <div class="col-12">
+                <p>En la Pantalla de <strong>Gestión de Mensualidad</strong>, puedes gestionar y hacer seguimiento a los
+                    pagos mensuales de los atletas, asegurando que sus cuotas estén actualizadas.</p>
+                <figure class="figure">
+                    <img src="./img/manual/49.jpg" alt="Pantalla de gestión de mensualidades"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Pantalla de gestión de mensualidades.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="registrarMensualidad">
+                <h3><?= $indice . "." . $sub_indice ?>. Registrar Mensualidad</h3>
                 <?php
                 $sub_indice++; ?>
             </div>
             <div class="col-12">
-                <p>Para Modificar la información de un atleta existente, se requieren los mismos datos que en el <a
-                        href="#registrarAtleta">registro de atleta</a>.</p>
+                <p>Puedes registrar un nuevo pago de mensualidad para un atleta. Los campos requeridos para completar el
+                    registro son:</p>
+                <ul>
+                    <li><strong>Atleta:</strong>Selecciona al atleta de una lista desplegable con los atletas
+                        registrados en el sistema.</li>
+                    <li><strong>Detalles (opcional): </strong>Puedes agregar una breve descripción o nota sobre el pago,
+                        como el concepto o motivo del pago.</li>
+                    <li><strong>Fecha: </strong>Ingresa la fecha en que se realiza el pago. Este campo es importante
+                        para llevar un control preciso de las fechas de los pagos.</li>
+                    <li><strong>Monto: </strong>Introduce el monto del pago realizado por el atleta. Debe ser un número
+                        con hasta 2 decimales</li>
+                </ul>
                 <figure class="figure">
-                    <img src="./img/manual/12.jpg" alt="Ventana de modificación de atleta"
+                    <img src="./img/manual/50.jpg" alt="Formulario de registro de mensualidad"
                         class="figure-img img-fluid rounded">
-                    <figcaption class="figure-caption">Ventana de modificación de atleta.</figcaption>
+                    <figcaption class="figure-caption">Formulario de registro de mensualidad.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/51.jpg" alt="Ventana de confirmación del registro de mensualidad"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de confirmación del registro de mensualidad.</figcaption>
                 </figure>
             </div>
-            <div class="col" id="eliminarAtleta">
-                <h3><?= $indice . "." . $sub_indice ?>. Eliminar Atleta</h3>
+            <div class="col" id="consultarPagosRegistrados">
+                <h3><?= $indice . "." . $sub_indice ?>. Consultar Pagos Registrados</h3>
+            </div>
+            <div class="col-12">
+                <p>Acá podrás ver el historial de pagos realizados por los atletas, con información detallada como el
+                    monto, la fecha de pago y el atleta que realizó el pago.</p>
+                <figure class="figure">
+                    <img src="./img/manual/52.jpg" alt="Tabla de pagos registrados"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Tabla de pagos registrados.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="gestionarWADA">
+            <div class="col">
+                <h2><?= $indice ?>. Gestionar WADA</h2>
+            </div>
+            <div class="col-12">
+                <p>En la Pantalla de <strong>Gestión de WADA</strong>, puedes registrar y gestionar la información
+                    relacionada con las pruebas y requisitos de la World Anti-Doping Agency (WADA) para los atletas.
+                    Esta pantalla es importante para asegurar que los atletas cumplan con las normativas antidopaje y
+                    para hacer un seguimiento adecuado de su estado en cuanto a las pruebas de WADA.</p>
+                <figure class="figure">
+                    <img src="./img/manual/53.jpg" alt="Pantalla de gestión de WADA"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Pantalla de gestión de WADA.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="registrarWADA">
+                <h3><?= $indice . "." . $sub_indice ?>. Registrar WADA</h3>
                 <?php
                 $sub_indice++; ?>
             </div>
             <div class="col-12">
-                <p>Para Eliminar la información de un atleta existente, haz clic en el boton "Eliminar Atleta"
-                    del atleta que deseas eliminar y confirma la accion.</p>
-                <span class="bg-danger-subtle d-block mb-3 text-danger-emphasis p-2">No se podrá eliminar el atleta
-                    si tiene mensualidades registradas.</span>
+                <p>En esta sección puedes registrar si un atleta ha sido sometido a un control WADA. Sin embargo, ten en
+                    cuenta que el atleta <strong>no puede ser menor de 15 años</strong> para registrar su estado de
+                    WADA. Los siguientes campos deben completarse al registrar la información de WADA:</p>
+                <ul>
+                    <li><strong>Atleta:</strong>Selecciona al atleta de una lista desplegable con los atletas
+                        registrados en el sistema.</li>
+                    <li><strong>Fecha de inscripción: </strong>Registra la fecha en que el atleta fue inscrito en el
+                        programa de control WADA.</li>
+                    <li><strong>Fecha de última actualización: </strong>Debe ingresar la fecha en que se actualizó por
+                        última vez la información relacionada con el control WADA. Esta fecha no puede ser anterior a la
+                        fecha de inscripción.</li>
+                    <li><strong>Fecha de vencimiento: </strong>La fecha de vencimiento del control WADA debe ser al
+                        menos
+                        un trimestre (tres meses) después de la fecha de la última actualización. Esto asegura que el
+                        control WADA sea actualizado dentro de los plazos establecidos por la normativa.</li>
+                    <li><strong>Cumple con los requisitos: </strong>Se debe registrar si el atleta cumple o no con los
+                        requisitos de WADA.</li>
+                </ul>
                 <figure class="figure">
-                    <img src="./img/manual/9.jpg" alt="Ventana de confirmación al eliminar atleta"
+                    <img src="./img/manual/54.jpg" alt="Formulario de registro de WADA"
                         class="figure-img img-fluid rounded">
-                    <figcaption class="figure-caption">Ventana de confirmación al eliminar atleta.</figcaption>
+                    <figcaption class="figure-caption">Formulario de registro de WADA.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="modificarWADA">
+                <h3><?= $indice . "." . $sub_indice ?>. Modificar WADA</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Si es necesario, puedes modificar los detalles de un control WADA registrado. Se usan los mismos
+                    datos que en el <a href="#registrarWADA">registro de WADA</a>.</p>
+                <figure class="figure">
+                    <img src="./img/manual/55.jpg" alt="Botón de modificar WADA" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de modificar WADA.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/56.jpg" alt="Ventana de modificación WADA"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de modificación WADA.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="eliminarWADA">
+                <h3><?= $indice . "." . $sub_indice ?>. Eliminar WADA</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Si es necesario, puedes eliminar un control WADA registrado.</p>
+                <figure class="figure">
+                    <img src="./img/manual/56.jpg" alt="Ventana de modificación WADA"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de modificación WADA.</figcaption>
                 </figure>
             </div>
         </section>

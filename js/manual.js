@@ -11,36 +11,22 @@ $(document).ready(function () {
     eliminarMarcado();
     var textoBusqueda = document.getElementById("buscar").value; // Obtiene el texto de búsqueda
     var terminoBusqueda = normalizarTexto(textoBusqueda); // Obtiene el término sin acentos para la busqueda
-    console.log(terminoBusqueda);
-    var titulos = document.querySelectorAll("h2,h3"); // Obtiene todos los titulos
-    var parrafos = document.querySelectorAll("p,li"); // Obtiene todos los párrafos y listas
+    var contenido = document.querySelectorAll("h2,h3,p,li"); // Obtiene todos los contenidos
     resultados = [];
     indiceResultado = 0;
-    // Primero buscamos en los titulos
     if (textoBusqueda.trim() !== "" && textoBusqueda.length > 0) {
-      for (var i = 0; i < titulos.length; i++) {
-        let contenidoNormalizado = normalizarTexto(titulos[i].textContent);
+      for (var i = 0; i < contenido.length; i++) {
+        let contenidoNormalizado = normalizarTexto(contenido[i].textContent);
         if (contenidoNormalizado.includes(terminoBusqueda)) {
-          scrollAlResultado(titulos[i]);
-          buscarTextoParaResaltar(titulos[i], textoBusqueda);
-          resultados.push(titulos[i]);
-        }
-      }
-
-      // Si no se encuentra en los titulos, buscamos en los párrafos y listas
-      for (var j = 0; j < parrafos.length; j++) {
-        let contenidoNormalizado = normalizarTexto(parrafos[j].textContent);
-        if (contenidoNormalizado.includes(terminoBusqueda)) {
-          scrollAlResultado(parrafos[j]);
-          buscarTextoParaResaltar(parrafos[j], terminoBusqueda);
-          resultados.push(parrafos[j]);
+          scrollAlResultado(contenido[i]);
+          buscarTextoParaResaltar(contenido[i], textoBusqueda);
+          resultados.push(contenido[i]);
         }
       }
     }
     if (resultados.length > 0) {
       scrollAlResultado(resultados[indiceResultado]);
     }
-    console.log(resultados);
   }
 
   // Función para resaltar el texto buscado

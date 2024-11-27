@@ -503,7 +503,7 @@ class Eventos extends datos
    public function listado_eventos_anteriores()
    {
       try {
-         $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() ORDER BY fecha_fin DESC LIMIT 5";
+         $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() OR estado = 'inactivo' ORDER BY fecha_fin DESC LIMIT 5";
          $respuesta = $this->conexion->prepare($consulta);
          $respuesta->execute();
          $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
