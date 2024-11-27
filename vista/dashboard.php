@@ -62,17 +62,17 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-12 col-md-6 col-lg-4">
-                    <h5>Estadísticas de Desarrollo de Atletas</h5>
-                    <canvas id="asistenciasChart"></canvas>
+                <div class="col-12 col-md-4 col-lg-4">
+                    <h5>Estadísticas de asistencias</h5>
+                   <canvas id="asistenciasChart"></canvas>
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
-                    <h5>Estadísticas de Desarrollo de Atletas</h5>
-                    <canvas id="wadaChart"></canvas>
+                    <h5>Edades comprendidas de Atletas</h5>
+                    <canvas id="edadAtletasChart"></canvas>
                 </div>
-                <div class="col-12 col-lg-4">
-                    <h5>Progreso Semanal de Atletas</h5>
-                    <canvas id="progressChart"></canvas>
+                <div class="col-12 col-lg-4"  style="width:18%">
+                    <h5>Genero predominante</h5>
+                    <canvas id="generoChart"></canvas>
                 </div>
             </div>
             <div class="row">

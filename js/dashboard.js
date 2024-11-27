@@ -36,43 +36,7 @@ $(document).ready(function () {
         },
       });
 
-      function renderGraficoEdades() {
-        $.ajax({
-          url: "",
-          method: "POST",
-          data: { accion: "obtenerDatosEstadisticos", tipo: "edadAtletas" },
-          success: function (respuesta) {
-            if (respuesta.ok) {
-              const etiquetas = respuesta.data.map(d => d.rango_edad);
-              const valores = respuesta.data.map(d => d.cantidad);
-    
-              const ctx = document.getElementById("edadAtletasChart").getContext("2d");
-              new Chart(ctx, {
-                type: "bar",
-                data: {
-                  labels: etiquetas,
-                  datasets: [{
-                    label: "Cantidad de Atletas",
-                    data: valores,
-                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 1
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  scales: { y: { beginAtZero: true } }
-                }
-              });
-            } else {
-              console.error("Error:", respuesta.mensaje);
-            }
-          },
-          error: function () {
-            console.error("No se pudo obtener los datos.");
-          }
-        });
-      }
+     
     
       function renderGraficoGenero() {
         $.ajax({
@@ -248,6 +212,81 @@ $(document).ready(function () {
               datasets: [{
                 data: valores,
                 backgroundColor: ["#4caf50", "#f44336"]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: "bottom" },
+                tooltip: { enabled: true }
+              }
+            }
+          });
+        } else {
+          console.error("Error:", respuesta.mensaje);
+        }
+      },
+      error: function () {
+        console.error("No se pudo obtener los datos.");
+      }
+    });
+  }
+  function renderGraficoEdades() {
+    $.ajax({
+      url: "",
+      method: "POST",
+      data: { accion: "obtenerDatosEstadisticos", tipo: "edadAtletas" },
+      success: function (respuesta) {
+        if (respuesta.ok) {
+          const etiquetas = respuesta.data.map(d => d.rango_edad);
+          const valores = respuesta.data.map(d => d.cantidad);
+
+          const ctx = document.getElementById("edadAtletasChart").getContext("2d");
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: etiquetas,
+              datasets: [{
+                label: "Cantidad de Atletas",
+                data: valores,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: { y: { beginAtZero: true } }
+            }
+          });
+        } else {
+          console.error("Error:", respuesta.mensaje);
+        }
+      },
+      error: function () {
+        console.error("No se pudo obtener los datos.");
+      }
+    });
+  }
+  function renderGraficoGenero() {
+    $.ajax({
+      url: "",
+      method: "POST",
+      data: { accion: "obtenerDatosEstadisticos", tipo: "generoAtletas" },
+      success: function (respuesta) {
+        if (respuesta.ok) {
+          const etiquetas = respuesta.data.map(d => d.genero);
+          const valores = respuesta.data.map(d => d.cantidad);
+
+          const ctx = document.getElementById("generoChart").getContext("2d");
+          new Chart(ctx, {
+            type: "pie",
+            data: {
+              labels: etiquetas,
+              datasets: [{
+                data: valores,
+                backgroundColor: ["#ff6384", "#36a2eb", "#cc65fe"],
+                hoverOffset: 4
               }]
             },
             options: {
