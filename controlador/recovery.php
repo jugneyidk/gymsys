@@ -1,10 +1,7 @@
 <?php
 if (!empty($_POST)) {
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
-        header('Content-Type: application/json');
-        require_once("modelo/recovery.php");
         $accion = $_POST['accion'];
-
         if ($accion == "recuperar") {
             $email = $_POST['email'];
             $cedula = $_POST['cedula'];
@@ -30,15 +27,13 @@ if (!empty($_POST)) {
             echo json_encode($respuesta);
             exit;
         }
-
         echo json_encode(["ok" => false, "mensaje" => "Acción no válida"]);
         exit;
     }
 }
-
 // Renderiza la vista HTML si no es una solicitud AJAX
 if (is_file("vista/" . $p . ".php")) {
     require_once("vista/" . $p . ".php");
 } else {
-    require_once("comunes/404.php");
+    require_once("vista/404.php");
 }

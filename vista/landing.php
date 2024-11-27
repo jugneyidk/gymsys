@@ -35,7 +35,7 @@ Estado: medio (falta añadir detalles para que este terminada)
                         <div class="d-flex flex-column flex-sm-row gap-2">
                             <a class="btn btn-outline-primary btn-lg flex-fill" href="?p=login" role="button">Iniciar
                                 sesión</a>
-                            <a class="btn btn-primary btn-lg flex-fill" href="?p=registro" role="button">Registrarse</a>
+                            <a class="btn btn-primary btn-lg flex-fill disabled" href="?p=registro" role="button">Registrarse</a>
                         </div>
 
                     </div>

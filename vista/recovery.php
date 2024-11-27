@@ -25,12 +25,12 @@
                 <form action="" method="POST" id="recovery-form">
                 <div class="form-group">
     <label for="email">Correo Electrónico:</label>
-    <input type="email" class="form-control" id="email" name="email" tabindex="1" required>
+    <input type="email" class="form-control" id="email" name="email">
     <div id="semail" class="invalid-feedback"></div>
 </div>
 <div class="form-group">
     <label for="cedula">Cédula:</label>
-    <input type="text" class="form-control" id="cedula" name="cedula" tabindex="2" required>
+    <input type="text" class="form-control" id="cedula" name="cedula">
     <div id="scedula" class="invalid-feedback"></div>
 </div>
 

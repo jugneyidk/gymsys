@@ -25,8 +25,8 @@
                         </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#!" class="nav-link p-0 text-white">
-                            <i class="fas fa-life-ring"></i> Soporte
+                        <a href="./?p=manual" class="nav-link p-0 text-white">
+                            <i class="fas fa-life-ring"></i> Manual de ayuda
                         </a>
                     </li>
                 </ul>
