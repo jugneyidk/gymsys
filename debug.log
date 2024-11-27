@@ -34,3 +34,9 @@ Array
     [id_competencia] => 2
     [atletas] => ["3331917"]
 )
+Array
+(
+    [accion] => inscribir_atletas
+    [id_competencia] => 13
+    [atletas] => ["26846371"]
+)

@@ -126,8 +126,8 @@ $(document).ready(function () {
     let listadoEventos = "";
     eventos.forEach((evento) => {
       listadoEventos += `
-                <div class="col-md-3 mb-4 d-flex align-items-stretch">
-                    <div class="card border-primary position-relative">
+                <div class="col col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
+                    <div class="card border-primary position-relative flex-grow-1">
                     ${
                       eliminar == 1
                         ? `<button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 eliminarEvento" 
@@ -139,12 +139,11 @@ $(document).ready(function () {
                         <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white">
                             <small><strong>${evento.nombre}</strong></small>
                         </div>
-                        <div class="row g-0">
+                        <div class="card-body row g-0 p-0">
                             <div class="col-md-1 bg-primary border-end border-primary">
-                                <img src="" alt="" class="img-fluid rounded-start">
                             </div>
-                            <div class="col-md-10">
-                                <div class="card-body p-3 ps-4">
+                            <div class="col-md-11">
+                                <div class="p-3 ps-4">
                                     <div class="card-title m-0 lead text-primary"><strong>${
                                       evento.nombre
                                     }</strong></div>
