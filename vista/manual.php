@@ -938,11 +938,135 @@ $sub_indice = 1;
                 $sub_indice++; ?>
             </div>
             <div class="col-12">
-                <p>Si es necesario, puedes eliminar un control WADA registrado.</p>
+                <p>Si un atleta ya no necesita estar en el programa WADA o si hubo un error en el registro, puedes
+                    eliminar el registro correspondiente.</p>
                 <figure class="figure">
-                    <img src="./img/manual/56.jpg" alt="Ventana de modificación WADA"
+                    <img src="./img/manual/57.jpg" alt="Ventana de confirmación para eliminar WADA"
                         class="figure-img img-fluid rounded">
-                    <figcaption class="figure-caption">Ventana de modificación WADA.</figcaption>
+                    <figcaption class="figure-caption">Ventana de confirmación para eliminar WADA.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="consultarWADAPorVencer">
+                <h3><?= $indice . "." . $sub_indice ?>. Consultar WADA próximos a vencer</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>El módulo muestra un listado de atletas cuyo control WADA está próximo a vencer, es decir, aquellos
+                    que tienen una fecha de vencimiento en los próximos 30 días o menos.</p>
+                <figure class="figure">
+                    <img src="./img/manual/58.jpg" alt="Tabla de WADA próximos a vencer"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Tabla de WADA próximos a vencer.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="consultarBitacora">
+            <div class="col">
+                <h2><?= $indice ?>. Consultar Bitácora</h2>
+            </div>
+            <div class="col-12">
+                <p>La <strong>Pantalla de Bitácora</strong> es una herramienta fundamental para realizar un seguimiento
+                    de las acciones realizadas en el sistema, permitiendo auditar todas las actividades que los usuarios
+                    realizan.
+                </p>
+                <ul>
+                    <li><strong>Usuario:</strong> La cédula del usuario que realizó la acción en el sistema.</li>
+                    <li><strong>Módulo:</strong> El módulo o sección en la que se realizó la acción (por ejemplo,
+                        "Atletas", "Eventos", "Mensualidades", etc.).</li>
+                    <li><strong>Fecha y Hora:</strong> La fecha y la hora exacta en que se realizó la acción.</li>
+                    <li><strong>Registro afectado:</strong> El registro o entidad que fue afectado por la acción (por
+                        ejemplo, un atleta, un evento, un pago, etc.).</li>
+                    <li><strong>Acción realizada:</strong> El tipo de acción realizada (por ejemplo, creación,
+                        modificación, eliminación).</li>
+                </ul>
+                <figure class="figure">
+                    <img src="./img/manual/59.jpg" alt="Pantalla de bitácora" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Pantalla de bitácora.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="consultarAccionBitacora">
+                <h3><?= $indice . "." . $sub_indice ?>. Consultar Acción en la Bitácora</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Al seleccionar una acción específica en el registro de la bitácora, puedes ver más detalles sobre la
+                    acción realizada</p>
+                <figure class="figure">
+                    <img src="./img/manual/60.jpg" alt="Consultar acción de la bitácora"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Consultar acción de la bitácora.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="verNotificaciones">
+            <div class="col">
+                <h2><?= $indice ?>. Ver Notificaciones</h2>
+            </div>
+            <div class="col-12">
+                <p>En esta sección, puedes ver todas las notificaciones generadas en el sistema.</p>
+                <figure class="figure">
+                    <img src="./img/manual/61.jpg" alt="Botón de notificaciones" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de notificaciones.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/62.jpg" alt="Panel de notificaciones" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Panel de notificaciones.</figcaption>
+                </figure>
+            </div>
+            <div class="col" id="marcarTodoComoLeido">
+                <h3><?= $indice . "." . $sub_indice ?>. Marcar notificaciones como leídas</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Al hacer clic, todas las notificaciones que aún no han sido leídas se marcarán como ya leídas.</p>
+                <figure class="figure">
+                    <img src="./img/manual/63.jpg" alt="Botón de marcar todas las notificaciones como leídas"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de marcar todas las notificaciones como leídas.
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col" id="verTodasLasNotificaciones">
+                <h3><?= $indice . "." . $sub_indice ?>. Ver todas las Notificaciones</h3>
+                <?php
+                $sub_indice++; ?>
+            </div>
+            <div class="col-12">
+                <p>Al hacer clic, se desplegará una ventana con todas las notificaciones.</p>
+                <figure class="figure">
+                    <img src="./img/manual/64.jpg" alt="Botón de ver todas las notificaciones"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de ver todas las notificaciones.</figcaption>
+                </figure>
+                <figure class="figure">
+                    <img src="./img/manual/65.jpg" alt="Ventana de todas las notificaciones"
+                        class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Ventana de todas las notificaciones.</figcaption>
+                </figure>
+            </div>
+        </section>
+        <?php
+        $indice++;
+        $sub_indice = 1; ?>
+        <section class="row" id="cerrarSesion">
+            <div class="col">
+                <h2><?= $indice ?>. Cerrar Sesión</h2>
+            </div>
+            <div class="col-12">
+                <p>La opción de <strong>Cerrar Sesión</strong> te permite finalizar tu sesión de manera segura en el
+                    sistema.</p>
+                <figure class="figure">
+                    <img src="./img/manual/66.jpg" alt="Botón de cerrar sesión" class="figure-img img-fluid rounded">
+                    <figcaption class="figure-caption">Botón de cerrar sesión.</figcaption>
                 </figure>
             </div>
         </section>
