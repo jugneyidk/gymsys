@@ -69,7 +69,62 @@ public function obtenerEstadisticas($tipoReporte, $filtros)
         return ["ok" => false, "mensaje" => $e->getMessage()];
     }
 }
+public function obtenerEstadisticas2($tipoReporte, $filtros)
+{
+    try {
+        $consulta = "";
+        $valores = [];
 
+        switch ($tipoReporte) {
+            case 'atletas':
+                $consulta = "
+                    SELECT 
+                        COUNT(*) AS eventos, 
+                        AVG(a.) AS ,
+                        MAX(a.) AS ,
+                        MIN(a.) AS 
+                    FROM atleta a
+                    INNER JOIN usuarios u ON a.cedula = u.cedula
+                    WHERE 1=1
+                ";
+
+                if (!empty($filtros['edadMin'])) {
+                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
+                    $valores[':edadMin'] = $filtros['edadMin'];
+                }
+                if (!empty($filtros['edadMax'])) {
+                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
+                    $valores[':edadMax'] = $filtros['edadMax'];
+                }
+                if (!empty($filtros['genero'])) {
+                    $consulta .= " AND u.genero = :genero";
+                    $valores[':genero'] = $filtros['genero'];
+                }
+                if (!empty($filtros['pesoMin'])) {
+                    $consulta .= " AND a.peso >= :pesoMin";
+                    $valores[':pesoMin'] = $filtros['pesoMin'];
+                }
+                if (!empty($filtros['pesoMax'])) {
+                    $consulta .= " AND a.peso <= :pesoMax";
+                    $valores[':pesoMax'] = $filtros['pesoMax'];
+                }
+                break;
+
+            
+
+            default:
+                return ["ok" => false, "mensaje" => "Tipo de reporte no válido para estadísticas"];
+        }
+
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->execute($valores);
+        $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return ["ok" => true, "estadisticas" => $estadisticas];
+    } catch (Exception $e) {
+        return ["ok" => false, "mensaje" => $e->getMessage()];
+    }
+}
     public function obtener_reportes($tipoReporte, $filtros)
     {
         try {
@@ -229,6 +284,7 @@ public function obtenerEstadisticas($tipoReporte, $filtros)
 
             if ($resultados) {
                 return ["ok" => true, "resultados" => $resultados];
+                
             } else {
                 return ["ok" => false, "mensaje" => "No se encontraron resultados de competencias"];
             }

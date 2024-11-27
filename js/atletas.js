@@ -262,7 +262,19 @@ $(document).ready(function () {
       dom: '<"top"f>rt<"bottom"lp><"clear">',
     });
   }
+  $("#btnConsultarTipos").on("click", function () {
+    cargarListadoTipos2();
+    $("#contenedorTablaTipos").show();
+  });
 
+  function cargarListadoTipos2() {
+    const datos = new FormData();
+    datos.append("accion", "obtener_tipos_atleta");
+    enviaAjax(datos, "").then((respuesta) => {
+      actualizarTablaTipos(respuesta.respuesta);
+    });
+  }
+  
   function cargarDatosAtleta(cedula) {
     const datos = new FormData();
     datos.append("accion", "obtener_atleta");
@@ -277,7 +289,34 @@ $(document).ready(function () {
       }
     });
   }
+  function actualizarTablaTipos(tipos) {
+    const tbody = $("#tablaTipos tbody");
+    tbody.empty();
 
+    tipos.forEach((tipo, index) => {
+      tbody.append(`
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${tipo.nombre}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btnEditarTipo" 
+                                data-id="${tipo.id_tipo}" 
+                                data-nombre="${tipo.nombre}">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger btn-sm btnEliminarTipo" 
+                                data-id="${tipo.id_tipo}">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `);
+    });
+
+    if (tipos.length === 0) {
+      tbody.append("<tr><td colspan='3'>No hay tipos registrados.</td></tr>");
+    }
+  }
   function calcularEdad(fechaNacimiento) {
     var hoy = new Date();
     var fechaNac = new Date(fechaNacimiento);

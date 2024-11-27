@@ -64,11 +64,11 @@
             <div class="row">
                 <div class="col-12 col-md-6 col-lg-4">
                     <h5>Estadísticas de Desarrollo de Atletas</h5>
-                    <canvas id="myChart"></canvas>
+                    <canvas id="asistenciasChart"></canvas>
                 </div>
                 <div class="col-12 col-md-6 col-lg-4">
                     <h5>Estadísticas de Desarrollo de Atletas</h5>
-                    <canvas id="myChart1"></canvas>
+                    <canvas id="wadaChart"></canvas>
                 </div>
                 <div class="col-12 col-lg-4">
                     <h5>Progreso Semanal de Atletas</h5>

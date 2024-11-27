@@ -1,5 +1,5 @@
 <?php
-
+require_once("modelo/reportes.php");
 if (is_file("vista/" . $p . ".php")) {
     $permisos_o = new Permisos();
     $permisos = $permisos_o->chequear_permisos();
@@ -24,6 +24,92 @@ if (is_file("vista/" . $p . ".php")) {
             ];
             echo json_encode($response);
             exit;
+        }
+    }
+    $oi = new Reporte();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!empty($_POST)) {
+            $accion = $_POST['accion'];
+            if ($accion == 'obtener_reportes') {
+                $filtros = [
+                    'edadMin' => $_POST['edadMin'] ?? null,
+                    'edadMax' => $_POST['edadMax'] ?? null,
+                    'genero' => $_POST['genero'] ?? null,
+                    'tipoAtleta' => $_POST['tipoAtleta'] ?? null,
+                    'pesoMin' => $_POST['pesoMin'] ?? null,
+                    'pesoMax' => $_POST['pesoMax'] ?? null,
+                    'edadMinEntrenador' => $_POST['edadMinEntrenador'] ?? null,
+                    'edadMaxEntrenador' => $_POST['edadMaxEntrenador'] ?? null,
+                    'gradoInstruccion' => $_POST['gradoInstruccion'] ?? null,
+                    'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
+                    'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
+                    'fechaInicioMensualidades' => $_POST['fechaInicioMensualidades'] ?? null,
+                    'fechaFinMensualidades' => $_POST['fechaFinMensualidades'] ?? null,
+                ];
+                $respuesta = $oi->obtener_reportes($_POST['tipoReporte'], $filtros);
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+    
+            if ($accion == 'obtener_resultados_competencias') {
+                $filtros = [
+                    'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
+                    'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
+                ];
+                $respuesta = $oi->obtener_resultados_competencias($filtros);
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+            if ($accion === 'obtenerDatosEstadisticos') {
+                $tipo = $_POST['tipo'] ?? '';
+                $respuesta = $oi->obtenerDatosEstadisticos($tipo);
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+            if ($accion === 'obtenerProgresoAsistencias') {
+                $respuesta = $oi->obtenerProgresoAsistenciasMensuales();
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+            if ($accion === 'obtenerCumplimientoWADA') {
+                $respuesta = $oi->obtenerCumplimientoWADA();
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+    
+            if ($accion === 'obtenerVencimientosWADA') {
+                $respuesta = $oi->obtenerVencimientosWADA();
+                header('Content-Type: application/json');
+                echo json_encode($respuesta);
+                exit();
+            }
+    
+    if ($accion == 'obtener_reportes') {
+        $filtros = [
+            'edadMin' => $_POST['edadMin'] ?? null,
+            'edadMax' => $_POST['edadMax'] ?? null,
+            'genero' => $_POST['genero'] ?? null,
+            'pesoMin' => $_POST['pesoMin'] ?? null,
+            'pesoMax' => $_POST['pesoMax'] ?? null,
+        ];
+    
+        $reportes = $oi->obtener_reportes($_POST['tipoReporte'], $filtros);
+        $estadisticas = $oi->obtenerEstadisticas($_POST['tipoReporte'], $filtros);
+    
+        header('Content-Type: application/json');
+        echo json_encode([
+            "ok" => $reportes["ok"] && $estadisticas["ok"],
+            "reportes" => $reportes["reportes"] ?? [],
+            "estadisticas" => $estadisticas["estadisticas"] ?? [],
+        ]);
+        exit();
+    }
+    
         }
     }
     // Asignar los datos obtenidos a variables para la vista del dashboard

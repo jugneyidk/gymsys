@@ -36,6 +36,83 @@ $(document).ready(function () {
         },
       });
 
+      function renderGraficoEdades() {
+        $.ajax({
+          url: "",
+          method: "POST",
+          data: { accion: "obtenerDatosEstadisticos", tipo: "edadAtletas" },
+          success: function (respuesta) {
+            if (respuesta.ok) {
+              const etiquetas = respuesta.data.map(d => d.rango_edad);
+              const valores = respuesta.data.map(d => d.cantidad);
+    
+              const ctx = document.getElementById("edadAtletasChart").getContext("2d");
+              new Chart(ctx, {
+                type: "bar",
+                data: {
+                  labels: etiquetas,
+                  datasets: [{
+                    label: "Cantidad de Atletas",
+                    data: valores,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  scales: { y: { beginAtZero: true } }
+                }
+              });
+            } else {
+              console.error("Error:", respuesta.mensaje);
+            }
+          },
+          error: function () {
+            console.error("No se pudo obtener los datos.");
+          }
+        });
+      }
+    
+      function renderGraficoGenero() {
+        $.ajax({
+          url: "",
+          method: "POST",
+          data: { accion: "obtenerDatosEstadisticos", tipo: "generoAtletas" },
+          success: function (respuesta) {
+            if (respuesta.ok) {
+              const etiquetas = respuesta.data.map(d => d.genero);
+              const valores = respuesta.data.map(d => d.cantidad);
+    
+              const ctx = document.getElementById("generoChart").getContext("2d");
+              new Chart(ctx, {
+                type: "pie",
+                data: {
+                  labels: etiquetas,
+                  datasets: [{
+                    data: valores,
+                    backgroundColor: ["#ff6384", "#36a2eb", "#cc65fe"],
+                    hoverOffset: 4
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  plugins: {
+                    legend: { position: "bottom" },
+                    tooltip: { enabled: true }
+                  }
+                }
+              });
+            } else {
+              console.error("Error:", respuesta.mensaje);
+            }
+          },
+          error: function () {
+            console.error("No se pudo obtener los datos.");
+          }
+        });
+      }
+    
       // Actualizamos el gráfico de Medallas por mes
       var ctx2 = document.getElementById("myChart1").getContext("2d");
       var myChart1 = new Chart(ctx2, {
@@ -112,4 +189,85 @@ $(document).ready(function () {
       console.error("Error en la solicitud AJAX:", error);
     },
   });
+  function renderGraficoAsistenciasMensuales() {
+    $.ajax({
+      url: "",
+      method: "POST",
+      data: { accion: "obtenerProgresoAsistencias" },
+      success: function (respuesta) {
+        if (respuesta.ok) {
+          const etiquetas = respuesta.data.map(d => d.mes);
+          const valores = respuesta.data.map(d => d.total_asistencias);
+
+          const ctx = document.getElementById("asistenciasChart").getContext("2d");
+          new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: etiquetas,
+              datasets: [{
+                label: "Asistencias Mensuales",
+                data: valores,
+                borderColor: "#42a5f5",
+                backgroundColor: "rgba(66, 165, 245, 0.5)",
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        } else {
+          console.error("Error:", respuesta.mensaje);
+        }
+      },
+      error: function () {
+        console.error("No se pudo obtener los datos.");
+      }
+    });
+  }
+  function renderGraficoCumplimientoWADA() {
+    $.ajax({
+      url: "",
+      method: "POST",
+      data: { accion: "obtenerCumplimientoWADA" },
+      success: function (respuesta) {
+        if (respuesta.ok) {
+          const etiquetas = respuesta.data.map(d => d.cumplimiento);
+          const valores = respuesta.data.map(d => d.cantidad);
+
+          const ctx = document.getElementById("wadaChart").getContext("2d");
+          new Chart(ctx, {
+            type: "pie",
+            data: {
+              labels: etiquetas,
+              datasets: [{
+                data: valores,
+                backgroundColor: ["#4caf50", "#f44336"]
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: "bottom" },
+                tooltip: { enabled: true }
+              }
+            }
+          });
+        } else {
+          console.error("Error:", respuesta.mensaje);
+        }
+      },
+      error: function () {
+        console.error("No se pudo obtener los datos.");
+      }
+    });
+  }
+  renderGraficoAsistenciasMensuales();
+  renderGraficoEdades();
+  renderGraficoGenero();
 });
