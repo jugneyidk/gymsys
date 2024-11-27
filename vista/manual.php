@@ -55,22 +55,177 @@ $sub_indice = 1;
                         <li class="nav-item">
                             <a class="nav-link" href="./">Volver a la página principal</a>
                         </li>
+                        <!-- <li class="nav-item">
+                            <a class="nav-link" href="#iniciarSesion">Inicio de sesión</a>
+                        </li> -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="inicioSesionDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Inicio de sesión
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="inicioSesionDropdown">
+                                <li><a class="dropdown-item" href="#inicioSesion">Inicio de sesión</a></li>
+                                <li><a class="dropdown-item" href="#recuperarContraseña">Recuperar contraseña</a></li>
+                                <!-- <li>
+                                    <hr class="dropdown-divider">
+                                </li> -->
+                            </ul>
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Link</a>
+                            <a class="nav-link" href="#barraDeNavegacion">Barra de Navegación</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#dashboard">Dashboard</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="offcanvasNavbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Dropdown
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarEntrenadoresDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Entrenadores
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="offcanvasNavbarDropdown">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarEntrenadoresDropdown">
+                                <li><a class="dropdown-item" href="#gestionarEntrenadores">Gestionar Entrenadores</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#registrarEntrenador">Registrar Entrenador</a></li>
+                                <li><a class="dropdown-item" href="#modificarEntrenador">Modificar Entrenador</a></li>
+                                <li><a class="dropdown-item" href="#eliminarEntrenador">Eliminar Entrenador</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarAtletasDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Atletas
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarAtletasDropdown">
+                                <li><a class="dropdown-item" href="#gestionarAtletas">Gestionar Atletas</a></li>
+                                <li><a class="dropdown-item" href="#registrarAtleta">Registrar Atleta</a></li>
+                                <li><a class="dropdown-item" href="#modificarAtleta">Modificar Atleta</a></li>
+                                <li><a class="dropdown-item" href="#eliminarAtleta">Eliminar Atleta</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarRolespermisosDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Roles y Permisos
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarRolespermisosDropdown">
+                                <li><a class="dropdown-item" href="#gestionarRolespermisos">Gestionar Roles y
+                                        Permisos</a></li>
+                                <li><a class="dropdown-item" href="#crearRol">Crear Rol</a></li>
+                                <li><a class="dropdown-item" href="#modificarRol">Modificar Rol</a></li>
+                                <li><a class="dropdown-item" href="#eliminarRol">Eliminar Rol</a></li>
+                                <li><a class="dropdown-item" href="#asignarRol">Asignar Rol</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarAsistenciasDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Asistencias
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarAsistenciasDropdown">
+                                <li><a class="dropdown-item" href="#gestionarAsistencias">Gestionar Asistencias</a></li>
+                                <li><a class="dropdown-item" href="#guardarAsistencias">Guardar Asistencias</a></li>
+                                <li><a class="dropdown-item" href="#eliminarAsistencias">Eliminar Asistencias del
+                                        día</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarEventosDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Eventos/Competencias
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarEventosDropdown">
+                                <li><a class="dropdown-item" href="#gestionarEventos">Gestionar Eventos/Competencias</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#registrarEvento">Registrar Evento</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                <li><a class="dropdown-item" href="#registrarCategoria">Registrar Categoría</a></li>
+                                <li><a class="dropdown-item" href="#editarCategoria">Editar Categoría</a></li>
+                                <li><a class="dropdown-item" href="#eliminarCategoria">Eliminar Categoría</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#registrarSubs">Registrar Subs</a></li>
+                                <li><a class="dropdown-item" href="#editarSubs">Editar Subs</a></li>
+                                <li><a class="dropdown-item" href="#eliminarSubs">Eliminar Subs</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#registrarTipoCompetencia">Registrar Tipo de
+                                        Competencia</a></li>
+                                <li><a class="dropdown-item" href="#editarTipoCompetencia">Editar Tipo de
+                                        Competencia</a></li>
+                                <li><a class="dropdown-item" href="#eliminarTipoCompetencia">Eliminar Tipo de
+                                        Competencia</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#inscribirParticipante">Inscribir Atleta a una
+                                        competencia</a></li>
+                                <li><a class="dropdown-item" href="#registrarResultados">Registrar resultados de un
+                                        Atleta</a></li>
+                                <li><a class="dropdown-item" href="#modificarEvento">Modificar Evento</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="#cerrarEvento">Cerrar Evento</a></li>
+                                <li><a class="dropdown-item" href="#consultarEventosAnteriores">Consultar eventos
+                                        anteriores</a></li>
                             </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarMensualidadDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar Mensualidad
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarMensualidadDropdown">
+                                <li><a class="dropdown-item" href="#gestionarMensualidad">Gestionar Mensualidad</a></li>
+                                <li><a class="dropdown-item" href="#registrarMensualidad">Registrar Mensualidad</a></li>
+                                <li><a class="dropdown-item" href="#consultarPagosRegistrados">Consultar Pagos
+                                        Registrados</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="gestionarWADADropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Gestionar WADA
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="gestionarWADADropdown">
+                                <li><a class="dropdown-item" href="#gestionarWADA">Gestionar WADA</a></li>
+                                <li><a class="dropdown-item" href="#registrarWADA">Registrar WADA</a></li>
+                                <li><a class="dropdown-item" href="#modificarWADA">Modificar WADA</a></li>
+                                <li><a class="dropdown-item" href="#eliminarWADA">Eliminar WADA</a></li>
+                                <li><a class="dropdown-item" href="#consultarWADAPorVencer">Consultar WADA próximos a
+                                        vencer</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="consultarBitacoraDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Consultar Bitácora
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="consultarBitacoraDropdown">
+                                <li><a class="dropdown-item" href="#consultarBitacora">Consultar Bitácora</a></li>
+                                <li><a class="dropdown-item" href="#consultarAccionBitacora">Consultar Acción en la
+                                        Bitácora</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="verNotificacionesDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Ver Notificaciones
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="verNotificacionesDropdown">
+                                <li><a class="dropdown-item" href="#verNotificaciones">Ver Notificaciones</a></li>
+                                <li><a class="dropdown-item" href="#marcarTodoComoLeido">Marcar notificaciones como
+                                        leídas</a></li>
+                                <li><a class="dropdown-item" href="#verTodasLasNotificaciones">Ver todas las
+                                        Notificaciones</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#cerrarSesion">Cerrar Sesión</a>
                         </li>
                     </ul>
                 </div>
@@ -775,7 +930,7 @@ $sub_indice = 1;
             </div>
             <?php
             $sub_indice++; ?>
-            <div class="col" id="rcerrarEvento">
+            <div class="col" id="cerrarEvento">
                 <h3><?= $indice . "." . $sub_indice ?>. Cerrar Evento</h3>
             </div>
             <div class="col-12">
@@ -791,7 +946,7 @@ $sub_indice = 1;
             </div>
             <?php
             $sub_indice++; ?>
-            <div class="col" id="rcerrarEvento">
+            <div class="col" id="consultarEventosAnteriores">
                 <h3><?= $indice . "." . $sub_indice ?>. Consultar eventos anteriores</h3>
             </div>
             <div class="col-12">

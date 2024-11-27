@@ -29,7 +29,6 @@ $(document).ready(function () {
     }
   }
 
-  // Función para resaltar el texto buscado
   function buscarTextoParaResaltar(elemento, textoBuscado) {
     const textoElementoNormalizado = normalizarTexto(elemento.textContent);
     const textoBusquedaNormalizado = normalizarTexto(textoBuscado);
