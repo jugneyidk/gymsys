@@ -468,7 +468,7 @@
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title fs-4 lead text-info" id="modalModificarResultadosLabel">Modificar
+                  <h5 class="modal-title" id="modalModificarResultadosLabel">Modificar
                      Resultados del Atleta</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
@@ -476,18 +476,20 @@
                   <div class="modal-body">
                      <div class="row">
                         <div class="col-md-6">
-                           <label for=""><strong>Nombre del Atleta:</strong></label>
+                           <strong>Nombre del Atleta:</strong>
                            <span id="nombreAtletaModificarResultados"></span><br>
-                           <label for=""><strong>Cédula:</strong></label>
+                           <strong>Cédula:</strong>
                            <span id="cedulaAtletaModificarResultados"></span><br>
                         </div>
                         <div class="col-md-6">
-                           <label for=""><strong>Competencia:</strong></label>
+                           <strong>Competencia:</strong>
                            <span id="nombreCompetenciaModificarResultados"></span><br>
-                           <label for=""><strong>Fecha:</strong></label>
+                           <strong>Fecha:</strong>
                            <span id="fechaCompetenciaModificarResultados"></span><br>
                         </div>
                      </div>
+                     <input type="hidden" class="form-control" id="id_competencia_modificar_resultado" name="id_competencia">
+                     <input type="hidden" class="form-control" id="id_atleta_modificar" name="id_atleta">
                      <div class="row mt-3">
                         <div class="col-md-6">
                            <label for="arranque_modificar" class="form-label">Arranque</label>
@@ -669,15 +671,13 @@
                      </div>
                      <div class="mb-3">
                         <label for="ubicacion_modificar" class="form-label">Ubicación</label>
-                        <input type="text" class="form-control" id="ubicacion_modificar" name="lugar_competencia"
-                        >
+                        <input type="text" class="form-control" id="ubicacion_modificar" name="lugar_competencia">
                         <div class="invalid-feedback">La ubicación es obligatoria</div>
                      </div>
                      <div class="row">
                         <div class="col-md-6 mb-3">
                            <label for="fecha_inicio_modificar" class="form-label">Fecha de Apertura</label>
-                           <input type="date" class="form-control" id="fecha_inicio_modificar" name="fecha_inicio"
-                           >
+                           <input type="date" class="form-control" id="fecha_inicio_modificar" name="fecha_inicio">
                            <div class="invalid-feedback">La fecha de inicio es obligatoria</div>
                         </div>
                         <div class="col-md-6 mb-3">
@@ -722,76 +722,7 @@
          </div>
       </div>
 
-      <div class="modal fade" id="modalModificarResultados" tabindex="-1"
-         aria-labelledby="modalModificarResultadosLabel" aria-hidden="true">
-         <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h5 class="modal-title fs-4 lead text-info" id="modalModificarResultadosLabel">Modificar
-                     Resultados del Atleta</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-               </div>
-               <form id="formModificarResultados">
-                  <div class="modal-body">
-                     <input type="hidden" id="id_competencia_modificar_resultado" name="id_competencia">
-                     <input type="hidden" id="id_atleta_modificar" name="id_atleta">
-                     <div class="row mb-3">
-                        <div class="col-md-6">
-                           <label for="arranque_modificar" class="form-label">Arranque</label>
-                           <input type="number" class="form-control" id="arranque_modificar" name="arranque" required>
-                        </div>
-                        <div class="col-md-6">
-                           <label for="envion_modificar" class="form-label">Envión</label>
-                           <input type="number" class="form-control" id="envion_modificar" name="envion" required>
-                        </div>
-                     </div>
-                     <div class="row mb-3">
-                        <div class="col-md-4">
-                           <label for="medalla_arranque_modificar" class="form-label">Medalla
-                              Arranque</label>
-                           <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select" required>
-                              <option value="oro">Oro</option>
-                              <option value="plata">Plata</option>
-                              <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
-                           </select>
-                        </div>
-                        <div class="col-md-4">
-                           <label for="medalla_envion_modificar" class="form-label">Medalla Envión</label>
-                           <select id="medalla_envion_modificar" name="medalla_envion" class="form-select" required>
-                              <option value="oro">Oro</option>
-                              <option value="plata">Plata</option>
-                              <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
-                           </select>
-                        </div>
-                        <div class="col-md-4">
-                           <label for="medalla_total_modificar" class="form-label">Medalla Total</label>
-                           <select id="medalla_total_modificar" name="medalla_total" class="form-select" required>
-                              <option value="oro">Oro</option>
-                              <option value="plata">Plata</option>
-                              <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
-                           </select>
-                        </div>
-                     </div>
-                     <div class="row mb-3">
-                        <div class="col-md-12">
-                           <label for="total_modificar" class="form-label">Total (Arranque +
-                              Envión)</label>
-                           <input type="number" class="form-control" id="total_modificar" name="total" readonly>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="modal-footer">
-                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                  </div>
-               </form>
-            </div>
-         </div>
-      </div>
-
+   
 
       <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp"
          tabindex="-1">

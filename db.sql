@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-11-2024 a las 02:26:34
+-- Tiempo de generación: 29-11-2024 a las 15:01:57
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -107,7 +107,7 @@ CREATE TABLE `atleta` (
 --
 
 INSERT INTO `atleta` (`cedula`, `entrenador`, `tipo_atleta`, `peso`, `altura`, `representante`) VALUES
-('26846371', '22222222', 4, 58.00, 178.00, '2122554');
+('26846371', '22222222', 4, 63.00, 178.00, NULL);
 
 --
 -- Disparadores `atleta`
@@ -170,9 +170,18 @@ CREATE TABLE `bitacora` (
 --
 
 INSERT INTO `bitacora` (`id_accion`, `id_usuario`, `accion`, `modulo`, `usuario_modificado`, `detalles`, `fecha`) VALUES
-(761, '22222222', 'Modificar', 'Atletas', '26846371', '', '2024-11-25 13:54:44'),
-(762, '22222222', 'Modificar', 'Atletas', '26846371', 'Nombre cambiado de \"Diego\" a \"Dieguito\"; ', '2024-11-25 13:54:51'),
-(763, '22222222', 'Modificar', 'Roles', 'Atleta', ' Modulo atletas - crear: No -> Si;  Modulo eventos - leer: Si -> No; ', '2024-11-25 16:00:19');
+(820, '22222222', 'Incluir', 'Inscripción a Evento', '26846371', 'Se agregó el Atleta con ID: 26846371 a la competencia: Campeonato Nacional', '2024-11-29 13:16:31'),
+(821, '22222222', 'Modificar', 'Resultado de evento', '26846371', 'Arranque cambiado de \"\" a \"120\"; Envion cambiado de \"\" a \"80\"; Total cambiado de \"0.00\" a \"200.00\"; ', '2024-11-29 13:20:36'),
+(822, '22222222', 'Modificar', 'Resultado de evento', '26846371', 'Medalla de arranque cambiado de \"ninguna\" a \"plata\"; ', '2024-11-29 13:40:46'),
+(824, '22222222', 'Incluir', 'Categorías', '73M', 'Se agregó la categoría: 73M', '2024-11-29 13:46:07'),
+(825, '22222222', 'Incluir', 'Categorías', '77M', 'Se agregó la categoría: 77M', '2024-11-29 13:46:32'),
+(826, '22222222', 'Incluir', 'Categorías', '81M', 'Se agregó la categoría: 81M', '2024-11-29 13:46:44'),
+(827, '22222222', 'Incluir', 'Subs', 'U23', 'Se agregó la sub: U23', '2024-11-29 13:47:13'),
+(828, '22222222', 'Incluir', 'Tipo de Competencia', 'Panamericano', 'Se agregó el tipo de competencia: Panamericano', '2024-11-29 13:47:35'),
+(829, '22222222', 'Incluir', 'Tipo de Competencia', 'Internacional', 'Se agregó el tipo de competencia: Internacional', '2024-11-29 13:47:43'),
+(830, '22222222', 'Incluir', 'Tipo de Competencia', 'Nacional', 'Se agregó el tipo de competencia: Nacional', '2024-11-29 13:47:49'),
+(831, '22222222', 'Incluir', 'Tipo de Competencia', 'Municipal', 'Se agregó el tipo de competencia: Municipal', '2024-11-29 13:47:59'),
+(832, '22222222', 'Incluir', 'Tipo de Competencia', 'Parroquial', 'Se agregó el tipo de competencia: Parroquial', '2024-11-29 13:48:06');
 
 -- --------------------------------------------------------
 
@@ -194,11 +203,20 @@ CREATE TABLE `categorias` (
 INSERT INTO `categorias` (`id_categoria`, `nombre`, `peso_minimo`, `peso_maximo`) VALUES
 (6, '61M', 61.00, 66.99),
 (7, '67M', 67.00, 72.99),
-(9, '81M', 73.00, 81.99);
+(10, '73M', 73.00, 76.99),
+(11, '77M', 77.00, 80.99),
+(12, '81M', 81.00, 88.99);
 
 --
 -- Disparadores `categorias`
 --
+DELIMITER $$
+CREATE TRIGGER `after_categorias_create` AFTER INSERT ON `categorias` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Categorías', @usuario_actual, NEW.nombre, CONCAT('Se agregó la categoría: ', NEW.nombre));
+END
+$$
+DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_categorias_delete` AFTER DELETE ON `categorias` FOR EACH ROW BEGIN
         INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
@@ -241,13 +259,13 @@ DELIMITER ;
 
 CREATE TABLE `competencia` (
   `id_competencia` int(50) NOT NULL,
-  `tipo_competicion` int(5) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `categoria` int(5) NOT NULL,
-  `subs` int(5) NOT NULL,
   `lugar_competencia` varchar(100) NOT NULL,
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date NOT NULL,
+  `categoria` int(5) NOT NULL,
+  `subs` int(5) NOT NULL,
+  `tipo_competicion` int(5) NOT NULL,
   `estado` enum('activo','inactivo') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -255,9 +273,61 @@ CREATE TABLE `competencia` (
 -- Volcado de datos para la tabla `competencia`
 --
 
-INSERT INTO `competencia` (`id_competencia`, `tipo_competicion`, `nombre`, `categoria`, `subs`, `lugar_competencia`, `fecha_inicio`, `fecha_fin`, `estado`) VALUES
-(11, 9, 'Campeonato Nacional', 6, 6, 'Ciudad Deportiva Lara', '2024-12-01', '2024-12-05', 'activo'),
-(12, 11, 'Panamericano 2024', 6, 6, 'Caracas', '2024-11-25', '2024-11-29', 'activo');
+INSERT INTO `competencia` (`id_competencia`, `nombre`, `lugar_competencia`, `fecha_inicio`, `fecha_fin`, `categoria`, `subs`, `tipo_competicion`, `estado`) VALUES
+(11, 'Campeonato Nacional', 'Ciudad Deportiva Lara', '2024-12-01', '2024-12-05', 6, 9, 9, 'activo'),
+(12, 'Panamericano 2024', 'Caracas', '2024-11-25', '2024-11-29', 6, 9, 11, 'inactivo'),
+(13, 'Choque 2024', 'Gimnasio Eddie Suarez', '2024-11-30', '2024-12-04', 7, 9, 9, 'inactivo');
+
+--
+-- Disparadores `competencia`
+--
+DELIMITER $$
+CREATE TRIGGER `after_competencia_create` AFTER INSERT ON `competencia` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Eventos', @usuario_actual, NEW.nombre, CONCAT('Se agregó el Evento: ', NEW.nombre, " - ", NEW.lugar_competencia));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_competencia_delete` AFTER DELETE ON `competencia` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Eliminar', 'Eventos', @usuario_actual, OLD.nombre, CONCAT('Se eliminó el Evento: ', OLD.nombre));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_competencia_update` AFTER UPDATE ON `competencia` FOR EACH ROW BEGIN
+	SET @cambios = '';
+    IF OLD.nombre != NEW.nombre THEN
+        SET @cambios = CONCAT(@cambios, 'Nombre cambiado de "', OLD.nombre, '" a "', NEW.nombre, '"; ');
+    END IF;
+    IF OLD.lugar_competencia != NEW.lugar_competencia THEN
+        SET @cambios = CONCAT(@cambios, 'Ubicación cambiado de "', OLD.lugar_competencia, '" a "', NEW.lugar_competencia, '"; ');
+    END IF;
+    IF OLD.fecha_inicio != NEW.fecha_inicio THEN
+        SET @cambios = CONCAT(@cambios, 'Fecha de apertura cambiada de "', OLD.fecha_inicio, '" a "', NEW.fecha_inicio, '"; ');
+    END IF;
+    IF OLD.fecha_fin != NEW.fecha_fin THEN
+        SET @cambios = CONCAT(@cambios, 'Fecha de clausura cambiada de "', OLD.fecha_fin, '" a "', NEW.fecha_fin, '"; ');
+    END IF;
+    IF OLD.categoria != NEW.categoria THEN
+        SET @cambios = CONCAT(@cambios, 'Categoria cambiada de "', (SELECT nombre from categorias WHERE id_categoria = OLD.categoria), '" a "', (SELECT nombre from categorias WHERE id_categoria = NEW.categoria), '"; ');
+    END IF;
+    IF OLD.subs != NEW.subs THEN
+        SET @cambios = CONCAT(@cambios, 'Subs cambiada de "', (SELECT nombre from subs WHERE id_sub = OLD.subs), '" a "', (SELECT nombre from subs WHERE id_sub = NEW.subs), '"; ');
+    END IF;
+    IF OLD.tipo_competicion != NEW.tipo_competicion THEN
+        SET @cambios = CONCAT(@cambios, 'Tipo de competición cambiada de "', (SELECT nombre from tipo_competencia WHERE id_tipo_competencia = OLD.tipo_competicion), '" a "', (SELECT nombre from tipo_competencia WHERE id_tipo_competencia = NEW.tipo_competicion), '"; ');
+    END IF;
+    IF OLD.estado != NEW.estado THEN
+        SET @cambios = CONCAT(@cambios, 'Estado de cambiado de "', OLD.estado, '" a "', NEW.estado, '"; ');
+    END IF;
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Modificar', 'Eventos', @usuario_actual, OLD.nombre, @cambios);
+    SET @cambios = NULL;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -365,9 +435,16 @@ CREATE TABLE `mensualidades` (
 -- Disparadores `mensualidades`
 --
 DELIMITER $$
-CREATE TRIGGER `after_mensualidad_create` AFTER INSERT ON `mensualidades` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_mensualidades_create` AFTER INSERT ON `mensualidades` FOR EACH ROW BEGIN
     INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
     VALUES ('Incluir', 'Mensualidad', @usuario_actual, NEW.id_atleta, CONCAT('Se agregó la mensualidad del Atleta con la cedula: ', NEW.id_atleta, ' para la fecha ', NEW.fecha));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_mensualidades_delete` AFTER DELETE ON `mensualidades` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Eliminar', 'Mensualidad', @usuario_actual, OLD.id_atleta, CONCAT('Se eliminó la mensualidad del atleta con la cedula: ', OLD.id_atleta, ' para la fecha ', OLD.fecha));
 END
 $$
 DELIMITER ;
@@ -414,6 +491,20 @@ CREATE TABLE `notificaciones` (
   `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `notificaciones`
+--
+
+INSERT INTO `notificaciones` (`id`, `id_usuario`, `titulo`, `mensaje`, `leida`, `objetivo`, `fecha_creacion`) VALUES
+(23, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá el 2024-12-10', 1, 'wada', '2024-11-27 13:37:53'),
+(24, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá el 2024-12-07', 0, 'wada', '2024-11-29 09:04:36'),
+(33, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá en 30 días', 0, 'wada', '2024-11-29 10:21:12'),
+(34, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá en 15 días', 0, 'wada', '2024-11-29 10:21:43'),
+(35, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá en 7 días', 0, 'wada', '2024-11-29 10:22:04'),
+(36, '22222222', 'Una WADA vencerá pronto', 'La WADA del atleta Diego Salazar se vencerá en 1 día', 0, 'wada', '2024-11-29 10:22:17'),
+(37, '22222222', 'La WADA ha vencido hoy', 'La WADA del atleta Diego Salazar se venció', 0, 'wada', '2024-11-29 10:22:38'),
+(43, '22222222', 'Atletas con mensualidad pendiente', 'Hay 1 atleta que debe la mensualidad este mes', 1, 'mensualidad', '2024-11-29 10:40:36');
+
 -- --------------------------------------------------------
 
 --
@@ -443,14 +534,14 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 (0, 7, 0, 0, 0, 0),
 (0, 8, 0, 0, 0, 0),
 (0, 9, 0, 0, 0, 0),
-(1, 1, 1, 1, 1, 0),
-(1, 2, 1, 1, 1, 1),
-(1, 3, 0, 1, 0, 0),
-(1, 4, 0, 0, 0, 0),
-(1, 5, 0, 0, 0, 0),
-(1, 6, 0, 0, 0, 0),
-(1, 7, 0, 0, 0, 0),
-(1, 8, 0, 0, 0, 0),
+(1, 1, 1, 1, 0, 0),
+(1, 2, 1, 1, 1, 0),
+(1, 3, 0, 0, 0, 0),
+(1, 4, 1, 1, 0, 0),
+(1, 5, 1, 1, 1, 0),
+(1, 6, 1, 1, 0, 0),
+(1, 7, 1, 1, 0, 0),
+(1, 8, 1, 1, 0, 0),
 (1, 9, 0, 0, 0, 0),
 (2, 1, 1, 1, 1, 1),
 (2, 2, 1, 1, 1, 1),
@@ -466,7 +557,7 @@ INSERT INTO `permisos` (`id_rol`, `modulo`, `crear`, `leer`, `actualizar`, `elim
 -- Disparadores `permisos`
 --
 DELIMITER $$
-CREATE TRIGGER `after_permiso_update` AFTER UPDATE ON `permisos` FOR EACH ROW BEGIN
+CREATE TRIGGER `after_permisos_update` AFTER UPDATE ON `permisos` FOR EACH ROW BEGIN
  IF @cambios IS NULL THEN
         SET @cambios = '';
     END IF;
@@ -547,6 +638,52 @@ CREATE TABLE `resultado_competencia` (
   `total` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `resultado_competencia`
+--
+
+INSERT INTO `resultado_competencia` (`id_competencia`, `id_atleta`, `arranque`, `envion`, `medalla_arranque`, `medalla_envion`, `medalla_total`, `total`) VALUES
+(11, '26846371', '120', '80', 'plata', 'plata', 'bronce', 200.00),
+(12, '26846371', '', '', NULL, NULL, NULL, 0.00);
+
+--
+-- Disparadores `resultado_competencia`
+--
+DELIMITER $$
+CREATE TRIGGER `after_resultado_competencia_create` AFTER INSERT ON `resultado_competencia` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Inscripción a Evento', @usuario_actual, NEW.id_atleta, CONCAT('Se agregó el Atleta con ID: ', NEW.id_atleta, ' a la competencia: ', (SELECT nombre FROM competencia WHERE id_competencia = NEW.id_competencia) ));
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_resultado_competencia_update` AFTER UPDATE ON `resultado_competencia` FOR EACH ROW BEGIN
+	SET @cambios = '';
+    IF OLD.arranque != NEW.arranque THEN
+        SET @cambios = CONCAT(@cambios, 'Arranque cambiado de "', OLD.arranque, '" a "', NEW.arranque, '"; ');
+    END IF;
+    IF OLD.envion != NEW.envion THEN
+        SET @cambios = CONCAT(@cambios, 'Envion cambiado de "', OLD.envion, '" a "', NEW.envion, '"; ');
+    END IF;
+    IF OLD.medalla_arranque != NEW.medalla_arranque THEN
+        SET @cambios = CONCAT(@cambios, 'Medalla de arranque cambiado de "', OLD.medalla_arranque, '" a "', NEW.medalla_arranque, '"; ');
+    END IF;
+    IF OLD.medalla_envion != NEW.medalla_envion THEN
+        SET @cambios = CONCAT(@cambios, 'Medalla de envion cambiado de "', OLD.medalla_envion, '" a "', NEW.medalla_envion, '"; ');
+    END IF;
+    IF OLD.medalla_total != NEW.medalla_total THEN
+        SET @cambios = CONCAT(@cambios, 'Medalla del total cambiado de "', OLD.medalla_total, '" a "', NEW.medalla_total, '"; ');
+    END IF;
+    IF OLD.total != NEW.total THEN
+        SET @cambios = CONCAT(@cambios, 'Total cambiado de "', OLD.total, '" a "', NEW.total, '"; ');
+    END IF;
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Modificar', 'Resultado de evento', @usuario_actual, OLD.id_atleta, @cambios);
+    SET @cambios = NULL;
+END
+$$
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -564,7 +701,7 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id_rol`, `nombre`) VALUES
 (0, 'Atleta'),
-(1, 'entrenador'),
+(1, 'Entrenador'),
 (2, 'Superusuario');
 
 --
@@ -617,11 +754,19 @@ CREATE TABLE `subs` (
 INSERT INTO `subs` (`id_sub`, `nombre`, `edad_minima`, `edad_maxima`) VALUES
 (6, 'U13', 11, 13),
 (7, 'U15', 13, 15),
-(9, 'U20', 15, 20);
+(9, 'U20', 15, 20),
+(10, 'U23', 17, 23);
 
 --
 -- Disparadores `subs`
 --
+DELIMITER $$
+CREATE TRIGGER `after_subs_create` AFTER INSERT ON `subs` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Subs', @usuario_actual, NEW.nombre, CONCAT('Se agregó la sub: ', NEW.nombre));
+END
+$$
+DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_subs_delete` AFTER DELETE ON `subs` FOR EACH ROW BEGIN
         INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
@@ -630,7 +775,7 @@ CREATE TRIGGER `after_subs_delete` AFTER DELETE ON `subs` FOR EACH ROW BEGIN
             'Subs', 
             @usuario_actual, 
             OLD.nombre, 
-            CONCAT('Se eliminó el sub: ', OLD.nombre)
+            CONCAT('Se eliminó la sub: ', OLD.nombre)
         );
 END
 $$
@@ -687,6 +832,13 @@ CREATE TRIGGER `after_tipo_atleta_create` AFTER INSERT ON `tipo_atleta` FOR EACH
 END
 $$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `after_tipo_atleta_delete` AFTER DELETE ON `tipo_atleta` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Eliminar', 'Tipo de Atleta', @usuario_actual, OLD.nombre_tipo_atleta, CONCAT('Se eliminó el Tipo de Atleta con: ', OLD.nombre_tipo_atleta));
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -706,12 +858,22 @@ CREATE TABLE `tipo_competencia` (
 INSERT INTO `tipo_competencia` (`id_tipo_competencia`, `nombre`) VALUES
 (9, 'Junior'),
 (11, 'Senior'),
-(12, 'Sub13'),
-(14, 'Sub23');
+(15, 'Panamericano'),
+(16, 'Internacional'),
+(17, 'Nacional'),
+(18, 'Municipal'),
+(19, 'Parroquial');
 
 --
 -- Disparadores `tipo_competencia`
 --
+DELIMITER $$
+CREATE TRIGGER `after_tipo_competencia_create` AFTER INSERT ON `tipo_competencia` FOR EACH ROW BEGIN
+    INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
+    VALUES ('Incluir', 'Tipo de Competencia', @usuario_actual, NEW.nombre, CONCAT('Se agregó el tipo de competencia: ', NEW.nombre));
+END
+$$
+DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `after_tipo_competencia_delete` AFTER DELETE ON `tipo_competencia` FOR EACH ROW BEGIN
         INSERT INTO bitacora (accion, modulo, id_usuario, usuario_modificado, detalles)
@@ -764,7 +926,7 @@ CREATE TABLE `usuarios` (
 
 INSERT INTO `usuarios` (`cedula`, `nombre`, `apellido`, `genero`, `fecha_nacimiento`, `lugar_nacimiento`, `estado_civil`, `telefono`, `correo_electronico`) VALUES
 ('22222222', 'Jugney', 'Vargas', 'Femenino', '2002-07-15', 'sdfdsfdfds', 'Casado', '04245681341', 'soykuuhaku@gmail.com'),
-('26846371', 'Dieguito', 'Salazar', 'Masculino', '2000-05-16', 'Nostrum et eos dese', 'Soltero', '04664073259', 'ryvin@mailinator.com');
+('26846371', 'Diego', 'Salazar', 'Masculino', '2005-10-18', 'Nostrum et eos dese', 'Soltero', '04664073259', 'ryvin@mailinator.com');
 
 --
 -- Disparadores `usuarios`
@@ -894,7 +1056,7 @@ CREATE TABLE `wada` (
 --
 
 INSERT INTO `wada` (`id_atleta`, `inscrito`, `vencimiento`, `ultima_actualizacion`, `estado`) VALUES
-('26846371', '2024-11-25', '2024-12-10', '2024-11-25', 1);
+('26846371', '2024-11-25', '2024-11-29', '2024-11-25', 1);
 
 --
 -- Disparadores `wada`
@@ -960,7 +1122,8 @@ ALTER TABLE `asistencias`
 ALTER TABLE `atleta`
   ADD UNIQUE KEY `cedula` (`cedula`),
   ADD KEY `entrenador` (`entrenador`),
-  ADD KEY `tipo_atleta` (`tipo_atleta`);
+  ADD KEY `tipo_atleta` (`tipo_atleta`),
+  ADD KEY `representante` (`representante`);
 
 --
 -- Indices de la tabla `bitacora`
@@ -1023,6 +1186,12 @@ ALTER TABLE `notificaciones`
 ALTER TABLE `permisos`
   ADD PRIMARY KEY (`id_rol`,`modulo`),
   ADD KEY `permisos_ibfk_2` (`modulo`);
+
+--
+-- Indices de la tabla `representantes`
+--
+ALTER TABLE `representantes`
+  ADD PRIMARY KEY (`cedula`);
 
 --
 -- Indices de la tabla `reset`
@@ -1091,19 +1260,19 @@ ALTER TABLE `wada`
 -- AUTO_INCREMENT de la tabla `bitacora`
 --
 ALTER TABLE `bitacora`
-  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=764;
+  MODIFY `id_accion` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=833;
 
 --
 -- AUTO_INCREMENT de la tabla `categorias`
 --
 ALTER TABLE `categorias`
-  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_categoria` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `competencia`
 --
 ALTER TABLE `competencia`
-  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_competencia` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `marcas`
@@ -1115,7 +1284,7 @@ ALTER TABLE `marcas`
 -- AUTO_INCREMENT de la tabla `mensualidades`
 --
 ALTER TABLE `mensualidades`
-  MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=170;
+  MODIFY `id_mensualidad` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=173;
 
 --
 -- AUTO_INCREMENT de la tabla `modulos`
@@ -1127,7 +1296,7 @@ ALTER TABLE `modulos`
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `reset`
@@ -1139,7 +1308,7 @@ ALTER TABLE `reset`
 -- AUTO_INCREMENT de la tabla `resultado_competencia`
 --
 ALTER TABLE `resultado_competencia`
-  MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_competencia` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `roles`
@@ -1151,19 +1320,19 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT de la tabla `subs`
 --
 ALTER TABLE `subs`
-  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_sub` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_atleta`
 --
 ALTER TABLE `tipo_atleta`
-  MODIFY `id_tipo_atleta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_tipo_atleta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_competencia`
 --
 ALTER TABLE `tipo_competencia`
-  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_tipo_competencia` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Restricciones para tablas volcadas
@@ -1181,7 +1350,8 @@ ALTER TABLE `asistencias`
 ALTER TABLE `atleta`
   ADD CONSTRAINT `atleta_ibfk_1` FOREIGN KEY (`cedula`) REFERENCES `usuarios` (`cedula`) ON UPDATE CASCADE,
   ADD CONSTRAINT `atleta_ibfk_2` FOREIGN KEY (`entrenador`) REFERENCES `entrenador` (`cedula`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `atleta_ibfk_3` FOREIGN KEY (`tipo_atleta`) REFERENCES `tipo_atleta` (`id_tipo_atleta`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `atleta_ibfk_3` FOREIGN KEY (`tipo_atleta`) REFERENCES `tipo_atleta` (`id_tipo_atleta`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `atleta_ibfk_4` FOREIGN KEY (`representante`) REFERENCES `representantes` (`cedula`) ON UPDATE CASCADE;
 
 --
 -- Filtros para la tabla `bitacora`

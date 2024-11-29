@@ -16,7 +16,9 @@ $(document).ready(function () {
       actualizarListadoEventos(result.respuesta);
     });
   }
-  var modales = document.querySelectorAll(".modal:not(#carga)");
+  var modales = document.querySelectorAll(
+    ".modal:not(#carga,#modalVerEventoActivo)"
+  );
   modales.forEach(function (modal) {
     modal.addEventListener("hidden.bs.modal", function (event) {
       limpiarForm();
@@ -104,15 +106,24 @@ $(document).ready(function () {
 
   $(document).on("click", ".modificarResultados", function () {
     const idCompetencia = $(this).data("id-competencia");
+    const datos = new FormData();
+    datos.append("accion", "obtener_competencia");
+    datos.append("id_competencia", idCompetencia);
+    enviaAjax(datos, "").then((respuesta) => {
+      var datosCompetencia = respuesta.respuesta;
+      $("#nombreCompetenciaModificarResultados").text(datosCompetencia.nombre);
+      $("#fechaCompetenciaModificarResultados").text(datosCompetencia.fecha_fin);
+    });
     const idAtleta = $(this).data("id-atleta");
-
     $("#id_competencia_modificar_resultado").val(idCompetencia);
+    $("#nombreAtletaModificarResultados").text($(this).data("nombre"));
     $("#id_atleta_modificar").val(idAtleta);
+    $("#cedulaAtletaModificarResultados").text(idAtleta);
     $("#arranque_modificar").val($(this).data("arranque"));
     $("#envion_modificar").val($(this).data("envion"));
     $("#medalla_arranque_modificar").val($(this).data("medalla-arranque"));
     $("#medalla_envion_modificar").val($(this).data("medalla-envion"));
-    $("#medalla_total_modificar").val($(this).data.data("medalla-total"));
+    $("#medalla_total_modificar").val($(this).data("medalla-total"));
     $("#total_modificar").val($(this).data("total"));
   });
 
