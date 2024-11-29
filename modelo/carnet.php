@@ -185,7 +185,7 @@ class Carnet extends datos
             imagettftext($imagen, $tamanoFuente, 0, $x, $y, $colorTexto, $fuenteBold, "$rol");
 
             // Verificar y agregar foto de perfil
-            $rutaFotoPerfil = 'img/atleta-foto.png'; // Ruta a la foto del perfil
+            $rutaFotoPerfil = 'img/diego.jpg'; // Ruta a la foto del perfil
 
             if (file_exists($rutaFotoPerfil)) {
                 $ext = pathinfo($rutaFotoPerfil, PATHINFO_EXTENSION);

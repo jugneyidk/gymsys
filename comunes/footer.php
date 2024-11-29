@@ -20,7 +20,7 @@
                 <span class="text-white h5 mb-2 d-inline-block">Ayuda</span>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
-                        <a href="?p=faq" class="nav-link p-0 text-white">
+                        <a href="#" class="nav-link p-0 text-white">
                             <i class="fas fa-question-circle"></i> Preguntas Frecuentes
                         </a>
                     </li>
@@ -35,12 +35,12 @@
                 <span class="text-white h5 mb-2 d-inline-block">Más</span>
                 <ul class="nav flex-column">
                     <li class="nav-item mb-2">
-                        <a href="#!" class="nav-link p-0 text-white">
+                        <a href="#" class="nav-link p-0 text-white">
                             <i class="fas fa-file-alt"></i> Términos de Uso
                         </a>
                     </li>
                     <li class="nav-item mb-2">
-                        <a href="#!" class="nav-link p-0 text-white">
+                        <a href="#" class="nav-link p-0 text-white">
                             <i class="fas fa-shield-alt"></i> Privacidad
                         </a>
                     </li>

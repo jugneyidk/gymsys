@@ -7,7 +7,7 @@
     <title>Reportes - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
     <link rel="stylesheet" href="datatables/datatables.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./js/chart.min.js" defer></script>
 </head>
 
 <body class="d-flex flex-column vh-100">

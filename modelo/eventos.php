@@ -50,6 +50,10 @@ class Eventos extends datos
       return $this->listado();
    }
 
+   public function obtener_resultados_competencia($id_competencia){
+      $this->id_competencia = filter_var($id_competencia, FILTER_SANITIZE_NUMBER_INT);
+      return $this->resultados_competencia_anterior();
+   }
    private function incluir()
    {
       try {
@@ -112,6 +116,32 @@ class Eventos extends datos
          $resultado["ok"] = true;
       } catch (PDOException $e) {
          $this->conexion->rollBack();
+         $resultado["ok"] = false;
+         $resultado["mensaje"] = $e->getMessage();
+      }
+      $this->desconecta();
+      return $resultado;
+   }
+   private function resultados_competencia_anterior()
+   {
+      try {
+         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
+         $existe = Validar::existe($this->conexion, $this->id_competencia, $consulta);
+         if (!$existe["ok"]) {
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = "Esta competencia no existe";
+            return $resultado;
+         }
+         $consulta = "SELECT rc.id_competencia, u.cedula, u.nombre, u.apellido, rc.arranque, rc.envion, rc.medalla_arranque, rc.medalla_envion, rc.medalla_total, rc.total FROM resultado_competencia rc
+         INNER JOIN usuarios u ON  rc.id_atleta = u.cedula
+         WHERE rc.id_competencia = :id_competencia;";
+         $con = $this->conexion->prepare($consulta);
+         $con->execute([':id_competencia' => $this->id_competencia]);
+         $resultados_competencia = $con->fetchAll(PDO::FETCH_ASSOC);
+         $con->closeCursor();
+         $resultado["ok"] = true;
+         $resultado['resultados'] = $resultados_competencia;
+      } catch (PDOException $e) {
          $resultado["ok"] = false;
          $resultado["mensaje"] = $e->getMessage();
       }

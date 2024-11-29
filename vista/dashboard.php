@@ -39,10 +39,10 @@
                         <!-- Reportes -->
                         <div class="col-12 col-sm-6 col-lg-3 mb-3 d-flex align-items-stretch">
                             <div class="card text-white bg-warning flex-grow-1">
-                                <div class="card-header"><i class="fas fa-chart-line"></i> Reportes</div>
+                                <div class="card-header"><i class="fas fa-chart-line"></i> Acciones</div>
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo $reportes; ?></h5>
-                                    <small class="card-text">Reportes generados este mes.</small>
+                                    <small class="card-text">Acciones realizadas este mes.</small>
                                 </div>
                             </div>
                         </div>

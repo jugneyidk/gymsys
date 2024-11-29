@@ -436,21 +436,23 @@
 
                         <div id="eventosAnteriores" class="mt-3">
                            <h3 class="lead text-info">Eventos Anteriores</h3>
-                           <table id="tablaEventosAnteriores" class="table table-bordered">
-                              <thead>
-                                 <tr>
-                                    <th>#</th>
-                                    <th>Nombre</th>
-                                    <th>Fecha de Inicio</th>
-                                    <th>Fecha Final</th>
-                                    <th>Ubicación</th>
-                                    <th>Estado</th>
-                                 </tr>
-                              </thead>
-                              <tbody>
+                           <div class="table-responsive">
+                              <table id="tablaEventosAnteriores" class="table table-bordered">
+                                 <thead>
+                                    <tr>
+                                       <th>#</th>
+                                       <th>Nombre</th>
+                                       <th>Fecha de Inicio</th>
+                                       <th>Fecha Final</th>
+                                       <th>Ubicación</th>
+                                       <th>Estado</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
 
-                              </tbody>
-                           </table>
+                                 </tbody>
+                              </table>
+                           </div>
                         </div>
 
                      </div>
@@ -643,7 +645,25 @@
                   <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFinAnterior"></span></p>
                   <p><strong>Ubicación:</strong> <span id="detallesUbicacionAnterior"></span></p>
                   <p><strong>Estado:</strong> <span id="detallesEstadoAnterior"></span></p>
+                  <div class="table-responsive">
+                     <table class="table table-bordered" id="tablaTipos">
+                        <thead class="table-light">
+                           <tr>
+                              <th>#</th>
+                              <th>Nombre</th>
+                              <th>Arranque</th>
+                              <th>Envión</th>
+                              <th>Total</th>
+                              <th>Medalla Arranque</th>
+                              <th>Medalla Envión</th>
+                              <th>Medalla Total</th>
+                           </tr>
+                        </thead>
+                        <tbody id="resultadosEventoAnterior">
 
+                        </tbody>
+                     </table>
+                  </div>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -722,7 +742,7 @@
          </div>
       </div>
 
-   
+
 
       <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp"
          tabindex="-1">
