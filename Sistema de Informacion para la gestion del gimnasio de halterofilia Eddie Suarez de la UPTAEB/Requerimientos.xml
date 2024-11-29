@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<requirement-specification>
+<req_spec title="Iniciar de sesión"  doc_id="RF-01"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[1]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema validara el inicio de seccion</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-01]]></docid>
+		<title><![CDATA[Validar Inicio de sesion]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>Valida el usuario y la contrase&ntilde;a</p>]]></description>
+		<status><![CDATA[V]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[6]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-01.1]]></docid>
+		<title><![CDATA[Recuperación de contraseña]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>El usuario podr&aacute; realizar una recuperaci&oacute;n de contrase&ntilde;a.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Entrenadores"  doc_id="RF-02"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[2]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<table border="1" cellspacing="0">
+	<tbody>
+		<tr>
+			<td style="border-color:black; height:12.25pt; vertical-align:top; width:285.3pt">
+			<p>El sistema mostrar&aacute; una ventana donde el usuario con el rol de Entrenador podr&aacute; (consultar, editar y eliminar datos del usuario)</p>
+			</td>
+		</tr>
+	</tbody>
+</table>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-02.1]]></docid>
+		<title><![CDATA[Agregar Entrenador]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El encargado del gimnasio agrega un entrenador a su registro</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-02.2]]></docid>
+		<title><![CDATA[Consultar Entrenador]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>El encargado del gimnasio consulta un registro de un entrenador</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-02.3]]></docid>
+		<title><![CDATA[Modificar Entrenador]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; editar los datos del entrenador</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[Ref-02.4]]></docid>
+		<title><![CDATA[Eliminar Entrenador]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>4</node_order>
+		<description><![CDATA[]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Atletas"  doc_id="RF-03"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[3]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<table border="1" cellspacing="0">
+	<tbody>
+		<tr>
+			<td style="border-color:black; height:12.25pt; vertical-align:top; width:285.3pt">
+			<p>El entrenador puede realizar la solicitud de (consultar, registrar, editar y eliminar datos del atleta)</p>
+			</td>
+		</tr>
+	</tbody>
+</table>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-03.1]]></docid>
+		<title><![CDATA[Agregar Atletas]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>Los entrenadores se encargan de agregar un atleta al registro del gimnasio.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-03.2]]></docid>
+		<title><![CDATA[Consultar Atleta]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>Muestra por pantalla los datos del atleta</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-03.3]]></docid>
+		<title><![CDATA[Modificar Atleta]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; editar los datos del usuario previamente registrado.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-03.4]]></docid>
+		<title><![CDATA[Eliminar Atleta]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>4</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; eliminar los datos del atleta previamente registrado.</p>]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Roles y Permisos"  doc_id="RF-04"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[4]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; crear un rol para los usuarios del sistema.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-04.1]]></docid>
+		<title><![CDATA[Crear Rol]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; crear un rol para los usuarios del sistema.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-04.2]]></docid>
+		<title><![CDATA[Modificar Rol]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; modificar un rol para los usuarios del sistema.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-04.3]]></docid>
+		<title><![CDATA[Consultar Rol]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; solicitar la informaci&oacute;n de un rol para los usuarios del sistema.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-04.4]]></docid>
+		<title><![CDATA[Eliminar Rol]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>4</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; la eliminaci&oacute;n de un rol para los usuarios del sistema.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-04.5]]></docid>
+		<title><![CDATA[Asignar un Rol]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>5</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; asignar los permisos de acceso a un rol.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Eventos"  doc_id="RF-06"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[5]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; crear eventos, consultarlos, editarlos y eliminarlos.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-06.1]]></docid>
+		<title><![CDATA[Agregar Evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio registra una nueva competencia</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.2]]></docid>
+		<title><![CDATA[Consultar Evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>Muestra por pantalla los datos de la competencia y los participantes registrados.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.3]]></docid>
+		<title><![CDATA[Modificar Evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio modificara los datos del evento.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.4]]></docid>
+		<title><![CDATA[Eliminar Evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>4</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio puede eliminar una competencia.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.5]]></docid>
+		<title><![CDATA[Inscribir participantes a una Evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>5</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio podr&aacute; inscribir a los participantes de un evento cuando este activo el mismo.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.5.1]]></docid>
+		<title><![CDATA[Modificar a los participantes inscritos en la Competencia]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>6</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio podr&aacute; modificar o darlos de baja de un evento.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.5.2]]></docid>
+		<title><![CDATA[Inscribir marcas de un participantes de un evento]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>7</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio podr&aacute; inscribir las marcas realizadas de un participantes registrado en un evento en curso.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-06.5.3]]></docid>
+		<title><![CDATA[Consultar las marcas de un participante inscrito en una Competencia]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>8</node_order>
+		<description><![CDATA[<p>El entrenador o el encargado del gimnasio podr&aacute; consultar las marcas previamente registradas de un participante registrado a un evento en curso.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Mensualidad"  doc_id="RF-07"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[6]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema deber&aacute; permitir la definici&oacute;n de la tarifa de cada servicio prestado en el centro de acuerdo a los topes</p>
+
+<p>m&aacute;ximos y m&iacute;nimos establecidos por el Gimnasio</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-07.1]]></docid>
+		<title><![CDATA[Consultar Mensualidad]]></title>
+		<version>1</version>
+		<revision>3</revision>
+		<node_order>0</node_order>
+		<description><![CDATA[<p>El sistema deber&aacute; permitir que el entrenador consulte la mensualidad de uno de los atletas que no pertenezca a los atletas</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-07.2]]></docid>
+		<title><![CDATA[Registrar Mensualidad]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema deber&aacute; permitir que el entrenador registrar el pago de mensualidad de los atletas inscritos en el gimnasio.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar WADA"  doc_id="RF-08"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[7]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; llevar el control de la WADA (World Anti-Doping Agency,) de los atletas que desean participar en eventos regionales, estadales e internacional.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-08.1]]></docid>
+		<title><![CDATA[Registrar WADA]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; registrar la actualizaci&oacute;n de la planilla wada de los atletas.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-08.2]]></docid>
+		<title><![CDATA[Consultar WADA]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; consultar los atletas previamente registrados con su respectiva WADA, a parte de los &uacute;ltimos en vencerse.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-08.3]]></docid>
+		<title><![CDATA[Modificar WADA]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; modificar la actualizaci&oacute;n de la planilla wada de los atletas.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Reportes"  doc_id="RF-09"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[8]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; gestionar todos los reportes solicitados por la comunidad.</p>]]></scope>
+		</req_spec>
+<req_spec title="Gestionar Bitacora"  doc_id="RF-10"  >
+	<revision><![CDATA[2]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[9]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; ver los movimientos (transacciones) de los usuarios.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-10.1]]></docid>
+		<title><![CDATA[Ver Bitacora]]></title>
+		<version>1</version>
+		<revision>2</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; ver los movimientos (transacciones) detallados de los usuarios.</p>]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Gestionar Asistencia"  doc_id="RF-05"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[3]]></type>
+	<node_order><![CDATA[10]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; realizar asistencias diarias de los atletas al gimnasio.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-05.1]]></docid>
+		<title><![CDATA[Crear Asistencia]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; crear las asistencias diarias de los atletas al gimnasio.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-05.2]]></docid>
+		<title><![CDATA[Consultar Asistencia]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>2</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; realizar consultas anteriores de las asistencias diarias de los atletas al gimnasio.</p>]]></description>
+		<status><![CDATA[D]]></status>
+		<type><![CDATA[3]]></type>
+		<expected_coverage><![CDATA[1]]></expected_coverage>
+		
+	</requirement>
+	<requirement>
+		<docid><![CDATA[RF-05-3]]></docid>
+		<title><![CDATA[Modificar Asistencia]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>3</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; realizar modificaciones a las asistencias diarias de los atletas al gimnasio.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[3]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+<req_spec title="Ver Notificaciones"  doc_id="RF-11"  >
+	<revision><![CDATA[1]]></revision>
+	<type><![CDATA[1]]></type>
+	<node_order><![CDATA[11]]></node_order>
+	<total_req><![CDATA[0]]></total_req>
+	<scope><![CDATA[<p>El sistema permitir&aacute; ver las notificaciones de los m&oacute;dulos de WADA Y eventos.</p>]]></scope>
+			<requirement>
+		<docid><![CDATA[RF-11]]></docid>
+		<title><![CDATA[Ver Notificaciones]]></title>
+		<version>1</version>
+		<revision>1</revision>
+		<node_order>1</node_order>
+		<description><![CDATA[<p>El sistema permitir&aacute; ver las notificaciones de los m&oacute;dulos de WADA Y eventos.</p>]]></description>
+		<status><![CDATA[R]]></status>
+		<type><![CDATA[2]]></type>
+		<expected_coverage><![CDATA[4]]></expected_coverage>
+		
+	</requirement>
+</req_spec>
+</requirement-specification>
