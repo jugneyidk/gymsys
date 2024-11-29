@@ -2,7 +2,7 @@
 class Atleta extends datos
 {
     private $conexion;
-    private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo_electronico, $entrenador_asignado, $cedula_representante, $nombre_representante, $telefono_representante, $parentesco_representante, $password;
+    private $id_atleta, $nombres, $apellidos, $cedula, $genero, $fecha_nacimiento, $lugar_nacimiento, $peso, $altura, $tipo_atleta, $estado_civil, $telefono, $correo_electronico, $entrenador_asignado, $cedula_representante, $nombre_representante, $telefono_representante, $parentesco_representante, $password, $nombre_tipo_atleta, $tipo_cobro;
 
     public function __construct()
     {
@@ -59,6 +59,11 @@ class Atleta extends datos
         }
         $this->cedula = $cedula;
         return $this->eliminar();
+    }
+    public function eliminar_tipo_atleta($id_tipo)
+    {
+        $this->tipo_atleta = filter_var($id_tipo, FILTER_SANITIZE_NUMBER_INT);
+        return $this->eliminar_tipo();
     }
     public function listado_atleta()
     {
@@ -365,11 +370,32 @@ class Atleta extends datos
     }
     public function registrarTipoAtleta($nombreTipoAtleta, $tipoCobro)
     {
+        if (!filter_var($tipoCobro, FILTER_VALIDATE_FLOAT)) {
+            return ["ok" => false, "mensaje" => "El tipo de cobro no es válido"];
+        }
+        $validacion = Validar::validar("nombre_tipo", $nombreTipoAtleta);
+        if (!$validacion["ok"]) {
+            return ["ok" => false, "mensaje" => "El nombre de tipo de atleta no es válido"];
+        }
+        $this->nombre_tipo_atleta = $nombreTipoAtleta;
+        $this->tipo_cobro = $tipoCobro;
+        return $this->registrar_tipo();
+    }
+
+    private function registrar_tipo()
+    {
         try {
+            $consulta = "SELECT id_tipo_atleta FROM tipo_atleta WHERE nombre_tipo_atleta = ?;";
+            $existe = Validar::existe($this->conexion, $this->nombre_tipo_atleta, $consulta);
+            if ($existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "Ya existe un tipo de atleta con este nombre";
+                return $resultado;
+            }
             $this->conexion->beginTransaction();
             $consulta = "INSERT INTO tipo_atleta (nombre_tipo_atleta, tipo_cobro) VALUES (?, ?)";
             $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([$nombreTipoAtleta, $tipoCobro]);
+            $respuesta->execute([$this->nombre_tipo_atleta, $this->tipo_cobro]);
             $respuesta->closeCursor();
             $this->conexion->commit();
             $resultado["ok"] = true;
@@ -381,7 +407,34 @@ class Atleta extends datos
         $this->desconecta();
         return $resultado;
     }
-
+    private function eliminar_tipo()
+    {
+        try {
+            $consulta = "SELECT id_tipo_atleta FROM tipo_atleta WHERE id_tipo_atleta = ?;";
+            $existe = Validar::existe($this->conexion, $this->tipo_atleta, $consulta);
+            if (!$existe["ok"]) {
+                $resultado["ok"] = false;
+                $resultado["mensaje"] = "No existe ningún tipo de atleta con esta ID";
+                return $resultado;
+            }
+            $this->conexion->beginTransaction();
+            $consulta = "
+                DELETE FROM tipo_atleta WHERE id_tipo_atleta = :tipo_atleta;
+            ";
+            $valores = array(':tipo_atleta' => $this->tipo_atleta);
+            $respuesta = $this->conexion->prepare($consulta);
+            $respuesta->execute($valores);
+            $respuesta->closeCursor();
+            $this->conexion->commit();
+            $resultado["ok"] = true;
+        } catch (PDOException $e) {
+            $this->conexion->rollBack();
+            $resultado["ok"] = false;
+            $resultado["mensaje"] = $e->getMessage();
+        }
+        $this->desconecta();
+        return $resultado;
+    }
 
     public function __get($propiedad)
     {

@@ -78,8 +78,10 @@
             <select class="form-select" id="tipo_atleta" name="tipo_atleta">
             </select>
             <div id="stipo_atleta" class="invalid-feedback"></div>
-            <span class="text-primary mt-2" id="openTipoAtletaModal" style="cursor: pointer;">
-                Agregar nuevo tipo de atleta</span>
+            <?php if ($permisos["crear"] && $permisos["actualizar"] && $permisos["eliminar"]): ?>
+                <span class="text-primary mt-2" id="openTipoAtletaModal" style="cursor: pointer;">
+                    Agregar nuevo tipo de atleta</span>
+            <?php endif; ?>
         </div>
         <div class="col-md-6 mb-3">
             <label for="entrenador_asignado" class="form-label">Entrenador asignado:</label>

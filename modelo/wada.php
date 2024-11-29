@@ -37,10 +37,10 @@ class WADA extends datos
         if (!Validar::validar("bool", $estado)["ok"]) {
             return ["ok" => false, "mensaje" => "El estado de la WADA no es valido"];
         }
-        $validar_fechas = Validar::validar_fechas_wada($this->conexion, $id_atleta, $inscrito, $ultima_actualizacion, $vencimiento);
-        if (!$validar_fechas["ok"]) {
-            return ["ok" => false, "mensaje" => $validar_fechas["mensaje"]];
-        }
+        // $validar_fechas = Validar::validar_fechas_wada($this->conexion, $id_atleta, $inscrito, $ultima_actualizacion, $vencimiento);
+        // if (!$validar_fechas["ok"]) {
+        //     return ["ok" => false, "mensaje" => $validar_fechas["mensaje"]];
+        // }
         $this->id_atleta = $id_atleta;
         $this->estado = $estado;
         $this->inscrito = $inscrito;

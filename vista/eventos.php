@@ -44,7 +44,7 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h1 class="modal-title fs-5">Registrar Evento</h1>
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <form id="fRegistrarEvento" method="post" action="#">
                   <div class="modal-body">
@@ -60,8 +60,8 @@
                         </div>
                         <div class="col-12 col-md-6">
                            <div class="form-floating">
-                              <input type="text" class="form-control" id="in_ubicacion"
-                                 name="lugar_competencia" placeholder="Ubicación">
+                              <input type="text" class="form-control" id="in_ubicacion" name="lugar_competencia"
+                                 placeholder="Ubicación">
                               <label for="in_ubicacion" class="form-label">Ubicación</label>
                               <div class="invalid-feedback" id="sin_ubicacion">Ubicación es obligatoria</div>
                            </div>
@@ -87,8 +87,8 @@
                            </select>
                            <div class="invalid-feedback">Categoría es obligatoria</div>
                            <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal"
-                                 data-bs-target="#modalRegistrarCategoria" type="button">Registrar
+                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria"
+                                 type="button">Registrar
                                  Categoria</button>
                            <?php endif; ?>
                         </div>
@@ -99,8 +99,8 @@
                            </select>
                            <div class="invalid-feedback">Subs es obligatorio</div>
                            <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal"
-                                 data-bs-target="#modalRegistrarSubs" type="button">Registrar Subs</button>
+                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs"
+                                 type="button">Registrar Subs</button>
                            <?php endif; ?>
                         </div>
                         <div class="col-md-4">
@@ -110,8 +110,8 @@
                            </select>
                            <div class="invalid-feedback">Tipo es obligatorio</div>
                            <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal"
-                                 data-bs-target="#modalRegistrarTipo" type="button">Registrar Tipo</button>
+                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo"
+                                 type="button">Registrar Tipo</button>
                            <?php endif; ?>
                         </div>
                      </div>
@@ -125,12 +125,12 @@
             </div>
          </div>
       </div>
-      <div class="modal fade" id="modalRegistrarCategoria" tabindex="-1"
-         aria-labelledby="modalRegistrarCategoriaLabel" aria-hidden="true">
+      <div class="modal fade" id="modalRegistrarCategoria" tabindex="-1" aria-labelledby="modalRegistrarCategoriaLabel"
+         aria-hidden="true">
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title fs-4 lead text-info" id="modalRegistrarCategoriaLabel">Registrar
+                  <h5 class="modal-title" id="modalRegistrarCategoriaLabel">Registrar
                      Categoría</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                </div>
@@ -163,21 +163,13 @@
                            </div>
                         </div>
                      </div>
-                     <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary me-2">Registrar</button>
-                        <button type="reset" class="btn btn-warning me-2">Limpiar</button>
-                        <button type="button" class="btn btn-secondary"
-                           data-bs-dismiss="modal">Cancelar</button>
+                     <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                        <button type="button" id="btnConsultarCategorias" class="btn btn-info">Consultar
+                           Categorías</button>
+                        <button type="button" id="btnRegresarCategorias" class="btn btn-secondary">Regresar</button>
                      </div>
                   </form>
-
-                  <hr>
-                  <div class="d-flex justify-content-between align-items-center mt-4">
-                     <h5 class="fs-5 text-info mb-0">Categorías Registradas</h5>
-                     <button id="btnConsultarCategorias" class="btn btn-info btn-sm">Consultar
-                        Categorías</button>
-                  </div>
-
                   <div class="table-responsive mt-3" id="contenedorTablaCategorias" style="display: none;">
                      <table class="table table-bordered" id="tablaCategorias">
                         <thead class="table-primary">
@@ -194,9 +186,6 @@
                      </table>
                   </div>
                </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-               </div>
             </div>
          </div>
       </div>
@@ -207,7 +196,7 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title" id="modalRegistrarSubsLabel">Registrar Subs</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
 
@@ -275,7 +264,7 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title" id="modalRegistrarTipoLabel">Registrar Tipo</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
 
@@ -292,7 +281,7 @@
                         <button type="submit" class="btn btn-primary">Registrar</button>
                         <button type="button" id="btnConsultarTipos" class="btn btn-info">Consultar
                            Tipos</button>
-                        <button type="button" id="btnRegresar" class="btn btn-secondary">Regresar</button>
+                        <button type="button" id="btnRegresarTipo" class="btn btn-secondary">Regresar</button>
                      </div>
                   </form>
 
@@ -321,7 +310,7 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h5 class="modal-title" id="modalEditarTipoLabel">Editar Tipo</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <form id="formEditarTipo">
                   <div class="modal-body">
@@ -382,22 +371,22 @@
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title fs-4 lead text-info" id="modalInscribirEventoLabel">Inscribir
+                  <h5 class="modal-title" id="modalInscribirEventoLabel">Inscribir
                      Participante</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
                   <div class="row">
                      <div class="col-md-6">
-                        <label for=""><strong>Nombre del Evento:</strong></label>
+                        <strong>Nombre del Evento:</strong>
                         <span id="nombreEventoInscripcion"></span><br>
-                        <label for=""><strong>Fecha de Inicio:</strong></label>
+                        <strong>Fecha de Inicio:</strong>
                         <span id="fechaInicioEventoInscripcion"></span><br>
                      </div>
                      <div class="col-md-6">
-                        <label for=""><strong>Ubicación:</strong></label>
+                        <strong>Ubicación:</strong>
                         <span id="ubicacionEventoInscripcion"></span><br>
-                        <label for=""><strong>Fecha de Clausura:</strong></label>
+                        <strong>Fecha de Clausura:</strong>
                         <span id="fechaFinEventoInscripcion"></span><br>
                      </div>
                   </div>
@@ -438,8 +427,8 @@
          <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                <div class="modal-header">
-                  <h1 class="modal-title fs-4 lead">Consulta eventos anteriores</h1>
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <h3 class="modal-title">Consulta eventos anteriores</h3>
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
                   <div class="row">
@@ -481,7 +470,7 @@
                <div class="modal-header">
                   <h5 class="modal-title fs-4 lead text-info" id="modalModificarResultadosLabel">Modificar
                      Resultados del Atleta</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <form id="formModificarResultados">
                   <div class="modal-body">
@@ -502,21 +491,18 @@
                      <div class="row mt-3">
                         <div class="col-md-6">
                            <label for="arranque_modificar" class="form-label">Arranque</label>
-                           <input type="number" class="form-control" id="arranque_modificar" name="arranque"
-                              required>
+                           <input type="number" class="form-control" id="arranque_modificar" name="arranque" required>
                         </div>
                         <div class="col-md-6">
                            <label for="envion_modificar" class="form-label">Envión</label>
-                           <input type="number" class="form-control" id="envion_modificar" name="envion"
-                              required>
+                           <input type="number" class="form-control" id="envion_modificar" name="envion" required>
                         </div>
                      </div>
                      <div class="row mt-3">
                         <div class="col-md-4">
                            <label for="medalla_arranque_modificar" class="form-label">Medalla
                               Arranque</label>
-                           <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select"
-                              required>
+                           <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -525,8 +511,7 @@
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_envion_modificar" class="form-label">Medalla Envión</label>
-                           <select id="medalla_envion_modificar" name="medalla_envion" class="form-select"
-                              required>
+                           <select id="medalla_envion_modificar" name="medalla_envion" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -535,8 +520,7 @@
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_total_modificar" class="form-label">Medalla Total</label>
-                           <select id="medalla_total_modificar" name="medalla_total" class="form-select"
-                              required>
+                           <select id="medalla_total_modificar" name="medalla_total" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -548,8 +532,7 @@
                         <div class="col-md-12">
                            <label for="total_modificar" class="form-label">Total (Arranque +
                               Envión)</label>
-                           <input type="number" class="form-control" id="total_modificar" name="total"
-                              readonly>
+                           <input type="number" class="form-control" id="total_modificar" name="total" readonly>
                         </div>
                      </div>
                   </div>
@@ -569,7 +552,7 @@
                <div class="modal-header">
                   <h5 class="modal-title fs-4 lead text-info" id="modalRegistrarResultadosLabel">Registrar
                      Resultados del Atleta</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <form id="formRegistrarResultados">
                   <div class="modal-body">
@@ -649,7 +632,7 @@
                <div class="modal-header">
                   <h5 class="modal-title" id="modalConsultarEventoAnteriorLabel">Detalles del Evento Anterior
                   </h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
 
@@ -672,42 +655,41 @@
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title fs-4 lead text-info" id="modalModificarCompetenciaLabel">Modificar
+                  <h5 class="modal-title" id="modalModificarCompetenciaLabel">Modificar
                      Competencia</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <form id="formModificarCompetencia">
                   <div class="modal-body">
                      <input type="hidden" id="id_competencia_modificar" name="id_competencia">
                      <div class="mb-3">
                         <label for="nombre_modificar" class="form-label">Nombre del Evento</label>
-                        <input type="text" class="form-control" id="nombre_modificar" name="nombre" required>
+                        <input type="text" class="form-control" id="nombre_modificar" name="nombre">
                         <div class="invalid-feedback">El nombre es obligatorio</div>
                      </div>
                      <div class="mb-3">
                         <label for="ubicacion_modificar" class="form-label">Ubicación</label>
-                        <input type="text" class="form-control" id="ubicacion_modificar"
-                           name="lugar_competencia" required>
+                        <input type="text" class="form-control" id="ubicacion_modificar" name="lugar_competencia"
+                        >
                         <div class="invalid-feedback">La ubicación es obligatoria</div>
                      </div>
                      <div class="row">
                         <div class="col-md-6 mb-3">
                            <label for="fecha_inicio_modificar" class="form-label">Fecha de Apertura</label>
-                           <input type="date" class="form-control" id="fecha_inicio_modificar"
-                              name="fecha_inicio" required>
+                           <input type="date" class="form-control" id="fecha_inicio_modificar" name="fecha_inicio"
+                           >
                            <div class="invalid-feedback">La fecha de inicio es obligatoria</div>
                         </div>
                         <div class="col-md-6 mb-3">
                            <label for="fecha_fin_modificar" class="form-label">Fecha de Clausura</label>
-                           <input type="date" class="form-control" id="fecha_fin_modificar" name="fecha_fin"
-                              required>
+                           <input type="date" class="form-control" id="fecha_fin_modificar" name="fecha_fin">
                            <div class="invalid-feedback">La fecha de fin es obligatoria</div>
                         </div>
                      </div>
                      <div class="row">
                         <div class="col-md-4 mb-3">
                            <label for="categoria_modificar" class="form-label">Categoría</label>
-                           <select id="categoria_modificar" name="categoria" class="form-select" required>
+                           <select id="categoria_modificar" name="categoria" class="form-select">
                               <option value="" selected>Seleccione una</option>
 
                            </select>
@@ -715,7 +697,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                            <label for="subs_modificar" class="form-label">Subs</label>
-                           <select id="subs_modificar" name="subs" class="form-select" required>
+                           <select id="subs_modificar" name="subs" class="form-select">
                               <option value="" selected>Seleccione una</option>
 
                            </select>
@@ -723,7 +705,7 @@
                         </div>
                         <div class="col-md-4 mb-3">
                            <label for="tipo_modificar" class="form-label">Tipo</label>
-                           <select id="tipo_modificar" name="tipo_competencia" class="form-select" required>
+                           <select id="tipo_modificar" name="tipo_competencia" class="form-select">
                               <option value="" selected>Seleccione una</option>
 
                            </select>
@@ -751,26 +733,23 @@
                </div>
                <form id="formModificarResultados">
                   <div class="modal-body">
-                     <input type="hidden" id="id_competencia_modificar" name="id_competencia">
+                     <input type="hidden" id="id_competencia_modificar_resultado" name="id_competencia">
                      <input type="hidden" id="id_atleta_modificar" name="id_atleta">
                      <div class="row mb-3">
                         <div class="col-md-6">
                            <label for="arranque_modificar" class="form-label">Arranque</label>
-                           <input type="number" class="form-control" id="arranque_modificar" name="arranque"
-                              required>
+                           <input type="number" class="form-control" id="arranque_modificar" name="arranque" required>
                         </div>
                         <div class="col-md-6">
                            <label for="envion_modificar" class="form-label">Envión</label>
-                           <input type="number" class="form-control" id="envion_modificar" name="envion"
-                              required>
+                           <input type="number" class="form-control" id="envion_modificar" name="envion" required>
                         </div>
                      </div>
                      <div class="row mb-3">
                         <div class="col-md-4">
                            <label for="medalla_arranque_modificar" class="form-label">Medalla
                               Arranque</label>
-                           <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select"
-                              required>
+                           <select id="medalla_arranque_modificar" name="medalla_arranque" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -779,8 +758,7 @@
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_envion_modificar" class="form-label">Medalla Envión</label>
-                           <select id="medalla_envion_modificar" name="medalla_envion" class="form-select"
-                              required>
+                           <select id="medalla_envion_modificar" name="medalla_envion" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -789,8 +767,7 @@
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_total_modificar" class="form-label">Medalla Total</label>
-                           <select id="medalla_total_modificar" name="medalla_total" class="form-select"
-                              required>
+                           <select id="medalla_total_modificar" name="medalla_total" class="form-select" required>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
@@ -802,8 +779,7 @@
                         <div class="col-md-12">
                            <label for="total_modificar" class="form-label">Total (Arranque +
                               Envión)</label>
-                           <input type="number" class="form-control" id="total_modificar" name="total"
-                              readonly>
+                           <input type="number" class="form-control" id="total_modificar" name="total" readonly>
                         </div>
                      </div>
                   </div>
@@ -823,7 +799,7 @@
             <div class="modal-content">
                <div class="modal-header">
                   <h1 class="modal-title fs-4 lead">Consulta Anteriores Especifica Evento</h1>
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
                   <div class="row">

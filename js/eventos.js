@@ -5,7 +5,8 @@ import {
   muestraMensaje,
   validarKeyUp,
   validarFecha,
-  obtenerNotificaciones
+  obtenerNotificaciones,
+  limpiarForm,
 } from "./comunes.js";
 $(document).ready(function () {
   function cargarEventos() {
@@ -15,6 +16,12 @@ $(document).ready(function () {
       actualizarListadoEventos(result.respuesta);
     });
   }
+  var modales = document.querySelectorAll(".modal:not(#carga)");
+  modales.forEach(function (modal) {
+    modal.addEventListener("hidden.bs.modal", function (event) {
+      limpiarForm();
+    });
+  });
   obtenerNotificaciones(idUsuario);
   setInterval(() => obtenerNotificaciones(idUsuario), 35000);
   function cargarEventosAnteriores() {
@@ -99,7 +106,7 @@ $(document).ready(function () {
     const idCompetencia = $(this).data("id-competencia");
     const idAtleta = $(this).data("id-atleta");
 
-    $("#id_competencia_modificar").val(idCompetencia);
+    $("#id_competencia_modificar_resultado").val(idCompetencia);
     $("#id_atleta_modificar").val(idAtleta);
     $("#arranque_modificar").val($(this).data("arranque"));
     $("#envion_modificar").val($(this).data("envion"));
@@ -120,7 +127,7 @@ $(document).ready(function () {
         "success"
       );
       $("#modalModificarResultados").modal("hide");
-      cargarAtletasInscritos($("#id_competencia_modificar").val()); // Recargar la tabla
+      cargarAtletasInscritos($("#id_competencia_modificar_resultado").val()); // Recargar la tabla
     });
   });
 
@@ -178,12 +185,15 @@ $(document).ready(function () {
                                             data-bs-target="#modalInscribirEvento"
                                             data-id="${evento.id_competencia}" 
                                             data-id-categoria="${evento.categoria}" 
-                                            data-id-sub="${evento.subs}">
+                                            data-id-sub="${evento.subs}"
+                                            data-nombre="${evento.nombre}" 
+                                            data-inicio="${evento.fecha_inicio}" 
+                                            data-fin="${evento.fecha_fin}" 
+                                            data-ubicacion="${evento.lugar_competencia}">
                                             Inscribir
                                         </button>
                                         <button class="btn btn-outline-primary btn-sm" 
-                                            data-bs-toggle="modal" 
-                                            data-bs-target="#modalModificarCompetencia" 
+                                            data-modificar="modificar"
                                             data-id="${evento.id_competencia}">
                                             Modificar
                                         </button>
@@ -842,9 +852,16 @@ $(document).ready(function () {
     const idCompetencia = button.data("id");
     const idCategoria = button.data("id-categoria");
     const idSub = button.data("id-sub");
-    console.log("Datos del modal: ", { idCompetencia, idCategoria, idSub });
+    const eventoNombre = button.data("nombre");
+    const ubicacion = button.data("nombre");
+    const fechaFin = button.data("fin");
+    const fechaInicio = button.data("inicio");
+    $("#nombreEventoInscripcion").text(eventoNombre);
+    $("#ubicacionEventoInscripcion").text(ubicacion);
+    $("#fechaInicioEventoInscripcion").text(fechaInicio);
+    $("#fechaFinEventoInscripcion").text(fechaFin);
     if (!idCompetencia) {
-      Swal.fire(
+      muestraMensaje(
         "Error",
         "Faltan datos del evento. No se puede continuar.",
         "error"
@@ -966,24 +983,30 @@ $(document).ready(function () {
     cargarListadoTipos();
   });
 
-  $("#modalModificarCompetencia").on("show.bs.modal", function (event) {
-    const button = $(event.relatedTarget);
+  $("body").on("click", '[data-modificar="modificar"]', function (event) {
+    const button = $(this);
     const idCompetencia = button.data("id");
     const datos = new FormData();
     datos.append("accion", "obtener_competencia");
     datos.append("id_competencia", idCompetencia);
     enviaAjax(datos, "").then((result) => {
       const competencia = result.respuesta;
-      $("#id_competencia_modificar").val(competencia.id_competencia);
-      $("#nombre_modificar").val(competencia.nombre);
-      $("#ubicacion_modificar").val(competencia.lugar_competencia);
-      $("#fecha_inicio_modificar").val(competencia.fecha_inicio);
-      $("#fecha_fin_modificar").val(competencia.fecha_fin);
-      $("#categoria_modificar").val(competencia.categoria).change();
-      $("#subs_modificar").val(competencia.subs).change();
-      $("#tipo_modificar").val(competencia.tipo_competicion).change();
+      actualizarDatosModificar(competencia);
     });
   });
+
+  function actualizarDatosModificar(competencia) {
+    console.log(competencia.nombre);
+    $("#id_competencia_modificar").val(competencia.id_competencia);
+    $("#nombre_modificar").val(competencia.nombre);
+    $("#ubicacion_modificar").val(competencia.lugar_competencia);
+    $("#fecha_inicio_modificar").val(competencia.fecha_inicio);
+    $("#fecha_fin_modificar").val(competencia.fecha_fin);
+    $("#categoria_modificar").val(competencia.categoria).change();
+    $("#subs_modificar").val(competencia.subs).change();
+    $("#tipo_modificar").val(competencia.tipo_competicion).change();
+    $("#modalModificarCompetencia").modal("show");
+  }
   $("#formRegistrarTipo").on("submit", function (e) {
     e.preventDefault();
     if (!validarEnvio($(this))) {
@@ -996,6 +1019,7 @@ $(document).ready(function () {
       $("#in_tipo_nombre").val("");
       cargarListadoTipos();
       cargarListadoTipos2();
+      $("#formRegistrarTipo")[0].reset();
       $("#modalRegistrarTipo").modal("hide");
     });
   });
@@ -1105,8 +1129,12 @@ $(document).ready(function () {
     });
   });
 
-  $("#btnRegresar").on("click", function () {
+  $("#btnRegresarTipo").on("click", function () {
     $("#modalRegistrarTipo").modal("hide");
+    $("#modalRegistrarEvento").modal("show");
+  });
+  $("#btnRegresarCategorias").on("click", function () {
+    $("#modalRegistrarCategoria").modal("hide");
     $("#modalRegistrarEvento").modal("show");
   });
   $("#btnRegresarSubs").on("click", function () {

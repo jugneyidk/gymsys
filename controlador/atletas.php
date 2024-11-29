@@ -49,6 +49,12 @@ if (is_file("vista/" . $p . ".php")) {
             );
             echo json_encode($respuesta);
             exit;
+        } elseif ($accion == 'eliminar_tipo_atleta') {
+            $respuesta = $o->eliminar_tipo_atleta(
+                $_POST['id_tipo'],
+            );
+            echo json_encode($respuesta);
+            exit;
         }
 
         exit;

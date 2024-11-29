@@ -5,7 +5,7 @@ import {
   muestraMensaje,
   REGEX,
   modalListener,
-  obtenerNotificaciones
+  obtenerNotificaciones,
 } from "./comunes.js";
 $(document).ready(function () {
   function cargaListadoAtleta() {
@@ -70,46 +70,37 @@ $(document).ready(function () {
     const datos = new FormData();
     datos.append("accion", "obtener_tipos_atleta");
     enviaAjax(datos, "").then((respuesta) => {
-      if (respuesta.ok) {
-        const selectTipoAtleta = $("#tipo_atleta");
-        selectTipoAtleta.empty(); // Limpiar opciones anteriores
-        selectTipoAtleta.append(
-          '<option value="">Seleccione un tipo de atleta</option>'
-        );
+      const selectTipoAtleta = $("#tipo_atleta");
+      selectTipoAtleta.empty(); // Limpiar opciones anteriores
+      selectTipoAtleta.append(
+        '<option value="">Seleccione un tipo de atleta</option>'
+      );
 
-        respuesta.tipos.forEach((tipo) => {
-          selectTipoAtleta.append(
-            `<option value="${tipo.id_tipo_atleta}">${tipo.nombre_tipo_atleta}</option>`
-          );
-        });
-      } else {
-        console.error(
-          "Error al cargar los tipos de atleta:",
-          respuesta.mensaje
+      respuesta.tipos.forEach((tipo) => {
+        selectTipoAtleta.append(
+          `<option value="${tipo.id_tipo_atleta}">${tipo.nombre_tipo_atleta}</option>`
         );
-      }
+      });
     });
   }
-  function cargarTiposAtletaParaModificacion(tipoAtletaAsignado) {
-    const datos = new FormData();
-    datos.append("accion", "obtener_tipos_atleta");
-    enviaAjax(datos, "").then((respuesta) => {
-      if (respuesta.ok) {
-        const selectTipoAtletaModificar = $("#tipo_atleta");
-        selectTipoAtletaModificar.empty(); // Limpiar opciones anteriores
-        selectTipoAtletaModificar.append(
-          '<option value="">Seleccione un tipo de atleta</option>'
-        );
-        respuesta.tipos.forEach((tipo) => {
-          selectTipoAtletaModificar.append(
-            `<option value="${tipo.id_tipo_atleta}" ${
-              tipo.id_tipo_atleta == tipoAtletaAsignado ? "selected" : ""
-            }>${tipo.nombre_tipo_atleta}</option>`
-          );
-        });
-      }
-    });
-  }
+  // function cargarTiposAtletaParaModificacion(tipoAtletaAsignado) {
+  //   const datos = new FormData();
+  //   datos.append("accion", "obtener_tipos_atleta");
+  //   enviaAjax(datos, "").then((respuesta) => {
+  //     const selectTipoAtletaModificar = $("#tipo_atleta");
+  //     selectTipoAtletaModificar.empty(); // Limpiar opciones anteriores
+  //     selectTipoAtletaModificar.append(
+  //       '<option value="">Seleccione un tipo de atleta</option>'
+  //     );
+  //     respuesta.tipos.forEach((tipo) => {
+  //       selectTipoAtletaModificar.append(
+  //         `<option value="${tipo.id_tipo_atleta}" ${
+  //           tipo.id_tipo_atleta == tipoAtletaAsignado ? "selected" : ""
+  //         }>${tipo.nombre_tipo_atleta}</option>`
+  //       );
+  //     });
+  //   });
+  // }
 
   cargarTiposAtleta();
   cargaListadoAtleta();
@@ -271,10 +262,10 @@ $(document).ready(function () {
     const datos = new FormData();
     datos.append("accion", "obtener_tipos_atleta");
     enviaAjax(datos, "").then((respuesta) => {
-      actualizarTablaTipos(respuesta.respuesta);
+      actualizarTablaTipos(respuesta.tipos);
     });
   }
-  
+
   function cargarDatosAtleta(cedula) {
     const datos = new FormData();
     datos.append("accion", "obtener_atleta");
@@ -292,20 +283,15 @@ $(document).ready(function () {
   function actualizarTablaTipos(tipos) {
     const tbody = $("#tablaTipos tbody");
     tbody.empty();
-
+    console.log(tipos);
     tipos.forEach((tipo, index) => {
       tbody.append(`
                 <tr>
                     <td>${index + 1}</td>
-                    <td>${tipo.nombre}</td>
+                    <td>${tipo.nombre_tipo_atleta}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm btnEditarTipo" 
-                                data-id="${tipo.id_tipo}" 
-                                data-nombre="${tipo.nombre}">
-                            Editar
-                        </button>
                         <button class="btn btn-danger btn-sm btnEliminarTipo" 
-                                data-id="${tipo.id_tipo}">
+                                data-id="${tipo.id_tipo_atleta}">
                             Eliminar
                         </button>
                     </td>
@@ -344,6 +330,7 @@ $(document).ready(function () {
     mostrarCamposRepresentante();
   });
   function llenarFormularioModificar(atleta) {
+    console.log(atleta);
     $("#f1 #nombres").val(atleta.nombre);
     $("#f1 #apellidos").val(atleta.apellido);
     $("#f1 #cedula").val(atleta.cedula);
@@ -357,8 +344,8 @@ $(document).ready(function () {
     $("#f1 #correo_electronico").val(atleta.correo_electronico);
     $("#f1 #entrenador_asignado").val(atleta.entrenador);
     $("#modificar_contraseña_container").removeClass("d-none");
-    // Lógica para cargar los tipos de atleta y seleccionar el correspondiente
-    cargarTiposAtletaParaModificacion(atleta.id_tipo_atleta);
+    $("#f1 #entrenador_asignado").val(atleta.entrenador);
+    $("#f1 #tipo_atleta").val(atleta.id_tipo_atleta);
 
     // Resetea y deshabilita el campo de contraseña
     $("#f1 #modificar_contraseña").prop("checked", false);
@@ -391,6 +378,32 @@ $(document).ready(function () {
       }
     });
   }
+
+  $(document).on("click", ".btnEliminarTipo", function () {
+    const id_tipo = $(this).data("id");
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción eliminará el tipo de atleta seleccionado.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const datos = new FormData();
+        datos.append("accion", "eliminar_tipo_atleta");
+        datos.append("id_tipo", id_tipo);
+        enviaAjax(datos, "").then(() => {
+          muestraMensaje(
+            "Éxito",
+            "Tipo de atleta eliminado con éxito",
+            "success"
+          );
+          cargarListadoTipos2();
+        });
+      }
+    });
+  });
 
   $("#tablaatleta").on("click", ".btn-warning", function () {
     const cedula = $(this).closest("tr").find("td:first").text();

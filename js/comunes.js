@@ -39,11 +39,14 @@ export function modalListener(titulo) {
   });
 }
 
-function limpiarForm() {
-  document.getElementById("f1").reset();
-  $("#f1 input").removeClass("is-valid");
-  $("#f1 input").removeClass("is-invalid");
-  $("#f1 div .invalid-feedback").text("");
+export function limpiarForm() {
+  var forms = document.getElementsByTagName("form");
+  Array.from(forms).forEach(function (form) {
+    form.reset();
+  });
+  $("form input").removeClass("is-valid");
+  $("form input").removeClass("is-invalid");
+  $("form div .invalid-feedback").text("");
 }
 
 export function enviaAjax(datos, url) {
