@@ -26,38 +26,19 @@ if ($permisos["leer"] === 0) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_POST)) {
         $accion = $_POST['accion'];
-        if ($accion == 'obtener_reportes') {
-            $filtros = [
-                'edadMin' => $_POST['edadMin'] ?? null,
-                'edadMax' => $_POST['edadMax'] ?? null,
-                'genero' => $_POST['genero'] ?? null,
-                'tipoAtleta' => $_POST['tipoAtleta'] ?? null,
-                'pesoMin' => $_POST['pesoMin'] ?? null,
-                'pesoMax' => $_POST['pesoMax'] ?? null,
-                'edadMinEntrenador' => $_POST['edadMinEntrenador'] ?? null,
-                'edadMaxEntrenador' => $_POST['edadMaxEntrenador'] ?? null,
-                'gradoInstruccion' => $_POST['gradoInstruccion'] ?? null,
-                'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
-                'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
-                'fechaInicioMensualidades' => $_POST['fechaInicioMensualidades'] ?? null,
-                'fechaFinMensualidades' => $_POST['fechaFinMensualidades'] ?? null,
-            ];
-            $respuesta = $o->obtener_reportes($_POST['tipoReporte'], $filtros);
-            header('Content-Type: application/json');
-            echo json_encode($respuesta);
-            exit();
-        }
-
-        if ($accion == 'obtener_resultados_competencias') {
+        
+       
+        if ($accion === 'obtener_resultados_competencias') {
             $filtros = [
                 'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
-                'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
+                'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null
             ];
             $respuesta = $o->obtener_resultados_competencias($filtros);
             header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit();
         }
+
         if ($accion === 'obtenerDatosEstadisticos') {
             $tipo = $_POST['tipo'] ?? '';
             $respuesta = $o->obtenerDatosEstadisticos($tipo);
@@ -65,12 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($respuesta);
             exit();
         }
+
         if ($accion === 'obtenerProgresoAsistencias') {
             $respuesta = $o->obtenerProgresoAsistenciasMensuales();
             header('Content-Type: application/json');
             echo json_encode($respuesta);
             exit();
         }
+
         if ($accion === 'obtenerCumplimientoWADA') {
             $respuesta = $o->obtenerCumplimientoWADA();
             header('Content-Type: application/json');
@@ -84,28 +67,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode($respuesta);
             exit();
         }
-
-if ($accion == 'obtener_reportes') {
-    $filtros = [
-        'edadMin' => $_POST['edadMin'] ?? null,
-        'edadMax' => $_POST['edadMax'] ?? null,
-        'genero' => $_POST['genero'] ?? null,
-        'pesoMin' => $_POST['pesoMin'] ?? null,
-        'pesoMax' => $_POST['pesoMax'] ?? null,
-    ];
-
-    $reportes = $o->obtener_reportes($_POST['tipoReporte'], $filtros);
-    $estadisticas = $o->obtenerEstadisticas($_POST['tipoReporte'], $filtros);
-
-    header('Content-Type: application/json');
-    echo json_encode([
-        "ok" => $reportes["ok"] && $estadisticas["ok"],
-        "reportes" => $reportes["reportes"] ?? [],
-        "estadisticas" => $estadisticas["estadisticas"] ?? [],
-    ]);
-    exit();
-}
-
+         if ($accion === 'obtener_reporte_individual') {
+      
+            $idAtleta = $_POST['idAtleta']; 
+            $filtros = [
+                'idAtleta' => $idAtleta,
+             
+            ];
+            $respuesta = $o->obtener_reporte_individual($filtros);  
+            header('Content-Type: application/json');
+            echo json_encode($respuesta);
+            exit();
+        }
+        
+         elseif ($_POST['accion'] === 'obtener_reportes') {
+            $filtros = [
+                'edadMin' => $_POST['edadMin'] ?? null,
+                'edadMax' => $_POST['edadMax'] ?? null,
+                'genero' => $_POST['genero'] ?? null,
+                'tipoAtleta' => $_POST['tipoAtleta'] ?? null,
+                'pesoMin' => $_POST['pesoMin'] ?? null,
+                'pesoMax' => $_POST['pesoMax'] ?? null,
+                'edadMinEntrenador' => $_POST['edadMinEntrenador'] ?? null,
+                'edadMaxEntrenador' => $_POST['edadMaxEntrenador'] ?? null,
+                'gradoInstruccion' => $_POST['gradoInstruccion'] ?? null,
+                'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
+                'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
+                'fechaInicioMensualidades' => $_POST['fechaInicioMensualidades'] ?? null,
+                'fechaFinMensualidades' => $_POST['fechaFinMensualidades'] ?? null
+            ];
+        
+            $reportes = $o->obtener_reportes($_POST['tipoReporte'], $filtros);
+            $estadisticas = $o->obtenerEstadisticas($_POST['tipoReporte'], $filtros);
+        
+            header('Content-Type: application/json');
+            echo json_encode([
+                "ok" => $reportes["ok"] && $estadisticas["ok"],
+                "reportes" => $reportes["reportes"] ?? [],
+                "estadisticas" => $estadisticas["estadisticas"] ?? []
+            ]);
+            exit();
+        }
+        
+        
     }
 }
 

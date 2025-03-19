@@ -28,7 +28,7 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       if (respuesta.ok) {
         const selectEntrenador = $("#entrenador_asignado");
-        selectEntrenador.empty(); // Limpiar opciones anteriores
+        selectEntrenador.empty();  
         selectEntrenador.append(
           '<option value="">Seleccione un entrenador</option>'
         );
@@ -49,7 +49,7 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       if (respuesta.ok) {
         const selectEntrenadorModificar = $("#entrenador_asignado_modificar");
-        selectEntrenadorModificar.empty(); // Limpiar opciones anteriores
+        selectEntrenadorModificar.empty();  
         selectEntrenadorModificar.append(
           '<option value="">Seleccione un entrenador</option>'
         );
@@ -71,7 +71,7 @@ $(document).ready(function () {
     datos.append("accion", "obtener_tipos_atleta");
     enviaAjax(datos, "").then((respuesta) => {
       const selectTipoAtleta = $("#tipo_atleta");
-      selectTipoAtleta.empty(); // Limpiar opciones anteriores
+      selectTipoAtleta.empty(); 
       selectTipoAtleta.append(
         '<option value="">Seleccione un tipo de atleta</option>'
       );
@@ -176,24 +176,91 @@ $(document).ready(function () {
     $(formId).find("#representantesContainer").hide();
   }
 
-  $("#incluir").on("click", function () {
-    if (validarEnvio("#f1")) {
+  $("#incluir").on("click", function (event) {
+    event.preventDefault();
+    
+    if (validarEnvio("#f1")) { 
       const datos = new FormData($("#f1")[0]);
-      if (datos.get("accion") === "") {
+      if (!datos.get("accion")) {
         datos.set("accion", "incluir");
       }
       enviaAjax(datos, "").then((respuesta) => {
-        muestraMensaje(
-          "Atleta incluido",
-          "El atleta se ha incluido satisfactoriamente.",
-          "success"
-        );
-        cargaListadoAtleta();
-        limpiarFormulario("#f1");
-        $("#modal").modal("hide");
+        console.log("Respuesta del servidor:", respuesta);
+  
+        if (
+          !respuesta.ok &&
+          respuesta.mensaje &&
+          respuesta.mensaje.toLowerCase().includes("¿desea asignarlo?")
+        ) {
+          Swal.fire({
+            title: "¿Asignar representante existente?",
+            text: respuesta.mensaje,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, asignar",
+            cancelButtonText: "Cancelar"
+          }).then((result) => {
+            if (result.isConfirmed) {
+              const datosNuevo = new FormData();
+              for (let [key, value] of datos.entries()) {
+                datosNuevo.append(key, value);
+              }
+  
+              datosNuevo.set("asignar_representante_existente", "true");
+  
+              enviaAjax(datosNuevo, "").then((respuesta2) => {
+                if (respuesta2.ok) {
+                  Swal.fire({
+                    title: "Atleta registrado",
+                    text: "El atleta ha sido registrado y se asignó el representante.",
+                    icon: "success",
+                    confirmButtonText: "Cerrar"
+                  });
+                  cargaListadoAtleta();
+                  limpiarFormulario("#f1");
+                  $("#modal").modal("hide");
+                } else {
+                  Swal.fire({
+                    title: "Error",
+                    text: respuesta2.mensaje,
+                    icon: "error",
+                    confirmButtonText: "Cerrar"
+                  });
+                }
+              });
+            } else {
+              Swal.fire({
+                title: "Cancelado",
+                text: "No se asignó el representante existente.",
+                icon: "info",
+                confirmButtonText: "Cerrar"
+              });
+            }
+          });
+        } else if (respuesta.ok) {
+          Swal.fire({
+            title: "Atleta incluido",
+            text: "El atleta se ha registrado correctamente.",
+            icon: "success",
+            confirmButtonText: "Cerrar"
+          });
+          cargaListadoAtleta();
+          limpiarFormulario("#f1");
+          $("#modal").modal("hide");
+        } else {
+          Swal.fire({
+            title: "Error",
+            text: "Ocurrió un error al procesar la solicitud.",
+            icon: "error",
+            confirmButtonText: "Cerrar"
+          });
+        }
       });
     }
   });
+  
 
   $("#modificar_contraseña").on("change", function () {
     if ($(this).is(":checked")) {
@@ -273,8 +340,7 @@ $(document).ready(function () {
     enviaAjax(datos, "").then((respuesta) => {
       if (respuesta.ok) {
         const atleta = respuesta.atleta;
-        llenarFormularioModificar(atleta);
-        // Llamada para cargar entrenadores y preseleccionar el correspondiente
+        llenarFormularioModificar(atleta); 
         cargarEntrenadoresParaModificacion(atleta.entrenador);
         $("#modal").modal("show");
       }

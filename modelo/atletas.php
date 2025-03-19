@@ -10,20 +10,100 @@ class Atleta extends datos
     }
 
     public function incluir_atleta($datos)
-    {
-        $validacion = Validar::validar_datos($datos);
-        if (is_array($validacion)) {
-            $respuesta["ok"] = false;
-            $respuesta["mensaje"] = $validacion;
-            return $respuesta;
+{
+    $validacion = Validar::validar_datos($datos);
+    if (is_array($validacion)) {
+        $respuesta["ok"] = false;
+        $respuesta["mensaje"] = $validacion;
+        return $respuesta;
+    }
+
+    foreach ($datos as $campo => $valor) {
+        if (property_exists($this, $campo)) {
+            $this->$campo = $valor;
         }
-        foreach ($datos as $campo => $valor) {
-            if (property_exists($this, $campo)) {
-                $this->$campo = $valor;
+    }
+
+    $consulta = "SELECT cedula FROM atleta WHERE cedula = ?;";
+    $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
+    if ($existe["ok"]) {
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = "Ya existe un atleta con esta cédula";
+        return $resultado;
+    }
+
+    if (!empty($this->cedula_representante)) {
+        $rep = $this->existeRepresentante($this->cedula_representante);
+        if ($rep) {
+            $this->cedula_representante = $rep['cedula'];
+        } else {
+    
+            $resultadoRepresentante = $this->incluirRepresentante(
+                $this->cedula_representante,
+                $this->nombre_representante,
+                $this->telefono_representante,
+                $this->parentesco_representante
+            );
+            if (!$resultadoRepresentante['ok']) {
+                return ['ok' => false, 'mensaje' => $resultadoRepresentante['mensaje']];
             }
         }
-        return $this->incluir();
     }
+
+    try {
+        $this->conexion->beginTransaction();
+
+        $consulta = "
+            INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+            VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico);
+        ";
+
+        $valores = array(
+            ':cedula' => $this->cedula,
+            ':nombre' => $this->nombres,
+            ':apellido' => $this->apellidos,
+            ':genero' => $this->genero,
+            ':fecha_nacimiento' => $this->fecha_nacimiento,
+            ':lugar_nacimiento' => $this->lugar_nacimiento,
+            ':estado_civil' => $this->estado_civil,
+            ':telefono' => $this->telefono,
+            ':correo_electronico' => $this->correo_electronico
+        );
+
+        $respuesta = $this->conexion->prepare($consulta);
+        $respuesta->execute($valores);
+
+        $consulta_atleta = "
+            INSERT INTO atleta (cedula, entrenador, tipo_atleta, peso, altura, representante)
+            VALUES (:cedula, :id_entrenador, :tipo_atleta, :peso, :altura, :representante);
+        ";
+
+        $valores_atleta = array(
+            ':cedula' => $this->cedula,
+            ':id_entrenador' => $this->entrenador_asignado,
+            ':tipo_atleta' => $this->tipo_atleta,
+            ':peso' => $this->peso,
+            ':altura' => $this->altura,
+            ':representante' => $this->cedula_representante
+        );
+
+        $respuesta_atleta = $this->conexion->prepare($consulta_atleta);
+        $respuesta_atleta->execute($valores_atleta);
+
+        $this->conexion->commit();
+
+        $resultado["ok"] = true;
+        return $resultado;
+    } catch (PDOException $e) {
+        $this->conexion->rollBack();
+        $resultado["ok"] = false;
+        $resultado["mensaje"] = $e->getMessage();
+    }
+
+    $this->desconecta();
+    return $resultado;
+}
+
 
     public function obtener_atleta($cedula)
     {
@@ -76,15 +156,33 @@ class Atleta extends datos
             $existe = Validar::existe($this->conexion, $this->cedula, $consulta);
             if ($existe["ok"]) {
                 $resultado["ok"] = false;
-                $resultado["mensaje"] = "Ya existe un atleta con esta cedula";
+                $resultado["mensaje"] = "Ya existe un atleta con esta cédula";
                 return $resultado;
             }
+     
             if (!empty($this->cedula_representante)) {
-                $resultadoRepresentante = $this->incluirRepresentante($this->cedula_representante, $this->nombre_representante, $this->telefono_representante, $this->parentesco_representante);
-                if (!$resultadoRepresentante['ok']) {
-                    return ['ok' => false, 'mensaje' => $resultadoRepresentante['mensaje']];
+                $rep = $this->existeRepresentante($this->cedula_representante);
+                if ($rep) {
+                    if (!isset($_POST['asignar_representante_existente']) || $_POST['asignar_representante_existente'] != "true") {
+                        $resultado["ok"] = false;
+                        $resultado["mensaje"] = "El representante con cédula $this->cedula_representante ya existe con el nombre " 
+                            . $rep['nombre_completo'] . ". ¿Desea asignarlo?";
+                        return $resultado;
+                    } 
+                } else { 
+                    $resultadoRepresentante = $this->incluirRepresentante(
+                        $this->cedula_representante,
+                        $this->nombre_representante,
+                        $this->telefono_representante,
+                        $this->parentesco_representante
+                    );
+                    if (!$resultadoRepresentante['ok']) {
+                        return ['ok' => false, 'mensaje' => $resultadoRepresentante['mensaje']];
+                    }
                 }
             }
+            
+    
             $this->conexion->beginTransaction();
             $id_rol = 0;
             $token = 0;
@@ -130,6 +228,7 @@ class Atleta extends datos
         $this->desconecta();
         return $resultado;
     }
+    
 
     private function listado()
     {
@@ -337,7 +436,17 @@ class Atleta extends datos
         $this->desconecta();
         return $resultado;
     }
-
+    private function existeRepresentante($cedula) {
+        try {
+            $consulta = "SELECT cedula, nombre_completo FROM representantes WHERE cedula = ?";
+            $stmt = $this->conexion->prepare($consulta);
+            $stmt->execute([$cedula]);
+            return $stmt->fetch(PDO::FETCH_ASSOC); // Devuelve los datos si existe o false
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
     public function incluirRepresentante($cedula, $nombreCompleto, $telefono, $parentesco)
     {
         try {

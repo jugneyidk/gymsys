@@ -9,6 +9,7 @@
         content="Gestion de atletas en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
     <title>Inscripción de Atletas - Sistema</title>
     <?php require_once("comunes/linkcss.php"); ?>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body class="bg-light">
