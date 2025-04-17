@@ -1,14 +1,14 @@
 <?php
-require_once("modelo/permisos.php");
-if (isset($_SESSION['rol'])) {
-  $permisos_navbar = $permisos_o->permisos_nav();
-}
-if (isset($_SESSION["id_usuario"])) {
-  echo "<script>
-    var idUsuario = {$_SESSION['id_usuario']};
-    var pagina = 1;
-    </script>";
-}
+// require_once("modelo/permisos.php");
+// if (isset($_SESSION['rol'])) {
+//   $permisos_navbar = $permisos_o->permisos_nav();
+// }
+// if (isset($_SESSION["id_usuario"])) {
+//   echo "<script>
+//     var idUsuario = {$_SESSION['id_usuario']};
+//     var pagina = 1;
+//     </script>";
+// }
 ?>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
   <div class="container-fluid">
@@ -130,7 +130,7 @@ if (isset($_SESSION["id_usuario"])) {
                 <span class="visually-hidden">Notificaciones sin leer</span>
               </span>
             </a>
-            <?php require_once "comunes/notificaciones.php"; ?>
+            <?php require_once __DIR__."/notificaciones.php"; ?>
           </li>
           <li class="nav-item dropdown d-lg-none">
             <a class="nav-link ps-3" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
@@ -161,4 +161,4 @@ if (isset($_SESSION["id_usuario"])) {
     </div>
   </div>
 </nav>
-<?php require_once "comunes/modal_notificaciones.php" ?>
+<?php require_once "modal_notificaciones.php" ?>

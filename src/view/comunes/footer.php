@@ -49,10 +49,10 @@
         </footer>
     </div>
 </div>
-<script src="js/popper.min.js"></script>
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/sweetalert.js"></script>
+<script src="assets/js/popper.min.js"></script>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/bootstrap.min.js"></script>
+<script src="assets/js/sweetalert.js"></script>
 <script>
     $(function () {
         $(document).on('mouseenter', '[data-tooltip="tooltip"]', function () {

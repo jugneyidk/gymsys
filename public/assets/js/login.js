@@ -1,9 +1,4 @@
-import {
-  enviaAjax,
-  validarKeyPress,
-  validarKeyUp,
-  REGEX,
-} from "./comunes.js";
+import { enviaAjax, validarKeyPress, validarKeyUp, REGEX } from "./comunes.js";
 $(document).ready(function () {
   $("#login").on("submit", function (e) {
     e.preventDefault();
@@ -11,9 +6,11 @@ $(document).ready(function () {
   $("#submit").on("click", function () {
     var datos = new FormData($("#login")[0]);
     if (validarEnvio()) {
-      datos.append("accion", "login");
-      enviaAjax(datos, "").then((respuesta) => {
-        location = ".";
+      enviaAjax(datos, "?p=login&accion=auth").then((respuesta) => {
+        if (respuesta.data.auth === true) {
+          location = ".";
+          console.log(respuesta);
+        }
       });
     }
   });

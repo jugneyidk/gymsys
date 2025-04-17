@@ -14,13 +14,13 @@ Estado: medio (falta añadir detalles para que este terminada)
     <meta name="description"
         content="Sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB). Administra y organiza la información de atletas, entrenadores, asistencias y eventos de manera eficiente y segura.">
     <title>Gimnasio de Halterofilia 'Eddie Suarez'</title>
-    <?php require_once("comunes/linkcss.php"); ?>
+    <?php require_once dirname(__DIR__)."/view/comunes/linkcss.php"; ?>
     <link rel="preconnect" href="https://maps.gstatic.com">
 </head>
 
 <body class="">
     <header>
-        <?php require_once("comunes/menu.php"); ?>
+        <?php require_once dirname(__DIR__)."/view/comunes/menu.php"; ?>
     </header>
     <main class="container mt-5">
         <!-- Sección de bienvenida -->
@@ -100,9 +100,9 @@ Estado: medio (falta añadir detalles para que este terminada)
             <div class="col-6 d-none d-lg-block">
                 <div class="carousel-container">
                     <div class="carousel-slide">
-                        <img src="img/imagen1.jpg" alt="Imagen 1" class="active">
-                        <img src="img/imagen2.jpg" alt="Imagen 2">
-                        <img src="img/imagen3.jpg" alt="Imagen 3">
+                        <img src="assets/img/imagen1.jpg" alt="Imagen 1" class="active">
+                        <img src="assets/img/imagen2.jpg" alt="Imagen 2">
+                        <img src="assets/img/imagen3.jpg" alt="Imagen 3">
                     </div>
                     <button class="carousel-control-prev" onclick="moveSlide(-1)">&#10094;</button>
                     <button class="carousel-control-next" onclick="moveSlide(1)">&#10095;</button>
@@ -134,8 +134,8 @@ Estado: medio (falta añadir detalles para que este terminada)
 
     </main>
     <br>
-    <?php require_once("comunes/footer.php"); ?>
-    <script src="js/landing.js"></script>
+    <?php require_once dirname(__DIR__)."/view/comunes/footer.php"; ?>
+    <script src="assets/js/landing.js"></script>
 </body>
 
 </html>

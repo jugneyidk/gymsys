@@ -49,12 +49,12 @@ export function limpiarForm() {
   $("form div .invalid-feedback").text("");
 }
 
-export function enviaAjax(datos, url) {
+export function enviaAjax(datos, url, type = "POST") {
   return new Promise((resolve, reject) => {
     $.ajax({
       async: true,
       url: url, // URL pasada como argumento
-      type: "POST",
+      type: type,
       contentType: false,
       data: datos,
       processData: false,
@@ -68,12 +68,15 @@ export function enviaAjax(datos, url) {
       },
       success: function (respuesta) {
         try {
-          const datosParseados = JSON.parse(respuesta);
-          if (!datosParseados.ok) {
-            muestraMensaje("Error", datosParseados.mensaje, "error");
+          if (!respuesta.ok) {
+            muestraMensaje(
+              "Error",
+              respuesta.mensaje || respuesta.error,
+              "error"
+            );
             return;
           }
-          resolve(datosParseados);
+          resolve(respuesta);
         } catch (error) {
           reject("Error al parsear la respuesta JSON");
         }
