@@ -6,8 +6,8 @@ $(document).ready(function () {
   $("#submit").on("click", function () {
     var datos = new FormData($("#login")[0]);
     if (validarEnvio()) {
-      enviaAjax(datos, "?p=login&accion=auth").then((respuesta) => {
-        if (respuesta.data.auth === true) {
+      enviaAjax(datos, "?p=login&accion=authUsuario").then((respuesta) => {
+        if (respuesta.auth === true) {
           location = ".";
           console.log(respuesta);
         }

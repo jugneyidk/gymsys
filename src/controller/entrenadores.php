@@ -1,38 +1,50 @@
 <?php
-if (!is_file("modelo/" . $p . ".php")) {
-    echo "No existe el modelo.";
-    exit;
-}
-$o = new Entrenador();
-$permisos_o = new Permisos();
-$permisos = $permisos_o->chequear_permisos();
-if ($permisos["leer"] === 0) {
-    header("Location: .");
-}
-if (!empty($_POST)) {
-    if ($_POST["accion"] == "incluir") {
-        unset($_POST["modificar_contraseña"]);
-        $response = $o->incluir_entrenador($_POST);
-        echo json_encode($response);
-    } elseif ($_POST["accion"] == "modificar") {
-        $_POST["password"] = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password"] : null;
-        $response = $o->modificar_entrenador($_POST);
-        echo json_encode($response);
-    } elseif ($_POST["accion"] == "obtener_entrenador") {
-        $response = $o->obtener_entrenador($_POST["cedula"]);
-        echo json_encode($response);
-    } elseif ($_POST["accion"] == "listado_entrenadores") {
-        $response = $o->listado_entrenador();
-        echo json_encode($response);
-    } elseif ($_POST["accion"] == "eliminar") {
-        $response = $o->eliminar_entrenador($_POST["cedula"]);
-        echo json_encode($response);
-    }
-    exit;
-}
 
-if (is_file("vista/" . $p . ".php")) {
-    require_once("vista/" . $p . ".php");
-} else {
-    require_once("comunes/404.php");
+namespace Gymsys\Controller;
+
+use Gymsys\Core\BaseController;
+use Gymsys\Model\Rolespermisos;
+use Gymsys\Core\Database;
+use Gymsys\Utils\ExceptionHandler;
+
+class Entrenadores extends BaseController
+{
+   private Database $database;
+   private object $model;
+   protected array $permisos;
+   public function __construct(Database $database)
+   {
+      $this->database = $database;
+      $modelClass = $this->getModel("Entrenadores");
+      $this->model = new $modelClass($this->database);
+      $this->permisos = Rolespermisos::obtenerPermisosModulo("Entrenadores", $this->database);
+      if (empty($this->permisos)) {
+         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+      }
+   }
+   public function listadoEntrenadores()
+   {
+      $response = $this->model->listadoEntrenadores();
+      return $response;
+   }
+   public function obtenerEntrenador(array $requestData)
+   {
+      $response = $this->model->obtenerEntrenador($requestData['id']);
+      return $response;
+   }
+   public function incluirEntrenador(array $requestData)
+   {
+      $response = $this->model->incluirEntrenador($requestData);
+      return $response;
+   }
+   public function eliminarEntrenador(array $requestData)
+   {
+      $response = $this->model->eliminarEntrenador($requestData);
+      return $response;
+   }
+   public function modificarEntrenador(array $requestData)
+   {
+      $response = $this->model->modificarEntrenador($requestData);
+      return $response;
+   }
 }

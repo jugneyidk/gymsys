@@ -3,7 +3,7 @@ RewriteEngine On
 
 # Redirige todas las solicitudes a la carpeta 'public/'
 RewriteRule ^(.*)$ public/$1 [L]
-RewriteRule ^(src|app|config|model|core) - [F,L,NC]
+RewriteRule ^(src|config|model|core|docs|test|vendor) - [F,L,NC]
 # Bloquea acceso a archivos sensibles (opcional pero recomendado)
 <FilesMatch "\.(env|log|sql|htaccess|gitignore|md)|composer.(json|lock)$">
     Order allow,deny

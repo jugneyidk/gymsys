@@ -5,12 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Sistema</title>
-    <?php require_once("comunes/linkcss.php"); ?>
+    <?php require_once "comunes/linkcss.php"; ?>
     <link rel="stylesheet" href="css/all.min.css">
 </head>
 
 <body class="d-flex flex-column vh-100">
-    <?php require_once("comunes/menu.php"); ?>
+    <?php require_once "comunes/menu.php"; ?>
     <main class="mb-4">
         <div class="container-lg mt-4">
             <div class="row justify-content-center">
@@ -167,7 +167,7 @@
             </div>
 
     </main>
-    <?php require_once("comunes/footer.php"); ?>
+    <?php require_once "comunes/footer.php"; ?>
 
     <script src="js/chart.min.js"></script>
     <script type="module" src="js/dashboard.js"></script>

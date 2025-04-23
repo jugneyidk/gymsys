@@ -4,6 +4,7 @@ return [
   "atletas" => ["enabled" => true, "public" => false],
   "asistencias" => ["enabled" => true, "public" => false],
   "bitacora" => ["enabled" => true, "public" => false],
+  "logout" => ["enabled" => true, "public" => false],
   "dashboard" => ["enabled" => true, "public" => false],
   "entrenadores" => ["enabled" => true, "public" => false],
   "eventos" => ["enabled" => true, "public" => false],

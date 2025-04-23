@@ -1,11 +1,15 @@
 <?php
-class Dashboard extends datos
-{
-    private $conexion;
+namespace Gymsys\Model;
 
-    public function __construct()
+use Gymsys\Core\Database;
+
+class Dashboard
+{
+    private Database $database;
+
+    public function __construct(Database $database)
     {
-        $this->conexion = $this->conecta();
+        $this->database = $database;
     }
     public function obtener_ultimos_atletas()
     {
