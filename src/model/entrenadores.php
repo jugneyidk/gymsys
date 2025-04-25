@@ -208,17 +208,9 @@ class Entrenadores
       $resultado["mensaje"] = "El entrenador se ha modificado exitosamente";
       return $resultado;
    }
-
-   private function _listadoEntrenadores()
+   private function _listadoEntrenadores(): array
    {
-      $consulta = "SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    u.telefono
-                FROM entrenador e
-                INNER JOIN usuarios u ON e.cedula = u.cedula
-                ORDER BY u.cedula DESC";
+      $consulta = "SELECT * FROM lista_entrenadores";
       $respuesta["entrenadores"] = $this->database->query($consulta);
       return $respuesta;
    }

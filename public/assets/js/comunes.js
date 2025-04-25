@@ -15,7 +15,7 @@ export function validarKeyUp(regex, input, mensaje, textoError) {
    return isValid;
 }
 
-function modalCarga(cargando) {
+export function modalCarga(cargando) {
    if (cargando) {
       $("#carga").modal("show");
       $("body").addClass("carga");
@@ -61,25 +61,13 @@ export function enviaAjax(datos, url, type = "POST") {
          cache: false,
          timeout: 10000,
          beforeSend: function () {
-            if (url == "?p=notificaciones") {
+            if (url == "?p=notificaciones&accion=obtenerNotificaciones") {
                return;
             }
             modalCarga(true);
          },
          success: function (respuesta) {
-            try {
-               if (!respuesta.ok) {
-                  muestraMensaje(
-                     "Error",
-                     respuesta.mensaje || respuesta.error,
-                     "error"
-                  );
-                  return;
-               }
-               resolve(respuesta.data);
-            } catch (error) {
-               reject("Error al parsear la respuesta JSON");
-            }
+            resolve(respuesta.data);
          },
          error: function (request, status) {
             const errorResponse = request.responseJSON.data.error ?? null;
@@ -92,7 +80,7 @@ export function enviaAjax(datos, url, type = "POST") {
             reject(errorMsg);
          },
          complete: function () {
-            if (url == "?p=notificaciones") {
+            if (url == "?p=notificaciones&accion=obtenerNotificaciones") {
                return;
             }
             modalCarga(false);

@@ -1,112 +1,74 @@
 <?php
-class Asistencia extends datos
+
+namespace Gymsys\Model;
+
+use Gymsys\Core\Database;
+use Gymsys\Utils\Validar;
+use Gymsys\Utils\ExceptionHandler;
+
+class Asistencias
 {
-    private $conexion, $fecha, $asistencias;
+   private Database $database;
+   public function __construct(Database $database)
+   {
+      $this->database = $database;
+   }
 
-    public function __construct()
-    {
-        $this->conexion = $this->conecta();
-    }
-
-    public function guardar_asistencias($fecha, $asistencias)
-    {
-        if (!is_array($asistencias)) {
-            $asistencias = json_decode($asistencias, true);
-        }
-        if (!Validar::validar_fecha($fecha)) {
-            return ["ok" => false, "mensaje" => "La fecha no es valida"];
-        }
-        if (!Validar::validar_fecha_mayor_que_hoy($fecha)) {
-            return ["ok" => false, "mensaje" => "La fecha no debe ser anterior a la de hoy"];
-        }
-        if (!Validar::validar_asistencias($asistencias)) {
-            return ["ok" => false, "mensaje" => "Las asistencias no son validas"];
-        }
-        $this->fecha = $fecha;
-        $this->asistencias = $asistencias;
-        return $this->guardar();
-    }
-    public function eliminar_asistencias($fecha)
-    {
-        if (!Validar::validar_fecha($fecha)) {
-            return ["ok" => false, "mensaje" => "La fecha no es valida"];
-        }
-        $this->fecha = $fecha;
-        return $this->eliminar();
-    }
-    public function obtener_atletas()
-    {
-        try {
-            $consulta = "
-                SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                ORDER BY u.cedula DESC
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["atletas"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-
-    private function guardar()
-    {
-        try {
-            if (is_array($this->asistencias) && count($this->asistencias) > 0) {
-                $num_asistencias = count($this->asistencias);
-            } else {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "No hay asistencias";
-                return $resultado;
-            }
-            $this->conexion->beginTransaction();
-            $consulta = "IF @num_asistencias IS NULL THEN
-            SET @num_asistencias = :num_asistencias;
-            END IF;
-            INSERT INTO asistencias (id_atleta, fecha, asistio, comentario)
+   public function guardarAsistencias(array $datos)
+   {
+      $keys = ['fecha', 'asistencias'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validarFecha($arrayFiltrado['fecha']);
+      Validar::validarFechaMayorHoy($arrayFiltrado['fecha']);
+      $asistencias = json_decode($arrayFiltrado['asistencias'], true);
+      Validar::validarAsistencias($asistencias);
+      return $this->_guardarAsistencias($asistencias, $arrayFiltrado['fecha']);
+   }
+   public function obtenerAsistencias(array $datos): array
+   {
+      $keys = ['fecha'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validarFecha($arrayFiltrado['fecha']);
+      return $this->_obtenerAsistencias($arrayFiltrado['fecha']);
+   }
+   public function eliminarAsistencias(array $datos): array
+   {
+      $keys = ['fecha'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validarFecha($arrayFiltrado['fecha']);
+      return $this->_eliminarAsistencias($arrayFiltrado['fecha']);
+   }
+   private function _guardarAsistencias(array $asistencias, string $fecha): array
+   {
+      $this->database->beginTransaction();
+      $numAsistencias = count($asistencias);
+      $consultaNumAsistencias = $this->database->query("SET @num_asistencias = :num_asistencias", [':num_asistencias' => $numAsistencias]);
+      $consulta = "INSERT INTO asistencias (id_atleta, fecha, asistio, comentario)
             VALUES 
                 (:id_atleta, :fecha, :asistio, :comentario)
             ON DUPLICATE KEY UPDATE
                 asistio = VALUES(asistio),
-                comentario = VALUES(comentario);
-            ";
-            $stmt = $this->conexion->prepare($consulta);
-            foreach ($this->asistencias as $asistencia) {
-                $stmt->execute([
-                    ':num_asistencias' => $num_asistencias,
-                    ':id_atleta' => $asistencia['id_atleta'],
-                    ':asistio' => $asistencia['asistio'],
-                    ':fecha' => $this->fecha,
-                    ':comentario' => $asistencia['comentario']
-                ]);
-                $stmt->closeCursor();
-            }
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (PDOException $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+                comentario = VALUES(comentario);";
+      foreach ($asistencias as $asistencia) {
+         $valores = [
+            ':id_atleta' => $asistencia['id_atleta'],
+            ':asistio' => $asistencia['asistio'],
+            ':fecha' => $fecha,
+            ':comentario' => $asistencia['comentario']
+         ];
+         $response = $this->database->query($consulta, $valores);
+         if (!$response) {
+            ExceptionHandler::throwException("Ocurrió un error al incluir las asistencias", 500, \RuntimeException::class);
+         }
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "Las asistencias se han modificado exitosamente";
+      return $resultado;
+   }
 
-    private function obtener()
-    {
-        try {
-            $consulta = "
-                SELECT 
+   private function _obtenerAsistencias(string $fecha): array
+   {
+      $consulta = "SELECT 
                     a.id_atleta, 
                     u.nombre, 
                     u.apellido, 
@@ -114,50 +76,24 @@ class Asistencia extends datos
                     a.comentario 
                 FROM asistencias a
                 INNER JOIN usuarios u ON a.id_atleta = u.cedula
-                WHERE a.fecha = :fecha
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute([':fecha' => $this->fecha]);
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["asistencias"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-    private function eliminar()
-    {
-        try {
-            $this->conexion->beginTransaction();
-            $consulta = "
-                DELETE 
+                WHERE a.fecha = :fecha";
+      $response = $this->database->query($consulta, [':fecha' => $fecha]);
+      $resultado["asistencias"] = $response ?: [];
+      return $resultado;
+   }
+   private function _eliminarAsistencias(string $fecha): array
+   {
+      $this->database->beginTransaction();
+      $consulta = "DELETE 
                 FROM asistencias
                 WHERE fecha = :fecha;";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute([':fecha' => $this->fecha]);
-            $con->closeCursor();
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (PDOException $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-    public function obtener_asistencias($fecha)
-    {
-        $validacion = Validar::validar_fecha($fecha);
-        if (!$validacion) {
-            $respuesta["ok"] = false;
-            $respuesta["mensaje"] = "La fecha no es valida";
-            return $respuesta;
-        }
-        $this->fecha = $fecha;
-        return $this->obtener();
-    }
+      $valores = [':fecha' => $fecha];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Hubo un error al eliminar las asistencias", 500, \RuntimeException::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "Las asistencias del dia '{$fecha}' se eliminaron correctamente";
+      return $resultado;
+   }
 }

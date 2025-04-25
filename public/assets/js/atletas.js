@@ -8,7 +8,7 @@ import {
    obtenerNotificaciones,
 } from "./comunes.js";
 $(document).ready(function () {
-   function cargaListadoAtleta() {
+   function cargaListadoAtletas() {
       enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET").then((respuesta) => {
          actualizarListadoAtletas(respuesta.atletas);
       });
@@ -29,31 +29,9 @@ $(document).ready(function () {
          );
          respuesta.entrenadores.forEach((entrenador) => {
             selectEntrenador.append(
-               `<option value="${entrenador.cedula}">${entrenador.nombre_completo}</option>`
+               `<option value="${entrenador.cedula}">${entrenador.nombre} ${entrenador.apellido}</option>`
             );
          });
-      });
-   }
-   function cargarEntrenadoresParaModificacion(entrenadorAsignado) {
-      const datos = new FormData();
-      datos.append("accion", "obtener_entrenadores");
-      enviaAjax(datos, "").then((respuesta) => {
-         if (respuesta.ok) {
-            const selectEntrenadorModificar = $("#entrenador_asignado_modificar");
-            selectEntrenadorModificar.empty();
-            selectEntrenadorModificar.append(
-               '<option value="">Seleccione un entrenador</option>'
-            );
-
-            respuesta.entrenadores.forEach((entrenador) => {
-               selectEntrenadorModificar.append(
-                  `<option value="${entrenador.cedula}" ${entrenador.cedula === entrenadorAsignado ? "selected" : ""
-                  }>${entrenador.nombre_completo}</option>`
-               );
-            });
-         } else {
-            console.error("Error al cargar los entrenadores:", respuesta.mensaje);
-         }
       });
    }
    function cargarTiposAtleta() {
@@ -93,7 +71,7 @@ $(document).ready(function () {
    // }
 
    // cargarTiposAtleta();
-   cargaListadoAtleta();
+   cargaListadoAtletas();
    cargarEntrenadores();
    function verificarFecha(fechaInput, mensaje) {
       const fecha = fechaInput.val();
@@ -208,7 +186,7 @@ $(document).ready(function () {
                               icon: "success",
                               confirmButtonText: "Cerrar"
                            });
-                           cargaListadoAtleta();
+                           cargaListadoAtletas();
                            limpiarFormulario("#f1");
                            $("#modal").modal("hide");
                         } else {
@@ -236,7 +214,7 @@ $(document).ready(function () {
                   icon: "success",
                   confirmButtonText: "Cerrar"
                });
-               cargaListadoAtleta();
+               cargaListadoAtletas();
                limpiarFormulario("#f1");
                $("#modal").modal("hide");
             } else {
@@ -275,11 +253,11 @@ $(document).ready(function () {
             }</td>
                     <td class='align-middle'>
                     ${window.actualizar === 1
-               ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Atleta"><i class='fa-regular fa-pen-to-square'></i></button>`
+               ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Atleta" data-id='${atleta.cedula}'><i class='fa-regular fa-pen-to-square'></i></button>`
                : ""
             }
                       ${window.eliminar === 1
-               ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Atleta"><i class='fa-solid fa-trash-can'></i></button>`
+               ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Atleta" data-id='${atleta.cedula}'><i class='fa-solid fa-trash-can'></i></button>`
                : ""
             }      
                     </td>
@@ -320,15 +298,11 @@ $(document).ready(function () {
       });
    }
 
-   function cargarDatosAtleta(cedula) {
-      const datos = new FormData();
-      datos.append("accion", "obtener_atleta");
-      datos.append("cedula", cedula);
-      enviaAjax(datos, "").then((respuesta) => {
-         if (respuesta.ok) {
+   function obtenerAtleta(cedula) {
+      enviaAjax("", `?p=atletas&accion=obtenerAtleta&id=${cedula}`, 'GET').then((respuesta) => {
+         if (respuesta.atleta) {
             const atleta = respuesta.atleta;
             llenarFormularioModificar(atleta);
-            cargarEntrenadoresParaModificacion(atleta.entrenador);
             $("#modal").modal("show");
          }
       });
@@ -418,20 +392,18 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar");
             datos.append("cedula", cedula);
-            enviaAjax(datos, "").then((respuesta) => {
+            enviaAjax(datos, "?p=atletas&accion=eliminarAtleta").then((respuesta) => {
                muestraMensaje(
                   "Eliminado!",
-                  "El atleta ha sido eliminado.",
+                  respuesta.mensaje,
                   "success"
                );
-               cargaListadoAtleta();
+               cargaListadoAtletas();
             });
          }
       });
    }
-
    $(document).on("click", ".btnEliminarTipo", function () {
       const id_tipo = $(this).data("id");
       Swal.fire({
@@ -459,13 +431,13 @@ $(document).ready(function () {
    });
 
    $("#tablaatleta").on("click", ".btn-warning", function () {
-      const cedula = $(this).closest("tr").find("td:first").text();
+      const cedula = $(this).data('id');
       $("#accion").val("modificar");
-      cargarDatosAtleta(cedula);
+      obtenerAtleta(cedula);
    });
 
    $("#tablaatleta").on("click", ".btn-danger", function () {
-      const cedula = $(this).closest("tr").find("td:first").text();
+      const cedula = $(this).data('id');
       eliminarAtleta(cedula);
    });
 

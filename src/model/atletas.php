@@ -82,14 +82,12 @@ class Atletas
       return $resultado;
    }
 
-   public function obtener_atleta($cedula)
+   public function obtenerAtleta(array $datos)
    {
-      $validacion = Validar::validar("cedula", $cedula);
-      if (!$validacion["ok"]) {
-         return $validacion;
-      }
-      $this->cedula = $cedula;
-      return $this->obtener();
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['id']);
+      return $this->_obtenerAtleta($arrayFiltrado['id']);
    }
 
    public function modificar_atleta($datos)
@@ -213,12 +211,14 @@ class Atletas
       return $resultado;
    }
 
-   private function obtener()
+   private function _obtenerAtleta(string $cedula): array
    {
-      try {
-         $consulta = "
-                SELECT 
-                    u.cedula, 
+      $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
+      $existe = Validar::existe($this->database, $cedula, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("No existe el atleta introducido", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT u.cedula, 
                     u.nombre, 
                     u.apellido, 
                     u.genero, 
@@ -233,24 +233,10 @@ class Atletas
                     a.entrenador
                 FROM atleta a
                 INNER JOIN usuarios u ON a.cedula = u.cedula
-                WHERE u.cedula = :cedula
-            ";
-         $valores = array(':cedula' => $this->cedula);
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         $atleta = $respuesta->fetch(PDO::FETCH_ASSOC);
-         if ($atleta) {
-            $resultado["ok"] = true;
-            $resultado["atleta"] = $atleta;
-         } else {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "No se encontró el atleta";
-         }
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
+                WHERE u.cedula = :cedula";
+      $valores = [':cedula' => $cedula];
+      $response = $this->database->query($consulta, $valores, true);
+      $resultado['atleta'] = $response;
       return $resultado;
    }
 
@@ -361,25 +347,6 @@ class Atletas
       $resultado['mensaje'] = "El atleta se ha eliminado exitosamente";
       return $resultado;
    }
-   public function obtenerEntrenadores()
-   {
-      try {
-         $consulta = "SELECT e.cedula, CONCAT(u.nombre, ' ', u.apellido) AS nombre_completo
-                     FROM entrenador e
-                     INNER JOIN usuarios u ON e.cedula = u.cedula";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $entrenadores = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["entrenadores"] = $entrenadores;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
-      return $resultado;
-   }
-
    public function obtenerTiposAtleta()
    {
       try {

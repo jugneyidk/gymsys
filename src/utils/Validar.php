@@ -25,7 +25,7 @@ class Validar
       }
       if (isset(self::$regex[$campo])) {
          $regex = self::$regex[$campo]['regex'];
-         if (!preg_match($regex, $valor) || (strpos($campo, 'fecha') === true && !self::validar_fecha($valor))) {
+         if (!preg_match($regex, $valor) || (strpos($campo, 'fecha') === true && !self::validarFecha($valor))) {
             ExceptionHandler::throwException(self::$regex[$campo]["mensaje"], 400, \UnexpectedValueException::class);
          }
          return true;
@@ -51,6 +51,7 @@ class Validar
    }
    public static function validarFecha(string $fecha): bool
    {
+      self::init();
       if (preg_match(self::$regex["fecha_nacimiento"]["regex"], $fecha)) {
          list($year, $month, $day) = explode('-', $fecha);
          if (checkdate($month, $day, $year)) {
@@ -68,32 +69,35 @@ class Validar
       return (bool) $response;
    }
 
-   public static function validar_asistencias($asistencias)
+   public static function validarAsistencias(array $asistencias)
    {
-      if (!is_array($asistencias)) {
-         return false;
+      if (empty($asistencias)) {
+         ExceptionHandler::throwException("Las asistencias no son validas", 400, \InvalidArgumentException::class);
       }
       foreach ($asistencias as $asistencia => $valor) {
-         if (!preg_match(self::$exp["cedula"]["regex"], $valor["id_atleta"])) {
-            return false;
+         if (!preg_match(self::$regex["cedula"]["regex"], $valor["id_atleta"])) {
+            ExceptionHandler::throwException("La cedula del atleta '{$valor["id_atleta"]}' es invalida", 400, \InvalidArgumentException::class);
          }
          if (gettype($valor["asistio"]) !== "integer" || $valor["asistio"] < 0 || $valor["asistio"] > 1) {
-            return false;
+            ExceptionHandler::throwException("El valor de asistencia del atleta '{$valor["id_atleta"]}' es invalido", 400, \InvalidArgumentException::class);
          }
-         if (!preg_match(self::$exp["detalles"]["regex"], $valor["comentario"])) {
-            return false;
+         if (!preg_match(self::$regex["detalles"]["regex"], $valor["comentario"])) {
+            ExceptionHandler::throwException("El comentario del atleta '{$valor["id_atleta"]}' es invalido", 400, \InvalidArgumentException::class);
          }
       }
       return true;
    }
 
-   public static function validar_fecha_mayor_que_hoy($fecha)
+   public static function validarFechaMayorHoy(string $fecha)
    {
-      $fechaSeleccionada = new DateTime($fecha);
-      $fechaActual = new DateTime();
+      $fechaSeleccionada = new \DateTime($fecha);
+      $fechaActual = new \DateTime();
       // Restablecer la hora a 00:00:00 para comparar solo la fecha
       $fechaActual->setTime(0, 0, 0);
       $fechaSeleccionada->setTime(0, 0, 0);
+      if (!($fechaSeleccionada >= $fechaActual)) {
+         ExceptionHandler::throwException("La fecha ingresada no es mayor a la actual", 400, \InvalidArgumentException::class);
+      }
       return $fechaSeleccionada >= $fechaActual;
    }
    public static function validar_fechas_wada($conexion, $cedula, $inscripcion, $ultima_actualizacion, $vencimiento)

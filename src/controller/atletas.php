@@ -24,8 +24,7 @@ class Atletas extends BaseController
    }
    public function listadoAtletas(): array
    {
-      $response = $this->model->listadoAtletas();
-      return $response;
+      return $this->model->listadoAtletas();
    }
    public function incluirAtleta(array $datos)
    {
@@ -34,6 +33,10 @@ class Atletas extends BaseController
    public function eliminarAtleta(array $datos)
    {
       return $this->model->eliminarAtleta($datos);
+   }
+   public function obtenerAtleta(array $datos)
+   {
+      return $this->model->obtenerAtleta($datos);
    }
 }
       // $accion = $_POST['accion'];
@@ -78,4 +81,3 @@ class Atletas extends BaseController
       //    $respuesta = $o->eliminar_tipo_atleta(
       //       $_POST['id_tipo'],
       //    );
-      //    echo json_encode($respuesta);
