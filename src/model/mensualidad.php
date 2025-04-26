@@ -3,197 +3,112 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\Validar;
 
 class Mensualidad
 {
-   private Database $database, $id, $id_atleta, $monto, $fecha, $detalles;
+   private Database $database;
 
    public function __construct(Database $database)
    {
       $this->database = $database;
    }
-
-   public function incluir_mensualidad($id_atleta, $monto, $fecha, $detalles)
+   public function incluirMensualidad(array $datos): array
    {
-      if (!Validar::validar("cedula", $id_atleta)["ok"]) {
-         return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
+      $keys = ['id_atleta', 'fecha', 'monto'];
+      if (!empty($datos['detalles'])) {
+         $keys[] = 'detalles';
       }
-      if (!Validar::validar_fecha($fecha)) {
-         return ["ok" => false, "mensaje" => "La fecha no es valida"];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['id_atleta']);
+      Validar::validarFecha($arrayFiltrado['fecha']);
+      Validar::validar("detalles", $arrayFiltrado['detalles']);
+      if (!filter_var((float)$arrayFiltrado['monto'], FILTER_VALIDATE_FLOAT) && $arrayFiltrado['monto'] < 0) {
+         ExceptionHandler::throwException("El monto no es válido", 400, \InvalidArgumentException::class);
       }
-      if (!Validar::validar("detalles", $detalles)["ok"]) {
-         return ["ok" => false, "mensaje" => "Solo letras, números y espacios (200 caracteres maximo)"];
-      }
-      if (!filter_var($monto, FILTER_VALIDATE_FLOAT)) {
-         return ["ok" => false, "mensaje" => "El monto no es un numero valido"];
-      }
-      $this->id_atleta = $id_atleta;
-      $this->monto = $monto;
-      $this->fecha = $fecha;
-      $this->detalles = trim($detalles);
-      return $this->incluir();
+      return $this->_incluirMensualidad($arrayFiltrado);
    }
-   public function eliminar_mensualidad($id)
+   public function eliminarMensualidad(array $datos): array
    {
-      if (!filter_var($id, FILTER_SANITIZE_NUMBER_INT)) {
-         return ["ok" => false, "mensaje" => "La ID de mensualidad no es válida"];
+      $id = filter_var($datos['id'], FILTER_SANITIZE_NUMBER_INT);
+      if (empty($id)) {
+         ExceptionHandler::throwException("El parametro 'id' es inválido", 400, \InvalidArgumentException::class);
       }
-      $this->id = $id;
-      return $this->eliminar();
+      return $this->_eliminarMensualidad($id);
    }
 
-   public function listado_mensualidades()
+   public function listadoMensualidades(): array
    {
-      return $this->listado();
+      return $this->_listadoMensualidades();
    }
 
-   public function listado_deudores()
+   public function listadoDeudores(): array
    {
-      return $this->listado_deudores_privado();
+      return $this->_listadoDeudores();
    }
 
-   public function listado_atletas()
+   private function _incluirMensualidad(array $datos): array
    {
-      return $this->listado_atletas_privado();
-   }
-
-   private function incluir()
-   {
-      try {
-         $this->conexion->beginTransaction();
-         $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
-                         VALUES (:id_atleta, :monto, :fecha, :detalles)";
-         $valores = array(
-            ':id_atleta' => $this->id_atleta,
-            ':monto' => $this->monto,
-            ':fecha' => $this->fecha,
-            ':detalles' => $this->detalles
-         );
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         $respuesta->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $this->database->beginTransaction();
+      $consultaValidacion = "SELECT 1
+                              FROM mensualidades
+                              WHERE id_atleta = :id_atleta
+                              AND MONTH(fecha) = MONTH(:fecha)
+                              AND YEAR(fecha) = YEAR(:fecha)
+                           LIMIT 1;";
+      $responseValidar = $this->database->query($consultaValidacion, [':id_atleta' => $datos['id_atleta'], ':fecha' => $datos['fecha']], true);
+      if (!empty($responseValidar)) {
+         ExceptionHandler::throwException("Ya existe una mensualidad para este atleta en ese mes", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
+                     VALUES (:id_atleta, :monto, :fecha, :detalles)";
+      $valores = [
+         ':id_atleta' => $datos['id_atleta'],
+         ':monto' => (float) $datos['monto'],
+         ':fecha' => $datos['fecha'],
+         ':detalles' => $datos['detalles'] ?: null
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrio un error al agregar la mensualidad", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "La mensualidad se agrego correctamente";
       return $resultado;
    }
-   private function eliminar()
+   private function _eliminarMensualidad(int $id): array
    {
-      try {
-         $consulta = "SELECT id_mensualidad FROM mensualidades WHERE id_mensualidad = ?;";
-         $existe = Validar::existe($this->conexion, $this->id, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "No existe esta mensualidad";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "DELETE FROM mensualidades WHERE id_mensualidad = :id";
-         $valores = array(
-            ':id' => $this->id
-         );
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         $respuesta->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $consulta = "SELECT id_mensualidad FROM mensualidades WHERE id_mensualidad = :id;";
+      $existe = Validar::existe($this->database, $id, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La mensualidad ingresada no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM mensualidades WHERE id_mensualidad = :id";
+      $valores = [':id' => $id];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la mensualidad", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "La mensualidad se eliminó exitosamente";
       return $resultado;
    }
 
-   private function listado()
+   private function _listadoMensualidades(): array
    {
-      try {
-         $consulta = "
-                SELECT m.id_mensualidad, u.cedula, u.nombre, u.apellido, m.monto, m.fecha, m.detalles, t.nombre_tipo_atleta
-                FROM mensualidades m
-                INNER JOIN atleta a ON m.id_atleta = a.cedula
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
-                ORDER BY m.fecha DESC
-            ";
-         $con = $this->conexion->prepare($consulta);
-         $con->execute();
-         $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
+      $consulta = "SELECT * FROM lista_mensualidades;";
+      $response = $this->database->query($consulta);
+      $resultado["mensualidades"] = $response ?: [];
       return $resultado;
    }
 
-   private function listado_deudores_privado()
+   private function _listadoDeudores(): array
    {
-      try {
-         $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, t.nombre_tipo_atleta, t.tipo_cobro
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
-                LEFT JOIN mensualidades m ON a.cedula = m.id_atleta 
-                  AND m.fecha >= DATE_FORMAT(NOW(), '%Y-%m-01') 
-                  AND m.fecha <= LAST_DAY(NOW())
-                WHERE m.id_atleta IS NULL 
-                GROUP BY u.cedula
-            ";
-         $con = $this->conexion->prepare($consulta);
-         $con->execute();
-         $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
+      $consulta = "SELECT * FROM lista_deudores;";
+      $response = $this->database->query($consulta);
+      $resultado["deudores"] = $response ?: [];
       return $resultado;
-   }
-
-
-   private function listado_atletas_privado()
-   {
-      try {
-         $consulta = "
-                SELECT u.cedula, u.nombre, u.apellido, t.nombre_tipo_atleta, t.tipo_cobro
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
-                ORDER BY u.cedula DESC
-            ";
-         $con = $this->conexion->prepare($consulta);
-         $con->execute();
-         $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
-      return $resultado;
-   }
-
-   public function __get($propiedad)
-   {
-      return $this->$propiedad;
-   }
-
-   public function __set($propiedad, $valor)
-   {
-      $this->$propiedad = $valor;
-      return $this;
    }
 }

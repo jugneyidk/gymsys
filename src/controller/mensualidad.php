@@ -22,26 +22,20 @@ class Mensualidad extends BaseController
          ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
       }
    }
-   
+   public function incluirMensualidad(array $datos): array
+   {
+      return $this->model->incluirMensualidad($datos);
+   }
+   public function listadoMensualidades(): array
+   {
+      return $this->model->listadoMensualidades();
+   }
+   public function listadoDeudores(): array
+   {
+      return $this->model->listadoDeudores();
+   }
+   public function eliminarMensualidad(array $datos): array
+   {
+      return $this->model->eliminarMensualidad($datos);
+   }
 }
-
-   //  if ($accion == 'incluir') {
-   //      $respuesta = $o->incluir_mensualidad(
-   //          $_POST['id_atleta'],
-   //          $_POST['monto'],
-   //          $_POST['fecha'],
-   //          $_POST['detalles'] ?? null
-   //      );
-   //      echo json_encode($respuesta);
-   //  } elseif ($accion == 'eliminar_mensualidad') {
-   //      $respuesta = $o->eliminar_mensualidad($_POST["id"]);
-   //      echo json_encode($respuesta);
-   //  } elseif ($accion == 'listado_mensualidades') {
-   //      $respuesta = $o->listado_mensualidades();
-   //      echo json_encode($respuesta);
-   //  } elseif ($accion == 'listado_deudores') {
-   //      $respuesta = $o->listado_deudores();
-   //      echo json_encode($respuesta);
-   //  } elseif ($accion == 'listado_atletas') {
-   //      $respuesta = $o->listado_atletas();
-   //      echo json_encode($respuesta);
