@@ -51,14 +51,8 @@ class Mensualidad
    private function _incluirMensualidad(array $datos): array
    {
       $this->database->beginTransaction();
-      $consultaValidacion = "SELECT 1
-                              FROM mensualidades
-                              WHERE id_atleta = :id_atleta
-                              AND MONTH(fecha) = MONTH(:fecha)
-                              AND YEAR(fecha) = YEAR(:fecha)
-                           LIMIT 1;";
-      $responseValidar = $this->database->query($consultaValidacion, [':id_atleta' => $datos['id_atleta'], ':fecha' => $datos['fecha']], true);
-      if (!empty($responseValidar)) {
+      $existeValidacion = $this->existeMensualidadEnMes($datos);
+      if (!empty($existeValidacion)) {
          ExceptionHandler::throwException("Ya existe una mensualidad para este atleta en ese mes", 400, \InvalidArgumentException::class);
       }
       $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
@@ -110,5 +104,16 @@ class Mensualidad
       $response = $this->database->query($consulta);
       $resultado["deudores"] = $response ?: [];
       return $resultado;
+   }
+   private function existeMensualidadEnMes(array $datos): bool
+   {
+      $consultaValidacion = "SELECT 1
+                              FROM mensualidades
+                              WHERE id_atleta = :id_atleta
+                              AND MONTH(fecha) = MONTH(:fecha)
+                              AND YEAR(fecha) = YEAR(:fecha)
+                           LIMIT 1;";
+      $responseValidar = $this->database->query($consultaValidacion, [':id_atleta' => $datos['id_atleta'], ':fecha' => $datos['fecha']], true);
+      return (bool) $responseValidar;
    }
 }
