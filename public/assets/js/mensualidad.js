@@ -125,6 +125,7 @@ $(document).ready(function () {
             infoEmpty: "No hay registros disponibles",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             search: "Buscar:",
+            emptyTable: "No hay registros disponibles",
             paginate: {
                next: "Siguiente",
                previous: "Anterior",

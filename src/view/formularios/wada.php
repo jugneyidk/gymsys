@@ -1,5 +1,5 @@
 <form method="post" id="f1" autocomplete="off">
-    <input type="hidden" name="accion" id="accion" value="">
+    <input type="hidden" name="accion" id="accion">
     <div class="container-lg">
         <div class="row mt-3">
             <div class="col-12 col-md-8 mb-3">

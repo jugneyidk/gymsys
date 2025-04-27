@@ -36,7 +36,6 @@ class ExceptionHandler extends Exception
    }
    public static function parseTypeErrorMessage(string $message): string
    {
-      print_r($message);
       if (preg_match('/Argument #\d+ \(\$(\w+)\) must be of type (\w+), (.+?) given/', $message, $matches)) {
          $argName = $matches[1];  // Ej: "userId"
          $expectedType = $matches[2]; // Ej: "string"

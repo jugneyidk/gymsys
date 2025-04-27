@@ -100,49 +100,44 @@ class Validar
       }
       return $fechaSeleccionada >= $fechaActual;
    }
-   public static function validar_fechas_wada($conexion, $cedula, $inscripcion, $ultima_actualizacion, $vencimiento)
+   public static function validarFechasWada(Database $database, string $cedula, string $inscripcion, string $ultima_actualizacion, string $vencimiento): void
    {
       $consulta = "SELECT fecha_nacimiento FROM usuarios WHERE cedula = :cedula";
-      $con = $conexion->prepare($consulta);
-      $con->execute([":cedula" => $cedula]);
-      $fecha_nacimiento = $con->fetchColumn();
-      if (!$fecha_nacimiento) {
-         return ["ok" => false, "mensaje" => "El atleta no existe"];
+      $response = $database->query($consulta, [":cedula" => $cedula], true);
+      $fechaNacimiento = $response['fecha_nacimiento'] ?: false;
+      if (!$fechaNacimiento) {
+         ExceptionHandler::throwException("El atleta no existe", 400, \InvalidArgumentException::class);
       }
-      foreach ([$inscripcion, $ultima_actualizacion, $fecha_nacimiento, $vencimiento] as $fecha) {
-         if (!self::validar_fecha($fecha)) {
-            return ["ok" => false, "mensaje" => "Las fechas no son válidas"];
+      foreach ([$inscripcion, $ultima_actualizacion, $fechaNacimiento, $vencimiento] as $fecha) {
+         if (!self::validarFecha($fecha)) {
+            ExceptionHandler::throwException("Las fechas no son válidas", 400, \InvalidArgumentException::class);
          }
       }
       // Convertir las fechas a objetos DateTime para hacer las comparaciones
-      $fecha_nacimiento_obj = new DateTime($fecha_nacimiento);
-      $fecha_inscripcion_obj = new DateTime($inscripcion);
-      $ultima_actualizacion_obj = new DateTime($ultima_actualizacion);
-      $fecha_vencimiento_obj = new DateTime($vencimiento);
+      $fechaNacimientoObj = new \DateTime($fechaNacimiento);
+      $fechaInscripcionObj = new \DateTime($inscripcion);
+      $ultimaActualizacionObj = new \DateTime($ultima_actualizacion);
+      $fechaVencimientoObj = new \DateTime($vencimiento);
       // Validar que la inscripción se pueda realizar a partir de los 15 años
       $edad_minima = 15;
-      $fecha_nacimiento_obj->modify("+$edad_minima years");
-      if ($fecha_inscripcion_obj < $fecha_nacimiento_obj) {
-         $mensaje_error = 'La inscripción no es válida: el atleta debe tener al menos 15 años';
-         return ["ok" => false, "mensaje" => $mensaje_error];
+      $fechaNacimientoObj->modify("+$edad_minima years");
+      if ($fechaInscripcionObj < $fechaNacimientoObj) {
+         ExceptionHandler::throwException("La inscripción no es válida: el atleta debe tener al menos 15 años", 400, \InvalidArgumentException::class);
       }
       // Calcular la fecha de vencimiento (un trimestre después de la última actualización)
-      $fecha_vencimiento_esperada = clone $ultima_actualizacion_obj;
-      $fecha_vencimiento_esperada->modify('+3 months');
+      $fechaVencimientoEsperada = clone $ultimaActualizacionObj;
+      $fechaVencimientoEsperada->modify('+3 months');
       // Validar si la fecha de vencimiento es correcta
-      if ($fecha_inscripcion_obj > $ultima_actualizacion_obj) {
-         $mensaje_error = 'La inscripción no es válida: la fecha de inscripción no puede ser posterior a la ultima actualización';
-         return ["ok" => false, "mensaje" => $mensaje_error];
+      if ($fechaInscripcionObj > $ultimaActualizacionObj) {
+         ExceptionHandler::throwException("La inscripción no es válida: la fecha de inscripción no puede ser posterior a la ultima actualización", 400, \InvalidArgumentException::class);
       }
-      if ($fecha_vencimiento_esperada > $fecha_vencimiento_obj) {
-         $mensaje_error = 'El vencimiento no es válido: la fecha de vencimiento debe ser al menos un trimestre después de la última actualización';
-         return ["ok" => false, "mensaje" => $mensaje_error];
+      if ($fechaVencimientoEsperada > $fechaVencimientoObj) {
+         ExceptionHandler::throwException("El vencimiento no es válido: la fecha de vencimiento debe ser al menos un trimestre después de la última actualización", 400, \InvalidArgumentException::class);
       }
-      if ($fecha_inscripcion_obj > $fecha_vencimiento_esperada) {
-         $mensaje_error = 'La inscripción no es válida: la fecha de inscripción no puede ser posterior al vencimiento (trimestre después de la última actualización)';
-         return ["ok" => false, "mensaje" => $mensaje_error];
+      if ($fechaInscripcionObj > $fechaVencimientoEsperada) {
+         ExceptionHandler::throwException("La inscripción no es válida: la fecha de inscripción no puede ser posterior al vencimiento (trimestre después de la última actualización)", 400, \InvalidArgumentException::class);
       }
-      return ["ok" => true];
+      return;
    }
    public static function validarArray(array $array, array $keys): array
    {

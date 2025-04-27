@@ -15,11 +15,14 @@ try {
    $apiController = new ApiController();
    $apiController->handleRequest();
 } catch (\TypeError $e) {
-   $cleanMessage = ExceptionHandler::parseTypeErrorMessage($e->getMessage());
-   $apiController->sendResponse(400, $cleanMessage, true);
+   if ($_ENV['ENVIRONMENT'] === 'PRODUCTION') {
+      $cleanMessage = ExceptionHandler::parseTypeErrorMessage($e->getMessage());
+      $apiController->sendResponse(400, $cleanMessage, true);
+      die;
+   }
+   $apiController->sendResponse(400, "{$e->getMessage()}: {$e->getTraceAsString()}", true);
    die;
 } catch (\Throwable $e) {
-   // $this->sendResponse(400, ['error' => $cleanMessage]);
    $errorMessage = json_decode($e->getMessage(), true);
    $apiController->sendResponse($errorMessage["code"] ?? 400, $errorMessage ?? $e->getMessage(), true);
    die;

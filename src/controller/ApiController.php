@@ -38,14 +38,14 @@ class ApiController extends BaseController
          case 'GET':
             $this->handleGet($controller);
          default:
-            ExceptionHandler::throwException("Método no permitido", 400, \BadMethodCallException::class);
+            ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
       }
    }
    protected function getRequestData(): array
    {
       return $this->method === 'GET' ? $_GET : $_POST;
    }
-   protected function handleGet($controller)
+   protected function handleGet(object $controller)
    {
       // Caso 1: GET para API (ej: ?p=user&accion=getData)
       if ($this->accion) {
@@ -57,15 +57,15 @@ class ApiController extends BaseController
       }
       // Caso 2: GET para vista (ej: ?p=user)
       else {
-         $permisosNav = Rolespermisos::obtenerPermisosNav($this->database);
+         $permisosNav = Rolespermisos::obtenerPermisosNav($this->database) ?: [];
          $permisosModulo = Rolespermisos::obtenerPermisosModulo($this->page, $this->database);
          $controller->renderVista(ucwords($this->page), $permisosNav, $permisosModulo);
          return true;
       }
    }
-   protected function handlePost($controller)
+   protected function handlePost(object $controller)
    {
-      // Validar acción en POST (ej: ?p=user&accion=update)
+      // Validar acción en POST (ej: ?p=user&accion=modificar)
       if (empty($this->accion) || !method_exists($controller, $this->accion)) {
          ExceptionHandler::throwException("Error en la solicitud: el método llamado no existe", 400, \BadMethodCallException::class);
       }

@@ -118,7 +118,6 @@ $(document).ready(function () {
       if (validarEnvio("#f1")) {
          var datos = new FormData($(this)[0]);
          var accion = datos.get("accion") || "incluir";
-         console.log(datos.get("cedula"));
          enviaAjax(datos, `?p=entrenadores&accion=${accion}Entrenador`).then((respuesta) => {
             muestraMensaje("Exito", respuesta.mensaje, "success");
             obtenerListadoEntrenadores();
@@ -163,6 +162,7 @@ $(document).ready(function () {
             infoEmpty: "No hay entrenadores disponibles",
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             search: "Buscar:",
+            emptyTable: "No hay registros disponibles",
             paginate: {
                next: "Siguiente",
                previous: "Anterior",
@@ -170,7 +170,6 @@ $(document).ready(function () {
          },
          autoWidth: false,
          order: [[0, "desc"]],
-         dom: '<"top"f>rt<"bottom"lp><"clear">',
       });
    }
    function llenarFormularioModificar(entrenador) {

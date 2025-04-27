@@ -1,302 +1,164 @@
 <?php
 
-class WADA extends datos
+namespace Gymsys\Model;
+
+use Gymsys\Core\Database;
+use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\Validar;
+
+class Wada
 {
-    private $conexion, $id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento;
+   private Database $database;
 
-    public function __construct()
-    {
-        $this->conexion = $this->conecta();
-    }
+   public function __construct(Database $database)
+   {
+      $this->database = $database;
+   }
 
-    public function incluir_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento)
-    {
-        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
-            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
-        }
-        if (!Validar::validar("bool", $estado)["ok"]) {
-            return ["ok" => false, "mensaje" => "El estado de la WADA no es valido"];
-        }
-        $validar_fechas = Validar::validar_fechas_wada($this->conexion, $id_atleta, $inscrito, $ultima_actualizacion, $vencimiento);
-        if (!$validar_fechas["ok"]) {
-            return ["ok" => false, "mensaje" => $validar_fechas["mensaje"]];
-        }
-        $this->id_atleta = $id_atleta;
-        $this->estado = $estado;
-        $this->inscrito = $inscrito;
-        $this->ultima_actualizacion = $ultima_actualizacion;
-        $this->vencimiento = $vencimiento;
-        return $this->incluir();
-    }
+   public function incluirWada(array $datos): array
+   {
+      $keys = ['atleta', 'status', 'inscrito', 'ultima_actualizacion', 'vencimiento'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['atleta']);
+      Validar::validarFechasWada($this->database, $arrayFiltrado['atleta'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
+      Validar::validar("bool", $arrayFiltrado['status']);
+      return $this->_incluirWada($arrayFiltrado['atleta'], $arrayFiltrado['status'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
+   }
 
-    public function modificar_wada($id_atleta, $estado, $inscrito, $ultima_actualizacion, $vencimiento)
-    {
-        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
-            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
-        }
-        if (!Validar::validar("bool", $estado)["ok"]) {
-            return ["ok" => false, "mensaje" => "El estado de la WADA no es valido"];
-        }
-        // $validar_fechas = Validar::validar_fechas_wada($this->conexion, $id_atleta, $inscrito, $ultima_actualizacion, $vencimiento);
-        // if (!$validar_fechas["ok"]) {
-        //     return ["ok" => false, "mensaje" => $validar_fechas["mensaje"]];
-        // }
-        $this->id_atleta = $id_atleta;
-        $this->estado = $estado;
-        $this->inscrito = $inscrito;
-        $this->ultima_actualizacion = $ultima_actualizacion;
-        $this->vencimiento = $vencimiento;
-        return $this->modificar();
-    }
+   public function modificarWada(array $datos): array
+   {
 
-    public function obtener_wada($id_atleta)
-    {
-        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
-            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
-        }
-        $this->id_atleta = $id_atleta;
-        return $this->obtener();
-    }
+      $keys = ['atleta', 'status', 'inscrito', 'ultima_actualizacion', 'vencimiento'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['atleta']);
+      Validar::validarFechasWada($this->database, $arrayFiltrado['atleta'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
+      Validar::validar("bool", $arrayFiltrado['status']);
+      return $this->_modificarWada($arrayFiltrado['atleta'], $arrayFiltrado['status'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
+   }
 
-    public function eliminar_wada($id_atleta)
-    {
-        if (!Validar::validar("cedula", $id_atleta)["ok"]) {
-            return ["ok" => false, "mensaje" => "La cedula del atleta no es valida"];
-        }
-        $this->id_atleta = $id_atleta;
-        return $this->eliminar();
-    }
+   public function obtenerWada(array $datos): array
+   {
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['id']);
+      return $this->_obtenerWada($arrayFiltrado['id']);
+   }
 
-    public function listado_wada()
-    {
-        return $this->listado();
-    }
+   public function eliminarWada(array $datos): array
+   {
+      $keys = ['cedula'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("cedula", $arrayFiltrado['cedula']);
+      return $this->_eliminarWada($arrayFiltrado['cedula']);
+   }
 
-    private function incluir()
-    {
-        try {
-            $consulta = "SELECT cedula FROM atleta WHERE cedula = ?;";
-            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
-            // Se verifica que el atleta exista para asignarle la WADA
-            if (!$existe["ok"]) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "Este atleta no existe";
-                return $resultado;
-            }
-            $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = ?;";
-            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
-            // Se verifica que no exista la WADA para este atleta
-            if ($existe["ok"]) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "Ya existe la WADA de este atleta";
-                return $resultado;
-            }
-            $this->conexion->beginTransaction();
-            $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
+   public function listadoWada()
+   {
+      return $this->_listadoWada();
+   }
+
+   private function _incluirWada(string $cedula, bool $estado, string $inscrito, string $ultimaActualizacion, string $vencimiento): array
+   {
+      $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
+      $existe = Validar::existe($this->database, $cedula, $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("La WADA para este atleta ya existe", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
                          VALUES (:id_atleta, :estado, :inscrito, :ultima_actualizacion, :vencimiento)";
-            $valores = array(
-                ':id_atleta' => $this->id_atleta,
-                ':estado' => $this->estado,
-                ':inscrito' => $this->inscrito,
-                ':ultima_actualizacion' => $this->ultima_actualizacion,
-                ':vencimiento' => $this->vencimiento
-            );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $respuesta->closeCursor();
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (PDOException $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+      $valores = [
+         ':id_atleta' => $cedula,
+         ':estado' => $estado,
+         ':inscrito' => $inscrito,
+         ':ultima_actualizacion' => $ultimaActualizacion,
+         ':vencimiento' => $vencimiento
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (!$response) {
+         ExceptionHandler::throwException("Ocurrió un error al incluir la WADA", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "La WADA se registró exitosamente";
+      return $resultado;
+   }
 
-    private function modificar()
-    {
-        try {
-            $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = ?;";
-            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
-            if (!$existe["ok"]) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "No existe la WADA de este atleta";
-                return $resultado;
-            }
-            $this->conexion->beginTransaction();
-            $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento 
-                         WHERE id_atleta = :id_atleta";
-            $valores = array(
-                ':id_atleta' => $this->id_atleta,
-                ':estado' => $this->estado,
-                ':inscrito' => $this->inscrito,
-                ':ultima_actualizacion' => $this->ultima_actualizacion,
-                ':vencimiento' => $this->vencimiento
-            );
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $respuesta->closeCursor();
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (PDOException $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+   private function _modificarWada(string $cedula, bool $estado, string $inscrito, string $ultimaActualizacion, string $vencimiento): array
+   {
+      $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
+      $existe = Validar::existe($this->database, $cedula, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La WADA del atleta introducido no existe", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento WHERE id_atleta = :id_atleta";
+      $valores = [
+         ':id_atleta' => $cedula,
+         ':estado' => $estado,
+         ':inscrito' => $inscrito,
+         ':ultima_actualizacion' => $ultimaActualizacion,
+         ':vencimiento' => $vencimiento
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (!$response) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar la WADA", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "La WADA se modificó exitosamente";
+      return $resultado;
+   }
 
-    private function obtener()
-    {
-        try {
-            $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = ?;";
-            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
-            if (!$existe["ok"]) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "No existe la WADA de este atleta";
-                return $resultado;
-            }
-            $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_atleta' => $this->id_atleta]);
-            $respuesta = $respuesta->fetch(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["wada"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+   private function _obtenerWada(string $cedula): array
+   {
+      $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
+      $existe = Validar::existe($this->database, $cedula, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La WADA de este atleta no existe", 400, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
+      $response = $this->database->query($consulta, [":id_atleta" => $cedula], true);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al obtener la WADA", 500, \Exception::class);
+      }
+      $resultado["wada"] = $response;
+      return $resultado;
+   }
 
-    private function eliminar()
-    {
-        try {
-            $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = ?;";
-            $existe = Validar::existe($this->conexion, $this->id_atleta, $consulta);
-            if (!$existe["ok"]) {
-                $resultado["ok"] = false;
-                $resultado["mensaje"] = "La WADA del atleta ingresado no existe";
-                return $resultado;
-            }
-            $this->conexion->beginTransaction();
-            $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute([':id_atleta' => $this->id_atleta]);
-            $respuesta->closeCursor();
-            $this->conexion->commit();
-            $resultado["ok"] = true;
-        } catch (PDOException $e) {
-            $this->conexion->rollBack();
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+   private function _eliminarWada(string $cedula): array
+   {
+      $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
+      $existe = Validar::existe($this->database, $cedula, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La WADA del atleta introducido no existe", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
+      $response = $this->database->query($consulta, [':id_atleta' => $cedula]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la WADA", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado['mensaje'] = "La WADA se eliminó exitosamente";
+      return $resultado;
+   }
 
-    private function listado()
-    {
-        try {
-            $consulta = "SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    w.estado,
-                    w.inscrito,
-                    w.vencimiento,
-                    w.ultima_actualizacion
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                INNER JOIN wada w ON w.id_atleta = u.cedula
-                ORDER BY u.cedula DESC";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
+   private function _listadoWada(): array
+   {
+      $consulta = "SELECT * FROM lista_wada;";
+      $response = $this->database->query($consulta);
+      $resultado["wada"] = $response ?: [];
+      return $resultado;
+   }
 
-    public function listado_atletas()
-    {
-        try {
-            $consulta = "
-                SELECT 
-                    u.cedula, 
-                    u.nombre, 
-                    u.apellido, 
-                    u.genero, 
-                    u.fecha_nacimiento, 
-                    u.lugar_nacimiento, 
-                    u.estado_civil, 
-                    u.telefono, 
-                    u.correo_electronico, 
-                    a.tipo_atleta, 
-                    a.peso, 
-                    a.altura, 
-                    a.entrenador 
-                FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
-                ORDER BY u.cedula DESC
-            ";
-            $con = $this->conexion->prepare($consulta);
-            $con->execute();
-            $respuesta = $con->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["devol"] = 'listado_atletas';
-            $resultado["respuesta"] = $respuesta;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-
-    public function obtener_proximos_vencer()
-    {
-        try {
-            $consulta = "SELECT u.cedula, 
-                u.nombre, 
-                u.apellido, 
-                w.vencimiento
-            FROM atleta a
-            INNER JOIN usuarios u ON a.cedula = u.cedula
-            INNER JOIN wada w ON w.id_atleta = u.cedula
-            WHERE w.vencimiento > CURDATE() 
-            AND w.vencimiento <= DATE_ADD(CURDATE(), INTERVAL 30 DAY)
-            ORDER BY w.vencimiento DESC;";
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute();
-            $registros = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-            $resultado["ok"] = true;
-            $resultado["respuesta"] = $registros;
-        } catch (PDOException $e) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = $e->getMessage();
-        }
-        $this->desconecta();
-        return $resultado;
-    }
-
-    public function __get($propiedad)
-    {
-        return $this->$propiedad;
-    }
-
-    public function __set($propiedad, $valor)
-    {
-        $this->$propiedad = $valor;
-        return $this;
-    }
+   public function listadoPorVencer(): array
+   {
+      return $this->_listadoPorVencer();
+   }
+   private function _listadoPorVencer(): array
+   {
+      $consulta = "SELECT * FROM lista_wada_por_vencer;";
+      $response = $this->database->query($consulta);
+      $resultado["wadas"] = $response ?: [];
+      return $resultado;
+   }
 }
