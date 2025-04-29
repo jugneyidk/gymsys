@@ -8,15 +8,15 @@
       content="Gestion de roles y permisos en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Roles y Permisos - Sistema</title>
-   <?php require_once("comunes/linkcss.php"); ?>
+   <?php require_once "comunes/linkcss.php"; ?>
 </head>
 
 <body class="bg-light">
    <script>
-      var actualizar = <?php echo $permisos["actualizar"] ?>;
-      var eliminar = <?php echo $permisos["eliminar"] ?>;
+      var actualizar = <?= $permisosModulo["actualizar"] ?>;
+      var eliminar = <?= $permisosModulo["eliminar"] ?>;
    </script>
-   <?php require_once("comunes/menu.php"); ?>
+   <?php require_once "comunes/menu.php" ; ?>
    <main class="container-md my-3 my-md-5">
       <div class="row">
          <div class="col">
@@ -25,7 +25,7 @@
                   <h2 class="mb-0">Gestionar Roles y Permisos</h2>
                   <div>
                      <?php
-                     if ($permisos["actualizar"] === 1):
+                     if ($permisosModulo["actualizar"] === 1):
                         ?>
                         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
                            data-bs-target="#modalAsignarRol" id="btnAsignarRol">
@@ -35,7 +35,7 @@
                      endif;
                      ?>
                      <?php
-                     if ($permisos["crear"] === 1):
+                     if ($permisosModulo["crear"] === 1):
                         ?>
                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal"
                            id="btnCrearRol">
@@ -68,15 +68,15 @@
          </div>
       </div>
       <?php
-      if ($permisos["actualizar"] === 1 || $permisos["crear"] === 1) {
+      if ($permisosModulo["actualizar"] === 1 || $permisosModulo["crear"] === 1) {
          require_once "comunes/modal.php";
          require_once "comunes/modal_asignar_rol.php";
       } ?>
    </main>
    <br>
-   <?php require_once("comunes/footer.php"); ?>
-   <script type="text/javascript" src="datatables/datatables.min.js"></script>
-   <script type="module" src="js/rolespermisos.js"></script>
+   <?php require_once "comunes/footer.php"; ?>
+   <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
+   <script type="module" src="assets/js/rolespermisos.js"></script>
 </body>
 
 </html>

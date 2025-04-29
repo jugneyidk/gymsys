@@ -46,4 +46,11 @@ class BaseController
       }
       return $class;
    }
+   public function validarMetodoRequest(string $metodo): void
+   {
+      if ($_SERVER['REQUEST_METHOD'] !== $metodo) {
+         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
+      }
+      return;
+   }
 }

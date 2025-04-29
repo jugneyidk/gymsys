@@ -49,7 +49,7 @@ export function limpiarForm() {
    $("form div .invalid-feedback").text("");
 }
 
-export function enviaAjax(datos, url, type = "POST") {
+export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true) {
    return new Promise((resolve, reject) => {
       $.ajax({
          async: true,
@@ -61,10 +61,9 @@ export function enviaAjax(datos, url, type = "POST") {
          cache: false,
          timeout: 10000,
          beforeSend: function () {
-            if (url == "?p=notificaciones&accion=obtenerNotificaciones") {
-               return;
+            if (mostrarCargaMensaje) {
+               modalCarga(true);
             }
-            modalCarga(true);
          },
          success: function (respuesta) {
             resolve(respuesta.data);
@@ -76,14 +75,15 @@ export function enviaAjax(datos, url, type = "POST") {
                   status === "timeout"
                      ? "Servidor ocupado, intente de nuevo"
                      : "Error al procesar la solicitud";
-            muestraMensaje("Error", errorMsg, "error");
+            if (mostrarCargaMensaje) {
+               muestraMensaje("Error", errorMsg, "error");
+            }
             reject(errorMsg);
          },
          complete: function () {
-            if (url == "?p=notificaciones&accion=obtenerNotificaciones") {
-               return;
+            if (mostrarCargaMensaje) {
+               modalCarga(false);
             }
-            modalCarga(false);
          },
       });
    });
@@ -100,7 +100,7 @@ export function muestraMensaje(titulo, mensaje, icono) {
 }
 
 export function obtenerNotificaciones(idUsuario) {
-   enviaAjax("", "?p=notificaciones&accion=obtenerNotificaciones", "GET").then((respuesta) => {
+   enviaAjax("", "?p=notificaciones&accion=obtenerNotificaciones", "GET", false).then((respuesta) => {
       if (respuesta.notificaciones.length < 1) {
          var contenido = `
         <li class="list-group-item list-group-item-secondary">
@@ -304,4 +304,14 @@ export function decodeBase64(base64) {
    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
    const decoder = new TextDecoder();
    return decoder.decode(bytes);
+}
+
+export function debounce(func, delay) {
+   let timer;
+   return function (...args) {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+         func.apply(this, args);
+      }, delay);
+   };
 }

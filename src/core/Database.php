@@ -31,7 +31,10 @@ class Database
          if (!empty($params)) {
             $parametros = $this->obtenerParametros($sql, $params);
          }
-         $stmt->execute($parametros ?? $params);
+         foreach (($parametros ?? $params) as $clave => $valor) {
+            $stmt->bindValue($clave, $valor);
+         }
+         $stmt->execute();
          $affected = $stmt->rowCount();
          if ($uniqueFetch === true) {
             return $stmt->fetch();
@@ -39,7 +42,9 @@ class Database
          $result = $stmt->fetchAll();
          return $result ?: ($affected > 0);
       } catch (\PDOException $e) {
-         $this->rollBack();
+         if ($this->inTransaction) {
+            $this->rollBack();
+         }
          ExceptionHandler::throwException($e->getMessage(), 500, \RuntimeException::class);
          return false;
       }
@@ -77,6 +82,13 @@ class Database
       // se obtienen las claves que esten en ambos arreglos
       $params = array_intersect_key($valores, $placeholders);
       return $params;
+   }
+   public function lastInsertId(): int|bool
+   {
+      if ($this->inTransaction) {
+         return $this->pdo->lastInsertId();
+      }
+      return false;
    }
    public function desconecta(): void
    {
