@@ -100,15 +100,15 @@ class Validar
       }
       return $fechaSeleccionada >= $fechaActual;
    }
-   public static function validarFechasWada(Database $database, string $cedula, string $inscripcion, string $ultima_actualizacion, string $vencimiento): void
+   public static function validarFechasWada(Database $database, string $cedula, string $inscripcion, string $ultimaActualizacion, string $vencimiento): void
    {
       $consulta = "SELECT fecha_nacimiento FROM usuarios WHERE cedula = :cedula";
       $response = $database->query($consulta, [":cedula" => $cedula], true);
       $fechaNacimiento = $response['fecha_nacimiento'] ?: false;
-      if (!$fechaNacimiento) {
+      if (empty($fechaNacimiento)) {
          ExceptionHandler::throwException("El atleta no existe", 400, \InvalidArgumentException::class);
       }
-      foreach ([$inscripcion, $ultima_actualizacion, $fechaNacimiento, $vencimiento] as $fecha) {
+      foreach ([$inscripcion, $ultimaActualizacion, $fechaNacimiento, $vencimiento] as $fecha) {
          if (!self::validarFecha($fecha)) {
             ExceptionHandler::throwException("Las fechas no son válidas", 400, \InvalidArgumentException::class);
          }
@@ -116,7 +116,7 @@ class Validar
       // Convertir las fechas a objetos DateTime para hacer las comparaciones
       $fechaNacimientoObj = new \DateTime($fechaNacimiento);
       $fechaInscripcionObj = new \DateTime($inscripcion);
-      $ultimaActualizacionObj = new \DateTime($ultima_actualizacion);
+      $ultimaActualizacionObj = new \DateTime($ultimaActualizacion);
       $fechaVencimientoObj = new \DateTime($vencimiento);
       // Validar que la inscripción se pueda realizar a partir de los 15 años
       $edad_minima = 15;
@@ -152,5 +152,44 @@ class Validar
          ExceptionHandler::throwException("Los siguientes campos faltan: " . json_encode($missingFields), 400, \InvalidArgumentException::class);
       }
       return $arrayFiltrado;
+   }
+   public static function sanitizarYValidar(mixed &$valor, string $tipoEsperado): bool
+   {
+      $valor = trim($valor);
+      switch ($tipoEsperado) {
+         case 'int':
+            $valor = filter_var($valor, FILTER_SANITIZE_NUMBER_INT);
+            if (filter_var($valor, FILTER_VALIDATE_INT) !== false) {
+               $valor = (int)$valor;
+               return true;
+            }
+            return false;
+
+         case 'float':
+            $valor = filter_var($valor, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+            if (filter_var($valor, FILTER_VALIDATE_FLOAT) !== false) {
+               $valor = (float)$valor;
+               return true;
+            }
+            return false;
+
+         case 'string':
+            $valor = htmlspecialchars($valor);
+            return true;
+
+         case 'email':
+            $valor = filter_var($valor, FILTER_SANITIZE_EMAIL);
+            return filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
+
+         case 'url':
+            $valor = filter_var($valor, FILTER_SANITIZE_URL);
+            return filter_var($valor, FILTER_VALIDATE_URL) !== false;
+
+         case 'bool':
+            $valor = filter_var($valor, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            return $valor !== null;
+         default:
+            return false; // tipo no soportado
+      }
    }
 }

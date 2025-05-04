@@ -93,8 +93,7 @@ class Entrenadores
       ];
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, [':cedula' => $cedula]);
-         if ($response === false) {
-            $this->database->rollBack();
+         if (!$response) {
             ExceptionHandler::throwException("Ocurrió un error al eliminar el entrenador", 500, \RuntimeException::class);
          }
       }
@@ -139,7 +138,6 @@ class Entrenadores
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, $valores);
          if ($response === false) {
-            $this->database->rollBack();
             ExceptionHandler::throwException("Ocurrió un error al incluir el entrenador", 500, \RuntimeException::class);
          }
       }
@@ -186,7 +184,6 @@ class Entrenadores
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, $valores);
          if ($response === false) {
-            $this->database->rollBack();
             ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
          }
       }
@@ -200,7 +197,6 @@ class Entrenadores
          ];
          $responseRoles = $this->database->query($consultaPassword, $valoresPassword);
          if (empty($responseRoles)) {
-            $this->database->rollBack();
             ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
          }
       }

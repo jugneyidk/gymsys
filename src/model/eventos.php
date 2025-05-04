@@ -1,746 +1,572 @@
 <?php
 
-class Eventos extends datos
+namespace Gymsys\Model;
+
+use Gymsys\Core\Database;
+use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\Validar;
+
+class Eventos
 {
-   private $conexion, $nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia, $id_competencia;
+   private Database $database;
 
-   public function __construct()
+   public function __construct(Database $database)
    {
-      $this->conexion = $this->conecta();
+      $this->database = $database;
    }
 
-   public function incluir_evento($datos)
+   public function incluirEvento(array $datos): array
    {
-      $validacion = Validar::validar("nombre_evento", $datos["nombre"]);
-      if (!$validacion["ok"]) {
-         return $validacion;
+      $keys = ['nombre', 'lugar_competencia', 'fecha_inicio', 'fecha_fin', 'categoria', 'subs', 'tipo_competencia'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_evento", $arrayFiltrado["nombre"]);
+      Validar::validar("lugar_competencia", $arrayFiltrado["lugar_competencia"]);
+      Validar::validarFecha($arrayFiltrado["fecha_inicio"]);
+      Validar::validarFecha($arrayFiltrado["fecha_fin"]);
+      if ($arrayFiltrado["fecha_inicio"] > $arrayFiltrado["fecha_fin"]) {
+         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", 400, \InvalidArgumentException::class);
       }
-      $validacion = Validar::validar("lugar_competencia", $datos["lugar_competencia"]);
-      if (!$validacion["ok"]) {
-         return $validacion;
+      if (!Validar::sanitizarYValidar($arrayFiltrado["categoria"], 'int')) {
+         ExceptionHandler::throwException("La categoria no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      if (!Validar::validar_fecha($datos["fecha_inicio"])) {
-         return ["ok" => false, "mensaje" => "La fecha de apertura no es valida"];
+      if (!Validar::sanitizarYValidar($arrayFiltrado["subs"], 'int')) {
+         ExceptionHandler::throwException("La sub no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      if (!Validar::validar_fecha($datos["fecha_fin"])) {
-         return ["ok" => false, "mensaje" => "La fecha de clausura no es valida"];
+      if (!Validar::sanitizarYValidar($arrayFiltrado["tipo_competencia"], 'int')) {
+         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      if ($datos["fecha_inicio"] > $datos["fecha_fin"]) {
-         return ["ok" => false, "mensaje" => "La fecha de inicio no puede ser mayor que la fecha de fin"];
-      }
-      if (!filter_var($datos["categoria"], FILTER_VALIDATE_INT)) {
-         return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
-      }
-      if (!filter_var($datos["subs"], FILTER_VALIDATE_INT)) {
-         return ["ok" => false, "mensaje" => "La sub no es un valor válido"];
-      }
-      if (!filter_var($datos["tipo_competencia"], FILTER_VALIDATE_INT)) {
-         return ["ok" => false, "mensaje" => "El tipo de competencia no es un valor válido"];
-      }
-      foreach ($datos as $campo => $valor) {
-         if (property_exists($this, $campo)) {
-            $this->$campo = $valor;
-         }
-      }
-      return $this->incluir();
+      return $this->_incluirEvento($arrayFiltrado);
    }
 
-   public function listado_eventos()
+   public function listadoEventos(): array
    {
-      return $this->listado();
+      return $this->_listadoEventos();
    }
 
-   public function obtener_resultados_competencia($id_competencia){
-      $this->id_competencia = filter_var($id_competencia, FILTER_SANITIZE_NUMBER_INT);
-      return $this->resultados_competencia_anterior();
-   }
-   private function incluir()
+   public function obtenerResultadosCompetencia(array $datos): array
    {
-      try {
-         $consulta = "SELECT id_competencia FROM competencia WHERE nombre = ?;";
-         $existe = Validar::existe($this->conexion, $this->nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una competencia con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin, estado) 
-                         VALUES (:tipo_competencia, :nombre, :categoria, :subs, :lugar_competencia, :fecha_inicio, :fecha_fin, 'activo')";
-         $valores = array(
-            ':nombre' => $this->nombre,
-            ':lugar_competencia' => $this->lugar_competencia,
-            ':fecha_inicio' => $this->fecha_inicio,
-            ':fecha_fin' => $this->fecha_fin,
-            ':categoria' => $this->categoria,
-            ':subs' => $this->subs,
-            ':tipo_competencia' => $this->tipo_competencia
-         );
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         $respuesta->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $idCompetencia = filter_var($arrayFiltrado['id'], FILTER_SANITIZE_NUMBER_INT);
+      return $this->_obtenerResultadosCompetencia($idCompetencia);
+   }
+   private function _incluirEvento(array $datos): array
+   {
+      $consulta = "SELECT id_competencia FROM competencia WHERE nombre = :id;";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una competencia con el nombre introducido", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin, estado)
+         VALUES (:tipo_competencia, :nombre, :categoria, :subs, :lugar_competencia, :fecha_inicio, :fecha_fin, 'activo')";
+      $valores = [
+         ':nombre' => $datos['nombre'],
+         ':lugar_competencia' => $datos['lugar_competencia'],
+         ':fecha_inicio' => $datos['fecha_inicio'],
+         ':fecha_fin' => $datos['fecha_fin'],
+         ':categoria' => $datos['categoria'],
+         ':subs' => $datos['subs'],
+         ':tipo_competencia' => $datos['tipo_competencia']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al incluir el evento", 500, \InvalidArgumentException::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "El evento se registró exitosamente";
       return $resultado;
    }
-   public function cerrar_evento($id_competencia)
+   public function cerrarEvento(array $datos): array
    {
-      if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-         return ["ok" => false, "mensaje" => "La competencia ingresada no es un válida"];
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id'], 'int');
+      if (!$idCompetencia) {
+         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
       }
-      $this->id_competencia = $id_competencia;
-      return $this->cerrar();
+      return $this->_cerrarEvento($arrayFiltrado['id']);
    }
-   private function cerrar()
+   private function _cerrarEvento(int $idCompetencia): array
    {
-      try {
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $this->id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "UPDATE competencia SET estado = 'inactivo' WHERE id_competencia = :id_competencia";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id_competencia' => $this->id_competencia]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La competencia introducida no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $this->database->beginTransaction();
+      $consulta = "UPDATE competencia SET estado = 'inactivo' WHERE id_competencia = :id_competencia";
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al cerrar el evento", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "El evento se cerró exitosamente";
       return $resultado;
    }
-   private function resultados_competencia_anterior()
+   private function _obtenerResultadosCompetencia(int $idCompetencia): array
    {
-      try {
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $this->id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT rc.id_competencia, u.cedula, u.nombre, u.apellido, rc.arranque, rc.envion, rc.medalla_arranque, rc.medalla_envion, rc.medalla_total, rc.total FROM resultado_competencia rc
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La competencia introducida no existe", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT rc.id_competencia, u.cedula, u.nombre, u.apellido, rc.arranque, rc.envion, rc.medalla_arranque, rc.medalla_envion, rc.medalla_total, rc.total FROM resultado_competencia rc
          INNER JOIN usuarios u ON  rc.id_atleta = u.cedula
          WHERE rc.id_competencia = :id_competencia;";
-         $con = $this->conexion->prepare($consulta);
-         $con->execute([':id_competencia' => $this->id_competencia]);
-         $resultados_competencia = $con->fetchAll(PDO::FETCH_ASSOC);
-         $con->closeCursor();
-         $resultado["ok"] = true;
-         $resultado['resultados'] = $resultados_competencia;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      $resultado["resultados"] = $response ?: [];
       return $resultado;
    }
-   private function listado()
+   private function _listadoEventos(): array
    {
-      try {
-         $consulta = "SELECT 
-                        c.id_competencia,
-                        c.nombre,
-                        c.categoria,  
-                        c.subs,  
-                        c.lugar_competencia,
-                        c.fecha_inicio,
-                        c.fecha_fin,
-                        (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia) AS participantes,
-                        (10 - (SELECT COUNT(*) FROM resultado_competencia rc WHERE rc.id_competencia = c.id_competencia)) AS cupos_disponibles
-                    FROM competencia c
-                    WHERE c.estado = 'activo'";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
+      $consulta = "SELECT * FROM lista_eventos_activos;";
+      $response = $this->database->query($consulta);
+      $resultado["eventos"] = $response ?: [];
       return $resultado;
    }
-   public function incluir_categoria($nombre, $pesoMinimo, $pesoMaximo)
+   public function incluirCategoria(array $datos): array
    {
-      try {
-         $validacion = Validar::validar("nombre_evento", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $validacion = Validar::validar("peso", $pesoMinimo);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $validacion = Validar::validar("peso", $pesoMaximo);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         if ($pesoMaximo <= $pesoMinimo) {
-            return ["ok" => false, "mensaje" => "El peso máximo no puede ser menor o igual al peso mínimo"];
-         }
-         $consulta = "SELECT id_categoria FROM categorias WHERE nombre = ?;";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una categoria con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
-         $valores = [
-            ':nombre' => $nombre,
-            ':pesoMinimo' => $pesoMinimo,
-            ':pesoMaximo' => $pesoMaximo
-         ];
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute($valores);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['nombre', 'pesoMinimo', 'pesoMaximo'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_evento", $arrayFiltrado['nombre']);
+      Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
+      Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
+      if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
+         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      return $this->_incluirCategoria($arrayFiltrado);
+   }
+   private function _incluirCategoria(array $datos): array
+   {
+      $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id;";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
+      $valores = [
+         ':nombre' => $datos['nombre'],
+         ':pesoMinimo' => $datos['pesoMinimo'],
+         ':pesoMaximo' => $datos['pesoMaximo']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al agregar la categoría", 500, \InvalidArgumentException::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "La categoría se registró exitosamente";
       return $respuesta;
    }
-
-   public function modificar_categoria($id, $nombre, $pesoMinimo, $pesoMaximo)
+   public function modificarCategoria(array $datos): array
    {
-      try {
-         $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = ?;";
-         $existe = Validar::existe($this->conexion, $id, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "No existe esta categoria";
-            return $resultado;
-         }
-         $consulta = "SELECT id_categoria FROM categorias WHERE nombre = ? AND id_categoria != '$id';";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una categoria con este nombre";
-            return $resultado;
-         }
-         $validacion = Validar::validar("nombre_categoria", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $validacion = Validar::validar("peso", $pesoMinimo);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $validacion = Validar::validar("peso", $pesoMaximo);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         if ($pesoMaximo <= $pesoMinimo) {
-            return ["ok" => false, "mensaje" => "El peso máximo no puede ser menor o igual al peso mínimo"];
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "UPDATE categorias 
+      $keys = ['id_categoria', 'nombre', 'pesoMinimo', 'pesoMaximo'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_categoria", $arrayFiltrado['nombre']);
+      Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
+      Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
+      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
+      if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
+         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
+      }
+      return $this->_modificarCategoria($arrayFiltrado);
+   }
+   private function _modificarCategoria(array $datos): array
+   {
+      $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
+      $existe = Validar::existe($this->database, $datos['id_categoria'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("No existe la categoria ingresada", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id AND id_categoria != " . $datos["id_categoria"] . ";";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "UPDATE categorias 
                      SET nombre = :nombre, peso_minimo = :pesoMinimo, peso_maximo = :pesoMaximo 
                      WHERE id_categoria = :id";
-         $valores = [
-            ':id' => $id,
-            ':nombre' => $nombre,
-            ':pesoMinimo' => $pesoMinimo,
-            ':pesoMaximo' => $pesoMaximo
-         ];
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute($valores);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $valores = [
+         ':id' => $datos['id_categoria'],
+         ':nombre' => $datos['nombre'],
+         ':pesoMinimo' => $datos['pesoMinimo'],
+         ':pesoMaximo' => $datos['pesoMaximo']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if ($response) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar la categoria", 500, \Exception::class);
       }
-      $this->desconecta();
+      $this->database->commit();
+      $respuesta["ok"] = true;
       return $respuesta;
    }
-   public function eliminar_categoria($id)
+   public function eliminarCategoria(array $datos): array
    {
-      try {
-         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
-         }
-         $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = ?;";
-         $existe = Validar::existe($this->conexion, $id, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "La categoria no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "DELETE FROM categorias WHERE id_categoria = :id";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id' => $id]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id_categoria'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
+      return $this->_eliminarCategoria($arrayFiltrado['id_categoria']);
+   }
+   private function _eliminarCategoria(int $idCategoria): array
+   {
+      $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
+      $existe = Validar::existe($this->database, $idCategoria, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La categoria ingresada no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM categorias WHERE id_categoria = :id";
+      $response = $this->database->query($consulta, [':id' => $idCategoria]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la categoria", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "La categoria se eliminó exitosamente";
       return $respuesta;
    }
-
-   public function modificar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
+   public function modificarResultados(array $datos): array
    {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de competencia no es un valor válido"];
-         }
-         $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = ? AND id_atleta = '$id_atleta';";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Este atleta o competencia no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "
-            UPDATE resultado_competencia 
-            SET arranque = :arranque, 
-                envion = :envion, 
-                medalla_arranque = :medalla_arranque, 
-                medalla_envion = :medalla_envion, 
-                medalla_total = :medalla_total, 
-                total = :total 
-            WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
-         $valores = array(
-            ':id_competencia' => $id_competencia,
-            ':id_atleta' => $id_atleta,
-            ':arranque' => $arranque,
-            ':envion' => $envion,
-            ':medalla_arranque' => $medalla_arranque,
-            ':medalla_envion' => $medalla_envion,
-            ':medalla_total' => $medalla_total,
-            ':total' => $total
-         );
-         $resultado = $this->conexion->prepare($consulta);
-         $resultado->execute($valores);
-         $resultado->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      return $this->_modificarResultados($datos);
+   }
+   public function _modificarResultados(array $datos): array
+   {
+      $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = " . $datos['id_competencia'] . " AND id_atleta = :id;";
+      $existe = Validar::existe($this->database, $datos['id_atleta'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("El atleta o competencia no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $this->database->beginTransaction();
+      $consulta = "UPDATE resultado_competencia 
+                     SET arranque = :arranque, 
+                        envion = :envion, 
+                        medalla_arranque = :medalla_arranque, 
+                        medalla_envion = :medalla_envion, 
+                        medalla_total = :medalla_total, 
+                        total = :total 
+                     WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
+      $valores = [
+         ':id_competencia' => $datos['id_competencia'],
+         ':id_atleta' => $datos['id_atleta'],
+         ':arranque' => $datos['arranque'],
+         ':envion' => $datos['envion'],
+         ':medalla_arranque' => $datos['medalla_arranque'],
+         ':medalla_envion' => $datos['medalla_envion'],
+         ':medalla_total' => $datos['medalla_total'],
+         ':total' => $datos['total']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar el resultado", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "El resultado se modificó exitosamente";
       return $respuesta;
    }
 
-
-   public function incluir_subs($nombre, $edadMinima, $edadMaxima)
+   public function incluirSubs(array $datos): array
    {
-      try {
-         $validacion = Validar::validar("nombre_sub", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         if (!filter_var($edadMinima, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La edad mínima no es un valor válido"];
-         }
-         if (!filter_var($edadMaxima, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La edad máxima no es un valor válido"];
-         }
-         if ($edadMaxima <= $edadMinima) {
-            return ["ok" => false, "mensaje" => "La edad máxima no puede ser menor o igual a la edad mínima"];
-         }
-         $consulta = "SELECT id_sub FROM subs WHERE nombre = ?;";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una sub con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
+      $keys = ['nombre', 'edadMinima', 'edadMaxima'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_sub", $arrayFiltrado['nombre']);
+      Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
+      if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
+         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
+      }
+      return $this->_incluirSubs($arrayFiltrado);
+   }
+   private function _incluirSubs(array $datos): array
+   {
+      $consulta = "SELECT id_sub FROM subs WHERE nombre = :id;";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
                      VALUES (:nombre, :edadMinima, :edadMaxima)";
-         $valores = [
-            ':nombre' => $nombre,
-            ':edadMinima' => $edadMinima,
-            ':edadMaxima' => $edadMaxima
-         ];
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute($valores);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (Exception $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $valores = [
+         ':nombre' => $datos['nombre'],
+         ':edadMinima' => $datos['edadMinima'],
+         ':edadMaxima' => $datos['edadMaxima']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al incluir la sub", 500, \Exception::class);
       }
-      $this->desconecta();
+      $this->database->commit();
+      $respuesta["mensaje"] = "La sub se registró exitosamente";
       return $respuesta;
    }
-   public function modificar_sub($id, $nombre, $edadMinima, $edadMaxima)
+   public function modificarSub(array $datos): array
    {
-      try {
-         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la sub no es válido"];
-         }
-         $validacion = Validar::validar("nombre_sub", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         if (!filter_var($edadMinima, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La edad mínima no es un valor válido"];
-         }
-         if (!filter_var($edadMaxima, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La edad máxima no es un valor válido"];
-         }
-         if ($edadMaxima <= $edadMinima) {
-            return ["ok" => false, "mensaje" => "La edad máxima no puede ser menor o igual a la edad mínima"];
-         }
-         $consulta = "SELECT id_sub FROM subs WHERE id_sub = ?;";
-         $existe = Validar::existe($this->conexion, $id, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta sub no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT id_sub FROM subs WHERE nombre = ? AND id_sub != '$id';";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una sub con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "UPDATE subs 
+      $keys = ['id_sub', 'nombre', 'edadMinima', 'edadMaxima'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
+      Validar::validar("nombre_sub", $arrayFiltrado['nombre']);
+      if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
+         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
+      }
+      return $this->_modificarSub($arrayFiltrado);
+   }
+   public function _modificarSub(array $datos): array
+   {
+      $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
+      $existe = Validar::existe($this->database, $datos['id_sub'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT id_sub FROM subs WHERE nombre = :id AND id_sub != {" . $datos['id_sub'] . "};";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "UPDATE subs 
                      SET nombre = :nombre, edad_minima = :edadMinima, edad_maxima = :edadMaxima 
                      WHERE id_sub = :id";
+      $valores = [
+         ':id' => $datos['id_sub'],
+         ':nombre' => $datos['nombre'],
+         ':edadMinima' => $datos['edadMinima'],
+         ':edadMaxima' => $datos['edadMaxima']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar la sub", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "La sub se modificó exitosamente";
+      return $respuesta;
+   }
+   public function eliminarSub(array $datos): array
+   {
+      $keys = ['id_sub'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
+      return $this->_eliminarSub($arrayFiltrado['id_sub']);
+   }
+
+   private function _eliminarSub(int $idSub): array
+   {
+      $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
+      $existe = Validar::existe($this->database, $idSub, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM subs WHERE id_sub = :id";
+      $response = $this->database->query($consulta, [':id' => $idSub]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la sub", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "La sub se eliminó exitosamente";
+      return $respuesta;
+   }
+   public function incluirTipo(array $datos): array
+   {
+      $keys = ['nombre'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_tipo", $arrayFiltrado['nombre']);
+      return $this->_incluirTipo($arrayFiltrado['nombre']);
+   }
+   private function _incluirTipo(string $nombreTipo): array
+   {
+      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id;";
+      $existe = Validar::existe($this->database, $nombreTipo, $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe este tipo de competencia", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
+      $response = $this->database->query($consulta, [':nombre' => $nombreTipo]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al incluir el tipo de competencia", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "El tipo de competencia se registró exitosamente";
+      return $resultado;
+   }
+   public function listadoCategorias(): array
+   {
+      return $this->_listadoCategorias();
+   }
+   private function _listadoCategorias(): array
+   {
+      $consulta = "SELECT * FROM categorias";
+      $response = $this->database->query($consulta);
+      $resultado["categorias"] = $response;
+      return $resultado;
+   }
+   public function listadoEventosAnteriores(): array
+   {
+      return $this->_listadoEventosAnteriores();
+   }
+   private function _listadoEventosAnteriores(): array
+   {
+      $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() OR estado = 'inactivo' ORDER BY fecha_fin DESC LIMIT 5";
+      $response = $this->database->query($consulta);
+      $resultado["eventos"] = $response ?: [];
+      return $resultado;
+   }
+   public function listadoSubs(): array
+   {
+      return $this->_listadoSubs();
+   }
+   private function _listadoSubs(): array
+   {
+      $consulta = "SELECT * FROM subs";
+      $response = $this->database->query($consulta);
+      $resultado["subs"] = $response ?: [];
+      return $resultado;
+   }
+   public function listadoTipos(): array
+   {
+      return $this->_listadoTipos();
+   }
+   private function _listadoTipos(): array
+   {
+      $consulta = "SELECT * FROM tipo_competencia";
+      $response = $this->database->query($consulta);
+      $resultado["tipos"] = $response ?: [];
+      return $resultado;
+   }
+   public function listadoAtletasInscritos(array $datos): array
+   {
+      $keys = ['id_competencia'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      return $this->_listadoAtletasInscritos($arrayFiltrado['id_competencia']);
+   }
+
+   private function _listadoAtletasInscritos(int $idCompetencia): array
+   {
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("No existe la competencia ingresada", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT 
+                     a.cedula AS id_atleta,
+                     u.nombre,
+                     u.apellido,
+                     rc.arranque,
+                     rc.envion,
+                     rc.medalla_arranque,
+                     rc.medalla_envion,
+                     rc.medalla_total,
+                     rc.total
+                  FROM resultado_competencia rc
+                  JOIN atleta a ON rc.id_atleta = a.cedula
+                  JOIN usuarios u ON a.cedula = u.cedula
+                  WHERE rc.id_competencia = :id_competencia";
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      $resultado["atletas"] = $response ?: [];
+      return $resultado;
+   }
+   public function inscribirAtletas(array $datos): array
+   {
+      $keys = ['id_competencia', 'atletas'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      if (!is_string($arrayFiltrado['atletas'])) {
+         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
+      }
+      $atletas = json_decode($arrayFiltrado['atletas'], true);
+      if (!is_array($atletas)) {
+         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
+      }
+      return $this->_inscribirAtletas($arrayFiltrado['id_competencia'], $atletas);
+   }
+   private function _inscribirAtletas(int $idCompetencia, array $atletas): array
+   {
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("Esta competencia no existe", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
+      foreach ($atletas as $id_atleta) {
          $valores = [
-            ':id' => $id,
-            ':nombre' => $nombre,
-            ':edadMinima' => $edadMinima,
-            ':edadMaxima' => $edadMaxima
+            ':id_competencia' => $idCompetencia,
+            ':id_atleta' => $id_atleta
          ];
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute($valores);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+         $response = $this->database->query($consulta, $valores);
+         if (empty($response)) {
+            ExceptionHandler::throwException("Ocurrió un error al inscribir los atletas", 500, \Exception::class);
+         }
       }
-      $this->desconecta();
+      $this->database->commit();
+      $respuesta["mensaje"] = "Los atletas se inscribieron exitosamente";
       return $respuesta;
    }
-
-   public function eliminar_sub($id)
+   public function obtenerCompetencia(array $datos): array
    {
-      try {
-         if (!filter_var($id, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la sub no es válido"];
-         }
-         $consulta = "SELECT id_sub FROM subs WHERE id_sub = ?;";
-         $existe = Validar::existe($this->conexion, $id, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta sub no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "DELETE FROM subs WHERE id_sub = :id";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id' => $id]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      if (!filter_var($arrayFiltrado['id'], FILTER_VALIDATE_INT)) {
+         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      return $this->_obtenerCompetencia($arrayFiltrado['id']);
+   }
+   private function _obtenerCompetencia(int $idCompetencia): array
+   {
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      $respuesta["competencia"] = $response ?: [];
       return $respuesta;
    }
-
-   public function incluir_tipo($nombre)
+   public function modificarCompetencia(array $datos): array
    {
-      try {
-         $validacion = Validar::validar("nombre_tipo", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = ?;";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe este tipo de competencia";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
-         $valores = array(':nombre' => $nombre);
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         $respuesta->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $keys = ['id_competencia', 'nombre', 'lugar_competencia', 'fecha_inicio', 'fecha_fin', 'categoria', 'subs', 'tipo_competencia'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::validar("nombre_evento", $arrayFiltrado["nombre"]);
+      Validar::validar("lugar_competencia", $arrayFiltrado["lugar_competencia"]);
+      Validar::validarFecha($arrayFiltrado["fecha_inicio"]);
+      Validar::validarFecha($arrayFiltrado["fecha_fin"]);
+      if ($arrayFiltrado["fecha_inicio"] > $arrayFiltrado["fecha_fin"]) {
+         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
-   }
-
-   public function listado_categoria()
-   {
-      try {
-         $consulta = "SELECT * FROM categorias";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      if (!Validar::sanitizarYValidar($arrayFiltrado["id_competencia"], 'int')) ExceptionHandler::throwException("La competencia ingresada no es un valor válido", 400, \InvalidArgumentException::class);
+      if (!Validar::sanitizarYValidar($arrayFiltrado["categoria"], 'int')) {
+         ExceptionHandler::throwException("La categoria no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
-   }
-   public function listado_eventos_anteriores()
-   {
-      try {
-         $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() OR estado = 'inactivo' ORDER BY fecha_fin DESC LIMIT 5";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      if (!Validar::sanitizarYValidar($arrayFiltrado["subs"], 'int')) {
+         ExceptionHandler::throwException("La sub no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
-   }
-
-
-   public function listado_subs()
-   {
-      try {
-         $consulta = "SELECT * FROM subs";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      if (!Validar::sanitizarYValidar($arrayFiltrado["tipo_competencia"], 'int')) {
+         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
+      return $this->_modificarCompetencia($arrayFiltrado);
    }
-
-   public function listado_tipo()
+   private function _modificarCompetencia(array $datos): array
    {
-      try {
-         $consulta = "SELECT * FROM tipo_competencia";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute();
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $datos['id_competencia'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
-   }
-
-   public function listado_atletas_inscritos($id_competencia)
-   {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "No existe esta competencia";
-            return $resultado;
-         }
-         $consulta = "
-            SELECT 
-                a.cedula AS id_atleta,
-                u.nombre,
-                u.apellido,
-                rc.arranque,
-                rc.envion,
-                rc.medalla_arranque,
-                rc.medalla_envion,
-                rc.medalla_total,
-                rc.total
-            FROM resultado_competencia rc
-            JOIN atleta a ON rc.id_atleta = a.cedula
-            JOIN usuarios u ON a.cedula = u.cedula
-            WHERE rc.id_competencia = :id_competencia";
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute([':id_competencia' => $id_competencia]);
-         $respuesta = $respuesta->fetchAll(PDO::FETCH_ASSOC);
-         $resultado["ok"] = true;
-         $resultado["respuesta"] = $respuesta;
-      } catch (PDOException $e) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $consulta = "SELECT id_competencia FROM competencia WHERE nombre = :id AND id_competencia != " . $datos['id_competencia'] . ";";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe una competencia con este nombre", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
-      return $resultado;
-   }
-
-
-   public function inscribir_atletas($id_competencia, $atletas)
-   {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
-         }
-         if (!is_string($atletas)) {
-            throw new Exception("El formato de los datos de atletas no es válido.");
-         }
-         $atletas = json_decode($atletas, true);
-         if (!is_array($atletas)) {
-            throw new Exception("El formato de los datos de atletas no es válido.");
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         foreach ($atletas as $id_atleta) {
-            $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
-            $valores = array(
-               ':id_competencia' => $id_competencia,
-               ':id_atleta' => $id_atleta
-            );
-            $stmt = $this->conexion->prepare($consulta);
-            $stmt->execute($valores);
-            $stmt->closeCursor();
-         }
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
-      return $respuesta;
-   }
-
-   public function obtenerCompetencia($id_competencia)
-   {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
-         $resultado = $this->conexion->prepare($consulta);
-         $resultado->execute([':id_competencia' => $id_competencia]);
-         $resultado = $resultado->fetch(PDO::FETCH_ASSOC);
-         $respuesta["ok"] = true;
-         $respuesta["respuesta"] = $resultado;
-      } catch (PDOException $e) {
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
-      }
-      $this->desconecta();
-      return $respuesta;
-   }
-
-   public function modificarCompetencia($id_competencia, $nombre, $lugar_competencia, $fecha_inicio, $fecha_fin, $categoria, $subs, $tipo_competencia)
-   {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
-         }
-         $validacion = Validar::validar("nombre_evento", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $validacion = Validar::validar("lugar_competencia", $lugar_competencia);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         if (!Validar::validar_fecha($fecha_inicio)) {
-            return ["ok" => false, "mensaje" => "La fecha de apertura no es valida"];
-         }
-         if (!Validar::validar_fecha($fecha_fin)) {
-            return ["ok" => false, "mensaje" => "La fecha de clausura no es valida"];
-         }
-         if ($fecha_inicio > $fecha_fin) {
-            return ["ok" => false, "mensaje" => "La fecha de inicio no puede ser mayor que la fecha de fin"];
-         }
-         if (!filter_var($categoria, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La categoria no es un valor válido"];
-         }
-         if (!filter_var($subs, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "La sub no es un valor válido"];
-         }
-         if (!filter_var($tipo_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El tipo de competencia no es un valor válido"];
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE nombre = ? AND id_competencia != '$id_competencia';";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe una competencia con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "UPDATE competencia 
+      $this->database->beginTransaction();
+      $consulta = "UPDATE competencia 
                      SET nombre = :nombre, 
                          lugar_competencia = :lugar_competencia, 
                          fecha_inicio = :fecha_inicio, 
@@ -749,211 +575,173 @@ class Eventos extends datos
                          subs = :subs, 
                          tipo_competicion = :tipo_competencia 
                      WHERE id_competencia = :id_competencia";
-         $valores = [
-            ':id_competencia' => $id_competencia,
-            ':nombre' => $nombre,
-            ':lugar_competencia' => $lugar_competencia,
-            ':fecha_inicio' => $fecha_inicio,
-            ':fecha_fin' => $fecha_fin,
-            ':categoria' => $categoria,
-            ':subs' => $subs,
-            ':tipo_competencia' => $tipo_competencia
-         ];
-         $resultado = $this->conexion->prepare($consulta);
-         $resultado->execute($valores);
-         $resultado->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $valores = [
+         ':id_competencia' => $datos['id_competencia'],
+         ':nombre' => $datos['nombre'],
+         ':lugar_competencia' => $datos['lugar_competencia'],
+         ':fecha_inicio' => $datos['fecha_inicio'],
+         ':fecha_fin' => $datos['fecha_fin'],
+         ':categoria' => $datos['categoria'],
+         ':subs' => $datos['subs'],
+         ':tipo_competencia' => $datos['tipo_competencia']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      $this->database->commit();
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar la competencia", 500, \Exception::class);
       }
-      $this->desconecta();
+      $respuesta["mensaje"] = "La competencia se modificó exitosamente";
       return $respuesta;
    }
-
-   public function eliminar_evento($id_competencia)
+   public function eliminarEvento(array $datos): array
    {
-      try {
-         if (!filter_var($id_competencia, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID de la competencia no es válido"];
-         }
-         $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_competencia, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Esta competencia no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consultaRelacionada = "DELETE FROM resultado_competencia WHERE id_competencia = :id_competencia";
-         $stmtRelacionada = $this->conexion->prepare($consultaRelacionada);
-         $stmtRelacionada->execute([':id_competencia' => $id_competencia]);
-         $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id_competencia' => $id_competencia]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $resultado["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = $e->getMessage();
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id'], 'int');
+      if (!$idCompetencia) {
+         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      return $this->_eliminarEvento($arrayFiltrado['id']);
+   }
+   private function _eliminarEvento(int $idCompetencia): array
+   {
+      $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
+      $existe = Validar::existe($this->database, $idCompetencia, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la competencia", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $resultado["mensaje"] = "La competencia se eliminó exitosamente";
       return $resultado;
    }
-
-   public function eliminar_tipo($id_tipo)
+   public function eliminarTipo(array $datos)
    {
-      try {
-         if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
-         }
-
-         $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Este tipo de competencia no existe";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id_tipo' => $id_tipo]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      if (!Validar::sanitizarYValidar($arrayFiltrado['id'], "int")) {
+         ExceptionHandler::throwException("El ID del tipo de competencia no es válido", 400, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      return $this->_eliminarTipo($arrayFiltrado['id']);
+   }
+   private function _eliminarTipo(int $idTipo): array
+   {
+      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
+      $existe = Validar::existe($this->database, $idTipo, $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("Este tipo de competencia no existe", 404, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
+      $response = $this->database->query($consulta, [':id_tipo' => $idTipo]);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al eliminar el tipo de competencia", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "El tipo de competencia se eliminó exitosamente";
       return $respuesta;
    }
-
-   public function modificar_tipo($id_tipo, $nombre)
+   public function modificarTipo(array $datos): array
    {
-      try {
-         if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
-         }
-         $validacion = Validar::validar("nombre_tipo", $nombre);
-         if (!$validacion["ok"]) {
-            return $validacion;
-         }
-         $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Este tipo de competencia no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = ? AND id_tipo_competencia != '$id_tipo';";
-         $existe = Validar::existe($this->conexion, $nombre, $consulta);
-         if ($existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Ya existe un tipo de competencia con este nombre";
-            return $resultado;
-         }
-         $this->conexion->beginTransaction();
-         $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':nombre' => $nombre, ':id_tipo' => $id_tipo]);
-         $stmt->closeCursor();
-         $this->conexion->commit();
-         $respuesta["ok"] = true;
-      } catch (PDOException $e) {
-         $this->conexion->rollBack();
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id_tipo', 'nombre'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], 'int');
+      Validar::validar("nombre_tipo", $arrayFiltrado['nombre']);
+      return $this->_modificarTipo($arrayFiltrado);
+   }
+   public function _modificarTipo(array $datos): array
+   {
+      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
+      $existe = Validar::existe($this->database, $datos['id_tipo'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("El tipo de competencia ingresado no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id AND id_tipo_competencia != " . $datos['id_tipo'] . ";";
+      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
+      if ($existe) {
+         ExceptionHandler::throwException("Ya existe un tipo de competencia con este nombre", 400, \InvalidArgumentException::class);
+      }
+      $this->database->beginTransaction();
+      $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
+      $valores = [
+         ':nombre' => $datos['nombre'],
+         ':id_tipo' => $datos['id_tipo']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar el tipo de competencia", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "El tipo de competencia se modificó exitosamente";
       return $respuesta;
    }
-   public function verificar_relacion_tipo($id_tipo)
+   public function registrarResultados(array $datos): array
    {
-      try {
-         if (!filter_var($id_tipo, FILTER_VALIDATE_INT)) {
-            return ["ok" => false, "mensaje" => "El ID del tipo de competencia no es válido"];
-         }
-         $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = ?;";
-         $existe = Validar::existe($this->conexion, $id_tipo, $consulta);
-         if (!$existe["ok"]) {
-            $resultado["ok"] = false;
-            $resultado["mensaje"] = "Este tipo de competencia no existe";
-            return $resultado;
-         }
-         $consulta = "SELECT COUNT(*) AS total FROM competencia WHERE tipo_competicion = :id_tipo";
-         $stmt = $this->conexion->prepare($consulta);
-         $stmt->execute([':id_tipo' => $id_tipo]);
-         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-         $respuesta["ok"] = true;
-         $respuesta["existe"] = $resultado["total"] > 0;
-      } catch (Exception $e) {
-         $respuesta["ok"] = false;
-         $respuesta["mensaje"] = $e->getMessage();
+      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      return $this->_registrarResultados($arrayFiltrado);
+   }
+   private function _registrarResultados(array $datos): array
+   {
+      $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = " . $datos['id_competencia'] . " AND id_atleta = :id;";
+      $existe = Validar::existe($this->database, $datos['id_atleta'], $consulta);
+      if (!$existe) {
+         ExceptionHandler::throwException("El atleta o competencia no existe", 404, \InvalidArgumentException::class);
       }
-      $this->desconecta();
+      $consulta = "UPDATE resultado_competencia 
+                     SET arranque = :arranque, 
+                        envion = :envion, 
+                        medalla_arranque = :medalla_arranque, 
+                        medalla_envion = :medalla_envion, 
+                        medalla_total = :medalla_total, 
+                        total = :total 
+                     WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
+      $valores = [
+         ':id_competencia' => $datos['id_competencia'],
+         ':id_atleta' => $datos['id_atleta'],
+         ':arranque' => $datos['arranque'],
+         ':envion' => $datos['envion'],
+         ':medalla_arranque' => $datos['medalla_arranque'],
+         ':medalla_envion' => $datos['medalla_envion'],
+         ':medalla_total' => $datos['medalla_total'],
+         ':total' => $datos['total']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      if (empty($response)) {
+         ExceptionHandler::throwException("Ocurrió un error al registrar el resultado", 500, \Exception::class);
+      }
+      $this->database->commit();
+      $respuesta["mensaje"] = "El resultado se registró exitosamente";
       return $respuesta;
    }
-
-   public function registrar_resultados($id_competencia, $id_atleta, $arranque, $envion, $medalla_arranque, $medalla_envion, $medalla_total, $total)
+   public function listadoAtletasDisponibles(array $datos): array
    {
-      try {
-         $consulta = "
-            UPDATE resultado_competencia 
-            SET arranque = :arranque, 
-                envion = :envion, 
-                medalla_arranque = :medalla_arranque, 
-                medalla_envion = :medalla_envion, 
-                medalla_total = :medalla_total, 
-                total = :total 
-            WHERE id_competencia = :id_competencia AND id_atleta = :id_atleta";
-         $valores = array(
-            ':id_competencia' => $id_competencia,
-            ':id_atleta' => $id_atleta,
-            ':arranque' => $arranque,
-            ':envion' => $envion,
-            ':medalla_arranque' => $medalla_arranque,
-            ':medalla_envion' => $medalla_envion,
-            ':medalla_total' => $medalla_total,
-            ':total' => $total
-         );
-         $respuesta = $this->conexion->prepare($consulta);
-         $respuesta->execute($valores);
-         return ["ok" => true, "mensaje" => "Resultados registrados correctamente."];
-      } catch (Exception $e) {
-         return ["ok" => false, "mensaje" => $e->getMessage()];
-      }
+      $keys = ['id_categoria', 'id_sub', 'id_competencia'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      return $this->_listadoAtletasDisponibles($arrayFiltrado);
    }
-
-   public function listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia)
+   private function _listadoAtletasDisponibles(array $datos): array
    {
-      try {
-         $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
-         $stmtCategoria = $this->conexion->prepare($consultaCategoria);
-         $stmtCategoria->execute([':id_categoria' => $id_categoria]);
-         $categoria = $stmtCategoria->fetch(PDO::FETCH_ASSOC);
-
-         if (!$categoria) {
-            throw new Exception("Categoría no encontrada.");
-         }
-
-         $consultaSub = "SELECT edad_minima, edad_maxima FROM subs WHERE id_sub = :id_sub";
-         $stmtSub = $this->conexion->prepare($consultaSub);
-         $stmtSub->execute([':id_sub' => $id_sub]);
-         $sub = $stmtSub->fetch(PDO::FETCH_ASSOC);
-
-         if (!$sub) {
-            throw new Exception("Subcategoría no encontrada.");
-         }
-
-         $consultaAtletas = "
-                SELECT 
+      $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
+      $responseCategoria = $this->database->query($consultaCategoria, [':id_categoria' => $datos['id_categoria']], true);
+      if (empty($responseCategoria)) {
+         ExceptionHandler::throwException("La categoria ingresada no fue encontrada", 404, \InvalidArgumentException::class);
+      }
+      $consultaSub = "SELECT edad_minima, edad_maxima FROM subs WHERE id_sub = :id_sub";
+      $responseSub = $this->database->query($consultaSub, [':id_sub' => $datos['id_sub']], true);
+      if (empty($responseSub)) {
+         ExceptionHandler::throwException("La sub ingresada no fue encontrada", 404, \InvalidArgumentException::class);
+      }
+      $consulta = "SELECT 
                     a.cedula AS id_atleta,
                     u.nombre,
                     u.apellido,
@@ -966,39 +754,16 @@ class Eventos extends datos
                   AND NOT EXISTS (
                       SELECT 1 
                       FROM resultado_competencia rc 
-                      WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula
-                  )";
-
-         $stmtAtletas = $this->conexion->prepare($consultaAtletas);
-         $stmtAtletas->execute([
-            ':peso_minimo' => $categoria['peso_minimo'],
-            ':peso_maximo' => $categoria['peso_maximo'],
-            ':edad_minima' => $sub['edad_minima'],
-            ':edad_maxima' => $sub['edad_maxima'],
-            ':id_competencia' => $id_competencia
-         ]);
-
-         $atletas = $stmtAtletas->fetchAll(PDO::FETCH_ASSOC);
-
-         return ["ok" => true, "respuesta" => $atletas];
-      } catch (Exception $e) {
-         return ["ok" => false, "mensaje" => $e->getMessage()];
-      }
-   }
-
-
-   public function __get($propiedad)
-   {
-      return $this->$propiedad;
-   }
-
-   public function __set($propiedad, $valor)
-   {
-      $this->$propiedad = $valor;
-      return $this;
-   }
-   public function __destruct()
-   {
-      $this->conexion = null;
+                      WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula)";
+      $valores = [
+         ':peso_minimo' => $responseCategoria['peso_minimo'],
+         ':peso_maximo' => $responseCategoria['peso_maximo'],
+         ':edad_minima' => $responseSub['edad_minima'],
+         ':edad_maxima' => $responseSub['edad_maxima'],
+         ':id_competencia' => $datos['id_competencia']
+      ];
+      $response = $this->database->query($consulta, $valores);
+      $resultado['atletas'] = $response ?: [];
+      return $resultado;
    }
 }
