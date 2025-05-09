@@ -125,107 +125,6 @@ class Eventos
       $resultado["eventos"] = $response ?: [];
       return $resultado;
    }
-   public function incluirCategoria(array $datos): array
-   {
-      $keys = ['nombre', 'pesoMinimo', 'pesoMaximo'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("nombre_evento", $arrayFiltrado['nombre']);
-      Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
-      Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
-      if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
-         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
-      }
-      return $this->_incluirCategoria($arrayFiltrado);
-   }
-   private function _incluirCategoria(array $datos): array
-   {
-      $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id;";
-      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 404, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
-      $valores = [
-         ':nombre' => $datos['nombre'],
-         ':pesoMinimo' => $datos['pesoMinimo'],
-         ':pesoMaximo' => $datos['pesoMaximo']
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al agregar la categoría", 500, \InvalidArgumentException::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "La categoría se registró exitosamente";
-      return $respuesta;
-   }
-   public function modificarCategoria(array $datos): array
-   {
-      $keys = ['id_categoria', 'nombre', 'pesoMinimo', 'pesoMaximo'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("nombre_categoria", $arrayFiltrado['nombre']);
-      Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
-      Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
-      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
-      if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
-         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
-      }
-      return $this->_modificarCategoria($arrayFiltrado);
-   }
-   private function _modificarCategoria(array $datos): array
-   {
-      $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
-      $existe = Validar::existe($this->database, $datos['id_categoria'], $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("No existe la categoria ingresada", 404, \InvalidArgumentException::class);
-      }
-      $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id AND id_categoria != " . $datos["id_categoria"] . ";";
-      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 400, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "UPDATE categorias 
-                     SET nombre = :nombre, peso_minimo = :pesoMinimo, peso_maximo = :pesoMaximo 
-                     WHERE id_categoria = :id";
-      $valores = [
-         ':id' => $datos['id_categoria'],
-         ':nombre' => $datos['nombre'],
-         ':pesoMinimo' => $datos['pesoMinimo'],
-         ':pesoMaximo' => $datos['pesoMaximo']
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if ($response) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la categoria", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["ok"] = true;
-      return $respuesta;
-   }
-   public function eliminarCategoria(array $datos): array
-   {
-      $keys = ['id_categoria'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
-      return $this->_eliminarCategoria($arrayFiltrado['id_categoria']);
-   }
-   private function _eliminarCategoria(int $idCategoria): array
-   {
-      $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
-      $existe = Validar::existe($this->database, $idCategoria, $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("La categoria ingresada no existe", 404, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "DELETE FROM categorias WHERE id_categoria = :id";
-      $response = $this->database->query($consulta, [':id' => $idCategoria]);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la categoria", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "La categoria se eliminó exitosamente";
-      return $respuesta;
-   }
    public function modificarResultados(array $datos): array
    {
       $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
@@ -267,145 +166,6 @@ class Eventos
       $respuesta["mensaje"] = "El resultado se modificó exitosamente";
       return $respuesta;
    }
-
-   public function incluirSubs(array $datos): array
-   {
-      $keys = ['nombre', 'edadMinima', 'edadMaxima'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("nombre_sub", $arrayFiltrado['nombre']);
-      Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
-      if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
-         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
-      }
-      return $this->_incluirSubs($arrayFiltrado);
-   }
-   private function _incluirSubs(array $datos): array
-   {
-      $consulta = "SELECT id_sub FROM subs WHERE nombre = :id;";
-      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
-                     VALUES (:nombre, :edadMinima, :edadMaxima)";
-      $valores = [
-         ':nombre' => $datos['nombre'],
-         ':edadMinima' => $datos['edadMinima'],
-         ':edadMaxima' => $datos['edadMaxima']
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir la sub", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "La sub se registró exitosamente";
-      return $respuesta;
-   }
-   public function modificarSub(array $datos): array
-   {
-      $keys = ['id_sub', 'nombre', 'edadMinima', 'edadMaxima'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
-      Validar::validar("nombre_sub", $arrayFiltrado['nombre']);
-      if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
-         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
-      }
-      return $this->_modificarSub($arrayFiltrado);
-   }
-   public function _modificarSub(array $datos): array
-   {
-      $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
-      $existe = Validar::existe($this->database, $datos['id_sub'], $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
-      }
-      $consulta = "SELECT id_sub FROM subs WHERE nombre = :id AND id_sub != {" . $datos['id_sub'] . "};";
-      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "UPDATE subs 
-                     SET nombre = :nombre, edad_minima = :edadMinima, edad_maxima = :edadMaxima 
-                     WHERE id_sub = :id";
-      $valores = [
-         ':id' => $datos['id_sub'],
-         ':nombre' => $datos['nombre'],
-         ':edadMinima' => $datos['edadMinima'],
-         ':edadMaxima' => $datos['edadMaxima']
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la sub", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "La sub se modificó exitosamente";
-      return $respuesta;
-   }
-   public function eliminarSub(array $datos): array
-   {
-      $keys = ['id_sub'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
-      return $this->_eliminarSub($arrayFiltrado['id_sub']);
-   }
-
-   private function _eliminarSub(int $idSub): array
-   {
-      $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
-      $existe = Validar::existe($this->database, $idSub, $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "DELETE FROM subs WHERE id_sub = :id";
-      $response = $this->database->query($consulta, [':id' => $idSub]);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la sub", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "La sub se eliminó exitosamente";
-      return $respuesta;
-   }
-   public function incluirTipo(array $datos): array
-   {
-      $keys = ['nombre'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("nombre_tipo", $arrayFiltrado['nombre']);
-      return $this->_incluirTipo($arrayFiltrado['nombre']);
-   }
-   private function _incluirTipo(string $nombreTipo): array
-   {
-      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id;";
-      $existe = Validar::existe($this->database, $nombreTipo, $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe este tipo de competencia", 400, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
-      $response = $this->database->query($consulta, [':nombre' => $nombreTipo]);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el tipo de competencia", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $resultado["mensaje"] = "El tipo de competencia se registró exitosamente";
-      return $resultado;
-   }
-   public function listadoCategorias(): array
-   {
-      return $this->_listadoCategorias();
-   }
-   private function _listadoCategorias(): array
-   {
-      $consulta = "SELECT * FROM categorias";
-      $response = $this->database->query($consulta);
-      $resultado["categorias"] = $response;
-      return $resultado;
-   }
    public function listadoEventosAnteriores(): array
    {
       return $this->_listadoEventosAnteriores();
@@ -417,28 +177,7 @@ class Eventos
       $resultado["eventos"] = $response ?: [];
       return $resultado;
    }
-   public function listadoSubs(): array
-   {
-      return $this->_listadoSubs();
-   }
-   private function _listadoSubs(): array
-   {
-      $consulta = "SELECT * FROM subs";
-      $response = $this->database->query($consulta);
-      $resultado["subs"] = $response ?: [];
-      return $resultado;
-   }
-   public function listadoTipos(): array
-   {
-      return $this->_listadoTipos();
-   }
-   private function _listadoTipos(): array
-   {
-      $consulta = "SELECT * FROM tipo_competencia";
-      $response = $this->database->query($consulta);
-      $resultado["tipos"] = $response ?: [];
-      return $resultado;
-   }
+
    public function listadoAtletasInscritos(array $datos): array
    {
       $keys = ['id_competencia'];
@@ -526,11 +265,11 @@ class Eventos
          ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
       }
       $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
-      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia], true);
       $respuesta["competencia"] = $response ?: [];
       return $respuesta;
    }
-   public function modificarCompetencia(array $datos): array
+   public function modificarEvento(array $datos): array
    {
       $keys = ['id_competencia', 'nombre', 'lugar_competencia', 'fecha_inicio', 'fecha_fin', 'categoria', 'subs', 'tipo_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
@@ -551,9 +290,9 @@ class Eventos
       if (!Validar::sanitizarYValidar($arrayFiltrado["tipo_competencia"], 'int')) {
          ExceptionHandler::throwException("El tipo de competencia no es un valor válido", 400, \InvalidArgumentException::class);
       }
-      return $this->_modificarCompetencia($arrayFiltrado);
+      return $this->_modificarEvento($arrayFiltrado);
    }
-   private function _modificarCompetencia(array $datos): array
+   private function _modificarEvento(array $datos): array
    {
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $datos['id_competencia'], $consulta);
@@ -620,66 +359,6 @@ class Eventos
       $resultado["mensaje"] = "La competencia se eliminó exitosamente";
       return $resultado;
    }
-   public function eliminarTipo(array $datos)
-   {
-      $keys = ['id'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      if (!Validar::sanitizarYValidar($arrayFiltrado['id'], "int")) {
-         ExceptionHandler::throwException("El ID del tipo de competencia no es válido", 400, \InvalidArgumentException::class);
-      }
-      return $this->_eliminarTipo($arrayFiltrado['id']);
-   }
-   private function _eliminarTipo(int $idTipo): array
-   {
-      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
-      $existe = Validar::existe($this->database, $idTipo, $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("Este tipo de competencia no existe", 404, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
-      $response = $this->database->query($consulta, [':id_tipo' => $idTipo]);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar el tipo de competencia", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "El tipo de competencia se eliminó exitosamente";
-      return $respuesta;
-   }
-   public function modificarTipo(array $datos): array
-   {
-      $keys = ['id_tipo', 'nombre'];
-      $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], 'int');
-      Validar::validar("nombre_tipo", $arrayFiltrado['nombre']);
-      return $this->_modificarTipo($arrayFiltrado);
-   }
-   public function _modificarTipo(array $datos): array
-   {
-      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
-      $existe = Validar::existe($this->database, $datos['id_tipo'], $consulta);
-      if (!$existe) {
-         ExceptionHandler::throwException("El tipo de competencia ingresado no existe", 404, \InvalidArgumentException::class);
-      }
-      $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id AND id_tipo_competencia != " . $datos['id_tipo'] . ";";
-      $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
-      if ($existe) {
-         ExceptionHandler::throwException("Ya existe un tipo de competencia con este nombre", 400, \InvalidArgumentException::class);
-      }
-      $this->database->beginTransaction();
-      $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
-      $valores = [
-         ':nombre' => $datos['nombre'],
-         ':id_tipo' => $datos['id_tipo']
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar el tipo de competencia", 500, \Exception::class);
-      }
-      $this->database->commit();
-      $respuesta["mensaje"] = "El tipo de competencia se modificó exitosamente";
-      return $respuesta;
-   }
    public function registrarResultados(array $datos): array
    {
       $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
@@ -722,22 +401,22 @@ class Eventos
    }
    public function listadoAtletasDisponibles(array $datos): array
    {
-      $keys = ['id_categoria', 'id_sub', 'id_competencia'];
+      $keys = ['categoria', 'sub', 'idCompetencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['categoria'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['sub'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['idCompetencia'], 'int');
       return $this->_listadoAtletasDisponibles($arrayFiltrado);
    }
    private function _listadoAtletasDisponibles(array $datos): array
    {
       $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
-      $responseCategoria = $this->database->query($consultaCategoria, [':id_categoria' => $datos['id_categoria']], true);
+      $responseCategoria = $this->database->query($consultaCategoria, [':id_categoria' => $datos['categoria']], true);
       if (empty($responseCategoria)) {
          ExceptionHandler::throwException("La categoria ingresada no fue encontrada", 404, \InvalidArgumentException::class);
       }
       $consultaSub = "SELECT edad_minima, edad_maxima FROM subs WHERE id_sub = :id_sub";
-      $responseSub = $this->database->query($consultaSub, [':id_sub' => $datos['id_sub']], true);
+      $responseSub = $this->database->query($consultaSub, [':id_sub' => $datos['sub']], true);
       if (empty($responseSub)) {
          ExceptionHandler::throwException("La sub ingresada no fue encontrada", 404, \InvalidArgumentException::class);
       }
@@ -760,7 +439,7 @@ class Eventos
          ':peso_maximo' => $responseCategoria['peso_maximo'],
          ':edad_minima' => $responseSub['edad_minima'],
          ':edad_maxima' => $responseSub['edad_maxima'],
-         ':id_competencia' => $datos['id_competencia']
+         ':id_competencia' => $datos['idCompetencia']
       ];
       $response = $this->database->query($consulta, $valores);
       $resultado['atletas'] = $response ?: [];

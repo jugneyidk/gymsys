@@ -34,6 +34,11 @@ class RedirectMiddleware
          header("Location: ?p=dashboard");
          exit;
       }
+      // Regla 4: Si hay sesión activa y va al landing redirige al dashboard
+      if (empty($routes[$page]['hasView']) && empty($accion)) {
+         header("Location: .");
+         exit;
+      }
       // Regla 4: Si no hay sesión y no hay accion (se esta viendo el sitio en el navegador), redirige al login
       // if (empty($_SESSION) && empty($accion) && $page !== "login") {
       //    header("Location: ?p=login");
@@ -42,6 +47,6 @@ class RedirectMiddleware
    }
    private static function routeExists(array $routes, string $page): bool
    {
-      return array_key_exists($page, $routes) || !empty($routes[$page]["enabled"]);
+      return array_key_exists($page, $routes) && !empty($routes[$page]["enabled"]);
    }
 }

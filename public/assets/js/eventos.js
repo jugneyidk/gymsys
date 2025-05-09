@@ -9,11 +9,14 @@ import {
    limpiarForm,
 } from "./comunes.js";
 $(document).ready(function () {
+   cargarEventos();
+   cargarListadoCategorias();
+   cargarListadoSubs();
+   cargarListadoTipos();
+   cargarEventosAnteriores();
    function cargarEventos() {
-      const datos = new FormData();
-      datos.append("accion", "listado_eventos");
-      enviaAjax(datos, "").then((result) => {
-         actualizarListadoEventos(result.respuesta);
+      enviaAjax("", "?p=eventos&accion=listadoEventos", "GET").then((result) => {
+         actualizarListadoEventos(result.eventos);
       });
    }
    var modales = document.querySelectorAll(
@@ -24,14 +27,12 @@ $(document).ready(function () {
          limpiarForm();
       });
    });
-   obtenerNotificaciones(idUsuario);
-   setInterval(() => obtenerNotificaciones(idUsuario), 35000);
+   obtenerNotificaciones();
+   setInterval(() => obtenerNotificaciones(), 35000);
    function cargarEventosAnteriores() {
-      const datos = new FormData();
-      datos.append("accion", "listado_eventos_anteriores");
-      enviaAjax(datos, "").then((result) => {
-         if (result.respuesta.length > 0) {
-            actualizarListadoEventosAnteriores(result.respuesta);
+      enviaAjax("", "?p=eventos&accion=listadoEventosAnteriores", "GET").then((result) => {
+         if (result.eventos.length > 0) {
+            actualizarListadoEventosAnteriores(result.eventos);
          } else {
             $("#tablaEventosAnteriores tbody").html(
                "<tr><td colspan='7'>No hay eventos anteriores</td></tr>"
@@ -40,14 +41,10 @@ $(document).ready(function () {
       });
    }
    function cargarAtletasInscritos(idCompetencia) {
-      const datos = new FormData();
-      datos.append("accion", "listado_atletas_inscritos");
-      datos.append("id_competencia", idCompetencia);
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaAtletasInscritos(result.respuesta, idCompetencia);
+      enviaAjax("", `?p=eventos&accion=listadoAtletasInscritos&id_competencia=${idCompetencia}`, "GET").then((resultado) => {
+         actualizarTablaAtletasInscritos(resultado.atletas, idCompetencia);
       });
    }
-
    function actualizarTablaAtletasInscritos(atletas, idCompetencia) {
       let filas = "";
       atletas.forEach((atleta, index) => {
@@ -91,22 +88,16 @@ $(document).ready(function () {
                     </td>
                 </tr>`;
       });
-
       if (filas === "") {
          filas =
             "<tr><td colspan='4'>No hay atletas inscritos en esta competencia.</td></tr>";
       }
-
       $("#tablaAtletasInscritos tbody").html(filas);
    }
-
    $(document).on("click", ".modificarResultados", function () {
       const idCompetencia = $(this).data("id-competencia");
-      const datos = new FormData();
-      datos.append("accion", "obtener_competencia");
-      datos.append("id_competencia", idCompetencia);
-      enviaAjax(datos, "").then((respuesta) => {
-         var datosCompetencia = respuesta.respuesta;
+      enviaAjax("", `?p=eventos&accion=obtenerCompetencia&id=${idCompetencia}`, "GET").then((respuesta) => {
+         const datosCompetencia = respuesta.competencia;
          $("#nombreCompetenciaModificarResultados").text(datosCompetencia.nombre);
          $("#fechaCompetenciaModificarResultados").text(datosCompetencia.fecha_fin);
       });
@@ -126,12 +117,8 @@ $(document).ready(function () {
    $("#formModificarResultados").on("submit", function (e) {
       e.preventDefault();
       const datos = new FormData(this);
-      datos.append("accion", "modificar_resultados");
-      enviaAjax(datos, "").then(() => {
-         muestraMensaje(
-            "Éxito",
-            "El resultado se modificó exitosamente",
-            "success"
+      enviaAjax(datos, "?p=eventos&accion=modificarResultados").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success"
          );
          $("#modalModificarResultados").modal("hide");
          cargarAtletasInscritos($("#id_competencia_modificar_resultado").val()); // Recargar la tabla
@@ -243,10 +230,9 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar_evento");
             datos.append("id_competencia", idCompetencia);
-            enviaAjax(datos, "").then(() => {
-               muestraMensaje("Éxito", "Evento eliminado con éxito", "success");
+            enviaAjax(datos, "?p=eventos&accion=eliminarEvento").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarEventos();
             });
          }
@@ -254,10 +240,9 @@ $(document).ready(function () {
    }
 
    function cargarListadoCategorias() {
-      const datos = new FormData();
-      datos.append("accion", "listado_categoria");
-      enviaAjax(datos, "").then((result) => {
-         actualizarListadoCategorias(result.respuesta);
+      enviaAjax("", "?p=categorias&accion=listadoCategorias", "GET").then((result) => {
+         actualizarListadoCategorias(result.categorias);
+         actualizarTablaCategorias(result.categorias);
       });
    }
 
@@ -271,10 +256,9 @@ $(document).ready(function () {
    }
 
    function cargarListadoSubs() {
-      const datos = new FormData();
-      datos.append("accion", "listado_subs");
-      enviaAjax(datos, "").then((result) => {
-         actualizarListadoSubs(result.respuesta);
+      enviaAjax("", "?p=subs&accion=listadoSubs", "GET").then((result) => {
+         actualizarListadoSubs(result.subs);
+         actualizarTablaSubs(result.subs);
       });
    }
 
@@ -288,10 +272,9 @@ $(document).ready(function () {
    }
 
    function cargarListadoTipos() {
-      const datos = new FormData();
-      datos.append("accion", "listado_tipo");
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaTipos(result.respuesta);
+      enviaAjax("", "?p=tipocompetencia&accion=listadoTipos", "GET").then((result) => {
+         actualizarTablaTipos(result.tipos);
+         actualizarListadoTipos(result.tipos);
       });
    }
 
@@ -302,12 +285,6 @@ $(document).ready(function () {
       });
       $("#in_tipo").html(opciones);
       $("#tipo_modificar").html(opciones);
-   }
-
-   function cargarDatosModificar() {
-      cargarListadoCategorias();
-      cargarListadoSubs();
-      cargarListadoTipos();
    }
 
    $("input").on("keypress", function (e) {
@@ -362,11 +339,8 @@ $(document).ready(function () {
    });
    $(document).on("click", ".consultarEventoAnterior", function () {
       const idCompetencia = $(this).data("id");
-      const datos = new FormData();
-      datos.append("accion", "obtener_competencia");
-      datos.append("id_competencia", idCompetencia);
-      enviaAjax(datos, "").then((result) => {
-         const evento = result.respuesta;
+      enviaAjax("", `?p=eventos&accion=obtenerCompetencia&id=${idCompetencia}`, "GET").then((result) => {
+         const evento = result.competencia;
          $("#detallesNombreEventoAnterior").text(evento.nombre);
          $("#detallesFechaInicioAnterior").text(evento.fecha_inicio);
          $("#detallesFechaFinAnterior").text(evento.fecha_fin);
@@ -375,13 +349,10 @@ $(document).ready(function () {
          $("#modalConsultarEventoAnterior").modal("show");
          $("#modalEventoConsultaAnterior").modal("hide");
       });
-      obtener_resultados_competencia_anterior(idCompetencia);
+      obtenerResultadosCompetencia(idCompetencia);
    });
-   function obtener_resultados_competencia_anterior(idCompetencia) {
-      const datosResultados = new FormData();
-      datosResultados.append("accion", "obtener_resultados_competencia");
-      datosResultados.append("id_competencia", idCompetencia);
-      enviaAjax(datosResultados, "").then((result) => {
+   function obtenerResultadosCompetencia(idCompetencia) {
+      enviaAjax("", `?p=eventos&accion=obtenerResultadosCompetencia&id=${idCompetencia}`, "GET").then((result) => {
          const resultados = result.resultados;
          var contenido = '';
          resultados.forEach(resultado => {
@@ -403,11 +374,8 @@ $(document).ready(function () {
    }
    $(document).on("click", ".verDetallesEvento", function () {
       const idCompetencia = $(this).data("id");
-      const datos = new FormData();
-      datos.append("accion", "obtener_competencia");
-      datos.append("id_competencia", idCompetencia);
-      enviaAjax(datos, "").then((result) => {
-         const competencia = result.respuesta;
+      enviaAjax("", `?p=eventos&accion=obtenerCompetencia&id=${idCompetencia}`, "GET").then((result) => {
+         const competencia = result.competencia;
          $("#detallesNombreEvento").text(competencia.nombre);
          $("#detallesFechaInicio").text(competencia.fecha_inicio);
          $("#detallesFechaFin").text(competencia.fecha_fin);
@@ -427,11 +395,10 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "cerrar_evento");
             datos.append("id_competencia", idCompetencia);
-            enviaAjax(datos, "").then(() => {
+            enviaAjax(datos, "?p=eventos&accion=cerrarEvento").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarEventos();
-               muestraMensaje("Éxito", "Evento cerrado con éxito", "success");
             });
          }
       });
@@ -441,18 +408,13 @@ $(document).ready(function () {
       idCategoria,
       idSub
    ) {
-      const datos = new FormData();
-      datos.append("accion", "listado_atletas_disponibles");
-      datos.append("id_categoria", idCategoria);
-      datos.append("id_sub", idSub);
-      datos.append("id_competencia", idCompetencia);
       console.log("Enviando datos al servidor:", {
          idCompetencia,
          idCategoria,
          idSub,
       });
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaAtletasDisponibles(result.respuesta, idCompetencia);
+      enviaAjax("", `?p=eventos&accion=listadoAtletasDisponibles&categoria=${idCategoria}&sub=${idSub}&idCompetencia=${idCompetencia}`, "GET").then((resultado) => {
+         actualizarTablaAtletasDisponibles(resultado.respuesta, idCompetencia);
       });
    }
 
@@ -461,7 +423,7 @@ $(document).ready(function () {
       let tabla = $("#tablaParticipantesInscripcion tbody");
       tabla.empty();
 
-      if (atletas.length > 0) {
+      if (atletas?.length > 0) {
          atletas.forEach((atleta, index) => {
             tabla.append(`
                     <tr>
@@ -501,13 +463,12 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData();
-      datos.append("accion", "inscribir_atletas");
       datos.append("id_competencia", idCompetencia);
       datos.append("atletas", JSON.stringify(atletasSeleccionados));
-      enviaAjax(datos, "").then((result) => {
+      enviaAjax(datos, "?p=eventos&accion=inscribirAtletas").then((resultado) => {
          muestraMensaje(
             "Éxito",
-            "El atleta se inscribió correctamente",
+            resultado.mensaje,
             "success"
          );
          $("#modalInscribirEvento").modal("hide");
@@ -535,7 +496,6 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData();
-      datos.append("accion", "registrar_resultados");
       datos.append("id_competencia", idCompetencia);
       datos.append("id_atleta", idAtleta);
       datos.append("arranque", arranque);
@@ -544,8 +504,8 @@ $(document).ready(function () {
       datos.append("medalla_envion", medallaEnvion);
       datos.append("medalla_total", medallaTotal);
       datos.append("total", total);
-      enviaAjax(datos, "").then(() => {
-         muestraMensaje("Éxito", "El resultado se registró con éxito", "success");
+      enviaAjax(datos, "?p=eventos&accion=registrarResultados").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
          $("#modalRegistrarResultados").modal("hide");
          cargarAtletasInscritos(idCompetencia);
       });
@@ -567,25 +527,15 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData(this);
-      datos.append("accion", "incluir_subs");
-      enviaAjax(datos, "").then(() => {
-         muestraMensaje("Éxito", "Sub registrado con éxito", "success");
+      enviaAjax(datos, "?p=subs&accion=incluirSub").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
          cargarListadoSubs();
-         cargarListadoSubs2();
          $("#formRegistrarSubs")[0].reset();
       });
    });
    $("#btnConsultarSubs").on("click", function () {
-      cargarListadoSubs2();
       $("#contenedorTablaSubs").show();
    });
-   function cargarListadoSubs2() {
-      const datos = new FormData();
-      datos.append("accion", "listado_subs");
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaSubs(result.respuesta);
-      });
-   }
    function actualizarTablaSubs(subs) {
       const tbody = $("#tablaSubs tbody");
       tbody.empty();
@@ -624,7 +574,6 @@ $(document).ready(function () {
             enviaAjax(datos, "").then(() => {
                muestraMensaje("Éxito", "Sub eliminado con éxito", "success");
                cargarListadoSubs();
-               cargarListadoSubs2();
             });
          }
       });
@@ -665,15 +614,13 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "modificar_sub");
             datos.append("id_sub", idSub);
             datos.append("nombre", result.value.nuevoNombre);
             datos.append("edadMinima", result.value.nuevaEdadMinima);
             datos.append("edadMaxima", result.value.nuevaEdadMaxima);
-            enviaAjax(datos, "").then(() => {
-               muestraMensaje("Éxito", "Sub modificado con éxito", "success");
+            enviaAjax(datos, "?p=subs&accion=modificarSub").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarListadoSubs();
-               cargarListadoSubs2();
             });
          }
       });
@@ -692,23 +639,11 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData(this);
-      datos.append("accion", "incluir_categoria");
-      enviaAjax(datos, "").then((respuesta) => {
-         muestraMensaje("Éxito", "Categoría registrada con éxito.", "success");
-         cargarListadoCategorias2();
+      enviaAjax(datos, "?p=categorias&accion=incluirCategoria").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
          $("#formRegistrarCategoria")[0].reset();
       });
    });
-
-   function cargarListadoCategorias2() {
-      const datos = new FormData();
-      datos.append("accion", "listado_categoria");
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaCategorias(result.respuesta);
-         $("#contenedorTablaCategorias").show();
-      });
-   }
-
    function actualizarTablaCategorias(categorias) {
       const tbody = $("#tablaCategorias tbody");
       tbody.empty();
@@ -781,15 +716,13 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "modificar_categoria");
             datos.append("id_categoria", id);
             datos.append("nombre", result.value.nombre);
             datos.append("pesoMinimo", result.value.pesoMinimo);
             datos.append("pesoMaximo", result.value.pesoMaximo);
-            enviaAjax(datos, "").then(() => {
-               muestraMensaje("Éxito", "Categoría modificada con éxito.", "success");
+            enviaAjax(datos, "?p=categorias&accion=modificarCategoria").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarListadoCategorias();
-               cargarListadoCategorias2();
             });
          }
       });
@@ -806,12 +739,10 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar_categoria");
             datos.append("id_categoria", idCategoria);
-            enviaAjax(datos, "").then((result) => {
-               muestraMensaje("Éxito", "Categoría eliminada con éxito.", "success");
+            enviaAjax(datos, "?p=categorias&accion=eliminarCategoria").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarListadoCategorias();
-               cargarListadoCategorias2();
             });
          }
       });
@@ -823,58 +754,13 @@ $(document).ready(function () {
       $("#total").val(arranque + envion);
    });
 
-   function actualizarTablaAtletas(atletas) {
-      let tabla = $("#tablaParticipantesInscripcion tbody");
-      tabla.empty();
-      atletas.forEach((atleta, index) => {
-         tabla.append(`
-            <tr>
-                <td>${index + 1}</td>
-                              <td>${atleta.nombre} ${atleta.apellido}</td>
-                <td>${atleta.cedula}</td>
-                <td>${calcularEdad(atleta.fecha_nacimiento)}</td>
-                <td>${atleta.peso} kg</td>
-                <td>${atleta.altura} cm</td>
-                <td>
-                    <input type="checkbox" class="form-check-input" name="atleta" value="${atleta.cedula
-            }">
-                </td>
-            </tr>
-        `);
-      });
-
-      if ($.fn.DataTable.isDataTable("#tablaParticipantesInscripcion")) {
-         $("#tablaParticipantesInscripcion").DataTable().destroy();
-      }
-
-      $("#tablaParticipantesInscripcion").DataTable({
-         language: {
-            lengthMenu: "Mostrar _MENU_ registros por página",
-            zeroRecords: "No se encontraron resultados",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            paginate: {
-               first: "Primero",
-               last: "Último",
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-         autoWidth: true,
-         order: [[0, "asc"]],
-         dom: '<"top"f>rt<"bottom"lp><"clear">',
-      });
-   }
-
    $("#modalInscribirEvento").on("show.bs.modal", function (event) {
       const button = $(event.relatedTarget);
       const idCompetencia = button.data("id");
       const idCategoria = button.data("id-categoria");
       const idSub = button.data("id-sub");
       const eventoNombre = button.data("nombre");
-      const ubicacion = button.data("nombre");
+      const ubicacion = button.data("ubicacion");
       const fechaFin = button.data("fin");
       const fechaInicio = button.data("inicio");
       $("#nombreEventoInscripcion").text(eventoNombre);
@@ -963,9 +849,8 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData(this);
-      datos.append("accion", "incluir_evento");
-      enviaAjax(datos, "").then((respuesta) => {
-         muestraMensaje("Éxito", "Evento registrado con éxito", "success");
+      enviaAjax(datos, "?p=eventos&accion=incluirEvento").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
          $("#modalRegistrarEvento").modal("hide");
          cargarEventos();
       });
@@ -974,11 +859,10 @@ $(document).ready(function () {
    $("#formModificarCompetencia").on("submit", function (e) {
       e.preventDefault();
       const datos = new FormData(this);
-      datos.append("accion", "modificar_competencia");
-      enviaAjax(datos, "").then(() => {
+      enviaAjax(datos, "?p=eventos&accion=modificarEvento").then((respuesta) => {
          muestraMensaje(
             "Éxito",
-            "El evento se modificó correctamente.",
+            respuesta.mensaje,
             "success"
          );
          $("#modalModificarCompetencia").modal("hide");
@@ -1007,17 +891,13 @@ $(document).ready(function () {
    $("body").on("click", '[data-modificar="modificar"]', function (event) {
       const button = $(this);
       const idCompetencia = button.data("id");
-      const datos = new FormData();
-      datos.append("accion", "obtener_competencia");
-      datos.append("id_competencia", idCompetencia);
-      enviaAjax(datos, "").then((result) => {
-         const competencia = result.respuesta;
+      enviaAjax("", `?p=eventos&accion=obtenerCompetencia&id=${idCompetencia}`, "GET").then((result) => {
+         const competencia = result.competencia;
          actualizarDatosModificar(competencia);
       });
    });
 
    function actualizarDatosModificar(competencia) {
-      console.log(competencia.nombre);
       $("#id_competencia_modificar").val(competencia.id_competencia);
       $("#nombre_modificar").val(competencia.nombre);
       $("#ubicacion_modificar").val(competencia.lugar_competencia);
@@ -1034,36 +914,20 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData(this);
-      datos.append("accion", "incluir_tipo");
-      enviaAjax(datos, "").then(() => {
+      enviaAjax(datos, "?p=tipocompetencia&accion=incluirTipo", "POST").then(() => {
          muestraMensaje("Éxito", "Tipo registrado con éxito", "success");
          $("#in_tipo_nombre").val("");
          cargarListadoTipos();
-         cargarListadoTipos2();
          $("#formRegistrarTipo")[0].reset();
          $("#modalRegistrarTipo").modal("hide");
       });
    });
 
    $("#btnConsultarTipos").on("click", function () {
-      cargarListadoTipos2();
+      cargarListadoTipos();
       $("#contenedorTablaTipos").show();
    });
 
-   function cargarListadoTipos2() {
-      const datos = new FormData();
-      datos.append("accion", "listado_tipo");
-      enviaAjax(datos, "").then((result) => {
-         actualizarTablaTipos(result.respuesta);
-      });
-   }
-   function cargarListadoTipos() {
-      const datos = new FormData();
-      datos.append("accion", "listado_tipo");
-      enviaAjax(datos, "").then((result) => {
-         actualizarListadoTipos(result.respuesta);
-      });
-   }
    function actualizarTablaTipos(tipos) {
       const tbody = $("#tablaTipos tbody");
       tbody.empty();
@@ -1105,12 +969,10 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar_tipo");
             datos.append("id_tipo", idTipo);
-            enviaAjax(datos, "").then((result) => {
-               Swal.fire("Éxito", "Tipo de evento eliminado con éxito", "success");
+            enviaAjax(datos, "?p=tipocompetencia&accion=eliminarTipo").then((result) => {
+               muestraMensaje("Éxito", result.mensaje, "success");
                cargarListadoTipos();
-               cargarListadoTipos2();
             });
          }
       });
@@ -1119,7 +981,6 @@ $(document).ready(function () {
    $(document).on("click", ".btnEditarTipo", function () {
       const idTipo = $(this).data("id");
       const nombreTipo = $(this).data("nombre");
-
       Swal.fire({
          title: "Editar Tipo",
          input: "text",
@@ -1138,13 +999,11 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "modificar_tipo");
             datos.append("id_tipo", idTipo);
             datos.append("nombre", result.value);
-            enviaAjax(datos, "").then(() => {
-               muestraMensaje("Éxito", "Tipo modificado con éxito", "success");
+            enviaAjax(datos, "?p=tipocompetencia&accion=modificarTipo").then((respuesta) => {
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarListadoTipos();
-               cargarListadoTipos2();
             });
          }
       });
@@ -1162,16 +1021,7 @@ $(document).ready(function () {
       $("#modalRegistrarSubs").modal("hide");
       $("#modalRegistrarEvento").modal("show");
    });
-   $("#modalRegistrarCategoria").on("show.bs.modal", function () {
-      cargarListadoCategorias();
-   });
    $("#btnConsultarCategorias").on("click", function () {
-      cargarListadoCategorias2();
+      $("#contenedorTablaCategorias").show();
    });
-
-   cargarEventos();
-   cargarListadoCategorias();
-   cargarListadoSubs();
-   cargarListadoTipos();
-   cargarEventosAnteriores();
 });

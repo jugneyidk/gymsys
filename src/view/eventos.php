@@ -5,22 +5,22 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Registro de Competencias - Sistema</title>
-   <?php require_once("comunes/linkcss.php") ?>
+   <?php require_once "comunes/linkcss.php" ?>
 </head>
 
 <body class="bg-light">
    <script>
-      var actualizar = <?php echo $permisos["actualizar"] ?>;
-      var eliminar = <?php echo $permisos["eliminar"] ?>;
+      var actualizar = <?= $permisosModulo["actualizar"] ?>;
+      var eliminar = <?= $permisosModulo["eliminar"] ?>;
    </script>
-   <?php require_once("comunes/menu.php"); ?>
+   <?php require_once "comunes/menu.php"; ?>
    <main class="container-md my-3 my-md-5">
       <div class="row">
          <div class="col">
             <div class="d-flex justify-content-between align-items-center bg-dark text-white shadow rounded p-3">
                <h2 class="mb-0">Eventos</h2>
                <div>
-                  <?php if ($permisos["crear"] == 1): ?>
+                  <?php if ($permisosModulo["crear"] == 1): ?>
                      <button class="btn btn-light" data-bs-toggle="modal"
                         data-bs-target="#modalRegistrarEvento">Registrar</button>
                   <?php endif; ?>
@@ -86,7 +86,7 @@
                               <option selected>Seleccione una</option>
                            </select>
                            <div class="invalid-feedback">Categoría es obligatoria</div>
-                           <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
+                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
                               <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria"
                                  type="button">Registrar
                                  Categoria</button>
@@ -98,7 +98,7 @@
                               <option selected>Seleccione una</option>
                            </select>
                            <div class="invalid-feedback">Subs es obligatorio</div>
-                           <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
+                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
                               <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs"
                                  type="button">Registrar Subs</button>
                            <?php endif; ?>
@@ -109,7 +109,7 @@
                               <option selected>Seleccione una</option>
                            </select>
                            <div class="invalid-feedback">Tipo es obligatorio</div>
-                           <?php if ($permisos["leer"] && $permisos["crear"] && $permisos["actualizar"] && $permisos["leer"] && $permisos["eliminar"]): ?>
+                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
                               <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo"
                                  type="button">Registrar Tipo</button>
                            <?php endif; ?>
@@ -798,10 +798,9 @@
          </div>
       </div>
    </main>
-   <?php require_once("comunes/footer.php"); ?>
-   <script src="js/jquery.min.js"></script>
-   <script src="datatables/datatables.min.js"></script>
-   <script type="module" src="js/eventos.js"></script>
+   <?php require_once "comunes/footer.php"; ?>
+   <script src="assets/js/datatables/datatables.min.js"></script>
+   <script type="module" src="assets/js/eventos.js"></script>
 
 </body>
 

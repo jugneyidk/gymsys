@@ -4,6 +4,7 @@ return [
    "atletas" => ["enabled" => true, "public" => false, "hasView" => true],
    "asistencias" => ["enabled" => true, "public" => false, "hasView" => true],
    "bitacora" => ["enabled" => true, "public" => false, "hasView" => true],
+   "categorias" => ["enabled" => true, "public" => false, "hasView" => false],
    "logout" => ["enabled" => true, "public" => false, "hasView" => true],
    "dashboard" => ["enabled" => true, "public" => false, "hasView" => true],
    "entrenadores" => ["enabled" => true, "public" => false, "hasView" => true],
@@ -19,5 +20,7 @@ return [
    "reestablecer" => ["enabled" => true, "public" => false, "hasView" => true],
    "reportes" => ["enabled" => true, "public" => false, "hasView" => true],
    "rolespermisos" => ["enabled" => true, "public" => false, "hasView" => true],
+   "subs" => ["enabled" => true, "public" => false, "hasView" => false],
+   "tipocompetencia" => ["enabled" => true, "public" => false, "hasView" => false],
    "wada" => ["enabled" => true, "public" => false, "hasView" => true]
 ];

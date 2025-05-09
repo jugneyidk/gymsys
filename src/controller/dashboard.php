@@ -13,9 +13,8 @@ class Dashboard extends BaseController
    {
       $this->database = $database;
       $modelClass = $this->getModel("dashboard");
-      $this->model = new $modelClass($database);
+      $this->model = new $modelClass($this->database);
    }
-   
 }
 
 

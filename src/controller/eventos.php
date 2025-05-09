@@ -32,25 +32,35 @@ class Eventos extends BaseController
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarEvento($datos);
    }
+   public function modificarEvento(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->modificarEvento($datos);
+   }
+   public function registrarResultados(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->registrarResultados($datos);
+   }
+   public function modificarResultados(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->modificarResultados($datos);
+   }
+   public function cerrarEvento(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->cerrarEvento($datos);
+   }
    public function listadoEventos(): array
    {
       $this->validarMetodoRequest("GET");
       return $this->model->listadoEventos();
    }
-   public function listadoCategorias(): array
+   public function listadoEventosAnteriores(): array
    {
       $this->validarMetodoRequest("GET");
-      return $this->model->listadoCategorias();
-   }
-   public function listadoSubs(): array
-   {
-      $this->validarMetodoRequest("GET");
-      return $this->model->listadoSubs();
-   }
-   public function listadoTipos(): array
-   {
-      $this->validarMetodoRequest("GET");
-      return $this->model->listadoTipos();
+      return $this->model->listadoEventosAnteriores();
    }
    public function obtenerCompetencia(array $datos): array
    {
@@ -61,6 +71,16 @@ class Eventos extends BaseController
    {
       $this->validarMetodoRequest("GET");
       return $this->model->obtenerResultadosCompetencia($datos);
+   }
+   public function listadoAtletasInscritos(array $datos): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->listadoAtletasInscritos($datos);
+   }
+   public function listadoAtletasDisponibles(array $datos): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->listadoAtletasDisponibles($datos);
    }
 }
 
@@ -86,29 +106,8 @@ class Eventos extends BaseController
          //    );
          //    echo json_encode($respuesta);
          //    break;
-
-         // case 'incluir_tipo':
-         //    $respuesta = $o->incluir_tipo($_POST['nombre']);
-         //    echo json_encode($respuesta);
-         //    break;
-
          // case 'listado_categoria':
          //    $respuesta = $o->listado_categoria();
-         //    echo json_encode($respuesta);
-         //    break;
-
-         // case 'listado_subs':
-         //    $respuesta = $o->listado_subs();
-         //    echo json_encode($respuesta);
-         //    break;
-
-         // case 'listado_tipo':
-         //    $respuesta = $o->listado_tipo();
-         //    echo json_encode($respuesta);
-         //    break;
-
-         // case 'listado_atletas_inscritos':
-         //    $respuesta = $o->listado_atletas_inscritos($_POST['id_competencia']);
          //    echo json_encode($respuesta);
          //    break;
 
@@ -198,21 +197,6 @@ class Eventos extends BaseController
          //    $id_sub = $_POST['id_sub'];
          //    $id_competencia = $_POST['id_competencia'];
          //    $respuesta = $o->listado_atletas_disponibles($id_categoria, $id_sub, $id_competencia);
-         //    echo json_encode($respuesta);
-         //    break;
-
-         // case 'eliminar_tipo':
-         //    $id_tipo = $_POST['id_tipo'];
-         //    $verificacion = $o->verificar_relacion_tipo($id_tipo);
-         //    if (!$verificacion["ok"]) {
-         //       echo json_encode($verificacion);
-         //       exit;
-         //    }
-         //    if ($verificacion["existe"]) {
-         //       echo json_encode(["ok" => false, "mensaje" => "No se puede eliminar este tipo porque está relacionado con competencias existentes."]);
-         //       exit;
-         //    }
-         //    $respuesta = $o->eliminar_tipo($id_tipo);
          //    echo json_encode($respuesta);
          //    break;
 
