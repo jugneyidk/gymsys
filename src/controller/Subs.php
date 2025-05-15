@@ -17,10 +17,8 @@ class Subs extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Subs");
       $this->model = new $modelClass((object) $this->database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Eventos", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
+      $this->permisos = $this->obtenerPermisos("Eventos", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoSubs(): array
    {

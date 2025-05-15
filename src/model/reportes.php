@@ -1,26 +1,26 @@
 <?php
-require_once("datos.php");
 
-class Reporte extends datos
+namespace Gymsys\Model;
+
+use Gymsys\Core\Database;
+
+class Reportes
 {
-    private $conexion;
+   private Database $database;
 
-    public function __construct()
-    {
-        $this->conexion = $this->conecta();
-        if (!$this->conexion) {
-            die("Error en la conexión a la base de datos");
-        }
-    }
-    public function obtenerEstadisticas($tipoReporte, $filtros)
-    {
-        try {
-            $consulta = "";
-            $valores = [];
-    
-            switch ($tipoReporte) {
-                case 'atletas':
-                    $consulta = "
+   public function __construct(Database $database)
+   {
+      $this->database = $database;
+   }
+   public function obtenerEstadisticas($tipoReporte, $filtros): array
+   {
+      try {
+         $consulta = "";
+         $valores = [];
+
+         switch ($tipoReporte) {
+            case 'atletas':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_atletas, 
                             AVG(a.peso) AS promedio_peso,
@@ -31,22 +31,22 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON a.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (!empty($filtros['edadMin'])) {
-                        $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
-                        $valores[':edadMin'] = $filtros['edadMin'];
-                    }
-                    if (!empty($filtros['edadMax'])) {
-                        $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
-                        $valores[':edadMax'] = $filtros['edadMax'];
-                    }
-                    if (!empty($filtros['genero'])) {
-                        $consulta .= " AND u.genero = :genero";
-                        $valores[':genero'] = $filtros['genero'];
-                    }
-                    break;
-    
-                case 'entrenadores':
-                    $consulta = "
+               if (!empty($filtros['edadMin'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
+                  $valores[':edadMin'] = $filtros['edadMin'];
+               }
+               if (!empty($filtros['edadMax'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
+                  $valores[':edadMax'] = $filtros['edadMax'];
+               }
+               if (!empty($filtros['genero'])) {
+                  $consulta .= " AND u.genero = :genero";
+                  $valores[':genero'] = $filtros['genero'];
+               }
+               break;
+
+            case 'entrenadores':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_entrenadores,
                             AVG(TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE())) AS promedio_edad,
@@ -55,18 +55,18 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON e.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (!empty($filtros['edadMinEntrenador'])) {
-                        $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMinEntrenador";
-                        $valores[':edadMinEntrenador'] = $filtros['edadMinEntrenador'];
-                    }
-                    if (!empty($filtros['edadMaxEntrenador'])) {
-                        $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMaxEntrenador";
-                        $valores[':edadMaxEntrenador'] = $filtros['edadMaxEntrenador'];
-                    }
-                    break;
-    
-                case 'mensualidades':
-                    $consulta = "
+               if (!empty($filtros['edadMinEntrenador'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMinEntrenador";
+                  $valores[':edadMinEntrenador'] = $filtros['edadMinEntrenador'];
+               }
+               if (!empty($filtros['edadMaxEntrenador'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMaxEntrenador";
+                  $valores[':edadMaxEntrenador'] = $filtros['edadMaxEntrenador'];
+               }
+               break;
+
+            case 'mensualidades':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_mensualidades,
                             SUM(m.monto) AS total_recaudado,
@@ -76,15 +76,15 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON a.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                        $consulta .= " AND m.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                    }
-                    break;
-    
-                case 'eventos':
-                    $consulta = "
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND m.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
+
+            case 'eventos':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_eventos,
                             MIN(c.fecha_inicio) AS primer_evento,
@@ -92,15 +92,15 @@ class Reporte extends datos
                         FROM competencia c
                         WHERE 1=1
                     ";
-                    if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
-                        $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
-                        $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
-                        $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
-                    }
-                    break;
-    
-                case 'asistencias':
-                    $consulta = "
+               if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
+                  $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
+                  $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
+                  $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
+               }
+               break;
+
+            case 'asistencias':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_asistencias,
                             COUNT(DISTINCT a.id_atleta) AS atletas_presentes,
@@ -110,15 +110,15 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON at.cedula = u.cedula
                         WHERE a.asistio = 1
                     ";
-                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                        $consulta .= " AND a.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                    }
-                    break;
-    
-                case 'wada':
-                    $consulta = "
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND a.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
+
+            case 'wada':
+               $consulta = "
                         SELECT 
                             COUNT(*) AS total_wada,
                             COUNT(CASE WHEN w.estado = 1 THEN 1 ELSE NULL END) AS wada_cumplen,
@@ -128,36 +128,36 @@ class Reporte extends datos
                         INNER JOIN usuarios u ON a.cedula = u.cedula
                         WHERE 1=1
                     ";
-                    if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                        $consulta .= " AND w.vencimiento BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                        $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                        $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                    }
-                    break;
-    
-                default:
-                    return ["ok" => false, "mensaje" => "Tipo de reporte no válido para estadísticas"];
-            }
-    
-            $stmt = $this->conexion->prepare($consulta);
-            $stmt->execute($valores);
-            $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            return ["ok" => true, "estadisticas" => $estadisticas];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
-    
-public function obtenerEstadisticas2($tipoReporte, $filtros)
-{
-    try {
-        $consulta = "";
-        $valores = [];
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND w.vencimiento BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
 
-        switch ($tipoReporte) {
+            default:
+               return ["ok" => false, "mensaje" => "Tipo de reporte no válido para estadísticas"];
+         }
+
+         $stmt = $this->conexion->prepare($consulta);
+         $stmt->execute($valores);
+         $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
+
+         return ["ok" => true, "estadisticas" => $estadisticas];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
+
+   public function obtenerEstadisticas2($tipoReporte, $filtros)
+   {
+      try {
+         $consulta = "";
+         $valores = [];
+
+         switch ($tipoReporte) {
             case 'atletas':
-                $consulta = "
+               $consulta = "
                     SELECT 
                         COUNT(*) AS eventos, 
                         AVG(a.) AS ,
@@ -168,175 +168,176 @@ public function obtenerEstadisticas2($tipoReporte, $filtros)
                     WHERE 1=1
                 ";
 
-                if (!empty($filtros['edadMin'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
-                    $valores[':edadMin'] = $filtros['edadMin'];
-                }
-                if (!empty($filtros['edadMax'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
-                    $valores[':edadMax'] = $filtros['edadMax'];
-                }
-                if (!empty($filtros['genero'])) {
-                    $consulta .= " AND u.genero = :genero";
-                    $valores[':genero'] = $filtros['genero'];
-                }
-                if (!empty($filtros['pesoMin'])) {
-                    $consulta .= " AND a.peso >= :pesoMin";
-                    $valores[':pesoMin'] = $filtros['pesoMin'];
-                }
-                if (!empty($filtros['pesoMax'])) {
-                    $consulta .= " AND a.peso <= :pesoMax";
-                    $valores[':pesoMax'] = $filtros['pesoMax'];
-                }
-                break;
+               if (!empty($filtros['edadMin'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
+                  $valores[':edadMin'] = $filtros['edadMin'];
+               }
+               if (!empty($filtros['edadMax'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
+                  $valores[':edadMax'] = $filtros['edadMax'];
+               }
+               if (!empty($filtros['genero'])) {
+                  $consulta .= " AND u.genero = :genero";
+                  $valores[':genero'] = $filtros['genero'];
+               }
+               if (!empty($filtros['pesoMin'])) {
+                  $consulta .= " AND a.peso >= :pesoMin";
+                  $valores[':pesoMin'] = $filtros['pesoMin'];
+               }
+               if (!empty($filtros['pesoMax'])) {
+                  $consulta .= " AND a.peso <= :pesoMax";
+                  $valores[':pesoMax'] = $filtros['pesoMax'];
+               }
+               break;
 
-            
+
 
             default:
-                return ["ok" => false, "mensaje" => "Tipo de reporte no válido para estadísticas"];
-        }
+               return ["ok" => false, "mensaje" => "Tipo de reporte no válido para estadísticas"];
+         }
 
-        $stmt = $this->conexion->prepare($consulta);
-        $stmt->execute($valores);
-        $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
+         $stmt = $this->conexion->prepare($consulta);
+         $stmt->execute($valores);
+         $estadisticas = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return ["ok" => true, "estadisticas" => $estadisticas];
-    } catch (Exception $e) {
-        return ["ok" => false, "mensaje" => $e->getMessage()];
-    }
-}
-public function obtener_reportes($tipoReporte, $filtros)
-{
-    try {
-        $consulta = "";
-        $valores = [];
+         return ["ok" => true, "estadisticas" => $estadisticas];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
+   public function obtener_reportes($tipoReporte, $filtros)
+   {
+      try {
+         $consulta = "";
+         $valores = [];
 
-        switch ($tipoReporte) {
+         switch ($tipoReporte) {
             case 'atletas':
-                $consulta = "
+               $consulta = "
                     SELECT a.cedula AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Atleta' AS detalles, u.fecha_nacimiento AS fecha
                     FROM atleta a
                     INNER JOIN usuarios u ON a.cedula = u.cedula
                     WHERE 1=1
                 ";
-                if (!empty($filtros['edadMin'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
-                    $valores[':edadMin'] = $filtros['edadMin'];
-                }
-                if (!empty($filtros['edadMax'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
-                    $valores[':edadMax'] = $filtros['edadMax'];
-                }
-                if (!empty($filtros['genero'])) {
-                    $consulta .= " AND u.genero = :genero";
-                    $valores[':genero'] = $filtros['genero'];
-                }
-                if (!empty($filtros['pesoMin'])) {
-                    $consulta .= " AND a.peso >= :pesoMin";
-                    $valores[':pesoMin'] = $filtros['pesoMin'];
-                }
-                if (!empty($filtros['pesoMax'])) {
-                    $consulta .= " AND a.peso <= :pesoMax";
-                    $valores[':pesoMax'] = $filtros['pesoMax'];
-                }
-                break;
+               if (!empty($filtros['edadMin'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMin";
+                  $valores[':edadMin'] = $filtros['edadMin'];
+               }
+               if (!empty($filtros['edadMax'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMax";
+                  $valores[':edadMax'] = $filtros['edadMax'];
+               }
+               if (!empty($filtros['genero'])) {
+                  $consulta .= " AND u.genero = :genero";
+                  $valores[':genero'] = $filtros['genero'];
+               }
+               if (!empty($filtros['pesoMin'])) {
+                  $consulta .= " AND a.peso >= :pesoMin";
+                  $valores[':pesoMin'] = $filtros['pesoMin'];
+               }
+               if (!empty($filtros['pesoMax'])) {
+                  $consulta .= " AND a.peso <= :pesoMax";
+                  $valores[':pesoMax'] = $filtros['pesoMax'];
+               }
+               break;
 
             case 'entrenadores':
-                $consulta = "
+               $consulta = "
                     SELECT e.cedula AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Entrenador' AS detalles, u.fecha_nacimiento AS fecha
                     FROM entrenador e
                     INNER JOIN usuarios u ON e.cedula = u.cedula
                     WHERE 1=1
                 ";
-                if (!empty($filtros['edadMinEntrenador'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMinEntrenador";
-                    $valores[':edadMinEntrenador'] = $filtros['edadMinEntrenador'];
-                }
-                if (!empty($filtros['edadMaxEntrenador'])) {
-                    $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMaxEntrenador";
-                    $valores[':edadMaxEntrenador'] = $filtros['edadMaxEntrenador'];
-                }
-                if (!empty($filtros['gradoInstruccion'])) {
-                    $consulta .= " AND e.grado_instruccion = :gradoInstruccion";
-                    $valores[':gradoInstruccion'] = $filtros['gradoInstruccion'];
-                }
-                break;
+               if (!empty($filtros['edadMinEntrenador'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) >= :edadMinEntrenador";
+                  $valores[':edadMinEntrenador'] = $filtros['edadMinEntrenador'];
+               }
+               if (!empty($filtros['edadMaxEntrenador'])) {
+                  $consulta .= " AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) <= :edadMaxEntrenador";
+                  $valores[':edadMaxEntrenador'] = $filtros['edadMaxEntrenador'];
+               }
+               if (!empty($filtros['gradoInstruccion'])) {
+                  $consulta .= " AND e.grado_instruccion = :gradoInstruccion";
+                  $valores[':gradoInstruccion'] = $filtros['gradoInstruccion'];
+               }
+               break;
 
             case 'mensualidades':
-                $consulta = "
+               $consulta = "
                     SELECT m.id_mensualidad AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Mensualidad' AS detalles, m.fecha AS fecha
                     FROM mensualidades m
                     INNER JOIN atleta a ON m.id_atleta = a.cedula
                     INNER JOIN usuarios u ON a.cedula = u.cedula
                     WHERE 1=1
                 ";
-                if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                    $consulta .= " AND m.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                    $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                    $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                }
-                break;
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND m.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
 
             case 'eventos':
-                $consulta = "
+               $consulta = "
                     SELECT c.id_competencia AS id, c.nombre AS nombre, 'Evento' AS detalles, c.fecha_inicio AS fecha
                     FROM competencia c
                     WHERE 1=1
                 ";
-                if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
-                    $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
-                    $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
-                    $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
-                }
-                break;
+               if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
+                  $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
+                  $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
+                  $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
+               }
+               break;
 
             case 'asistencias':
-                $consulta = "
+               $consulta = "
                     SELECT a.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'Asistencia' AS detalles, a.fecha AS fecha
                     FROM asistencias a
                     INNER JOIN atleta at ON a.id_atleta = at.cedula
                     INNER JOIN usuarios u ON at.cedula = u.cedula
                     WHERE 1=1
                 ";
-                if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                    $consulta .= " AND a.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                    $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                    $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                }
-                break;
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND a.fecha BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
 
             case 'wada':
-                $consulta = "
+               $consulta = "
                     SELECT w.id_atleta AS id, CONCAT(u.nombre, ' ', u.apellido) AS nombre, 'WADA' AS detalles, w.vencimiento AS fecha
                     FROM wada w
                     INNER JOIN atleta a ON w.id_atleta = a.cedula
                     INNER JOIN usuarios u ON a.cedula = u.cedula
                     WHERE 1=1
                 ";
-                if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
-                    $consulta .= " AND w.vencimiento BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
-                    $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
-                    $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
-                }
-                break;
+               if (!empty($filtros['fechaInicioMensualidades']) && !empty($filtros['fechaFinMensualidades'])) {
+                  $consulta .= " AND w.vencimiento BETWEEN :fechaInicioMensualidades AND :fechaFinMensualidades";
+                  $valores[':fechaInicioMensualidades'] = $filtros['fechaInicioMensualidades'];
+                  $valores[':fechaFinMensualidades'] = $filtros['fechaFinMensualidades'];
+               }
+               break;
 
             default:
-                return ["ok" => false, "mensaje" => "Tipo de reporte no válido"];
-        }
+               return ["ok" => false, "mensaje" => "Tipo de reporte no válido"];
+         }
 
-        $stmt = $this->conexion->prepare($consulta);
-        $stmt->execute($valores);
-        $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         $stmt = $this->conexion->prepare($consulta);
+         $stmt->execute($valores);
+         $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $reportes ? ["ok" => true, "reportes" => $reportes] : ["ok" => false, "mensaje" => "No se encontraron reportes"];
-    } catch (Exception $e) {
-        return ["ok" => false, "mensaje" => $e->getMessage()];
-    }
-}
+         return $reportes ? ["ok" => true, "reportes" => $reportes] : ["ok" => false, "mensaje" => "No se encontraron reportes"];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
 
-public function obtener_reporte_individual($filtros) {
-    try {
-        $consulta = "
+   public function obtener_reporte_individual($filtros)
+   {
+      try {
+         $consulta = "
             SELECT 
                 a.nombre, 
                 a.cedula, 
@@ -351,27 +352,27 @@ public function obtener_reporte_individual($filtros) {
             WHERE a.id_atleta = :idAtleta
         ";
 
-        $stmt = $this->conexion->prepare($consulta);
-        $stmt->bindParam(':idAtleta', $filtros['idAtleta'], PDO::PARAM_INT);
-        $stmt->execute();
-        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+         $stmt = $this->conexion->prepare($consulta);
+         $stmt->bindParam(':idAtleta', $filtros['idAtleta'], PDO::PARAM_INT);
+         $stmt->execute();
+         $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return [
+         return [
             'ok' => true,
             'reporte' => $resultado
-        ];
-    } catch (Exception $e) {
-        return [
+         ];
+      } catch (Exception $e) {
+         return [
             'ok' => false,
             'mensaje' => "Error: " . $e->getMessage()
-        ];
-    }
-}
+         ];
+      }
+   }
 
-    public function obtener_resultados_competencias($filtros)
-    {
-        try {
-            $consulta = "
+   public function obtener_resultados_competencias($filtros)
+   {
+      try {
+         $consulta = "
                 SELECT c.nombre AS nombreEvento, CONCAT(u.nombre, ' ', u.apellido) AS nombreAtleta, r.arranque, r.envion, r.total
                 FROM resultado_competencia r
                 INNER JOIN competencia c ON r.id_competencia = c.id_competencia
@@ -379,35 +380,34 @@ public function obtener_reporte_individual($filtros) {
                 INNER JOIN usuarios u ON a.cedula = u.cedula
                 WHERE 1=1
             ";
-            $valores = [];
+         $valores = [];
 
-            if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
-                $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
-                $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
-                $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
-            }
+         if (!empty($filtros['fechaInicioEventos']) && !empty($filtros['fechaFinEventos'])) {
+            $consulta .= " AND c.fecha_inicio BETWEEN :fechaInicioEventos AND :fechaFinEventos";
+            $valores[':fechaInicioEventos'] = $filtros['fechaInicioEventos'];
+            $valores[':fechaFinEventos'] = $filtros['fechaFinEventos'];
+         }
 
-            $respuesta = $this->conexion->prepare($consulta);
-            $respuesta->execute($valores);
-            $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
+         $respuesta = $this->conexion->prepare($consulta);
+         $respuesta->execute($valores);
+         $resultados = $respuesta->fetchAll(PDO::FETCH_ASSOC);
 
-            if ($resultados) {
-                return ["ok" => true, "resultados" => $resultados];
-                
-            } else {
-                return ["ok" => false, "mensaje" => "No se encontraron resultados de competencias"];
-            }
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
+         if ($resultados) {
+            return ["ok" => true, "resultados" => $resultados];
+         } else {
+            return ["ok" => false, "mensaje" => "No se encontraron resultados de competencias"];
+         }
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
 
-    public function obtenerDatosEstadisticos($tipo)
-    {
-        try {
-            switch ($tipo) {
-                case 'edadAtletas':
-                    $sql = "SELECT 
+   public function obtenerDatosEstadisticos($tipo)
+   {
+      try {
+         switch ($tipo) {
+            case 'edadAtletas':
+               $sql = "SELECT 
                                 CASE 
          WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 0 AND 18 THEN '0-18'
                                     WHEN TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN 19 AND 30 THEN '19-30'
@@ -418,30 +418,30 @@ public function obtener_reporte_individual($filtros) {
                             FROM atleta a
                             INNER JOIN usuarios u ON a.cedula = u.cedula
                             GROUP BY rango_edad";
-                    break;
+               break;
 
-                case 'generoAtletas':
-                    $sql = "SELECT u.genero AS genero, COUNT(*) AS cantidad
+            case 'generoAtletas':
+               $sql = "SELECT u.genero AS genero, COUNT(*) AS cantidad
                             FROM atleta a
                             INNER JOIN usuarios u ON a.cedula = u.cedula
                             GROUP BY u.genero";
-                    break;
+               break;
 
-                default:
-                    return ["ok" => false, "mensaje" => "Tipo de reporte no válido"];
-            }
+            default:
+               return ["ok" => false, "mensaje" => "Tipo de reporte no válido"];
+         }
 
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->execute();
-            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
-    public function obtenerProgresoAsistenciasMensuales()
-    {
-        try {
-            $sql = "
+         $stmt = $this->conexion->prepare($sql);
+         $stmt->execute();
+         return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
+   public function obtenerProgresoAsistenciasMensuales()
+   {
+      try {
+         $sql = "
                 SELECT 
                     DATE_FORMAT(fecha, '%Y-%m') AS mes,
                     COUNT(*) AS total_asistencias
@@ -451,19 +451,19 @@ public function obtener_reporte_individual($filtros) {
                 ORDER BY fecha;
             ";
 
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->execute();
+         $stmt = $this->conexion->prepare($sql);
+         $stmt->execute();
 
-            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
+         return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
 
-    public function obtenerCumplimientoWADA()
-    {
-        try {
-            $sql = "
+   public function obtenerCumplimientoWADA()
+   {
+      try {
+         $sql = "
             SELECT 
                 CASE 
                     WHEN estado = 1 THEN 'Cumplen'
@@ -474,18 +474,18 @@ public function obtener_reporte_individual($filtros) {
             GROUP BY cumplimiento;
         ";
 
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->execute();
-            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
+         $stmt = $this->conexion->prepare($sql);
+         $stmt->execute();
+         return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
 
-    public function obtenerVencimientosWADA()
-    {
-        try {
-            $sql = "
+   public function obtenerVencimientosWADA()
+   {
+      try {
+         $sql = "
             SELECT 
                 id_atleta,
                 DATE_FORMAT(vencimiento, '%Y-%m-%d') AS fecha_vencimiento
@@ -495,13 +495,11 @@ public function obtener_reporte_individual($filtros) {
                 AND YEAR(vencimiento) = YEAR(CURDATE());
         ";
 
-            $stmt = $this->conexion->prepare($sql);
-            $stmt->execute();
-            return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
-        } catch (Exception $e) {
-            return ["ok" => false, "mensaje" => $e->getMessage()];
-        }
-    }
-
-
+         $stmt = $this->conexion->prepare($sql);
+         $stmt->execute();
+         return ["ok" => true, "data" => $stmt->fetchAll(PDO::FETCH_ASSOC)];
+      } catch (Exception $e) {
+         return ["ok" => false, "mensaje" => $e->getMessage()];
+      }
+   }
 }

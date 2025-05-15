@@ -137,7 +137,9 @@ export function obtenerNotificaciones(idUsuario) {
       });
       if (!leidas) {
          $("#contador-notificaciones").removeClass("d-none");
+         $("#icono-notificaciones").addClass("fa-shake");
       } else {
+         $("#icono-notificaciones").removeClass("fa-shake");
          $("#contador-notificaciones").addClass("d-inline-block");
       }
       $("#contenedor-notificaciones").html(contenido);
@@ -156,6 +158,7 @@ export function obtenerNotificaciones(idUsuario) {
          obtenerNotificaciones(idUsuario);
          $("#contador-notificaciones").removeClass("d-inline-block");
          $("#contador-notificaciones").addClass("d-none");
+         $("#icono-notificaciones").removeClass("fa-shake");
       });
    });
    $("body").on("click", "#ver-todas-notificaciones", function () {

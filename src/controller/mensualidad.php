@@ -17,25 +17,27 @@ class Mensualidad extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Mensualidad");
       $this->model = new $modelClass((object) $this->database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Mensualidad", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
-   }
-   public function incluirMensualidad(array $datos): array
-   {
-      return $this->model->incluirMensualidad($datos);
+      $this->permisos = $this->obtenerPermisos("Mensualidad", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoMensualidades(): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->listadoMensualidades();
    }
    public function listadoDeudores(): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->listadoDeudores();
+   }
+   public function incluirMensualidad(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->incluirMensualidad($datos);
    }
    public function eliminarMensualidad(array $datos): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->eliminarMensualidad($datos);
    }
 }

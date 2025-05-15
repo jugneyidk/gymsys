@@ -15,12 +15,13 @@ return [
    "manual" => ["enabled" => true, "public" => false, "hasView" => true],
    "mensualidad" => ["enabled" => true, "public" => false, "hasView" => true],
    "notificaciones" => ["enabled" => true, "public" => false, "hasView" => true],
-   "perfil_atleta" => ["enabled" => true, "public" => false, "hasView" => true],
+   "perfilatleta" => ["enabled" => true, "public" => true, "hasView" => true],
    "recovery" => ["enabled" => true, "public" => false, "hasView" => true],
    "reestablecer" => ["enabled" => true, "public" => false, "hasView" => true],
    "reportes" => ["enabled" => true, "public" => false, "hasView" => true],
    "rolespermisos" => ["enabled" => true, "public" => false, "hasView" => true],
    "subs" => ["enabled" => true, "public" => false, "hasView" => false],
+   "tipoatleta" => ["enabled" => true, "public" => false, "hasView" => false],
    "tipocompetencia" => ["enabled" => true, "public" => false, "hasView" => false],
    "wada" => ["enabled" => true, "public" => false, "hasView" => true]
 ];

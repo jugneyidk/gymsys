@@ -4,7 +4,7 @@ $(document).ready(function () {
       serverSide: true,
       ajax: {
          url: '?p=bitacora&accion=listadoBitacora',
-         type: 'POST',
+         type: 'GET',
          dataSrc: function (json) {
             json.draw = json.data.draw;
             json.recordsTotal = json.data.recordsTotal;

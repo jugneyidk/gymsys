@@ -39,11 +39,6 @@ class RedirectMiddleware
          header("Location: .");
          exit;
       }
-      // Regla 4: Si no hay sesión y no hay accion (se esta viendo el sitio en el navegador), redirige al login
-      // if (empty($_SESSION) && empty($accion) && $page !== "login") {
-      //    header("Location: ?p=login");
-      //    exit;
-      // }
    }
    private static function routeExists(array $routes, string $page): bool
    {

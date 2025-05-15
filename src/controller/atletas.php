@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
 
 class Atletas extends BaseController
@@ -17,67 +16,32 @@ class Atletas extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Atletas");
       $this->model = new $modelClass((object) $this->database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Atletas", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
+      $this->permisos = $this->obtenerPermisos("Atletas", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoAtletas(): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->listadoAtletas();
    }
-   public function incluirAtleta(array $datos)
+   public function incluirAtleta(array $datos): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->incluirAtleta($datos);
    }
-   public function eliminarAtleta(array $datos)
+   public function modificarAtleta(array $datos): array
    {
+      $this->validarMetodoRequest("POST");
+      return $this->model->modificarAtleta($datos);
+   }
+   public function eliminarAtleta(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
       return $this->model->eliminarAtleta($datos);
    }
-   public function obtenerAtleta(array $datos)
+   public function obtenerAtleta(array $datos): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->obtenerAtleta($datos);
    }
 }
-      // $accion = $_POST['accion'];
-      // if ($accion == 'listado_atleta') {
-      //    $respuesta = $o->listado_atleta();
-      //    echo json_encode($respuesta);
-      // } elseif ($accion == 'incluir') {
-      //    $campos_null = ['cedula_representante', 'telefono_representante', 'nombre_representante', 'parentesco_representante'];
-      //    foreach ($campos_null as $campo) {
-      //       if (isset($_POST[$campo]) && $_POST[$campo] === '') {
-      //          $_POST[$campo] = null;
-      //       }
-      //    }
-      //    $respuesta = $o->incluir_atleta($_POST);
-      //    echo json_encode($respuesta);
-      // } elseif ($accion == 'modificar') {
-      //    $_POST["password"] = isset($_POST["modificar_contraseña"]) && $_POST["modificar_contraseña"] === "on" ? $_POST["password"] : null;
-      //    $respuesta = $o->modificar_atleta($_POST);
-      //    echo json_encode($respuesta);
-      // } elseif ($accion == 'eliminar') {
-      //    $respuesta = $o->eliminar_atleta($_POST['cedula']);
-      //    echo json_encode($respuesta);
-      // } elseif ($accion == 'obtener_atleta') {
-      //    $respuesta = $o->obtener_atleta($_POST['cedula']);
-      //    echo json_encode($respuesta);
-      // } elseif ($accion == 'obtener_entrenadores') {
-      //    $respuesta = $o->obtenerEntrenadores();
-      //    echo json_encode($respuesta);
-      //    exit;
-      // } elseif ($accion == 'obtener_tipos_atleta') {
-      //    $respuesta = $o->obtenerTiposAtleta();
-      //    echo json_encode($respuesta);
-      //    exit;
-      // } elseif ($accion == 'registrar_tipo_atleta') {
-      //    $respuesta = $o->registrarTipoAtleta(
-      //       $_POST['nombre_tipo_atleta'],
-      //       $_POST['tipo_cobro']
-      //    );
-      //    echo json_encode($respuesta);
-      //    exit;
-      // } elseif ($accion == 'eliminar_tipo_atleta') {
-      //    $respuesta = $o->eliminar_tipo_atleta(
-      //       $_POST['id_tipo'],
-      //    );

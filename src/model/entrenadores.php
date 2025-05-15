@@ -23,7 +23,7 @@ class Entrenadores
       return $this->_incluirEntrenador($arrayFiltrado);
    }
 
-   public function modificarEntrenador(array $datos)
+   public function modificarEntrenador(array $datos): array
    {
       $keys = ["nombres", "apellidos", "cedula", "cedula_original", "genero", "fecha_nacimiento", "lugar_nacimiento", "estado_civil", "telefono", "correo_electronico", "grado_instruccion"];
       if (!empty($datos['modificar_contraseña']) && !empty($datos['password'])) {
@@ -154,9 +154,7 @@ class Entrenadores
          ExceptionHandler::throwException("No existe el entrenador", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consultas = [
-         "UPDATE entrenador SET grado_instruccion = :grado_instruccion WHERE cedula = :cedula_original;",
-         "UPDATE usuarios SET 
+      $consulta = "UPDATE usuarios SET 
                   cedula = :cedula,
                   nombre = :nombre, 
                   apellido = :apellido, 
@@ -166,8 +164,8 @@ class Entrenadores
                   estado_civil = :estado_civil, 
                   telefono = :telefono, 
                   correo_electronico = :correo 
-               WHERE cedula = :cedula_original;"
-      ];
+               WHERE cedula = :cedula_original;
+               UPDATE entrenador SET grado_instruccion = :grado_instruccion WHERE cedula = :cedula_original;";
       $valores = [
          ':cedula' => $datos['cedula'],
          ':cedula_original' => $datos['cedula_original'],
@@ -181,11 +179,9 @@ class Entrenadores
          ':correo' => $datos['correo_electronico'],
          ':grado_instruccion' => $datos['grado_instruccion']
       ];
-      foreach ($consultas as $consulta) {
-         $response = $this->database->query($consulta, $valores);
-         if ($response === false) {
-            ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
-         }
+      $response = $this->database->query($consulta, $valores);
+      if ($response === false) {
+         ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
       }
       if (!empty($datos['password'])) {
          $consultaPassword = "UPDATE usuarios_roles

@@ -18,18 +18,22 @@ class Notificaciones extends BaseController
    }
    public function obtenerNotificaciones(): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->obtenerNotificaciones();
    }
-   public function marcarLeida(array $requestData)
+   public function marcarLeida(array $requestData): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->marcarLeida($requestData);
    }
-   public function marcarTodoLeido()
+   public function marcarTodoLeido(): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->marcarTodoLeido();
    }
-   public function verTodas(array $datos)
+   public function verTodas(array $datos): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->verTodas($datos);
    }
 }

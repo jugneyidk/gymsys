@@ -17,21 +17,22 @@ class Asistencias extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Asistencias");
       $this->model = new $modelClass((object) $this->database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Asistencias", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
+      $this->permisos = $this->obtenerPermisos("Asistencias", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
-   public function obtenerAsistencias(array $datos)
+   public function obtenerAsistencias(array $datos): array
    {
+      $this->validarMetodoRequest("GET");
       return $this->model->obtenerAsistencias($datos);
    }
-   public function guardarAsistencias(array $datos)
+   public function guardarAsistencias(array $datos): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->guardarAsistencias($datos);
    }
-   public function eliminarAsistencias(array $datos)
+   public function eliminarAsistencias(array $datos): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->eliminarAsistencias($datos);
    }
 }

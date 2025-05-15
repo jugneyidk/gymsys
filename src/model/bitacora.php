@@ -25,21 +25,25 @@ class Bitacora
    }
    private function _listadoBitacora(array $datos): array
    {
-      $start = intval($datos['start']);
-      $length = intval($datos['length']);
+      $start = intval($datos['start'] ?? 0);
+      $length = intval($datos['length'] ?? 0);
+      if ($length < 1) {
+         $length = 10;
+      } elseif ($length > 100) {
+         $length = 100;
+      }
       $orderColumnIndex = $datos['order'][0]['column'] ?? 0;
       $orderBy = $datos['columns'][$orderColumnIndex]['data'] ?? 'fecha';
       $orderDir = $datos['order'][0]['dir'] ?? 'desc';
       $totalQuery = $this->database->query("SELECT COUNT(*) as total FROM bitacora", uniqueFetch: true);
       $totalRegistros = $totalQuery['total'];
 
-      $sql = "SELECT id_accion, id_usuario, accion, modulo, registro_modificado, fecha FROM bitacora WHERE 1";
+      $sql = "SELECT id_accion, id_usuario, accion, modulo, registro_modificado, fecha, CONCAT(u.nombre,' ', u.apellido) AS nombre_completo FROM (bitacora JOIN usuarios u ON bitacora.id_usuario = u.cedula) WHERE 1";
       $params = [];
 
       if (!empty($datos['search']['value'])) {
          $sql .= " AND (id_usuario LIKE :search OR accion LIKE :search OR modulo LIKE :search OR registro_modificado LIKE :search OR fecha LIKE :search)";
          $params[':search'] = "%" . $datos['search']['value'] . "%";
-
          // calcular registros filtrados
          $sqlFiltro = "SELECT COUNT(*) as total FROM bitacora WHERE 1
          AND (id_usuario LIKE :search OR accion LIKE :search OR modulo LIKE :search OR registro_modificado LIKE :search OR fecha LIKE :search)";

@@ -7,265 +7,146 @@ import {
    modalListener,
    obtenerNotificaciones,
 } from "./comunes.js";
-$(document).ready(function () {
-   function cargaListadoAtletas() {
-      enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET").then((respuesta) => {
-         actualizarListadoAtletas(respuesta.atletas);
-      });
-   }
-   modalListener("Atleta");
-   obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
-   modal.addEventListener("hidden.bs.modal", function (event) {
-      $("#modificar_contraseña_container").addClass("d-none");
-      $("#password").prop("disabled", false);
-   });
-   function cargarEntrenadores() {
-      enviaAjax("", "?p=entrenadores&accion=listadoEntrenadores", "GET").then((respuesta) => {
-         const selectEntrenador = $("#entrenador_asignado");
-         selectEntrenador.empty();
-         selectEntrenador.append(
-            '<option value="">Seleccione un entrenador</option>'
-         );
-         respuesta.entrenadores.forEach((entrenador) => {
-            selectEntrenador.append(
-               `<option value="${entrenador.cedula}">${entrenador.nombre} ${entrenador.apellido}</option>`
-            );
-         });
-      });
-   }
-   function cargarTiposAtleta() {
-      const datos = new FormData();
-      datos.append("accion", "obtener_tipos_atleta");
-      enviaAjax(datos, "").then((respuesta) => {
-         const selectTipoAtleta = $("#tipo_atleta");
-         selectTipoAtleta.empty();
-         selectTipoAtleta.append(
-            '<option value="">Seleccione un tipo de atleta</option>'
-         );
 
-         respuesta.tipos.forEach((tipo) => {
-            selectTipoAtleta.append(
-               `<option value="${tipo.id_tipo_atleta}">${tipo.nombre_tipo_atleta}</option>`
-            );
-         });
-      });
-   }
-   // function cargarTiposAtletaParaModificacion(tipoAtletaAsignado) {
-   //   const datos = new FormData();
-   //   datos.append("accion", "obtener_tipos_atleta");
-   //   enviaAjax(datos, "").then((respuesta) => {
-   //     const selectTipoAtletaModificar = $("#tipo_atleta");
-   //     selectTipoAtletaModificar.empty(); // Limpiar opciones anteriores
-   //     selectTipoAtletaModificar.append(
-   //       '<option value="">Seleccione un tipo de atleta</option>'
-   //     );
-   //     respuesta.tipos.forEach((tipo) => {
-   //       selectTipoAtletaModificar.append(
-   //         `<option value="${tipo.id_tipo_atleta}" ${
-   //           tipo.id_tipo_atleta == tipoAtletaAsignado ? "selected" : ""
-   //         }>${tipo.nombre_tipo_atleta}</option>`
-   //       );
-   //     });
-   //   });
-   // }
+$(document).ready(() => {
+   // Helpers
+   const cargaListadoAtletas = () =>
+      enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET")
+         .then(({ atletas }) => actualizarListadoAtletas(atletas));
 
-   // cargarTiposAtleta();
-   cargaListadoAtletas();
-   cargarEntrenadores();
-   function verificarFecha(fechaInput, mensaje) {
-      const fecha = fechaInput.val();
-      const hoy = new Date();
-      const fechaNac = new Date(fecha);
-      const isValid = fecha && fechaNac <= hoy;
-      fechaInput
-         .toggleClass("is-invalid", !isValid)
-         .toggleClass("is-valid", isValid);
-      mensaje.text(
-         isValid
+   const cargarOpciones = (url, selector, placeholder, key, tpl) =>
+      enviaAjax("", url, "GET").then((resp) => {
+         const $sel = $(selector).empty().append(placeholder);
+         resp[key].forEach((item) => $sel.append(tpl(item)));
+      });
+
+   const verificarFecha = ($inp, $msg) => {
+      const val = $inp.val(),
+         ok = val && new Date(val) <= new Date();
+      $inp.toggleClass("is-invalid", !ok).toggleClass("is-valid", ok);
+      $msg.text(
+         ok
             ? ""
-            : fecha
+            : val
                ? "La fecha debe ser anterior al día actual"
                : "La fecha de nacimiento es obligatoria"
       );
-      return isValid;
-   }
+      return ok;
+   };
 
-   function calcularEdad(fechaNacimiento) {
-      const hoy = new Date();
-      const fechaNac = new Date(fechaNacimiento);
-      let edad = hoy.getFullYear() - fechaNac.getFullYear();
-      const mes = hoy.getMonth() - fechaNac.getMonth();
-
-      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-         edad--;
-      }
+   const calcularEdad = (fecha) => {
+      const hoy = new Date(), nac = new Date(fecha);
+      let edad = hoy.getFullYear() - nac.getFullYear(),
+         m = hoy.getMonth() - nac.getMonth();
+      if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) edad--;
       return edad;
-   }
+   };
 
-   function validarEnvio(formId) {
+   const validarEnvio = (formId) => {
       let esValido = true;
-      const form = $(formId);
-      const fechaNacimiento = form.find(`#fecha_nacimiento`).val();
-      const edad = calcularEdad(fechaNacimiento);
-      // Validación de campos comunes
-      form.find('input[type="text"]:not([name="accion"])').each(function () {
-         const nombreInput = $(this).attr("name");
-         if (edad >= 18 && nombreInput.includes("_representante")) {
-            return;
-         }
-         esValido &= validarKeyUp(
-            REGEX[nombreInput].regex,
-            form.find(`#${nombreInput}`),
-            form.find(`#s${nombreInput}`),
-            REGEX[nombreInput].mensaje
+      const $f = $(formId),
+         edad = calcularEdad($f.find("#fecha_nacimiento").val());
+
+      $f.find('input[type="text"]:not([name="accion"])').each(function () {
+         const name = this.name;
+         if (edad >= 18 && name.includes("_representante")) return;
+         esValido = esValido && validarKeyUp(
+            REGEX[name].regex,
+            $(this),
+            $f.find(`#s${name}`),
+            REGEX[name].mensaje
          );
-         console.log(`${nombreInput} ${esValido}`);
       });
-      esValido &= verificarFecha(
-         form.find(`#fecha_nacimiento`),
-         form.find(`#sfecha_nacimiento`)
+
+      esValido = esValido && verificarFecha(
+         $f.find("#fecha_nacimiento"),
+         $f.find("#sfecha_nacimiento")
       );
+
       return esValido;
-   }
+   };
 
-   $("#incluir, #btnModificar").on("click", function (event) {
-      event.preventDefault();
-   });
-
-   function limpiarFormulario(formId) {
+   const limpiarFormulario = (formId) => {
       $(formId)
-         .find(
-            "input[type=text], input[type=email], input[type=tel], input[type=number], input[type=password], input[type=date], select"
-         )
-         .val("");
-      $(formId).find("input[type=checkbox]").prop("checked", false);
-      $(formId).find("input").removeClass("is-invalid is-valid");
-      $(formId).find("#representantesContainer").hide();
-   }
+         .find("input, select").val("").end()
+         .find("input[type=checkbox]").prop("checked", false).end()
+         .find("input").removeClass("is-invalid is-valid").end()
+         .find("#representantesContainer").hide();
+   };
 
-   $("#incluir").on("click", function (event) {
-      event.preventDefault();
-
-      if (validarEnvio("#f1")) {
-         const datos = new FormData($("#f1")[0]);
-         if (!datos.get("accion")) {
-            datos.set("accion", "incluir");
-         }
-         enviaAjax(datos, "").then((respuesta) => {
-            console.log("Respuesta del servidor:", respuesta);
-
-            if (
-               !respuesta.ok &&
-               respuesta.mensaje &&
-               respuesta.mensaje.toLowerCase().includes("¿desea asignarlo?")
-            ) {
-               Swal.fire({
-                  title: "¿Asignar representante existente?",
-                  text: respuesta.mensaje,
-                  icon: "warning",
-                  showCancelButton: true,
-                  confirmButtonColor: "#3085d6",
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "Sí, asignar",
-                  cancelButtonText: "Cancelar"
-               }).then((result) => {
-                  if (result.isConfirmed) {
-                     const datosNuevo = new FormData();
-                     for (let [key, value] of datos.entries()) {
-                        datosNuevo.append(key, value);
-                     }
-
-                     datosNuevo.set("asignar_representante_existente", "true");
-
-                     enviaAjax(datosNuevo, "").then((respuesta2) => {
-                        if (respuesta2.ok) {
-                           Swal.fire({
-                              title: "Atleta registrado",
-                              text: "El atleta ha sido registrado y se asignó el representante.",
-                              icon: "success",
-                              confirmButtonText: "Cerrar"
-                           });
-                           cargaListadoAtletas();
-                           limpiarFormulario("#f1");
-                           $("#modal").modal("hide");
-                        } else {
-                           Swal.fire({
-                              title: "Error",
-                              text: respuesta2.mensaje,
-                              icon: "error",
-                              confirmButtonText: "Cerrar"
-                           });
-                        }
-                     });
-                  } else {
-                     Swal.fire({
-                        title: "Cancelado",
-                        text: "No se asignó el representante existente.",
-                        icon: "info",
-                        confirmButtonText: "Cerrar"
-                     });
-                  }
-               });
-            } else if (respuesta.ok) {
-               Swal.fire({
-                  title: "Atleta incluido",
-                  text: "El atleta se ha registrado correctamente.",
-                  icon: "success",
-                  confirmButtonText: "Cerrar"
-               });
-               cargaListadoAtletas();
-               limpiarFormulario("#f1");
-               $("#modal").modal("hide");
-            } else {
-               Swal.fire({
-                  title: "Error",
-                  text: "Ocurrió un error al procesar la solicitud.",
-                  icon: "error",
-                  confirmButtonText: "Cerrar"
-               });
-            }
-         });
-      }
+   // Inicialización
+   modalListener("Atleta");
+   obtenerNotificaciones();
+   setInterval(obtenerNotificaciones, 35000);
+   modal.addEventListener("hidden.bs.modal", () => {
+      $("#modificar_contraseña_container").addClass("d-none");
+      $("#password").prop("disabled", false);
    });
 
+   cargarOpciones(
+      "?p=tipoatleta&accion=listadoTipoAtletas",
+      "#tipo_atleta",
+      '<option value="">Seleccione un tipo de atleta</option>',
+      "tipos",
+      (t) => `<option value="${t.id_tipo_atleta}">${t.nombre_tipo_atleta}</option>`
+   );
+   cargarOpciones(
+      "?p=entrenadores&accion=listadoEntrenadores",
+      "#entrenador_asignado",
+      '<option value="">Seleccione un entrenador</option>',
+      "entrenadores",
+      (e) => `<option value="${e.cedula}">${e.nombre} ${e.apellido}</option>`
+   );
+   cargaListadoAtletas();
 
-   $("#modificar_contraseña").on("change", function () {
-      if ($(this).is(":checked")) {
-         $("#password").prop("disabled", false);
-      } else {
-         $("#password").prop("disabled", true).val("");
-         $("#password").removeClass("is-valid is-invalid");
-         $("#spassword").text("");
-      }
+   // Eventos de formulario
+   $("#incluir, #btnModificar").click((e) => e.preventDefault());
+
+   $("#incluir").click((e) => {
+      e.preventDefault();
+      if (!validarEnvio("#f1")) return;
+      let accion;
+      const datos = new FormData($("#f1")[0]);
+      accion = datos.get("accion") || "incluir";
+      enviaAjax(datos, `?p=atletas&accion=${accion}Atleta`).then((respuesta) => {
+         muestraMensaje("Exito", respuesta.mensaje, "success");
+         cargaListadoAtletas();
+         limpiarFormulario("#f1");
+         $("#modal").modal("hide");
+      });
    });
 
-   function actualizarListadoAtletas(atletas) {
-      let listadoAtleta = "";
+   $("#modificar_contraseña").change(function () {
+      const disabled = !this.checked;
+      $("#password")
+         .prop("disabled", disabled)
+         .val("")
+         .removeClass("is-valid is-invalid");
+      $("#spassword").text("");
+   });
+
+   // Listado y acciones de tabla
+   const actualizarListadoAtletas = (atletas) => {
       if ($.fn.DataTable.isDataTable("#tablaatleta")) {
          $("#tablaatleta").DataTable().destroy();
       }
-      atletas.forEach((atleta) => {
-         listadoAtleta += `
-                <tr>
-                    <td class='align-middle'>${atleta.cedula}</td>
-                    <td class='align-middle'>${atleta.nombre} ${atleta.apellido
-            }</td>
-                    <td class='align-middle'>
-                    ${window.actualizar === 1
-               ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Atleta" data-id='${atleta.cedula}'><i class='fa-regular fa-pen-to-square'></i></button>`
-               : ""
-            }
-                      ${window.eliminar === 1
-               ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar atleta ${atleta.nombre} ${atleta.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Atleta" data-id='${atleta.cedula}'><i class='fa-solid fa-trash-can'></i></button>`
-               : ""
-            }      
-                    </td>
-                </tr>
-            `;
-      });
-
-      $("#listado").html(listadoAtleta);
+      const filas = atletas.map((a) => `
+      <tr>
+        <td class="align-middle">${a.cedula}</td>
+        <td class="align-middle">${a.nombre} ${a.apellido}</td>
+        <td class="align-middle">
+          ${window.actualizar === 1
+            ? `<button class="btn btn-warning me-2 w-auto" data-id="${a.cedula}" data-bs-toggle="modal" title="Modificar Atleta"><i class="fa-regular fa-pen-to-square"></i></button>`
+            : ""
+         }
+          ${window.eliminar === 1
+            ? `<button class="btn btn-danger w-auto" data-id="${a.cedula}" title="Eliminar Atleta"><i class="fa-solid fa-trash-can"></i></button>`
+            : ""
+         }
+        </td>
+      </tr>
+    `).join("");
+      $("#listado").html(filas);
       $("#tablaatleta").DataTable({
          columnDefs: [{ targets: [2], orderable: false, searchable: false }],
          language: {
@@ -276,105 +157,111 @@ $(document).ready(function () {
             infoFiltered: "(filtrado de _MAX_ registros totales)",
             search: "Buscar:",
             emptyTable: "No hay registros disponibles",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
+            paginate: { next: "Siguiente", previous: "Anterior" },
          },
          autoWidth: false,
          order: [[0, "desc"]],
       });
-   }
-   $("#btnConsultarTipos").on("click", function () {
-      cargarListadoTipos2();
+   };
+
+   $("#tablaatleta")
+      .on("click", ".btn-warning", (e) => {
+         $("#accion").val("modificar");
+         obtenerAtleta($(e.currentTarget).data("id"));
+      })
+      .on("click", ".btn-danger", (e) => {
+         eliminarAtleta($(e.currentTarget).data("id"));
+      });
+
+   // Gestión de tipos de atleta
+   $("#btnConsultarTipos").click(() => {
+      cargarListadoTipos();
       $("#contenedorTablaTipos").show();
    });
 
-   function cargarListadoTipos2() {
-      const datos = new FormData();
-      datos.append("accion", "obtener_tipos_atleta");
-      enviaAjax(datos, "").then((respuesta) => {
-         actualizarTablaTipos(respuesta.tipos);
-      });
-   }
+   const cargarListadoTipos = () => {
+      enviaAjax("", "?p=tipoatleta&accion=listadoTipoAtletas", "GET").then((respuesta) => actualizarTablaTipos(respuesta.tipos));
+   };
 
+   const actualizarTablaTipos = (tipos) => {
+      const $tbody = $("#tablaTipos tbody").empty();
+      tipos.forEach((tipo, i) => {
+         $tbody.append(`
+        <tr>
+          <td>${i + 1}</td>
+          <td>${tipo.nombre_tipo_atleta}</td>
+          <td>
+            <button class="btn btn-danger btn-sm btnEliminarTipo" data-id="${tipo.id_tipo_atleta}">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      `);
+      });
+      if (!tipos.length) {
+         $tbody.append("<tr><td colspan='3'>No hay tipos registrados.</td></tr>");
+      }
+   };
+
+   $(document).on("click", ".btnEliminarTipo", function () {
+      const id = $(this).data("id");
+      Swal.fire({
+         title: "¿Estás seguro?",
+         text: "Esta acción eliminará el tipo de atleta seleccionado.",
+         icon: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Sí, eliminar",
+         cancelButtonText: "No, cancelar",
+      }).then((respuesta) => {
+         if (respuesta.isConfirmed) {
+            const datos = new FormData();
+            datos.append("id_tipo", id);
+            enviaAjax(datos, "?p=tipoatleta&accion=eliminarTipoAtleta").then((respuesta) => {
+               cargarListadoTipos();
+               muestraMensaje("Éxito", respuesta.mensaje, "success");
+               cargarOpciones(
+                  "?p=tipoatleta&accion=listadoTipoAtletas",
+                  "#tipo_atleta",
+                  '<option value="">Seleccione un tipo de atleta</option>',
+                  "tipos",
+                  (tipos) => `<option value="${tipos.id_tipo_atleta}">${tipos.nombre_tipo_atleta}</option>`
+               );
+            });
+         }
+      });
+   });
+
+   // Obtener y editar atleta
    function obtenerAtleta(cedula) {
-      enviaAjax("", `?p=atletas&accion=obtenerAtleta&id=${cedula}`, 'GET').then((respuesta) => {
+      enviaAjax("", `?p=atletas&accion=obtenerAtleta&id=${cedula}`, "GET").then((respuesta) => {
          if (respuesta.atleta) {
-            const atleta = respuesta.atleta;
-            llenarFormularioModificar(atleta);
+            llenarFormularioModificar(respuesta.atleta);
             $("#modal").modal("show");
          }
       });
    }
-   function actualizarTablaTipos(tipos) {
-      const tbody = $("#tablaTipos tbody");
-      tbody.empty();
-      console.log(tipos);
-      tipos.forEach((tipo, index) => {
-         tbody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${tipo.nombre_tipo_atleta}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm btnEliminarTipo" 
-                                data-id="${tipo.id_tipo_atleta}">
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-            `);
-      });
 
-      if (tipos.length === 0) {
-         tbody.append("<tr><td colspan='3'>No hay tipos registrados.</td></tr>");
-      }
-   }
-   function calcularEdad(fechaNacimiento) {
-      var hoy = new Date();
-      var fechaNac = new Date(fechaNacimiento);
-      var edad = hoy.getFullYear() - fechaNac.getFullYear();
-      var mes = hoy.getMonth() - fechaNac.getMonth();
-      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNac.getDate())) {
-         edad--;
-      }
-      return edad;
-   }
+   function llenarFormularioModificar({
+      nombre, apellido, cedula, genero, fecha_nacimiento, lugar_nacimiento,
+      peso, altura, estado_civil, telefono, correo_electronico, entrenador, id_tipo_atleta
+   }) {
+      Object.entries({
+         nombres: nombre,
+         apellidos: apellido,
+         cedula,
+         genero,
+         fecha_nacimiento,
+         lugar_nacimiento,
+         peso,
+         altura,
+         estado_civil,
+         telefono,
+         correo_electronico,
+         entrenador_asignado: entrenador,
+         tipo_atleta: id_tipo_atleta
+      }).forEach(([id, val]) => $(`#f1 #${id}`).val(val));
 
-   function mostrarCamposRepresentante() {
-      var fechaNacimiento = $("#fecha_nacimiento").val();
-      if (fechaNacimiento) {
-         var edad = calcularEdad(fechaNacimiento);
-         if (edad < 18) {
-            $("#representantesContainer").removeClass("d-none");
-         } else {
-            $("#representantesContainer").addClass("d-none");
-         }
-      }
-   }
-
-   $("#fecha_nacimiento").on("change", function () {
-      mostrarCamposRepresentante();
-   });
-   function llenarFormularioModificar(atleta) {
-      console.log(atleta);
-      $("#f1 #nombres").val(atleta.nombre);
-      $("#f1 #apellidos").val(atleta.apellido);
-      $("#f1 #cedula").val(atleta.cedula);
-      $("#f1 #genero").val(atleta.genero);
-      $("#f1 #fecha_nacimiento").val(atleta.fecha_nacimiento);
-      $("#f1 #lugar_nacimiento").val(atleta.lugar_nacimiento);
-      $("#f1 #peso").val(atleta.peso);
-      $("#f1 #altura").val(atleta.altura);
-      $("#f1 #estado_civil").val(atleta.estado_civil);
-      $("#f1 #telefono").val(atleta.telefono);
-      $("#f1 #correo_electronico").val(atleta.correo_electronico);
-      $("#f1 #entrenador_asignado").val(atleta.entrenador);
       $("#modificar_contraseña_container").removeClass("d-none");
-      $("#f1 #entrenador_asignado").val(atleta.entrenador);
-      $("#f1 #tipo_atleta").val(atleta.id_tipo_atleta);
-
-      // Resetea y deshabilita el campo de contraseña
       $("#f1 #modificar_contraseña").prop("checked", false);
       $("#f1 #password").prop("disabled", true).val("");
    }
@@ -385,132 +272,83 @@ $(document).ready(function () {
          text: "No podrás revertir esto!",
          icon: "warning",
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
          confirmButtonText: "Sí, eliminar!",
          cancelButtonText: "Cancelar",
-      }).then((result) => {
-         if (result.isConfirmed) {
+      }).then((res) => {
+         if (res.isConfirmed) {
             const datos = new FormData();
             datos.append("cedula", cedula);
             enviaAjax(datos, "?p=atletas&accion=eliminarAtleta").then((respuesta) => {
-               muestraMensaje(
-                  "Eliminado!",
-                  respuesta.mensaje,
-                  "success"
-               );
+               muestraMensaje("Eliminado!", respuesta.mensaje, "success");
                cargaListadoAtletas();
             });
          }
       });
    }
-   $(document).on("click", ".btnEliminarTipo", function () {
-      const id_tipo = $(this).data("id");
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "Esta acción eliminará el tipo de atleta seleccionado.",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
-      }).then((result) => {
-         if (result.isConfirmed) {
-            const datos = new FormData();
-            datos.append("accion", "eliminar_tipo_atleta");
-            datos.append("id_tipo", id_tipo);
-            enviaAjax(datos, "").then(() => {
-               muestraMensaje(
-                  "Éxito",
-                  "Tipo de atleta eliminado con éxito",
-                  "success"
-               );
-               cargarListadoTipos2();
-            });
+
+   // Validaciones de input
+   const reglasKeyPress = {
+      keypress_letras: ["nombres", "apellidos", "lugar_nacimiento", "nombre_representante", "parentesco_representante"],
+      keypress_numerico: ["cedula", "cedula_representante", "telefono", "telefono_representante"],
+      keypress_decimal: ["peso", "altura"],
+      keypress_correo: ["correo_electronico"],
+      keypress_password: ["password"],
+   };
+
+   $("input")
+      .on("keypress", function (e) {
+         const id = this.id;
+         for (let rule in reglasKeyPress) {
+            if (reglasKeyPress[rule].includes(id)) {
+               validarKeyPress(e, REGEX[rule].regex);
+               break;
+            }
          }
+      })
+      .on("keyup", function () {
+         const id = this.id, $el = $(this);
+         validarKeyUp(REGEX[id].regex, $el, $(`#s${id}`), REGEX[id].mensaje);
       });
+
+   // Fecha de nacimiento dinámica
+   $("#fecha_nacimiento").change(function () {
+      const $f = $(this).closest("form"),
+         val = $(this).val();
+      verificarFecha($(this), $f.find("#sfecha_nacimiento"));
+      const ed = calcularEdad(val);
+      $f.find("#edad").val(ed);
+      $("#representantesContainer").toggleClass("d-none", ed >= 18);
    });
 
-   $("#tablaatleta").on("click", ".btn-warning", function () {
-      const cedula = $(this).data('id');
-      $("#accion").val("modificar");
-      obtenerAtleta(cedula);
-   });
-
-   $("#tablaatleta").on("click", ".btn-danger", function () {
-      const cedula = $(this).data('id');
-      eliminarAtleta(cedula);
-   });
-
-   $("input").on("keypress", function (e) {
-      var id = $(this).attr("id");
-      switch (id) {
-         case "nombres":
-         case "apellidos":
-         case "lugar_nacimiento":
-         case "nombres":
-         case "apellidos":
-         case "lugar_nacimiento":
-         case "nombre_representante":
-         case "parentesco_representante":
-            validarKeyPress(e, REGEX.keypress_letras.regex);
-            break;
-         case "cedula":
-         case "cedula_representante":
-         case "telefono":
-         case "telefono_representante":
-            validarKeyPress(e, REGEX.keypress_numerico.regex);
-            break;
-         case "peso":
-         case "altura":
-            validarKeyPress(e, REGEX.keypress_decimal.regex);
-            break;
-         case "correo_electronico":
-            validarKeyPress(e, REGEX.keypress_correo.regex);
-            break;
-         case "password":
-            validarKeyPress(e, REGEX.keypress_password.regex);
-            break;
-      }
-   });
-
-   $("input").on("keyup", function () {
-      var id = $(this).attr("id");
-      validarKeyUp(REGEX[id].regex, $(this), $("#s" + id), REGEX[id].mensaje);
-   });
-
-   $("#fecha_nacimiento").on("change", function () {
-      const form = $(this).closest("form");
-      verificarFecha($(this), form.find(`#sfecha_nacimiento`));
-      const edad = calcularEdad($(this).val());
-      form.find(`#edad`).val(edad);
-      form.find(`#representantesContainer`).toggle(edad < 18);
-   });
-
-   $("#openTipoAtletaModal").on("click", function () {
+   // Modal de tipo atleta
+   $("#openTipoAtletaModal").click(() => {
       $("#modal").modal("hide");
       $("#modalRegistrarTipoAtleta").modal("show");
    });
 
-   $("#btnRegistrarTipoAtleta").on("click", function () {
-      const nombreTipo = $("#nombre_tipo_atleta").val().trim();
-      const tipoCobro = $("#tipo_cobro").val().trim();
-      if (!nombreTipo || !tipoCobro) {
-         alert("Por favor, complete todos los campos.");
+   $("#btnRegistrarTipoAtleta").click(() => {
+      const nombre = $("#nombre_tipo_atleta").val().trim(),
+         cobro = $("#tipo_cobro").val().trim();
+      if (!nombre || !cobro) {
+         muestraMensaje("Error", "Todos los campos son obligatorios", "error");
          return;
       }
       const datos = new FormData();
-      datos.append("accion", "registrar_tipo_atleta");
-      datos.append("nombre_tipo_atleta", nombreTipo);
-      datos.append("tipo_cobro", tipoCobro);
-      enviaAjax(datos, "").then((respuesta) => {
-         if (respuesta.ok) {
-            cargarTiposAtleta();
-            $("#modalRegistrarTipoAtleta").modal("hide");
-            $("#modal").modal("show");
-            $("#formRegistrarTipoAtleta")[0].reset();
-         } else {
-            alert("Error al registrar el tipo de atleta: " + respuesta.mensaje);
-         }
+      datos.append("nombre_tipo_atleta", nombre);
+      datos.append("tipo_cobro", cobro);
+      enviaAjax(datos, "?p=tipoatleta&accion=incluirTipoAtleta").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
+         cargarOpciones(
+            "?p=tipoatleta&accion=listadoTipoAtletas",
+            "#tipo_atleta",
+            '<option value="">Seleccione un tipo de atleta</option>',
+            "tipos",
+            (tipos) => `<option value="${tipos.id_tipo_atleta}">${tipos.nombre_tipo_atleta}</option>`
+         );
+         cargarListadoTipos();
+         $("#modalRegistrarTipoAtleta").modal("hide");
+         $("#modal").modal("show");
+         $("#formRegistrarTipoAtleta")[0].reset();
       });
    });
 });

@@ -14,13 +14,13 @@ class Notificaciones
    {
       $this->database = $database;
    }
-   public function obtenerNotificaciones()
+   public function obtenerNotificaciones(): array
    {
       Validar::validar("cedula", $_SESSION['id_usuario']);
       return $this->_obtenerNotificaciones();
    }
 
-   public function marcarLeida(array $datos)
+   public function marcarLeida(array $datos): array
    {
       $arrayFiltrado = Validar::validarArray($datos, ['id']);
       $idNotificacion = filter_var($arrayFiltrado['id'], FILTER_SANITIZE_NUMBER_INT);
@@ -35,7 +35,7 @@ class Notificaciones
       Validar::validar("cedula", $idUsuario);
       return $this->_marcarTodoLeido($idUsuario);
    }
-   public function verTodas(array $datos)
+   public function verTodas(array $datos): array
    {
       $keys = ['pagina'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
@@ -46,7 +46,7 @@ class Notificaciones
       return $this->_verTodas($pagina);
    }
 
-   private function _marcarLeida(int $idNotificacion)
+   private function _marcarLeida(int $idNotificacion): array
    {
 
       $consulta = "SELECT id FROM notificaciones WHERE id = :id;";
@@ -63,7 +63,7 @@ class Notificaciones
       $resultado["leido"] = true;
       return $resultado;
    }
-   private function _marcarTodoLeido(int $idUsuario)
+   private function _marcarTodoLeido(int $idUsuario): array
    {
       $consulta = "SELECT id FROM notificaciones WHERE id_usuario = :id;";
       $existe = Validar::existe($this->database, $idUsuario, $consulta);
@@ -94,7 +94,7 @@ class Notificaciones
                      LIMIT 4;";
       $valores = [":id_usuario" => $_SESSION['id_usuario']];
       $response = $this->database->query($consulta, $valores);
-      $resultado["notificaciones"] = $response;
+      $resultado["notificaciones"] = $response ?: [];
       return $resultado;
    }
    private function _verTodas(int $pagina): array
@@ -122,7 +122,7 @@ class Notificaciones
       return $resultado;
    }
 
-   public static function crearNotificaciones(Database $database)
+   public static function crearNotificaciones(Database $database): array
    {
       $notificaciones_creadas = 0;
       $notificaciones_wada = self::crearNotificacionesWada($database);

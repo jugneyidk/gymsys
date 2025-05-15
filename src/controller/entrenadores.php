@@ -17,34 +17,32 @@ class Entrenadores extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Entrenadores");
       $this->model = new $modelClass($this->database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Entrenadores", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
+      $this->permisos = $this->obtenerPermisos("Entrenadores", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
-   public function listadoEntrenadores()
+   public function listadoEntrenadores(): array
    {
-      $response = $this->model->listadoEntrenadores();
-      return $response;
+      $this->validarMetodoRequest("GET");
+      return $this->model->listadoEntrenadores();
    }
-   public function obtenerEntrenador(array $requestData)
+   public function obtenerEntrenador(array $datos): array
    {
-      $response = $this->model->obtenerEntrenador($requestData['id']);
-      return $response;
+      $this->validarMetodoRequest("GET");
+      return $this->model->obtenerEntrenador($datos['id']);
    }
-   public function incluirEntrenador(array $requestData)
+   public function incluirEntrenador(array $datos): array
    {
-      $response = $this->model->incluirEntrenador($requestData);
-      return $response;
+      $this->validarMetodoRequest("POST");
+      return $this->model->incluirEntrenador($datos);
    }
-   public function eliminarEntrenador(array $requestData)
+   public function eliminarEntrenador(array $datos): array
    {
-      $response = $this->model->eliminarEntrenador($requestData);
-      return $response;
+      $this->validarMetodoRequest("POST");
+      return $this->model->eliminarEntrenador($datos);
    }
-   public function modificarEntrenador(array $requestData)
+   public function modificarEntrenador(array $datos): array
    {
-      $response = $this->model->modificarEntrenador($requestData);
-      return $response;
+      $this->validarMetodoRequest("POST");
+      return $this->model->modificarEntrenador($datos);
    }
 }

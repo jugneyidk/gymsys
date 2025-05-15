@@ -18,10 +18,8 @@ class Rolespermisos extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Rolespermisos");
       $this->model = new $modelClass($this->database);
-      $this->permisos = ModelRolespermisos::obtenerPermisosModulo("Rolespermisos", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
+      $this->permisos = $this->obtenerPermisos("Rolespermisos", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
 
    public function obtenerRol(array $datos): array

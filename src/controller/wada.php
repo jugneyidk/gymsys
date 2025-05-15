@@ -17,51 +17,37 @@ class Wada extends BaseController
       $this->database = $database;
       $modelClass = $this->getModel("Wada");
       $this->model = new $modelClass((object) $database);
-      $this->permisos = Rolespermisos::obtenerPermisosModulo("Wada", $this->database);
-      if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
-      }
-   }
-   public function incluirWada(array $datos): array
-   {
-      if ($_SERVER['REQUEST_METHOD'] !== "POST") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
-      return $this->model->incluirWada($datos);
+      $this->permisos = $this->obtenerPermisos("Wada", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoPorVencer(): array
    {
-      if ($_SERVER['REQUEST_METHOD'] !== "GET") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
+      $this->validarMetodoRequest("GET");
       return $this->model->listadoPorVencer();
    }
    public function listadoWada(): array
    {
-      if ($_SERVER['REQUEST_METHOD'] !== "GET") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
+      $this->validarMetodoRequest("GET");
       return $this->model->listadoWada();
+   }
+   public function incluirWada(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->incluirWada($datos);
    }
    public function obtenerWada(array $datos): array
    {
-      if ($_SERVER['REQUEST_METHOD'] !== "GET") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
+      $this->validarMetodoRequest("GET");
       return $this->model->obtenerWada($datos);
    }
    public function modificarWada(array $datos): array
    {
-      if ($_SERVER['REQUEST_METHOD'] !== "POST") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
+      $this->validarMetodoRequest("POST");
       return $this->model->modificarWada($datos);
    }
    public function eliminarWada(array $datos): array
    {
-      if ($_SERVER['REQUEST_METHOD'] !== "POST") {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
-      }
+      $this->validarMetodoRequest("POST");
       return $this->model->eliminarWada($datos);
    }
 }

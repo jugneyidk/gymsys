@@ -15,7 +15,7 @@ class Logout extends BaseController
       $modelClass = $this->getModel("Logout");
       $this->model = new $modelClass($this->database);
    }
-   public function logOut()
+   public function logOut(): never
    {
       $response = $this->model->logOut();
       if ($response) {

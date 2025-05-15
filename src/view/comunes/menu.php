@@ -120,9 +120,9 @@ if (isset($_SESSION["id_usuario"])) {
                ?>
                <li class="nav-item dropdown d-none d-lg-block">
                   <a class="nav-link px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
-                     aria-expanded="false" aria-label="Notificaciones" title="Notificaciones"><i class="fa-solid fa-bell"></i>
+                     aria-expanded="false" aria-label="Notificaciones" title="Notificaciones"><i class="fa-solid fa-bell" id="icono-notificaciones"></i>
                      <span
-                        class="position-absolute top-25 start-75 translate-middle badge rounded-circle p-2 bg-danger border border-light d-none"
+                        class="position-absolute top-25 start-75 translate-middle badge rounded-circle p-2 bg-danger border border-light fa-beat-fade d-none"
                         id="contador-notificaciones">
                         <span class="visually-hidden">Notificaciones sin leer</span>
                      </span>

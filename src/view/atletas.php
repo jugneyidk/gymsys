@@ -56,6 +56,7 @@
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/atletas.js"></script>
+   <?php echo($controller->csrfField()); ?>
 </body>
 
 </html>
