@@ -588,28 +588,28 @@
                         <div class="col-md-4">
                            <label for="medalla_arranque" class="form-label">Medalla Arranque</label>
                            <select id="medalla_arranque" name="medalla_arranque" class="form-select" required>
+                              <option value="ninguna" selected>Ninguna</option>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
                            </select>
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_envion" class="form-label">Medalla Envión</label>
                            <select id="medalla_envion" name="medalla_envion" class="form-select" required>
+                              <option value="ninguna" selected>Ninguna</option>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
                            </select>
                         </div>
                         <div class="col-md-4">
                            <label for="medalla_total" class="form-label">Medalla Total</label>
                            <select id="medalla_total" name="medalla_total" class="form-select" required>
+                              <option value="ninguna" selected>Ninguna</option>
                               <option value="oro">Oro</option>
                               <option value="plata">Plata</option>
                               <option value="bronce">Bronce</option>
-                              <option value="ninguna">Ninguna</option>
                            </select>
                         </div>
                      </div>
@@ -639,12 +639,11 @@
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
                <div class="modal-body">
-
-                  <p><strong>Nombre del Evento:</strong> <span id="detallesNombreEventoAnterior"></span></p>
-                  <p><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicioAnterior"></span></p>
-                  <p><strong>Fecha de Fin:</strong> <span id="detallesFechaFinAnterior"></span></p>
-                  <p><strong>Ubicación:</strong> <span id="detallesUbicacionAnterior"></span></p>
-                  <p><strong>Estado:</strong> <span id="detallesEstadoAnterior"></span></p>
+                  <span class="d-block"><strong>Nombre del Evento:</strong> <span id="detallesNombreEventoAnterior"></span></span>
+                  <span class="d-block"><strong>Fecha de Inicio:</strong> <span id="detallesFechaInicioAnterior"></span></span>
+                  <span class="d-block"><strong>Fecha de Fin:</strong> <span id="detallesFechaFinAnterior"></span></span>
+                  <span class="d-block"><strong>Ubicación:</strong> <span id="detallesUbicacionAnterior"></span></span>
+                  <span class="d-block"><strong>Estado:</strong> <span id="detallesEstadoAnterior"></span></span>
                   <div class="table-responsive">
                      <table class="table table-bordered" id="tablaTipos">
                         <thead class="table-light">

@@ -399,6 +399,7 @@ $(document).ready(function () {
             enviaAjax(datos, "?p=eventos&accion=cerrarEvento").then((respuesta) => {
                muestraMensaje("Éxito", respuesta.mensaje, "success");
                cargarEventos();
+               cargarEventosAnteriores();
             });
          }
       });
@@ -414,7 +415,7 @@ $(document).ready(function () {
          idSub,
       });
       enviaAjax("", `?p=eventos&accion=listadoAtletasDisponibles&categoria=${idCategoria}&sub=${idSub}&idCompetencia=${idCompetencia}`, "GET").then((resultado) => {
-         actualizarTablaAtletasDisponibles(resultado.respuesta, idCompetencia);
+         actualizarTablaAtletasDisponibles(resultado.atletas, idCompetencia);
       });
    }
 
@@ -569,9 +570,8 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar_sub");
             datos.append("id_sub", idSub);
-            enviaAjax(datos, "").then(() => {
+            enviaAjax(datos, "?p=subs&accion=eliminarSub").then(() => {
                muestraMensaje("Éxito", "Sub eliminado con éxito", "success");
                cargarListadoSubs();
             });
@@ -642,6 +642,7 @@ $(document).ready(function () {
       enviaAjax(datos, "?p=categorias&accion=incluirCategoria").then((respuesta) => {
          muestraMensaje("Éxito", respuesta.mensaje, "success");
          $("#formRegistrarCategoria")[0].reset();
+         cargarListadoCategorias();
       });
    });
    function actualizarTablaCategorias(categorias) {
@@ -914,8 +915,8 @@ $(document).ready(function () {
          return;
       }
       const datos = new FormData(this);
-      enviaAjax(datos, "?p=tipocompetencia&accion=incluirTipo", "POST").then(() => {
-         muestraMensaje("Éxito", "Tipo registrado con éxito", "success");
+      enviaAjax(datos, "?p=tipocompetencia&accion=incluirTipo", "POST").then((respuesta) => {
+         muestraMensaje("Éxito", respuesta.mensaje, "success");
          $("#in_tipo_nombre").val("");
          cargarListadoTipos();
          $("#formRegistrarTipo")[0].reset();
@@ -982,20 +983,18 @@ $(document).ready(function () {
       const idTipo = $(this).data("id");
       const nombreTipo = $(this).data("nombre");
       Swal.fire({
-         title: "Editar Tipo",
-         input: "text",
+         title: 'Editar Tipo',
+         input: 'text',
          inputValue: nombreTipo,
          showCancelButton: true,
-         confirmButtonText: "Guardar",
-         cancelButtonText: "Cancelar",
-         preConfirm: (nuevoNombre) => {
-            if (!nuevoNombre || !REGEX.in_tipo_nombre.regex.test(nuevoNombre)) {
-               Swal.showValidationMessage(
-                  "El nombre no puede estar vacío o no es válido."
-               );
+         confirmButtonText: 'Guardar',
+         cancelButtonText: 'Cancelar',
+         focusConfirm: false,
+         inputValidator: (value) => {      // si devuelve texto, lo muestra como error
+            if (!value || !REGEX.in_tipo_nombre.regex.test(value)) {
+               return 'El nombre no puede estar vacío o no es válido.';
             }
-            return nuevoNombre;
-         },
+         }
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();

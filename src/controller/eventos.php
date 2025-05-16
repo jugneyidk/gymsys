@@ -35,6 +35,11 @@ class Eventos extends BaseController
       $this->validarMetodoRequest("POST");
       return $this->model->modificarEvento($datos);
    }
+   public function inscribirAtletas(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->inscribirAtletas($datos);
+   }
    public function registrarResultados(array $datos): array
    {
       $this->validarMetodoRequest("POST");

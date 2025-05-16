@@ -8,11 +8,6 @@ class Validar
 {
    protected \PDO $database;
    protected static $regex;
-   // public function __construct(\PDO $database)
-   // {
-   //    self::$database = $database;
-   //    self::$exp = ;
-   // }
    private static function init()
    {
       self::$regex = require __DIR__ . "/regex.php";

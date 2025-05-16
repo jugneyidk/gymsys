@@ -79,13 +79,13 @@ class Eventos
    }
    public function cerrarEvento(array $datos): array
    {
-      $keys = ['id'];
+      $keys = ['id_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id'], 'int');
+      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
          ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
       }
-      return $this->_cerrarEvento($arrayFiltrado['id']);
+      return $this->_cerrarEvento($arrayFiltrado['id_competencia']);
    }
    private function _cerrarEvento(int $idCompetencia): array
    {
@@ -334,13 +334,13 @@ class Eventos
    }
    public function eliminarEvento(array $datos): array
    {
-      $keys = ['id'];
+      $keys = ['id_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id'], 'int');
+      $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
          ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
       }
-      return $this->_eliminarEvento($arrayFiltrado['id']);
+      return $this->_eliminarEvento($arrayFiltrado['id_competencia']);
    }
    private function _eliminarEvento(int $idCompetencia): array
    {
@@ -426,14 +426,14 @@ class Eventos
                     u.apellido,
                     a.peso,
                     u.fecha_nacimiento
-                FROM atleta a
-                JOIN usuarios u ON a.cedula = u.cedula
-                WHERE a.peso BETWEEN :peso_minimo AND :peso_maximo
-                  AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN :edad_minima AND :edad_maxima
-                  AND NOT EXISTS (
-                      SELECT 1 
-                      FROM resultado_competencia rc 
-                      WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula)";
+                  FROM atleta a
+                  JOIN usuarios u ON a.cedula = u.cedula
+                  WHERE a.peso BETWEEN :peso_minimo AND :peso_maximo
+                     AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN :edad_minima AND :edad_maxima
+                     AND NOT EXISTS (
+                        SELECT 1 
+                        FROM resultado_competencia rc 
+                        WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula)";
       $valores = [
          ':peso_minimo' => $responseCategoria['peso_minimo'],
          ':peso_maximo' => $responseCategoria['peso_maximo'],

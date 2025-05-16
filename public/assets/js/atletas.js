@@ -136,11 +136,11 @@ $(document).ready(() => {
         <td class="align-middle">${a.nombre} ${a.apellido}</td>
         <td class="align-middle">
           ${window.actualizar === 1
-            ? `<button class="btn btn-warning me-2 w-auto" data-id="${a.cedula}" data-bs-toggle="modal" title="Modificar Atleta"><i class="fa-regular fa-pen-to-square"></i></button>`
+            ? `<button class="btn btn-warning me-2 w-auto" data-id="${a.cedula}" data-bs-toggle="modal" title="Modificar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-regular fa-pen-to-square"></i></button>`
             : ""
          }
           ${window.eliminar === 1
-            ? `<button class="btn btn-danger w-auto" data-id="${a.cedula}" title="Eliminar Atleta"><i class="fa-solid fa-trash-can"></i></button>`
+            ? `<button class="btn btn-danger w-auto" data-id="${a.cedula}" title="Eliminar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-solid fa-trash-can"></i></button>`
             : ""
          }
         </td>

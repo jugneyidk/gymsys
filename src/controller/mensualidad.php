@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
 
 class Mensualidad extends BaseController
