@@ -1,3 +1,4 @@
 {
-    "editor.find.seedSearchStringFromSelection": "selection"
+  "docwriter.language": "English",
+  "docwriter.style": "Auto-detect"
 }

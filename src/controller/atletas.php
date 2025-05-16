@@ -1,0 +1,47 @@
+<?php
+
+namespace Gymsys\Controller;
+
+use Gymsys\Core\BaseController;
+use Gymsys\Core\Database;
+use Gymsys\Utils\ExceptionHandler;
+
+class Atletas extends BaseController
+{
+   private Database $database;
+   private object $model;
+   private array $permisos;
+   public function __construct(Database $database)
+   {
+      $this->database = $database;
+      $modelClass = $this->getModel("Atletas");
+      $this->model = new $modelClass((object) $this->database);
+      $this->permisos = $this->obtenerPermisos("Atletas", $this->database);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+   }
+   public function listadoAtletas(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->listadoAtletas();
+   }
+   public function incluirAtleta(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->incluirAtleta($datos);
+   }
+   public function modificarAtleta(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->modificarAtleta($datos);
+   }
+   public function eliminarAtleta(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->eliminarAtleta($datos);
+   }
+   public function obtenerAtleta(array $datos): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->obtenerAtleta($datos);
+   }
+}

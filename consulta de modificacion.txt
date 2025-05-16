@@ -1,3 +1,0 @@
-DELETE FROM `representantes`;
-ALTER TABLE `representantes`
-ADD UNIQUE (`cedula`);
