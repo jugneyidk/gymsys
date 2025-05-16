@@ -4,7 +4,7 @@
             <div class="rounded-0 py-1 d-flex justify-content-between align-items-center">
                 <div class="mb-0 h6">Notificaciones</div>
                 <button class="btn btn-outline-light" aria-label="Marcar todas las notificaciones como leídas"
-                    title="Marcar todo como leído" id="marcar-todo-leido">
+                    title="Marcar todo como leído" id="marcar-todo-leido" data-tooltip="tooltip" data-bs-placement="left">
                     <i class="fa-solid fa-envelope-open"></i>
                 </button>
             </div>
