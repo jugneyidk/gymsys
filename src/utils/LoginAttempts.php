@@ -49,10 +49,19 @@ class LoginAttempts
       return true;
    }
 
+   private static function verificarDirectorioCache(): void
+   {
+      if (!file_exists(self::CACHE_DIR)) {
+         mkdir(self::CACHE_DIR, 0755, true);
+      }
+   }
+
    public static function recordFailedAttempt(): void
    {
       $file = self::getCacheFile();
       $data = ['attempts' => 1, 'timestamp' => time()];
+      
+      self::verificarDirectorioCache();
 
       if (file_exists($file)) {
          $currentData = json_decode(file_get_contents($file), true);
@@ -79,7 +88,15 @@ class LoginAttempts
 
    public static function limpiarCacheIntentos(): int
    {
+      if (!file_exists(self::CACHE_DIR)) {
+         return 0;
+      }
+      
       $files = glob(self::CACHE_DIR . '/login_attempts_*.txt');
+      if ($files === false) {
+         return 0;
+      }
+      
       $now = time();
       $archivosLimpiados = 0;
       foreach ($files as $file) {

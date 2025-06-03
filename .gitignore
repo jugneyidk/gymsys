@@ -2,4 +2,4 @@
 /vendor/
 .htaccess
 .env
-/cache/login_attempts/*.txt
+/cache/
