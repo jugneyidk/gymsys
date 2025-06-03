@@ -7,6 +7,7 @@ use Gymsys\Core\Database;
 use Gymsys\Core\RedirectMiddleware;
 use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\JWTHelper;
 
 class ApiController extends BaseController
 {
@@ -18,7 +19,6 @@ class ApiController extends BaseController
    protected array $requestData;
    public function __construct()
    {
-      $this->database = new Database();
       $this->routes = require dirname(__DIR__) . "/core/routes.php";
       $this->page = $_GET['p'] ?? 'landing';
       $this->method = $_SERVER['REQUEST_METHOD'];
@@ -29,6 +29,7 @@ class ApiController extends BaseController
    public function handleRequest()
    {
       RedirectMiddleware::handle($this->routes, $this->page, $this->method, (bool) $this->accion);
+      $this->database = new Database();
       $class = $this->getClass($this->page);
       $controller = new $class((object) $this->database);
       switch ($this->method) {
@@ -58,7 +59,7 @@ class ApiController extends BaseController
       // Caso 2: GET para vista (ej: ?p=user)
       else {
          $permisosNav = Rolespermisos::obtenerPermisosNav($this->database) ?: [];
-         $permisosModulo = Rolespermisos::obtenerPermisosModulo($this->page, $this->database);
+         $permisosModulo = Rolespermisos::obtenerPermisosModulo($this->page,  $this->database);
          $controller->renderVista(ucwords($this->page), $permisosNav, $permisosModulo);
          return true;
       }

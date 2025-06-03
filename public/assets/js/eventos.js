@@ -8,6 +8,8 @@ import {
    obtenerNotificaciones,
    limpiarForm,
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+
 $(document).ready(function () {
    cargarEventos();
    cargarListadoCategorias();
@@ -31,13 +33,7 @@ $(document).ready(function () {
    setInterval(() => obtenerNotificaciones(), 35000);
    function cargarEventosAnteriores() {
       enviaAjax("", "?p=eventos&accion=listadoEventosAnteriores", "GET").then((result) => {
-         if (result.eventos.length > 0) {
             actualizarListadoEventosAnteriores(result.eventos);
-         } else {
-            $("#tablaEventosAnteriores tbody").html(
-               "<tr><td colspan='7'>No hay eventos anteriores</td></tr>"
-            );
-         }
       });
    }
    function cargarAtletasInscritos(idCompetencia) {
@@ -47,50 +43,46 @@ $(document).ready(function () {
    }
    function actualizarTablaAtletasInscritos(atletas, idCompetencia) {
       let filas = "";
+
       atletas.forEach((atleta, index) => {
-         const tieneResultados = atleta.arranque || atleta.envion; // Revisamos si tiene resultados
+         const tieneResultados = atleta.arranque || atleta.envion;
+         const nombreCompleto = `${atleta.nombre} ${atleta.apellido}`;
+         const modalId = tieneResultados ? "modalModificarResultados" : "modalRegistrarResultados";
+         const botonClase = tieneResultados ? "modificarResultados" : "registrarResultados";
+         const botonTexto = tieneResultados ? "Modificar Resultados" : "Registrar Resultados";
+
+         let atributosExtra = "";
+         if (tieneResultados) {
+            atributosExtra = `
+            data-arranque="${atleta.arranque}" 
+            data-envion="${atleta.envion}" 
+            data-medalla-arranque="${atleta.medalla_arranque}" 
+            data-medalla-envion="${atleta.medalla_envion}" 
+            data-medalla-total="${atleta.medalla_total}" 
+            data-total="${atleta.total}"`;
+         }
          filas += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${atleta.nombre} ${atleta.apellido}</td>
-                    <td>${atleta.id_atleta}</td>
-                    <td>
-                        <button 
-                            class="btn btn-outline-primary btn-sm ${tieneResultados
-               ? "modificarResultados"
-               : "registrarResultados"
-            }" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#${tieneResultados
-               ? "modalModificarResultados"
-               : "modalRegistrarResultados"
-            }" 
-                            data-id-competencia="${idCompetencia}" 
-                            data-id-atleta="${atleta.id_atleta}" 
-                            data-nombre="${atleta.nombre} ${atleta.apellido}" 
-                            data-cedula="${atleta.id_atleta}"
-                            ${tieneResultados
-               ? `
-                                data-arranque="${atleta.arranque}" 
-                                data-envion="${atleta.envion}" 
-                                data-medalla-arranque="${atleta.medalla_arranque}" 
-                                data-medalla-envion="${atleta.medalla_envion}" 
-                                data-medalla-total="${atleta.medalla_total}" 
-                                data-total="${atleta.total}"`
-               : ""
-            }
-                        >
-                            ${tieneResultados
-               ? "Modificar Resultados"
-               : "Registrar Resultados"
-            }
-                        </button>
-                    </td>
-                </tr>`;
+         <tr>
+            <td>${index + 1}</td>
+            <td>${nombreCompleto}</td>
+            <td>${atleta.id_atleta}</td>
+            <td>
+               <button 
+                  class="btn btn-outline-primary btn-sm ${botonClase}" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#${modalId}" 
+                  data-id-competencia="${idCompetencia}" 
+                  data-id-atleta="${atleta.id_atleta_encriptado}" 
+                  data-nombre="${nombreCompleto}" 
+                  data-cedula="${atleta.id_atleta}"
+                  ${atributosExtra}>
+                  ${botonTexto}
+               </button>
+            </td>
+         </tr>`;
       });
       if (filas === "") {
-         filas =
-            "<tr><td colspan='4'>No hay atletas inscritos en esta competencia.</td></tr>";
+         filas = "<tr><td colspan='4'>No hay atletas inscritos en esta competencia.</td></tr>";
       }
       $("#tablaAtletasInscritos tbody").html(filas);
    }
@@ -102,10 +94,11 @@ $(document).ready(function () {
          $("#fechaCompetenciaModificarResultados").text(datosCompetencia.fecha_fin);
       });
       const idAtleta = $(this).data("id-atleta");
+      const cedula = $(this).data("cedula");
       $("#id_competencia_modificar_resultado").val(idCompetencia);
       $("#nombreAtletaModificarResultados").text($(this).data("nombre"));
       $("#id_atleta_modificar").val(idAtleta);
-      $("#cedulaAtletaModificarResultados").text(idAtleta);
+      $("#cedulaAtletaModificarResultados").text(cedula);
       $("#arranque_modificar").val($(this).data("arranque"));
       $("#envion_modificar").val($(this).data("envion"));
       $("#medalla_arranque_modificar").val($(this).data("medalla-arranque"));
@@ -198,35 +191,46 @@ $(document).ready(function () {
                     </div>
                 </div>`;
       });
+      if (listadoEventos == "") {
+         listadoEventos = `<div class="col-12 text-center lead">No hay eventos activos</div>`;
+      }
       $("#lista-eventos").html(listadoEventos);
    }
 
    function actualizarListadoEventosAnteriores(eventos) {
       let listado = "";
+      let index = 1;
       eventos.forEach((evento) => {
          listado += `
             <tr>
-                <td>${evento.id_competencia}</td>
+                <td>${index}</td>
                 <td>${evento.nombre}</td>
-                <td>${evento.fecha_inicio}</td>
+                <td class="d-none d-lg-table-cell">${evento.fecha_inicio}</td>
                 <td>${evento.fecha_fin}</td>
-                <td>${evento.lugar_competencia}</td>
-                <td>${evento.estado}</td>
+                <td class="d-none d-lg-table-cell">${evento.lugar_competencia}</td>
                 <td>
                     <button class="btn btn-outline-info btn-sm consultarEventoAnterior" data-id="${evento.id_competencia}">Consultar</button>
                 </td>
             </tr>`;
+         index++;
       });
-      $("#tablaEventosAnteriores tbody").html(listado);
+      initDataTable("#tablaEventosAnteriores", {
+         order: [[0, "desc"]],
+         columnDefs: [{
+            targets: [5],
+            orderable: false,
+            searchable: false
+         }],
+         autoWidth: false,
+         lengthChange: false
+      }, listado);
    }
 
    function eliminarEvento(idCompetencia) {
-      Swal.fire({
-         title: "¿Estás seguro de eliminar este evento?",
-         icon: "warning",
+      muestraMensaje("Confirmar eliminación", "¿Estás seguro de que deseas eliminar este evento?", "warning", {
          showCancelButton: true,
          confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
+         confirmButtonColor: "#d33"
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
@@ -249,7 +253,7 @@ $(document).ready(function () {
    function actualizarListadoCategorias(categorias) {
       let opciones = "<option value='' selected>Seleccione una</option>";
       categorias.forEach((categoria) => {
-         opciones += `<option value="${categoria.id_categoria}">${categoria.nombre}</option>`;
+         opciones += `<option value="${categoria.id_categoria}" data-hash="${categoria.id_categoria_hash}">${categoria.nombre}</option>`;
       });
       $("#in_categoria").html(opciones);
       $("#categoria_modificar").html(opciones);
@@ -265,7 +269,7 @@ $(document).ready(function () {
    function actualizarListadoSubs(subs) {
       let opciones = "<option selected>Seleccione una</option>";
       subs.forEach((sub) => {
-         opciones += `<option value="${sub.id_sub}">${sub.nombre}</option>`;
+         opciones += `<option value="${sub.id_sub}" data-hash="${sub.id_sub_hash}">${sub.nombre}</option>`;
       });
       $("#in_subs").html(opciones);
       $("#subs_modificar").html(opciones);
@@ -281,7 +285,7 @@ $(document).ready(function () {
    function actualizarListadoTipos(tipos) {
       let opciones = "<option selected>Seleccione una</option>";
       tipos.forEach((tipo) => {
-         opciones += `<option value="${tipo.id_tipo_competencia}">${tipo.nombre}</option>`;
+         opciones += `<option value="${tipo.id_tipo_competencia}" data-hash="${tipo.id_tipo_competencia_hash}">${tipo.nombre}</option>`;
       });
       $("#in_tipo").html(opciones);
       $("#tipo_modificar").html(opciones);
@@ -328,7 +332,7 @@ $(document).ready(function () {
 
    $(document).on("click", ".registrarResultados", function () {
       const idCompetencia = $(this).data("id-competencia");
-      const idAtleta = $(this).data("cedula");
+      const idAtleta = $(this).data("id-atleta");
       const nombre = $(this).data("nombre");
       const cedula = $(this).data("cedula");
       $("#nombreAtletaResultados").text(nombre);
@@ -368,6 +372,9 @@ $(document).ready(function () {
                     <td class='text-center align-middle text-capitalize'><span class='badge bg-${!resultado.medalla_total || resultado.medalla_total == "ninguna" ? "dark'" : resultado.medalla_total == 'bronce' ? "danger" : resultado.medalla_total == 'plata' ? "secondary text-black" : resultado.medalla_total == "oro" ? "warning" : ""}'>${resultado.medalla_total ?? "No"}</span></td>
                 </tr>
             `;
+            if (contenido == '') {
+               contenido = `<tr><td class='text-center align-middle' colspan='9'>No se encontraron resultados</td></tr>`
+            }
          });
          $("#resultadosEventoAnterior").html(contenido);
       });
@@ -382,16 +389,13 @@ $(document).ready(function () {
          $("#detallesUbicacion").text(competencia.lugar_competencia);
          $("#detallesEstado").text(competencia.estado);
          cargarAtletasInscritos(idCompetencia);
+         $("#modalDetallesEvento").modal("show");
       });
-   });
-
-   function cerrarEvento(idCompetencia) {
-      Swal.fire({
-         title: "¿Estás seguro de cerrar este evento?",
-         icon: "warning",
+   }); function cerrarEvento(idCompetencia) {
+      muestraMensaje("Confirmar cierre", "¿Estás seguro de que deseas cerrar este evento?", "warning", {
          showCancelButton: true,
          confirmButtonText: "Sí, cerrar",
-         cancelButtonText: "No, cancelar",
+         confirmButtonColor: "#d33",
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
@@ -405,22 +409,14 @@ $(document).ready(function () {
       });
    }
    function cargarAtletasDisponiblesParaInscripcion(
-      idCompetencia,
-      idCategoria,
-      idSub
+      idCompetencia
    ) {
-      console.log("Enviando datos al servidor:", {
-         idCompetencia,
-         idCategoria,
-         idSub,
-      });
-      enviaAjax("", `?p=eventos&accion=listadoAtletasDisponibles&categoria=${idCategoria}&sub=${idSub}&idCompetencia=${idCompetencia}`, "GET").then((resultado) => {
-         actualizarTablaAtletasDisponibles(resultado.atletas, idCompetencia);
+      enviaAjax("", `?p=eventos&accion=listadoAtletasDisponibles&id=${idCompetencia}`, "GET").then((resultado) => {
+         actualizarTablaAtletasDisponibles(resultado.atletas);
       });
    }
 
-   function actualizarTablaAtletasDisponibles(atletas, idCompetencia) {
-      console.log("Actualizando tabla con atletas:", atletas);
+   function actualizarTablaAtletasDisponibles(atletas) {
       let tabla = $("#tablaParticipantesInscripcion tbody");
       tabla.empty();
 
@@ -434,7 +430,7 @@ $(document).ready(function () {
                         <td>${atleta.peso} kg</td>
                         <td>${calcularEdad(atleta.fecha_nacimiento)}</td>
                         <td>
-                            <input type="checkbox" class="form-check-input" name="atletas" value="${atleta.id_atleta
+                            <input type="checkbox" class="form-check-input" name="atletas" value="${atleta.id_atleta_encriptado
                }">
                         </td>
                     </tr>
@@ -456,9 +452,9 @@ $(document).ready(function () {
          })
          .get();
       if (atletasSeleccionados.length === 0) {
-         Swal.fire(
+         muestraMensaje(
             "Advertencia",
-            "Debe seleccionar al menos un atleta para inscribir.",
+            "Debe seleccionar al menos un atleta para inscribir",
             "warning"
          );
          return;
@@ -489,9 +485,9 @@ $(document).ready(function () {
       const total = parseInt(arranque) + parseInt(envion);
 
       if (!arranque || !envion || isNaN(total)) {
-         Swal.fire(
+         muestraMensaje(
             "Error",
-            "Debes completar todos los campos correctamente.",
+            "Por favor, completa los campos de arranque y envión correctamente",
             "error"
          );
          return;
@@ -522,7 +518,7 @@ $(document).ready(function () {
       if (edadMinima >= edadMaxima) {
          muestraMensaje(
             "Error",
-            "La edad mínima no debe ser mayor o igual a la edad máxima",
+            "La edad mínima debe ser menor que la edad máxima",
             "error"
          );
          return;
@@ -557,17 +553,17 @@ $(document).ready(function () {
                 </tr>
             `);
       });
-   }
-   $(document).on("click", ".btnEliminarSub", function () {
+   } $(document).on("click", ".btnEliminarSub", function () {
       const idSub = $(this).data("id");
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "Esta acción eliminará el sub seleccionado.",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
-      }).then((result) => {
+      muestraMensaje("Confirmar eliminación",
+         "¿Estás seguro de que deseas eliminar este sub?",
+         "warning",
+         {
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            confirmButtonColor: "#d33"
+         }
+      ).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
             datos.append("id_sub", idSub);
@@ -584,29 +580,40 @@ $(document).ready(function () {
       const nombre = $(this).data("nombre");
       const edadMinima = $(this).data("edad-minima");
       const edadMaxima = $(this).data("edad-maxima");
-      Swal.fire({
-         title: "Editar Sub",
+      muestraMensaje("Editar Sub", "", "question", {
          html: `
-                <label for="nombreSub">Nombre:</label>
-                <input id="nombreSub" class="swal2-input" value="${nombre}">
-                <label for="edadMinima">Edad Mínima:</label>
-                <input id="edadMinima" class="swal2-input" type="number" value="${edadMinima}">
-                <label for="edadMaxima">Edad Máxima:</label>
-                <input id="edadMaxima" class="swal2-input" type="number" value="${edadMaxima}">
+                <div class="mb-3">
+                    <label for="nombreSub" class="form-label d-block">Nombre:</label>
+                    <input id="nombreSub" class="swal2-input mx-auto" value="${nombre}" placeholder="Nombre" type="text">
+                </div>
+                <div class="mb-3">
+                    <label for="edadMinima" class="form-label d-block">Edad Mínima:</label>
+                    <input id="edadMinima" class="swal2-input mx-auto" type="number" value="${edadMinima}" placeholder="Edad mínima">
+                </div>
+                <div class="mb-3">
+                    <label for="edadMaxima" class="form-label d-block">Edad Máxima:</label>
+                    <input id="edadMaxima" class="swal2-input mx-auto" type="number" value="${edadMaxima}" placeholder="Edad máxima">
+                </div>
             `,
+         cancelButtonText: "Cancelar",
+         showCancelButton: true,
          focusConfirm: false,
          preConfirm: () => {
             const nuevoNombre = document.getElementById("nombreSub").value;
             const nuevaEdadMinima = document.getElementById("edadMinima").value;
             const nuevaEdadMaxima = document.getElementById("edadMaxima").value;
 
-            if (!nuevoNombre || nuevaEdadMinima === "" || nuevaEdadMaxima === "") {
-               Swal.showValidationMessage("Todos los campos son obligatorios");
+            if ((!nuevoNombre || nuevoNombre == "") || nuevaEdadMinima === "" || nuevaEdadMaxima === "") {
+               muestraMensaje("Error", "Todos los campos son obligatorios", "error");
+               return false;
             }
             if (parseInt(nuevaEdadMinima) >= parseInt(nuevaEdadMaxima)) {
-               Swal.showValidationMessage(
-                  "La edad mínima debe ser menor que la máxima"
+               muestraMensaje(
+                  "Error",
+                  "La edad mínima debe ser menor que la máxima",
+                  "error"
                );
+               return false;
             }
 
             return { nuevoNombre, nuevaEdadMinima, nuevaEdadMaxima };
@@ -633,7 +640,7 @@ $(document).ready(function () {
       if ($("#in_peso_minimo").val() > $("#in_peso_maximo").val()) {
          muestraMensaje(
             "Error",
-            "El peso mínimo no puede ser mayor al peso máximo",
+            "El peso mínimo debe ser menor que el peso máximo",
             "error"
          );
          return;
@@ -679,17 +686,25 @@ $(document).ready(function () {
       const nombre = $(this).data("nombre");
       const pesoMinimo = $(this).data("peso-minimo");
       const pesoMaximo = $(this).data("peso-maximo");
-
-      Swal.fire({
-         title: "Editar Categoría",
+      muestraMensaje("Editar Categoría", "", "question", {
          html: `
-                <input id="nuevoNombre" class="swal2-input" placeholder="Nombre" value="${nombre}">
-                <input id="nuevoPesoMinimo" class="swal2-input" type="number" placeholder="Peso Mínimo" value="${pesoMinimo}">
-                <input             id="nuevoPesoMaximo" class="swal2-input" type="number" placeholder="Peso Máximo" value="${pesoMaximo}">
+                <div class="mb-3">
+                     <label for="nuevoNombre" class="form-label d-block">Nombre:</label>
+                     <input id="nuevoNombre" class="swal2-input mx-auto" placeholder="Nombre" type="text" value="${nombre}">
+                     </div>
+               <div class="mb-3">
+                     <label for="nuevoPesoMinimo" class="form-label d-block">Peso mínimo:</label>
+                    <input id="nuevoPesoMinimo" class="swal2-input mx-auto" type="number" placeholder="Peso Mínimo" value="${pesoMinimo}">
+                </div>
+                <div class="mb-3">
+                     <label for="nuevoPesoMaximo" class="form-label d-block">Peso máximo:</label>
+                    <input id="nuevoPesoMaximo" class="swal2-input mx-auto" type="number" placeholder="Peso Máximo" value="${pesoMaximo}">
+                </div>
         `,
          showCancelButton: true,
          confirmButtonText: "Guardar",
          cancelButtonText: "Cancelar",
+         focusConfirm: false,
          preConfirm: () => {
             const nuevoNombre = document.getElementById("nuevoNombre").value;
             const nuevoPesoMinimo =
@@ -698,14 +713,14 @@ $(document).ready(function () {
                document.getElementById("nuevoPesoMaximo").value;
 
             if (!nuevoNombre || nuevoNombre.length < 2) {
-               Swal.showValidationMessage("El nombre es inválido.");
+               muestraMensaje("Error", "El nombre es inválido", "error");
             } else if (
                !nuevoPesoMinimo ||
                !nuevoPesoMaximo ||
                nuevoPesoMinimo < 0 ||
                nuevoPesoMaximo <= nuevoPesoMinimo
             ) {
-               Swal.showValidationMessage("El rango de peso es inválido.");
+               muestraMensaje("Error", "El rango de peso es inválido", "error");
             } else {
                return {
                   nombre: nuevoNombre,
@@ -730,13 +745,10 @@ $(document).ready(function () {
    });
    $(document).on("click", ".btnEliminarCategoria", function () {
       const idCategoria = $(this).data("id");
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "Esta acción eliminará la categoría seleccionada.",
-         icon: "warning",
+      muestraMensaje("Confirmar eliminación", "¿Estás seguro de que deseas eliminar esta categoría?", "warning", {
          showCancelButton: true,
          confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
+         confirmButtonColor: "#d33"
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
@@ -771,7 +783,7 @@ $(document).ready(function () {
       if (!idCompetencia) {
          muestraMensaje(
             "Error",
-            "Faltan datos del evento. No se puede continuar.",
+            "No se encontraron los datos necesarios del evento",
             "error"
          );
          return;
@@ -809,7 +821,6 @@ $(document).ready(function () {
             form.find(`#s${idInput}`),
             REGEX[idInput].mensaje
          );
-         console.log(`${idInput} ${esValido}`);
       });
       return esValido;
    }
@@ -830,22 +841,14 @@ $(document).ready(function () {
          return;
       }
       if (
-         isNaN($("#in_tipo").val()) ||
          $("#in_tipo").val() === "" ||
-         isNaN($("#in_subs").val()) ||
          $("#in_subs").val() === "" ||
-         isNaN($("#in_categoria").val()) ||
          $("#in_categoria").val() === ""
       ) {
          muestraMensaje(
             "Error",
             "Debe seleccionar una categoria, sub y un tipo",
             "error"
-         );
-         console.log(!isNaN($("#in_tipo").val()) && $("#in_tipo").val() !== "");
-         console.log(!isNaN($("#in_subs").val()) && $("#in_subs").val() !== "");
-         console.log(
-            !isNaN($("#in_categoria").val()) && $("#in_categoria").val() !== ""
          );
          return;
       }
@@ -878,14 +881,23 @@ $(document).ready(function () {
    });
 
    $("#modalRegistrarCategoria").on("show.bs.modal", function () {
+      setTimeout(() => {
+         $("#in_categoria_nombre").focus();
+      }, 500);
       cargarListadoCategorias();
    });
 
    $("#modalRegistrarSubs").on("show.bs.modal", function () {
+      setTimeout(() => {
+         $("#in_subs_nombre").focus();
+      }, 500);
       cargarListadoSubs();
    });
 
    $("#modalRegistrarTipo").on("show.bs.modal", function () {
+      setTimeout(() => {
+         $("#in_tipo_nombre").focus();
+      }, 500);
       cargarListadoTipos();
    });
 
@@ -904,9 +916,21 @@ $(document).ready(function () {
       $("#ubicacion_modificar").val(competencia.lugar_competencia);
       $("#fecha_inicio_modificar").val(competencia.fecha_inicio);
       $("#fecha_fin_modificar").val(competencia.fecha_fin);
-      $("#categoria_modificar").val(competencia.categoria).change();
-      $("#subs_modificar").val(competencia.subs).change();
-      $("#tipo_modificar").val(competencia.tipo_competicion).change();
+      $("#categoria_modificar option").each(function () {
+         if ($(this).data('hash') === competencia.categoria_hash) {
+            $("#categoria_modificar").val($(this).val());
+         }
+      });
+      $("#subs_modificar option").each(function () {
+         if ($(this).data('hash') === competencia.subs_hash) {
+            $("#subs_modificar").val($(this).val());
+         }
+      });
+      $("#tipo_modificar option").each(function () {
+         if ($(this).data('hash') === competencia.tipo_competicion_hash) {
+            $("#tipo_modificar").val($(this).val());
+         }
+      });
       $("#modalModificarCompetencia").modal("show");
    }
    $("#formRegistrarTipo").on("submit", function (e) {
@@ -960,13 +984,10 @@ $(document).ready(function () {
 
    $(document).on("click", ".btnEliminarTipo", function () {
       const idTipo = $(this).data("id");
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "Esta acción eliminará el tipo seleccionado.",
-         icon: "warning",
+      muestraMensaje("Confirmar eliminación", "¿Estás seguro de que deseas eliminar este tipo?", "warning", {
          showCancelButton: true,
          confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
+         confirmButtonColor: "#d33"
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
@@ -982,18 +1003,22 @@ $(document).ready(function () {
    $(document).on("click", ".btnEditarTipo", function () {
       const idTipo = $(this).data("id");
       const nombreTipo = $(this).data("nombre");
-      Swal.fire({
-         title: 'Editar Tipo',
-         input: 'text',
-         inputValue: nombreTipo,
+      muestraMensaje('Editar Tipo', '', 'question', {
+         html: `<div class="mb-3">
+                  <label for="nombreTipo" class="form-label d-block">Nombre:</label>
+                  <input id="nombreTipo" class="swal2-input mx-auto" value="${nombreTipo}" type="text" placeholder="Nombre">
+               </div>`,
          showCancelButton: true,
          confirmButtonText: 'Guardar',
          cancelButtonText: 'Cancelar',
          focusConfirm: false,
-         inputValidator: (value) => {      // si devuelve texto, lo muestra como error
-            if (!value || !REGEX.in_tipo_nombre.regex.test(value)) {
-               return 'El nombre no puede estar vacío o no es válido.';
+         preConfirm: () => {
+            const valor = document.getElementById('nombreTipo').value;
+            if (!valor || !REGEX.in_tipo_nombre.regex.test(valor)) {
+               muestraMensaje('Error', 'El nombre no puede estar vacío o no es válido', 'error');
+               return false;
             }
+            return valor;
          }
       }).then((result) => {
          if (result.isConfirmed) {

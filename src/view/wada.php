@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <?php $formulario = "wada"; ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,10 +12,10 @@
    <?php require_once "comunes/linkcss.php"; ?>
 </head>
 
-<body class="bg-light">
+<body class="bg-body">
    <script>
-      var actualizar = <?php echo $permisosModulo["actualizar"] ?>;
-      var eliminar = <?php echo $permisosModulo["eliminar"] ?>;
+      var actualizar = <?= $permisosModulo["actualizar"] ?>;
+      var eliminar = <?= $permisosModulo["eliminar"] ?>;
    </script>
    <?php require_once "comunes/menu.php"; ?>
    <main class="container-md my-3 my-md-5">

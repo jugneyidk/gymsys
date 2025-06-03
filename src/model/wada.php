@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -19,6 +20,7 @@ class Wada
    {
       $keys = ['atleta', 'status', 'inscrito', 'ultima_actualizacion', 'vencimiento'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['atleta'] = Cipher::aesDecrypt($arrayFiltrado['atleta']);
       Validar::validar("cedula", $arrayFiltrado['atleta']);
       Validar::validarFechasWada($this->database, $arrayFiltrado['atleta'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
       Validar::validar("bool", $arrayFiltrado['status']);
@@ -27,9 +29,9 @@ class Wada
 
    public function modificarWada(array $datos): array
    {
-
       $keys = ['atleta', 'status', 'inscrito', 'ultima_actualizacion', 'vencimiento'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['atleta'] = Cipher::aesDecrypt($arrayFiltrado['atleta']);
       Validar::validar("cedula", $arrayFiltrado['atleta']);
       Validar::validarFechasWada($this->database, $arrayFiltrado['atleta'], $arrayFiltrado['inscrito'], $arrayFiltrado['ultima_actualizacion'], $arrayFiltrado['vencimiento']);
       Validar::validar("bool", $arrayFiltrado['status']);
@@ -40,19 +42,21 @@ class Wada
    {
       $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("cedula", $arrayFiltrado['id']);
-      return $this->_obtenerWada($arrayFiltrado['id']);
+      $idAtleta = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::validar("cedula", $idAtleta);
+      return $this->_obtenerWada($idAtleta);
    }
 
    public function eliminarWada(array $datos): array
    {
       $keys = ['cedula'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("cedula", $arrayFiltrado['cedula']);
-      return $this->_eliminarWada($arrayFiltrado['cedula']);
+      $idAtleta = Cipher::aesDecrypt($arrayFiltrado['cedula']);
+      Validar::validar("cedula", $idAtleta);
+      return $this->_eliminarWada($idAtleta);
    }
 
-   public function listadoWada()
+   public function listadoWada(): array
    {
       return $this->_listadoWada();
    }
@@ -121,6 +125,8 @@ class Wada
          ExceptionHandler::throwException("Ocurrió un error al obtener la WADA", 500, \Exception::class);
       }
       $resultado["wada"] = $response;
+      Cipher::crearHashArray($resultado, "id_atleta");
+      Cipher::encriptarCampoArray($resultado, "id_atleta", false);
       return $resultado;
    }
 
@@ -147,6 +153,9 @@ class Wada
       $consulta = "SELECT * FROM lista_wada;";
       $response = $this->database->query($consulta);
       $resultado["wada"] = $response ?: [];
+      if (!empty($resultado["wada"])) {
+         Cipher::encriptarCampoArray($resultado["wada"], "cedula", false);
+      }
       return $resultado;
    }
 
@@ -159,6 +168,9 @@ class Wada
       $consulta = "SELECT * FROM lista_wada_por_vencer;";
       $response = $this->database->query($consulta);
       $resultado["wadas"] = $response ?: [];
+      if (!empty($resultado["wadas"])) {
+         Cipher::encriptarCampoArray($resultado["wadas"], "cedula", false);
+      }
       return $resultado;
    }
 }

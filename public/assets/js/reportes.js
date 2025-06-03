@@ -1,322 +1,255 @@
-import { obtenerNotificaciones } from "./comunes.js";
-$(document).ready(function () {
-  obtenerNotificaciones(idUsuario);
-  setInterval(() => obtenerNotificaciones(idUsuario), 35000);
-  const filtrosMap = {
-    atletas: "#filtrosAtletas",
-    entrenadores: "#filtrosEntrenadores",
-    mensualidades: "#filtrosGenerales",
-    wada: "#filtrosGenerales",
-    eventos: "#filtrosGenerales",
-    asistencias: "#filtrosGenerales",
-    reporteIndividualAtleta: "#filtrosIndividualAtleta"
-};
+import {
+   enviaAjax,
+   muestraMensaje,
+   obtenerNotificaciones,
+} from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+import { crearGrafico } from "./graficos.js";
 
-$("#tipoReporte").change(function () {
-    $(".filtros-reporte").hide();
-    const filtroSeleccionado = filtrosMap[$(this).val()];
-    if (filtroSeleccionado) $(filtroSeleccionado).show();
-});
-$("#btnGenerarReporte").on("click", function () {
-  const tipoReporte = $("#tipoReporte").val();
-  const datos = new FormData($("#formReportes")[0]);
+$(document).ready(() => {
+   // Helpers
+   const cargarDatosEstadisticos = () => {
+      renderGraficoEdades();
+      renderGraficoGenero();
+      renderGraficoAsistenciasMensuales();
+      renderGraficoCumplimientoWADA();
+   };
+   const actualizarListadoReportes = (reportes) => {
+      console.log("Actualizando listado de reportes", reportes);
+      if (!reportes.length) {
+         $("#listadoReportes").html("<tr><td colspan='4'>No se encontraron reportes.</td></tr>");
+         return;
+      }
 
-  if (tipoReporte === 'reporteIndividualAtleta') {
-      datos.append("accion", "obtener_reporte_individual");
-  } else {
-      datos.append("accion", "obtener_reportes");
-  }
+      // Obtener las columnas del primer reporte
+      const columnas = Object.keys(reportes[0]);
 
-  for (let [key, value] of datos.entries()) {
-      console.log(key, value);
-  }
-
-  enviaAjax(datos);
-});
-
-
-
-function enviaAjax(datos) {
-  $.ajax({
-      async: true,
-      url: "",
-      type: "POST",
-      contentType: false,
-      data: datos,
-      processData: false,
-      cache: false,
-      success: function (respuesta) {
-        try {
-            const lee = typeof respuesta === "string" ? JSON.parse(respuesta) : respuesta;
-    
-            if (lee.ok) {
-                if (Array.isArray(lee.reportes) && lee.reportes.length > 0) {
-                    $("#listadoReportes").html(
-                        lee.reportes
-                            .map(reporte => `
-                                <tr>
-                                    <td>${reporte.id}</td>
-                                    <td>${reporte.nombre}</td>
-                                    <td>${reporte.detalles}</td>
-                                    <td>${reporte.fecha}</td>
-                                </tr>
-                            `)
-                            .join("")
-                    );
-                } else {
-                    $("#listadoReportes").html("<tr><td colspan='4'>No se encontraron reportes.</td></tr>");
-                }
-    
-                if (lee.resultados) {
-                    actualizaEstadisticas(lee.resultados);
-                }
-            } else {
-                Swal.fire("Error", lee.mensaje || "Error en la respuesta del servidor.", "error");
-            }
-        } catch (error) {
-            console.error("Error al procesar la respuesta JSON: ", error);
-            Swal.fire("Error", "Error procesando respuesta del servidor.", "error");
-        }
-    }
-    
-  });
-}
-
-function mostrarTablaReportes(reportes) {
-  if ($.fn.DataTable.isDataTable("#tablaReportes")) {
-      $("#tablaReportes").DataTable().clear().destroy();
-  }
-
-  $("#listadoReportes").html(
-      reportes.map(reporte => `
-          <tr>
-              <td>${reporte.id}</td>
-              <td>${reporte.nombre}</td>
-              <td>${reporte.detalles}</td>
-              <td>${reporte.fecha}</td>
-          </tr>
-      `).join("")
-  );
-
-  $("#tablaReportes").DataTable({
-      language: {
-          lengthMenu: "Mostrar _MENU_ por página",
-          zeroRecords: "No se encontraron reportes",
-          info: "Mostrando página _PAGE_ de _PAGES_",
-          infoEmpty: "No hay reportes disponibles",
-          infoFiltered: "(filtrado de _MAX_ registros totales)",
-          search: "Buscar:",
-          paginate: {
-              first: "Primera",
-              last: "Última",
-              next: "Siguiente",
-              previous: "Anterior"
-          }
-      },
-      autoWidth: true,
-      order: [[0, "desc"]],
-      dom: '<"top"f>rt<"bottom"lp><"clear">'
-  });
-}
-
-function mostrarResultadosIndividuales(resultados) {
-  // Mostrar datos del reporte individual en el formato que desees.
-  console.log("Resultados individuales:", resultados);
-}
-
-
-
-
-  function actualizaEstadisticas(estadisticas) {
-    $("#listaEstadisticas").html(
-      Object.entries(estadisticas)
-        .map(([clave, valor]) => `<li>${clave.replace("_", " ")}: ${valor}</li>`)
-        .join("")
-    );
-  }
-
-  function renderGraficoEdades() {
-    $.ajax({
-      url: "",
-      method: "POST",
-      data: { accion: "obtenerDatosEstadisticos", tipo: "edadAtletas" },
-      success: function (respuesta) {
-        if (respuesta.ok) {
-          const etiquetas = respuesta.data.map(d => d.rango_edad);
-          const valores = respuesta.data.map(d => d.cantidad);
-          const ctx = document.getElementById("edadAtletasChart").getContext("2d");
-          new Chart(ctx, {
-            type: "bar",
-            data: {
-              labels: etiquetas,
-              datasets: [{
-                label: "Cantidad de Atletas",
-                data: valores,
-                backgroundColor: "rgba(75, 192, 192, 0.2)",
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1
-              }]
-            },
-            options: {
-              responsive: true,
-              scales: { y: { beginAtZero: true } }
-            }
-          });
-        }
-      },
-      error: function () {}
-    });
-  }
-
-  function renderGraficoGenero() {
-    $.ajax({
-      url: "",
-      method: "POST",
-      data: { accion: "obtenerDatosEstadisticos", tipo: "generoAtletas" },
-      success: function (respuesta) {
-        if (respuesta.ok) {
-          const etiquetas = respuesta.data.map(d => d.genero);
-          const valores = respuesta.data.map(d => d.cantidad);
-          const ctx = document.getElementById("generoChart").getContext("2d");
-          new Chart(ctx, {
-            type: "pie",
-            data: {
-              labels: etiquetas,
-              datasets: [{
-                data: valores,
-                backgroundColor: ["#ff6384", "#36a2eb", "#cc65fe"],
-                hoverOffset: 4
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: "bottom" },
-                tooltip: { enabled: true }
-              }
-            }
-          });
-        }
-      },
-      error: function () {}
-    });
-  }
-
-  function renderGraficoAsistenciasMensuales() {
-    $.ajax({
-      url: "",
-      method: "POST",
-      data: { accion: "obtenerProgresoAsistencias" },
-      success: function (respuesta) {
-        if (respuesta.ok) {
-          const etiquetas = respuesta.data.map(d => d.mes);
-          const valores = respuesta.data.map(d => d.total_asistencias);
-          const ctx = document.getElementById("asistenciasChart").getContext("2d");
-          new Chart(ctx, {
-            type: "line",
-            data: {
-              labels: etiquetas,
-              datasets: [{
-                label: "Asistencias Mensuales",
-                data: valores,
-                borderColor: "#42a5f5",
-                backgroundColor: "rgba(66, 165, 245, 0.5)",
-                fill: true
-              }]
-            },
-            options: {
-              responsive: true,
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
-            }
-          });
-        }
-      },
-      error: function () {}
-    });
-  }
-
-  function renderGraficoCumplimientoWADA() {
-    $.ajax({
-      url: "",
-      method: "POST",
-      data: { accion: "obtenerCumplimientoWADA" },
-      success: function (respuesta) {
-        if (respuesta.ok) {
-          const etiquetas = respuesta.data.map(d => d.cumplimiento);
-          const valores = respuesta.data.map(d => d.cantidad);
-          const ctx = document.getElementById("wadaChart").getContext("2d");
-          new Chart(ctx, {
-            type: "pie",
-            data: {
-              labels: etiquetas,
-              datasets: [{
-                data: valores,
-                backgroundColor: ["#4caf50", "#f44336"]
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                legend: { position: "bottom" },
-                tooltip: { enabled: true }
-              }
-            }
-          });
-        }
-      },
-      error: function () {}
-    });
-  }
-
-  function mostrarVencimientosWADA() {
-    $.ajax({
-      url: "",
-      method: "POST",
-      data: { accion: "obtenerVencimientosWADA" },
-      success: function (respuesta) {
-        if (respuesta.ok) {
-          let contenido = "";
-          respuesta.data.forEach(atleta => {
-            contenido += `<tr>
-              <td>${atleta.id_atleta}</td>
-              <td>${atleta.fecha_vencimiento}</td>
+      // Generar el encabezado de la tabla
+      const thead = `
+            <tr>
+               ${columnas.map(col => `<th class="text-capitalize">${col.replace('_', ' ')}</th>`).join('')}
             </tr>`;
-          });
-          $("#tablaVencimientos tbody").html(contenido);
-        }
-      },
-      error: function () {}
-    });
-  }
-  $("#btnDescargarPDF").on("click", function () {
-    const form = $("<form>", {
-      action: "reportes_pdf.php",
-      method: "POST",
-      target: "_blank"
-    });
-  
-    const formData = $("#formReportes").serializeArray();
-    formData.forEach(item => {
-      form.append($("<input>", {
-        type: "hidden",
-        name: item.name,
-        value: item.value
+
+      // Generar las filas
+      const filas = reportes.map(reporte => `
+         <tr>
+            ${columnas.map(col => `<td>${reporte[col]}</td>`).join('')}
+         </tr>`).join("");
+
+      const columns = columnas.map(col => ({
+         data: col,
+         title: col.replace('_', ' '),
+         className: 'text-capitalize'
       }));
-    });
-  
-    $("body").append(form);
-    form.submit();
-    form.remove();
-  });
-    
-  
-  renderGraficoCumplimientoWADA();
-  mostrarVencimientosWADA();
-  renderGraficoAsistenciasMensuales();
-  renderGraficoEdades();
-  renderGraficoGenero();
+
+      // Actualizar la tabla con encabezados y filas
+      // $("#tablaReportes").html(thead + '<tbody>' + filas + '</tbody>');
+      initDataTable("#tablaReportes", {
+         order: [[0, "desc"]],
+         destroy: true,
+         data: reportes,
+         columns: columns,
+      }, filas, thead);
+      $("#resultadosReporte").show();
+   };
+
+   const filtrosMap = {
+      atletas: "#filtrosAtletas",
+      entrenadores: "#filtrosEntrenadores",
+      mensualidades: "#filtrosGenerales",
+      wada: "#filtrosGenerales",
+      eventos: "#filtrosGenerales",
+      asistencias: "#filtrosGenerales",
+      reporteIndividualAtleta: "#filtrosIndividualAtleta"
+   };
+
+
+   // Inicialización
+   obtenerNotificaciones();
+   setInterval(obtenerNotificaciones, 35000);
+   cargarDatosEstadisticos();
+   cargarListadoGradoInstruccion();
+
+   // Event Listeners
+   $("#tipoReporte").change(function () {
+      $(".filtros-reporte").hide();
+      const filtroSeleccionado = filtrosMap[$(this).val()];
+      if (filtroSeleccionado) $(filtroSeleccionado).show();
+   });   // Variable para almacenar el último reporte generado
+   let ultimoReporteGenerado = null;
+
+   $("#btnGenerarReporte").on("click", function () {
+      const tipoReporte = $("#tipoReporte").val();
+      const datos = new FormData($("#formReportes")[0]);
+      const accion = tipoReporte === 'reporteIndividualAtleta' ? 'obtenerReporteIndividual' : 'obtenerReportes';
+
+      enviaAjax(datos, `?p=reportes&accion=${accion}`).then(respuesta => {
+         // Guardar la respuesta completa
+         ultimoReporteGenerado = {
+            tipoReporte,
+            datos: new FormData($("#formReportes")[0]),
+            respuesta
+         };
+         // Actualizar la interfaz
+         if (respuesta.reportes) {
+            actualizarListadoReportes(respuesta.reportes);
+         }
+         if (respuesta.estadisticas && ultimoReporteGenerado.tipoReporte != 'reporteIndividualAtleta') {
+            actualizaEstadisticas(respuesta.estadisticas);
+         }
+         if (ultimoReporteGenerado.tipoReporte === 'reporteIndividualAtleta') {
+            $("#estadisticasReporte").hide();
+         }
+      });
+   }); $("#btnDescargarPDF").on("click", function () {
+      if (!ultimoReporteGenerado) {
+         muestraMensaje("Error", "Primero debe generar un reporte", "warning");
+         return;
+      }
+      const jsonData = {
+         tipoReporte: ultimoReporteGenerado.tipoReporte,
+         datos: {
+            ...Object.fromEntries(ultimoReporteGenerado.datos.entries()),
+            reportes: ultimoReporteGenerado.respuesta.reportes || []
+         },
+         estadisticas: ultimoReporteGenerado.respuesta.estadisticas || {}
+      };
+
+      // Abre una nueva ventana para el PDF
+      const nuevaVentana = window.open('', '_blank');
+
+      // Envia la solicitud fetch para generar el PDF
+      fetch('reporte_pdf.php', {
+         method: 'POST',
+         headers: {
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify(jsonData)
+      })
+         .then(response => {
+            if (!response.ok) {
+               throw new Error('Error al generar el PDF');
+            }
+            return response.blob();
+         })
+         .then(blob => {
+            // Crear URL del blob y abrirlo en la nueva ventana
+            const url = window.URL.createObjectURL(blob);
+            nuevaVentana.location.href = url;
+         })
+         .catch(error => {
+            nuevaVentana.close();
+            muestraMensaje("Error", "Error al generar el PDF: " + error.message, "error");
+         });
+   });
+
+   // Funciones de actualización de gráficos
+   function actualizaEstadisticas(estadisticas) {
+      const VALOR_POR_DEFECTO = "Disponible en reporte";
+      const listItems = Object.entries(estadisticas)
+         .map(([clave, valor]) => {
+            // si es objeto (y no null), uso el valor por defecto
+            const displayValue = (valor !== null && typeof valor === "object")
+               ? VALOR_POR_DEFECTO
+               : valor;
+
+            return `
+            <li class="list-group-item d-flex justify-content-between align-items-center text-capitalize">
+              ${clave.replace(/_/g, " ")}
+              <span class="badge bg-primary rounded-pill">${displayValue}</span>
+            </li>`;
+         })
+         .join("");
+      $("#listaEstadisticas").html(listItems);
+      $("#estadisticasReporte").show();
+   }
+
+   function renderGraficoEdades() {
+      enviaAjax("", "?p=reportes&accion=obtenerDatosEstadisticos&tipo=edadAtletas", "GET").then(respuesta => {
+         const etiquetas = respuesta.estadisticas?.map(d => d.rango_edad) || [];
+         const valores = respuesta.estadisticas?.map(d => d.cantidad) || [];
+         const ctx = document.getElementById("edadAtletasChart").getContext("2d");
+
+         crearGrafico({
+            tipo: "bar",
+            ctx,
+            etiquetas,
+            valores,
+            titulo: "Cantidad de Atletas por Rango de Edad",
+            mostrarEjes: true,
+            textoSinDatos: "No hay datos de edades disponibles"
+         });
+      });
+   }
+   function renderGraficoGenero() {
+      enviaAjax("", "?p=reportes&accion=obtenerDatosEstadisticos&tipo=generoAtletas", "GET").then(respuesta => {
+         const datosProcesados = (respuesta.estadisticas || []).reduce((acc, d) => {
+            acc.etiquetas.push(d.genero);
+            acc.valores.push(d.cantidad);
+            acc.colores.push(d.genero.toLowerCase() === 'masculino' ? '#36a2eb' : '#ff6384');
+            return acc;
+         }, { etiquetas: [], valores: [], colores: [] });
+
+         const ctx = document.getElementById("generoChart").getContext("2d");
+
+         crearGrafico({
+            tipo: "pie",
+            ctx,
+            etiquetas: datosProcesados.etiquetas,
+            valores: datosProcesados.valores,
+            colores: datosProcesados.colores,
+            titulo: "Distribución por Género",
+            textoSinDatos: "No hay datos de género disponibles"
+         });
+      });
+   }
+   function renderGraficoAsistenciasMensuales() {
+      enviaAjax("", "?p=reportes&accion=obtenerProgresoAsistencias", "GET").then(respuesta => {
+         const etiquetas = respuesta.asistencias?.map(d => d.mes) || [];
+         const valores = respuesta.asistencias?.map(d => d.total_asistencias) || [];
+         const ctx = document.getElementById("asistenciasChart").getContext("2d");
+         crearGrafico({
+            tipo: "line",
+            ctx,
+            etiquetas,
+            valores,
+            titulo: "Asistencias Mensuales",
+            mostrarEjes: true,
+            textoSinDatos: "No hay datos de asistencia disponibles"
+         });
+      });
+   }
+   function renderGraficoCumplimientoWADA() {
+      enviaAjax("", "?p=reportes&accion=obtenerCumplimientoWADA", "GET").then(respuesta => {
+         const data = respuesta.wada;
+         const etiquetas = ["Vigentes", "Vencidas", "Por vencer"];
+         const valores = [
+            parseInt(data.vigentes) || 0,
+            parseInt(data.vencidas) || 0,
+            parseInt(data.por_vencer) || 0
+         ];
+         const ctx = document.getElementById("wadaChart").getContext("2d");
+         crearGrafico({
+            tipo: "pie",
+            ctx,
+            etiquetas,
+            valores,
+            colores: ["#4caf50", "#f44336", "#ff9800"], // Verde (vigentes), Rojo (vencidas), Naranja (por vencer)
+            titulo: `Estado WADA (Total: ${data.total_atletas})`,
+            textoSinDatos: "No hay datos WADA disponibles"
+         });
+      });
+   }
+   function cargarListadoGradoInstruccion() {
+      enviaAjax("", "?p=entrenadores&accion=listadoGradosInstruccion", "GET").then(respuesta => {
+         const select = $("#gradoInstruccion");
+         select.empty();
+         select.append('<option value="" selected>Todos</option>');
+         respuesta.grados.forEach(grado => {
+            select.append(`<option value="${grado.grado_instruccion}">${grado.grado_instruccion}</option>`);
+         });
+      }).catch(error => {
+         muestraMensaje("Error", "No se pudo cargar el listado de grados de instrucción: " + error.message, "error");
+      });
+   }
 });

@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,7 +9,7 @@
    <?php require_once "comunes/linkcss.php"; ?>
 </head>
 
-<body class="bg-light">
+<body class="bg-body">
    <?php require_once "comunes/menu.php"; ?>
    <main class="container-md my-3 my-md-5">
       <div class="row">

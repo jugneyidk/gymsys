@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -21,6 +22,7 @@ class Mensualidad
          $keys[] = 'detalles';
       }
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_atleta'] = Cipher::aesDecrypt($arrayFiltrado['id_atleta']);
       Validar::validar("cedula", $arrayFiltrado['id_atleta']);
       Validar::validarFecha($arrayFiltrado['fecha']);
       Validar::validar("detalles", $arrayFiltrado['detalles']);
@@ -31,11 +33,11 @@ class Mensualidad
    }
    public function eliminarMensualidad(array $datos): array
    {
-      $id = filter_var($datos['id'], FILTER_SANITIZE_NUMBER_INT);
-      if (empty($id)) {
-         ExceptionHandler::throwException("El parametro 'id' es inválido", 400, \InvalidArgumentException::class);
-      }
-      return $this->_eliminarMensualidad($id);
+      $keys = ['id'];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $idMensualidad = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::sanitizarYValidar($idMensualidad, 'int');
+      return $this->_eliminarMensualidad($idMensualidad);
    }
 
    public function listadoMensualidades(): array
@@ -95,6 +97,9 @@ class Mensualidad
       $consulta = "SELECT * FROM lista_mensualidades;";
       $response = $this->database->query($consulta);
       $resultado["mensualidades"] = $response ?: [];
+      if (!empty($resultado["mensualidades"])) {
+         Cipher::encriptarCampoArray($resultado["mensualidades"], "id_mensualidad", false);
+      }
       return $resultado;
    }
 
@@ -103,6 +108,9 @@ class Mensualidad
       $consulta = "SELECT * FROM lista_deudores;";
       $response = $this->database->query($consulta);
       $resultado["deudores"] = $response ?: [];
+      if (!empty($resultado["deudores"])) {
+         Cipher::crearHashArray($resultado["deudores"], "cedula");
+      }
       return $resultado;
    }
    private function existeMensualidadEnMes(array $datos): bool

@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -28,6 +29,7 @@ class TipoCompetencia
    {
       $keys = ['id_tipo', 'nombre'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_tipo'] = Cipher::aesDecrypt($arrayFiltrado['id_tipo']);
       Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], 'int');
       Validar::validar("nombre_tipo", $arrayFiltrado['nombre']);
       return $this->_modificarTipo($arrayFiltrado);
@@ -36,6 +38,7 @@ class TipoCompetencia
    {
       $keys = ['id_tipo'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_tipo'] = Cipher::aesDecrypt($arrayFiltrado['id_tipo']);
       if (!Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], "int")) {
          ExceptionHandler::throwException("El ID del tipo de competencia no es válido", 400, \InvalidArgumentException::class);
       }
@@ -46,6 +49,10 @@ class TipoCompetencia
       $consulta = "SELECT * FROM tipo_competencia";
       $response = $this->database->query($consulta);
       $resultado["tipos"] = $response ?: [];
+      if (!empty($resultado["tipos"])) {
+         Cipher::crearHashArray($resultado["tipos"], "id_tipo_competencia", true);
+         Cipher::encriptarCampoArray($resultado["tipos"], "id_tipo_competencia", false);
+      }
       return $resultado;
    }
    private function _incluirTipo(string $nombreTipo): array

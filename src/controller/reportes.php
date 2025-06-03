@@ -6,6 +6,7 @@ use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
 use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\Validar;
 
 class Reportes extends BaseController
 {
@@ -23,92 +24,42 @@ class Reportes extends BaseController
          ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
       }
    }
-   public function obtenerEstadisticas()
+
+   public function obtenerResultadosCompetencias(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      $keys = ["fechaInicioEventos", "fechaFinEventos"];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      return $this->model->obtenerResultadosCompetencias($arrayFiltrado);
+   }
+
+   public function obtenerDatosEstadisticos(array $datos): array
    {
       $this->validarMetodoRequest("GET");
-      return $this->model->obtenerEstadisticas();
+      return $this->model->obtenerDatosEstadisticos($datos);
+   }
+
+   public function obtenerProgresoAsistencias(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->obtenerProgresoAsistencias();
+   }
+
+   public function obtenerCumplimientoWADA(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->obtenerCumplimientoWADA();
+   }
+
+   public function obtenerReporteIndividual(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->obtenerReporteIndividual($datos);
+   }
+
+   public function obtenerReportes(array $datos): array
+   {
+      $this->validarMetodoRequest("POST");
+      return $this->model->obtenerReportes($datos);
    }
 }
-
-   //  if (!empty($_POST)) {
-   //      $accion = $_POST['accion'];
-        
-       
-   //      if ($accion === 'obtener_resultados_competencias') {
-   //          $filtros = [
-   //              'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
-   //              'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null
-   //          ];
-   //          $respuesta = $o->obtener_resultados_competencias($filtros);
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-
-   //      if ($accion === 'obtenerDatosEstadisticos') {
-   //          $tipo = $_POST['tipo'] ?? '';
-   //          $respuesta = $o->obtenerDatosEstadisticos($tipo);
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-
-   //      if ($accion === 'obtenerProgresoAsistencias') {
-   //          $respuesta = $o->obtenerProgresoAsistenciasMensuales();
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-
-   //      if ($accion === 'obtenerCumplimientoWADA') {
-   //          $respuesta = $o->obtenerCumplimientoWADA();
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-
-   //      if ($accion === 'obtenerVencimientosWADA') {
-   //          $respuesta = $o->obtenerVencimientosWADA();
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-   //       if ($accion === 'obtener_reporte_individual') {
-      
-   //          $idAtleta = $_POST['idAtleta']; 
-   //          $filtros = [
-   //              'idAtleta' => $idAtleta,
-             
-   //          ];
-   //          $respuesta = $o->obtener_reporte_individual($filtros);  
-   //          header('Content-Type: application/json');
-   //          echo json_encode($respuesta);
-   //          exit();
-   //      }
-        
-   //       elseif ($_POST['accion'] === 'obtener_reportes') {
-   //          $filtros = [
-   //              'edadMin' => $_POST['edadMin'] ?? null,
-   //              'edadMax' => $_POST['edadMax'] ?? null,
-   //              'genero' => $_POST['genero'] ?? null,
-   //              'tipoAtleta' => $_POST['tipoAtleta'] ?? null,
-   //              'pesoMin' => $_POST['pesoMin'] ?? null,
-   //              'pesoMax' => $_POST['pesoMax'] ?? null,
-   //              'edadMinEntrenador' => $_POST['edadMinEntrenador'] ?? null,
-   //              'edadMaxEntrenador' => $_POST['edadMaxEntrenador'] ?? null,
-   //              'gradoInstruccion' => $_POST['gradoInstruccion'] ?? null,
-   //              'fechaInicioEventos' => $_POST['fechaInicioEventos'] ?? null,
-   //              'fechaFinEventos' => $_POST['fechaFinEventos'] ?? null,
-   //              'fechaInicioMensualidades' => $_POST['fechaInicioMensualidades'] ?? null,
-   //              'fechaFinMensualidades' => $_POST['fechaFinMensualidades'] ?? null
-   //          ];
-        
-   //          $reportes = $o->obtener_reportes($_POST['tipoReporte'], $filtros);
-   //          $estadisticas = $o->obtenerEstadisticas($_POST['tipoReporte'], $filtros);
-        
-   //          header('Content-Type: application/json');
-   //          echo json_encode([
-   //              "ok" => $reportes["ok"] && $estadisticas["ok"],
-   //              "reportes" => $reportes["reportes"] ?? [],
-   //              "estadisticas" => $estadisticas["estadisticas"] ?? []
-   //          ])

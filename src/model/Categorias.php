@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -34,6 +35,7 @@ class Categorias
    {
       $keys = ['id_categoria', 'nombre', 'pesoMinimo', 'pesoMaximo'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_categoria'] = Cipher::aesDecrypt($arrayFiltrado['id_categoria']);
       Validar::validar("nombre_categoria", $arrayFiltrado['nombre']);
       Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
       Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
@@ -47,14 +49,19 @@ class Categorias
    {
       $keys = ['id_categoria'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
-      return $this->_eliminarCategoria($arrayFiltrado['id_categoria']);
+      $idCategoria = Cipher::aesDecrypt($arrayFiltrado['id_categoria']);
+      Validar::sanitizarYValidar($idCategoria, 'int');
+      return $this->_eliminarCategoria($idCategoria);
    }
    private function _listadoCategorias(): array
    {
       $consulta = "SELECT * FROM categorias";
       $response = $this->database->query($consulta);
       $resultado["categorias"] = $response ?: [];
+      if (!empty($resultado["categorias"])) {
+         Cipher::crearHashArray($resultado["categorias"], "id_categoria", true);
+         Cipher::encriptarCampoArray($resultado["categorias"], "id_categoria", false);
+      }
       return $resultado;
    }
    private function _incluirCategoria(array $datos): array

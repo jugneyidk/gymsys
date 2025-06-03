@@ -1,8 +1,8 @@
 <?php
 $p = $_GET["p"];
-if (isset($_SESSION["id_usuario"])) {
+if (!empty(ID_USUARIO)) {
    echo "<script>
-    var idUsuario = {$_SESSION['id_usuario']};
+    var idUsuario = " . ID_USUARIO . ";
     var pagina = 1;
     </script>";
 }
@@ -17,7 +17,7 @@ if (isset($_SESSION["id_usuario"])) {
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
          <ul class="navbar-nav">
             <?php
-            if (isset($_SESSION["id_usuario"])):
+            if (!empty(ID_USUARIO)):
             ?>
                <li class="nav-item d-none d-lg-block">
                   <a class="nav-link<?= $p == in_array($p, ["", "dashboard"]) ? " active" : "" ?>" href="?p=dashboard"
@@ -100,24 +100,6 @@ if (isset($_SESSION["id_usuario"])) {
                <?php
                endif;
                ?>
-               <?php
-               if (($permisosNav[7]["leer"] ?? false)):
-               ?>
-                  <li class="nav-item">
-                     <a class="nav-link ps-3 ps-lg-2<?= $p == "reportes" ? " active" : "" ?>" href="?p=reportes" <?= $p == "reportes" ? "aria-current='page'" : "" ?>>Reportes</a>
-                  </li>
-               <?php
-               endif;
-               ?>
-               <?php
-               if (($permisosNav[8]["leer"] ?? false)):
-               ?>
-                  <li class="nav-item">
-                     <a class="nav-link ps-3 ps-lg-2<?= $p == "bitacora" ? " active" : "" ?>" href="?p=bitacora" <?= $p == "bitacora" ? "aria-current='page'" : "" ?>>Bitacora</a>
-                  </li>
-               <?php
-               endif;
-               ?>
                <li class="nav-item dropdown d-none d-lg-block">
                   <a class="nav-link px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
                      aria-expanded="false" aria-label="Notificaciones" title="Notificaciones"><i class="fa-solid fa-bell" id="icono-notificaciones"></i>
@@ -138,12 +120,12 @@ if (isset($_SESSION["id_usuario"])) {
                   </div>
                   </a>
                </li>
-               <li class="nav-item d-lg-none">
-                  <a class="nav-link ps-3" href="?p=logout&accion=logout">Cerrar sesión</a>
-               </li>
-               <li class="nav-item d-none d-lg-block">
-                  <a class="nav-link" href="?p=logout&accion=logout" aria-label="Cerrar sesión"><i
-                        class="fa-solid fa-right-from-bracket" title="Cerrar sesión"></i></a>
+               <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false"
+                     aria-expanded="false" aria-label="Menu de usuario" title="Menu de usuario"><i class="fa-solid fa-circle-user d-none d-lg-inline-block"></i>
+                     <span class="d-lg-none">Menú de usuario</span>
+                  </a>
+                  <?php require_once __DIR__ . "/menu_usuario.php"; ?>
                </li>
             <?php
             else:

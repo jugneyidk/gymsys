@@ -47,8 +47,8 @@ class PerfilAtleta
                         ue.nombre AS nombre_entrenador, 
                         CONCAT(ue.nombre, ' ', ue.apellido) AS nombre_entrenador
                      FROM atleta a
-                     INNER JOIN usuarios u ON a.cedula = u.cedula
-                     LEFT JOIN usuarios ue ON a.entrenador = ue.cedula
+                     INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
+                     LEFT JOIN {$_ENV['SECURE_DB']}.usuarios ue ON a.entrenador = ue.cedula
                      WHERE u.cedula = :cedula;";
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);

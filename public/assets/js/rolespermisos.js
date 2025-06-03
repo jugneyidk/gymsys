@@ -7,6 +7,7 @@ import {
    obtenerNotificaciones,
    debounce
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
 $(document).ready(function () {
    function cargaListadoRoles() {
       enviaAjax("", "?p=rolespermisos&accion=listadoRoles", "GET").then((respuesta) => {
@@ -59,6 +60,7 @@ $(document).ready(function () {
          }
       } else if (validarEnvio("#form_incluir")) {
          const datos = new FormData($("#form_incluir")[0]);
+         console.log(datos);
          enviaAjax(datos, "?p=rolespermisos&accion=modificarRol").then((respuesta) => {
             muestraMensaje(
                "Éxito",
@@ -73,10 +75,9 @@ $(document).ready(function () {
    $("#f1").on("submit", function (e) {
       e.preventDefault();
       let regexCedula = /^\d{7,9}$/;
-      let regexId = /^\d{1,50}$/;
       if (
          !regexCedula.test($("#cedula").val()) ||
-         !regexId.test($("#id_rol_asignar").val())
+         ($("#id_rol_asignar").val() == "" || $("#id_rol_asignar").val() == 0)
       ) {
          muestraMensaje("Error", "Los valores ingresados no son validos", "error");
       } else {
@@ -121,24 +122,18 @@ $(document).ready(function () {
       });
    }
    function eliminarRol(id_rol) {
-      Swal.fire({
-         title: "¿Estás seguro que deseas eliminar este rol?",
-         text: "No podrás revertir esto!",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro que deseas eliminar este rol?", "No podrás revertir esto!", "warning", {
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
+         confirmButtonColor: "#d33",
          confirmButtonText: "Sí, eliminar!",
-         cancelButtonText: "Cancelar",
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
-            datos.append("accion", "eliminar_rol");
             datos.append("id_rol", id_rol);
-            enviaAjax(datos, "").then((respuesta) => {
+            enviaAjax(datos, "?p=rolespermisos&accion=eliminarRol").then((respuesta) => {
                muestraMensaje(
                   "Éxito",
-                  "El rol se ha eliminado exitosamente.",
+                  respuesta.mensaje,
                   "success"
                );
                $("#modalModificar").modal("hide");
@@ -150,13 +145,10 @@ $(document).ready(function () {
    function actualizarListadoRoles(roles) {
       let listadoRoles = "";
       let selectRoles = "";
-      if ($.fn.DataTable.isDataTable("#tablaroles")) {
-         $("#tablaroles").DataTable().destroy();
-      }
+
       roles.forEach((rol) => {
          listadoRoles += `
                 <tr>
-                    <td class='d-none'>${rol.id_rol}</td>
                     <td class='align-middle text-capitalize'>${rol.nombre}</td>
                     <td class='align-middle'>
                     ${actualizar === 1
@@ -170,28 +162,16 @@ $(document).ready(function () {
                     </td>
                 </tr>
             `;
-         selectRoles += `<option value="${rol.id_rol}">${rol.nombre}</option>`;
+         selectRoles += `<option value="${rol.id_rol}" data-hash="${rol.id_rol_hash}">${rol.nombre}</option>`;
       });
       $("#listado").html(listadoRoles);
       $("#id_rol_asignar").html(selectRoles);
       $("#id_rol_asignar").val(0);
-      $("#tablaroles").DataTable({
-         columnDefs: [{ targets: [2], orderable: false, searchable: false }],
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron roles",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay roles disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-         autoWidth: false,
-         order: [[0, "desc"]],
-      });
+
+      initDataTable("#tablaroles", {
+         columnDefs: [{ targets: [1], orderable: false, searchable: false }],
+         order: [[0, "asc"]],
+      }, listadoRoles);
    }
    const verificarCedulaDebounce = debounce(function () {
       let valor = $("#cedula").val();
@@ -224,7 +204,11 @@ $(document).ready(function () {
          );
          $("#nombreUsuario").removeClass("bg-secondary");
          $("#nombreUsuario").addClass("bg-primary");
-         $("#id_rol_asignar").val(respuesta.rol.id_rol);
+         $("#id_rol_asignar option").each(function () {
+            if ($(this).data("hash") == respuesta.rol.id_rol_hash) {
+               $("#id_rol_asignar").val($(this).val());
+            }
+         });
          $("#cedula").removeClass("is-invalid");
          $("#cedula").addClass("is-valid");
       }).catch(() => {

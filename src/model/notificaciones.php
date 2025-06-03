@@ -3,12 +3,15 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
 class Notificaciones
 {
    private Database $database;
+   private const DIAS_RECORDATORIO_WADA = [30, 15, 7, 1];
+   private const DIAS_VERIFICACION_MENSUALIDAD = 3;
 
    public function __construct(Database $database)
    {
@@ -16,22 +19,23 @@ class Notificaciones
    }
    public function obtenerNotificaciones(): array
    {
-      Validar::validar("cedula", $_SESSION['id_usuario']);
+      Validar::validar("cedula", ID_USUARIO);
       return $this->_obtenerNotificaciones();
    }
 
    public function marcarLeida(array $datos): array
    {
       $arrayFiltrado = Validar::validarArray($datos, ['id']);
-      $idNotificacion = filter_var($arrayFiltrado['id'], FILTER_SANITIZE_NUMBER_INT);
-      if (!is_numeric($idNotificacion)) {
-         ExceptionHandler::throwException("El valor de 'id' no es válido", 400, \InvalidArgumentException::class);
-      }
+      $idNotificacion = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::sanitizarYValidar($idNotificacion, "int");
       return $this->_marcarLeida($idNotificacion);
    }
    public function marcarTodoLeido(): array
    {
-      $idUsuario = $_SESSION['id_usuario'];
+      $idUsuario = ID_USUARIO;
+      if (empty($idUsuario)) {
+         ExceptionHandler::throwException("No se ha iniciado sesión", 403, \UnexpectedValueException::class);
+      }
       Validar::validar("cedula", $idUsuario);
       return $this->_marcarTodoLeido($idUsuario);
    }
@@ -49,15 +53,15 @@ class Notificaciones
    private function _marcarLeida(int $idNotificacion): array
    {
 
-      $consulta = "SELECT id FROM notificaciones WHERE id = :id;";
+      $consulta = "SELECT id FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id = :id;";
       $existe = Validar::existe($this->database, $idNotificacion, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("La notificacion no existe", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE notificaciones SET leida = 1
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.notificaciones SET leida = 1
             WHERE id = :id_notificacion AND id_usuario = :id_usuario;";
-      $valores = [':id_notificacion' => $idNotificacion, ':id_usuario' => $_SESSION['id_usuario']];
+      $valores = [':id_notificacion' => $idNotificacion, ':id_usuario' => ID_USUARIO];
       $this->database->query($consulta, $valores);
       $this->database->commit();
       $resultado["leido"] = true;
@@ -65,13 +69,13 @@ class Notificaciones
    }
    private function _marcarTodoLeido(int $idUsuario): array
    {
-      $consulta = "SELECT id FROM notificaciones WHERE id_usuario = :id;";
+      $consulta = "SELECT id FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id_usuario = :id;";
       $existe = Validar::existe($this->database, $idUsuario, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("No tiene notificaciones", 404, \UnexpectedValueException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE notificaciones SET leida = 1
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.notificaciones SET leida = 1
                       WHERE id_usuario = :id_usuario;";
       $this->database->query($consulta, [':id_usuario' => $idUsuario]);
       $this->database->commit();
@@ -87,14 +91,15 @@ class Notificaciones
                         leida,
                         objetivo,
                         fecha_creacion
-                     FROM notificaciones n
-                     INNER JOIN usuarios u ON n.id_usuario = u.cedula
+                     FROM {$_ENV['SECURE_DB']}.notificaciones n
+                     INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON n.id_usuario = u.cedula
                      WHERE n.id_usuario = :id_usuario 
                      ORDER BY id DESC
                      LIMIT 4;";
-      $valores = [":id_usuario" => $_SESSION['id_usuario']];
+      $valores = [":id_usuario" => ID_USUARIO];
       $response = $this->database->query($consulta, $valores);
       $resultado["notificaciones"] = $response ?: [];
+      Cipher::encriptarCampoArray($resultado["notificaciones"], "id", false);
       return $resultado;
    }
    private function _verTodas(int $pagina): array
@@ -107,174 +112,188 @@ class Notificaciones
                         leida,
                         objetivo,
                         fecha_creacion
-                     FROM notificaciones n
+                     FROM {$_ENV['SECURE_DB']}.notificaciones n
                      WHERE n.id_usuario = :id_usuario 
                      ORDER BY id DESC
                      LIMIT $limite
                      OFFSET $diferencia;";
-      $valores = [':id_usuario' => $_SESSION['id_usuario']];
+      $valores = [':id_usuario' => ID_USUARIO];
       $response = $this->database->query($consulta, $valores);
-      $consultaTotal = "SELECT COUNT(*) AS total FROM notificaciones WHERE id_usuario = :id_usuario";
-      $notificacionesTotales = $this->database->query($consultaTotal, [':id_usuario' => $_SESSION['id_usuario']], true);
+      $consultaTotal = "SELECT COUNT(*) AS total FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id_usuario = :id_usuario";
+      $notificacionesTotales = $this->database->query($consultaTotal, [':id_usuario' => ID_USUARIO], true);
       $verMas = ($pagina * $limite) < $notificacionesTotales['total'];
-      $resultado["notificaciones"] = $response;
+      $resultado["notificaciones"] = $response ?: [];
       $resultado["ver_mas"] = $verMas;
+      if (!empty($resultado["notificaciones"])) {
+         Cipher::encriptarCampoArray($resultado["notificaciones"], "id", false);
+      }
       return $resultado;
    }
 
+   private function notificacionExiste(string $mensaje, string $idUsuario, string $objetivo): bool
+   {
+      $consulta = "SELECT COUNT(*) as total 
+                     FROM {$_ENV['SECURE_DB']}.notificaciones 
+                     WHERE id_usuario = :id_usuario 
+                     AND objetivo = :objetivo 
+                     AND mensaje LIKE :mensaje";
+
+      $valores = [
+         ':id_usuario' => $idUsuario,
+         ':objetivo' => $objetivo,
+         ':mensaje' => $mensaje
+      ];
+
+      $resultado = $this->database->query($consulta, $valores, true);
+      return $resultado['total'] > 0;
+   }
+
+   private function crearNotificacion(array $datos): void
+   {
+      $consulta = "INSERT INTO {$_ENV['SECURE_DB']}.notificaciones(id_usuario, titulo, mensaje, objetivo)
+                     VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
+      $this->database->query($consulta, $datos);
+   }
+
+   // Métodos estáticos
    public static function crearNotificaciones(Database $database): array
    {
+      $notificador = new self($database);
       $notificaciones_creadas = 0;
-      $notificaciones_wada = self::crearNotificacionesWada($database);
-      $notificaciones_mensualidad = self::crearNotificacionesMensualidad($database);
-      if (is_int($notificaciones_wada)) {
-         $notificaciones_creadas += $notificaciones_wada;
-      }
-      if (is_int($notificaciones_mensualidad)) {
-         $notificaciones_creadas += $notificaciones_mensualidad;
-      }
-      $resultado["ok"] = true;
-      $resultado["notificaciones_creadas"] = $notificaciones_creadas ?? 0;
-      return $resultado;
-   }
-   private static function crearNotificacionesWada(Database $database)
-   {
-      // Consulta para obtener los atletas cuyo vencimiento de WADA está entre hoy y los próximos 30 días
-      $consulta = "SELECT u.cedula, 
-                                u.nombre, 
-                                u.apellido, 
-                                w.vencimiento,
-                                a.entrenador
-                        FROM atleta a
-                        INNER JOIN usuarios u ON a.cedula = u.cedula
-                        INNER JOIN wada w ON w.id_atleta = u.cedula
-                        WHERE w.vencimiento >= CURDATE() 
-                        AND w.vencimiento <= DATE_ADD(CURDATE(), INTERVAL 31 DAY)
-                        ORDER BY w.vencimiento DESC;";
 
-      $response = $database->query($consulta);
-      $notificaciones_creadas = 0;
-      if (count($response) > 0) {
+      try {
          $database->beginTransaction();
-         $notificaciones_creadas = 0;
-         foreach ($response as $valor) {
-            // Calcula la diferencia en días entre el vencimiento y la fecha actual
-            $fecha_vencimiento = new \DateTime($valor['vencimiento']);
-            $fecha_hoy = new \DateTime();
-            $diferencia_dias = $fecha_hoy->diff($fecha_vencimiento)->days;
-            // Verificar si la diferencia es 30, 15, 7 o 1 dias
-            if (in_array($diferencia_dias, [30, 15, 7, 1])) {
-               // Verifica si ya existe la notificacion para este dia
-               $consultaExistente = "SELECT COUNT(*) as total
-                                              FROM notificaciones 
-                                              WHERE id_usuario = :id_usuario 
-                                              AND objetivo = 'wada' 
-                                              AND mensaje LIKE :mensaje";
-               $mensaje = "La WADA del atleta {$valor['nombre']} {$valor['apellido']} se vencerá en {$diferencia_dias} día" . ($diferencia_dias > 1 ? "s" : "");
-               $existe = $database->query($consultaExistente, [
-                  ':id_usuario' => $valor["entrenador"],
-                  ':mensaje' => $mensaje
-               ], true);
-               if ($existe['total'] == 0) {
-                  // Inserta la notificación solo si la WADA vence en 30, 15, 7 o 1 día
-                  $consulta = "INSERT INTO notificaciones(id_usuario, titulo, mensaje, objetivo)
-                                        VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
-                  $mensaje = "La WADA del atleta {$valor['nombre']} {$valor['apellido']} se vencerá en {$diferencia_dias} día" . ($diferencia_dias > 1 ? "s" : "");
-                  $valores = [
-                     ":id_usuario" => $valor["entrenador"],
-                     ":titulo" => "Una WADA vencerá pronto",
-                     ":mensaje" => $mensaje,
-                     ":objetivo" => "wada",
-                  ];
-                  $response = $database->query($consulta, $valores);
-                  $notificaciones_creadas++;
-               }
+
+         $notificaciones_wada = $notificador->crearNotificacionesWada();
+         $notificaciones_mensualidad = $notificador->crearNotificacionesMensualidad();
+
+         $notificaciones_creadas = ($notificaciones_wada ?? 0) + ($notificaciones_mensualidad ?? 0);
+
+         $database->commit();
+
+         return [
+            "ok" => true,
+            "notificaciones_creadas" => $notificaciones_creadas
+         ];
+      } catch (\Exception $e) {
+         $database->rollBack();
+         throw $e;
+      }
+   }
+
+   private function crearNotificacionesWada(): int
+   {
+      $consulta = "SELECT u.cedula, 
+                           u.nombre, 
+                           u.apellido, 
+                           w.vencimiento,
+                           a.entrenador
+                    FROM atleta a
+                    INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
+                    INNER JOIN wada w ON w.id_atleta = u.cedula
+                    WHERE w.vencimiento >= CURDATE() 
+                    AND w.vencimiento <= DATE_ADD(CURDATE(), INTERVAL 31 DAY)
+                    ORDER BY w.vencimiento DESC;";
+
+      $response = $this->database->query($consulta);
+      $notificaciones_creadas = 0;
+
+      if (empty($response)) {
+         return $notificaciones_creadas;
+      }
+
+      foreach ($response as $atleta) {
+         $fecha_vencimiento = new \DateTime($atleta['vencimiento']);
+         $fecha_hoy = new \DateTime();
+         $diferencia_dias = $fecha_hoy->diff($fecha_vencimiento)->days;
+
+         // Notificaciones para días específicos antes del vencimiento
+         if (in_array($diferencia_dias, self::DIAS_RECORDATORIO_WADA)) {
+            $mensaje = sprintf(
+               "La WADA del atleta %s %s se vencerá en %d día%s",
+               $atleta['nombre'],
+               $atleta['apellido'],
+               $diferencia_dias,
+               $diferencia_dias > 1 ? "s" : ""
+            );
+
+            if (!$this->notificacionExiste($mensaje, $atleta["entrenador"], "wada")) {
+               $this->crearNotificacion([
+                  ":id_usuario" => $atleta["entrenador"],
+                  ":titulo" => "Una WADA vencerá pronto",
+                  ":mensaje" => $mensaje,
+                  ":objetivo" => "wada"
+               ]);
+               $notificaciones_creadas++;
             }
-            if ($fecha_hoy->format('Y-m-d') === $fecha_vencimiento->format('Y-m-d')) {
-               // Verifica si ya existe la notificacion de vencida
-               $consultaExistente = "SELECT COUNT(*) as total
-                                              FROM notificaciones 
-                                              WHERE id_usuario = :id_usuario 
-                                              AND objetivo = 'wada' 
-                                              AND mensaje LIKE :mensaje";
-               $mensaje = "La WADA del atleta {$valor['nombre']} {$valor['apellido']} se venció";
-               $valores = [
-                  ':id_usuario' => $valor["entrenador"],
-                  ':mensaje' => $mensaje
-               ];
-               $existe = $database->query($consultaExistente, $valores, true);
-               if ($existe['total'] == 0) {
-                  $consulta = "INSERT INTO notificaciones(id_usuario, titulo, mensaje, objetivo)
-                                VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
-                  $valores = [
-                     ":id_usuario" => $valor["entrenador"],
-                     ":titulo" => "La WADA ha vencido hoy",
-                     ":mensaje" => $mensaje,
-                     ":objetivo" => "wada",
-                  ];
-                  $existe = $database->query($consulta, $valores);
-                  $notificaciones_creadas++;
-               }
+         }
+
+         // Notificación el día del vencimiento
+         if ($fecha_hoy->format('Y-m-d') === $fecha_vencimiento->format('Y-m-d')) {
+            $mensaje = sprintf(
+               "La WADA del atleta %s %s se venció",
+               $atleta['nombre'],
+               $atleta['apellido']
+            );
+
+            if (!$this->notificacionExiste($mensaje, $atleta["entrenador"], "wada")) {
+               $this->crearNotificacion([
+                  ":id_usuario" => $atleta["entrenador"],
+                  ":titulo" => "La WADA ha vencido hoy",
+                  ":mensaje" => $mensaje,
+                  ":objetivo" => "wada"
+               ]);
+               $notificaciones_creadas++;
             }
          }
       }
-      $database->commit();
+
       return $notificaciones_creadas;
    }
-   private static function crearNotificacionesMensualidad(Database $database)
+
+   private function crearNotificacionesMensualidad(): int
    {
-      $notificaciones_creadas = 0;
-      // Consulta para obtener la cantidad de atletas que deben la mensualidad en el mes actual
       $consulta = "SELECT COUNT(u.cedula) AS cantidad_deudores
                     FROM atleta a
-                    INNER JOIN usuarios u ON a.cedula = u.cedula
+                    INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
                     INNER JOIN tipo_atleta t ON a.tipo_atleta = t.id_tipo_atleta
                     LEFT JOIN mensualidades m ON a.cedula = m.id_atleta 
                     AND m.fecha >= DATE_FORMAT(NOW(), '%Y-%m-01') 
                     AND m.fecha <= LAST_DAY(NOW())
                     WHERE m.id_atleta IS NULL";
-      $respuesta = $this->conexion->prepare($consulta);
-      $respuesta->execute();
-      $cantidad_deudores = $respuesta->fetchColumn();
-      if ($cantidad_deudores > 0) {
-         $this->conexion->beginTransaction();
-         $mensaje = "Hay {$cantidad_deudores} atleta" . ($cantidad_deudores > 1 ? "s" : "") . " que debe" . ($cantidad_deudores > 1 ? "n" : "") . " la mensualidad este mes";
-         // Verificar si ya existe una notificación reciente (dentro de los últimos 3 días)
-         $consulta_existente = "SELECT COUNT(*) 
-                                   FROM notificaciones 
-                                   WHERE objetivo = 'mensualidad' 
-                                   AND mensaje LIKE :mensaje 
-                                   AND fecha_creacion >= CURDATE() - INTERVAL 3 DAY";
 
-         $stmt_existente = $this->conexion->prepare($consulta_existente);
-         $stmt_existente->execute([
-            ':mensaje' => $mensaje
-         ]);
-         $existe = $stmt_existente->fetchColumn();
-         if ($existe == 0) {
-            $entrenadores = "SELECT cedula
-                    FROM entrenador WHERE 1;";
-            $lista_entrenadores = $this->conexion->prepare($entrenadores);
-            $lista_entrenadores->execute();
-            $lista_entrenadores = $lista_entrenadores->fetchAll(PDO::FETCH_ASSOC);
-            print_r($lista_entrenadores);
-            foreach ($lista_entrenadores as $entrenador) {
-               $consulta = "INSERT INTO notificaciones(id_usuario, titulo, mensaje, objetivo)
-                                VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
-               $stmt = $this->conexion->prepare($consulta);
-               $valores = [
-                  ":id_usuario" => $entrenador["cedula"],
-                  ":titulo" => "Atletas con mensualidad pendiente",
-                  ":mensaje" => $mensaje,
-                  ":objetivo" => "mensualidad",
-               ];
-               $stmt->execute($valores);
-               $stmt->closeCursor();
-               $notificaciones_creadas = 1;
-            }
-         }
-         $this->conexion->commit();
+      $resultado = $this->database->query($consulta, [], true);
+      $cantidad_deudores = $resultado['cantidad_deudores'];
+
+      if ($cantidad_deudores === 0) {
+         return 0;
       }
+
+      $mensaje = sprintf(
+         "Hay %d atleta%s que debe%s la mensualidad este mes",
+         $cantidad_deudores,
+         $cantidad_deudores > 1 ? "s" : "",
+         $cantidad_deudores > 1 ? "n" : ""
+      );
+
+      // Obtener entrenadores activos
+      $consulta = "SELECT cedula FROM entrenador;";
+      $entrenadores = $this->database->query($consulta);
+
+      $notificaciones_creadas = 0;
+
+      foreach ($entrenadores as $entrenador) {
+         if (!$this->notificacionExiste($mensaje, $entrenador["cedula"], "mensualidad")) {
+            $this->crearNotificacion([
+               ":id_usuario" => $entrenador["cedula"],
+               ":titulo" => "Atletas con mensualidad pendiente",
+               ":mensaje" => $mensaje,
+               ":objetivo" => "mensualidad"
+            ]);
+            $notificaciones_creadas++;
+         }
+      }
+
       return $notificaciones_creadas;
    }
 }

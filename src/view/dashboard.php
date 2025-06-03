@@ -9,7 +9,7 @@
    <link rel="stylesheet" href="assets/css/all.min.css">
 </head>
 
-<body>
+<body class="bg-body">
    <?php require_once "comunes/menu.php"; ?>
    <main class="mb-4">
       <div class="container-lg mt-4">
@@ -67,19 +67,22 @@
                <canvas id="asistenciasChart"></canvas>
             </div>
             <div class="col-12 col-md-6 col-lg-4">
-               <h5>Edades comprendidas de Atletas</h5>
-               <canvas id="edadAtletasChart"></canvas>
+               <h5>Vigencias de WADA</h5>
+               <canvas id="wadaChart"></canvas>
             </div>
-            <div class="col-12 col-lg-4" style="width:18%">
+            <div class="col-12 col-lg-4">
                <h5>Genero predominante</h5>
-               <canvas id="generoChart"></canvas>
+               <canvas id="generoChart" class="w-50 h-auto mx-auto"></canvas>
             </div>
          </div>
          <div class="row">
             <div class="col-12 col-lg-6 d-flex align-self-stretch my-4">
                <div class="card w-100">
-                  <div class="card-header border-0 bg-body">
-                     <i class="fas fa-bell"></i> Notificaciones Recientes
+                  <div class="card-header d-flex justify-content-between border-0 bg-body">
+                     <div>
+                        <i class="fas fa-bell"></i> Notificaciones Recientes
+                     </div>
+                     <a href="#" id="verNotificacionesRecientes" title="Ir a Notificaciones" role="button" data-bs-target="#menuNotificaciones" data-tooltip="tooltip" data-bs-placement="top" class="text-decoration-none text-body"><i class="fas fa-eye my-auto"></i></a>
                   </div>
                   <ul class="list-group list-group-flush card-body p-0 d-flex justify-content-center" id="ultimas_notificaciones">
                   </ul>
@@ -91,49 +94,67 @@
                      <div>
                         <i class="fas fa-history"></i> Actividad Reciente
                      </div>
-                     <a href="?p=bitacora" title="Ver Bitácora" data-tooltip="tooltip" data-bs-placement="top" class="text-decoration-none text-body"><i class="fas fa-angle-right my-auto"></i></a>
+                     <?php if (!empty($permisosNav[8]["leer"])): ?>
+                        <a href="?p=bitacora" title="Ver Bitácora" data-tooltip="tooltip" data-bs-placement="top" class="text-decoration-none text-body"><i class="fas fa-angle-right my-auto"></i></a>
+                     <?php endif; ?>
                   </div>
                   <ul class="list-group list-group-flush card-body p-0 d-flex justify-content-center" id="ultimas_acciones">
                   </ul>
                </div>
             </div>
-            <div class="col d-flex align-self-stretch my-4">
+            <div class="col col-lg-7 d-flex align-self-stretch my-4">
                <div class="card w-100">
-                  <div class="card-header">
-                     <i class="fas fa-table"></i> Tabla de Atletas
+                  <div class="card-header d-flex justify-content-between border-0 bg-body">
+                     <div>
+                        <i class="fas fa-table"></i> Mensualidades Pendientes
+                     </div>
+                     <?php if (!empty($permisosNav[5]["leer"])): ?>
+                        <a href="?p=mensualidad" title="Ir a Mensualidades" data-tooltip="tooltip" data-bs-placement="top" class="text-decoration-none text-body"><i class="fas fa-angle-right my-auto"></i></a>
+                     <?php endif; ?>
                   </div>
                   <div class="card-body table-responsive">
-                     <table class="table table-striped">
+                     <table class="table" id="tablaMensualidadesPendientes">
                         <thead>
                            <tr>
-                              <th>#</th>
+                              <th>Cedula</th>
                               <th>Nombre</th>
-                              <th>Apellido</th>
-                              <th>Género</th>
-                              <th>Fecha de Nacimiento</th>
+                              <th>Monto</th>
                            </tr>
                         </thead>
                         <tbody>
-                           <?php foreach ($ultimos_atletas as $index => $atleta): ?>
-                              <tr>
-                                 <th scope="row"><?php echo $index + 1; ?></th>
-                                 <td><?php echo $atleta['nombre']; ?></td>
-                                 <td><?php echo $atleta['apellido']; ?></td>
-                                 <td><?php echo $atleta['genero']; ?></td>
-                                 <td><?php echo $atleta['fecha_nacimiento']; ?></td>
-                              </tr>
-                           <?php endforeach; ?>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="col col-lg-5 d-flex align-self-stretch my-4">
+               <div class="card w-100">
+                  <div class="card-header d-flex justify-content-between border-0 bg-body">
+                     <div>
+                        <i class="fas fa-address-card"></i> WADAs por vencer
+                     </div>
+                     <?php if (!empty($permisosNav[6]["leer"])): ?>
+                        <a href="?p=wada" title="Ir a Wadas" data-tooltip="tooltip" data-bs-placement="top" class="text-decoration-none text-body"><i class="fas fa-angle-right my-auto"></i></a>
+                     <?php endif; ?>
+                  </div>
+                  <div class="card-body table-responsive">
+                     <table class="table" id="tablaWadasPendientes">
+                        <thead>
+                           <tr>
+                              <th>Nombre</th>
+                              <th>Fecha vencimiento</th>
+                           </tr>
+                        </thead>
+                        <tbody>
                         </tbody>
                      </table>
                   </div>
                </div>
             </div>
          </div>
-
    </main>
    <?php require_once "comunes/footer.php"; ?>
-
-   <script src="assets/js/chart.min.js"></script>
+   <script src="assets/js/chart.min.js" defer></script>
    <script type="module" src="assets/js/dashboard.js"></script>
 </body>
 

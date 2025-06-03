@@ -7,6 +7,7 @@ import {
    modalListener,
    obtenerNotificaciones,
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
 
 $(document).ready(() => {
    // Helpers
@@ -88,14 +89,14 @@ $(document).ready(() => {
       "#tipo_atleta",
       '<option value="">Seleccione un tipo de atleta</option>',
       "tipos",
-      (t) => `<option value="${t.id_tipo_atleta}">${t.nombre_tipo_atleta}</option>`
+      (t) => `<option value="${t.id_tipo_atleta_encriptado}" data-hash="${t.id_tipo_atleta_hash}">${t.nombre_tipo_atleta}</option>`
    );
    cargarOpciones(
       "?p=entrenadores&accion=listadoEntrenadores",
       "#entrenador_asignado",
       '<option value="">Seleccione un entrenador</option>',
       "entrenadores",
-      (e) => `<option value="${e.cedula}">${e.nombre} ${e.apellido}</option>`
+      (e) => `<option value="${e.cedula_encriptado}" data-hash="${e.cedula_hash}">${e.nombre} ${e.apellido}</option>`
    );
    cargaListadoAtletas();
 
@@ -127,41 +128,28 @@ $(document).ready(() => {
 
    // Listado y acciones de tabla
    const actualizarListadoAtletas = (atletas) => {
-      if ($.fn.DataTable.isDataTable("#tablaatleta")) {
-         $("#tablaatleta").DataTable().destroy();
-      }
       const filas = atletas.map((a) => `
       <tr>
-        <td class="align-middle">${a.cedula}</td>
-        <td class="align-middle">${a.nombre} ${a.apellido}</td>
-        <td class="align-middle">
+         <td class="align-middle">${a.cedula}</td>
+         <td class="align-middle">${a.nombre} ${a.apellido}</td>
+         <td class="align-middle">
           ${window.actualizar === 1
-            ? `<button class="btn btn-warning me-2 w-auto" data-id="${a.cedula}" data-bs-toggle="modal" title="Modificar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-regular fa-pen-to-square"></i></button>`
+            ? `<button class="btn btn-warning me-2 w-auto" data-id="${a.cedula_encriptado}" data-bs-toggle="modal" title="Modificar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-regular fa-pen-to-square"></i></button>`
             : ""
          }
           ${window.eliminar === 1
-            ? `<button class="btn btn-danger w-auto" data-id="${a.cedula}" title="Eliminar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-solid fa-trash-can"></i></button>`
+            ? `<button class="btn btn-danger w-auto" data-id="${a.cedula_encriptado}" title="Eliminar Atleta" data-tooltip="tooltip" data-bs-placement="top"><i class="fa-solid fa-trash-can"></i></button>`
             : ""
          }
         </td>
-      </tr>
-    `).join("");
-      $("#listado").html(filas);
-      $("#tablaatleta").DataTable({
-         columnDefs: [{ targets: [2], orderable: false, searchable: false }],
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron atletas",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay atletas disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            emptyTable: "No hay registros disponibles",
-            paginate: { next: "Siguiente", previous: "Anterior" },
-         },
-         autoWidth: false,
-         order: [[0, "desc"]],
-      });
+      </tr>`).join("");
+      initDataTable("#tablaatleta", {
+         columnDefs: [{
+            targets: [2],
+            orderable: false,
+            searchable: false
+         }]
+      }, filas);
    };
 
    $("#tablaatleta")
@@ -191,7 +179,7 @@ $(document).ready(() => {
           <td>${i + 1}</td>
           <td>${tipo.nombre_tipo_atleta}</td>
           <td>
-            <button class="btn btn-danger btn-sm btnEliminarTipo" data-id="${tipo.id_tipo_atleta}">
+            <button class="btn btn-danger btn-sm btnEliminarTipo" data-id="${tipo.id_tipo_atleta_encriptado}">
               Eliminar
             </button>
           </td>
@@ -205,13 +193,10 @@ $(document).ready(() => {
 
    $(document).on("click", ".btnEliminarTipo", function () {
       const id = $(this).data("id");
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "Esta acción eliminará el tipo de atleta seleccionado.",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro?", "Esta acción eliminará el tipo de atleta seleccionado.", "warning", {
          showCancelButton: true,
          confirmButtonText: "Sí, eliminar",
-         cancelButtonText: "No, cancelar",
+         cancelButtonText: "No, cancelar"
       }).then((respuesta) => {
          if (respuesta.isConfirmed) {
             const datos = new FormData();
@@ -224,7 +209,7 @@ $(document).ready(() => {
                   "#tipo_atleta",
                   '<option value="">Seleccione un tipo de atleta</option>',
                   "tipos",
-                  (tipos) => `<option value="${tipos.id_tipo_atleta}">${tipos.nombre_tipo_atleta}</option>`
+                  (tipos) => `<option value="${tipos.id_tipo_atleta_encriptado}" data-id="${tipos.id_tipo_atleta_hash}">${tipos.nombre_tipo_atleta}</option>`
                );
             });
          }
@@ -243,7 +228,7 @@ $(document).ready(() => {
 
    function llenarFormularioModificar({
       nombre, apellido, cedula, genero, fecha_nacimiento, lugar_nacimiento,
-      peso, altura, estado_civil, telefono, correo_electronico, entrenador, id_tipo_atleta
+      peso, altura, estado_civil, telefono, correo_electronico, entrenador_hash, id_tipo_atleta_hash
    }) {
       Object.entries({
          nombres: nombre,
@@ -257,24 +242,33 @@ $(document).ready(() => {
          estado_civil,
          telefono,
          correo_electronico,
-         entrenador_asignado: entrenador,
-         tipo_atleta: id_tipo_atleta
-      }).forEach(([id, val]) => $(`#f1 #${id}`).val(val));
-
+      }).forEach(([id, val]) => {
+         $(`#f1 #${id}`).val(val);
+      });
+      $("#entrenador_asignado option").each(function () {
+         if ($(this).data('hash') === entrenador_hash) {
+            $("#entrenador_asignado").val($(this).val());
+         }
+      });
+      $("#tipo_atleta option").each(function () {
+         if ($(this).data('hash') === id_tipo_atleta_hash) {
+            $("#tipo_atleta").val($(this).val());
+         }
+      });
       $("#modificar_contraseña_container").removeClass("d-none");
       $("#f1 #modificar_contraseña").prop("checked", false);
       $("#f1 #password").prop("disabled", true).val("");
-   }
-
-   function eliminarAtleta(cedula) {
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "No podrás revertir esto!",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonText: "Sí, eliminar!",
-         cancelButtonText: "Cancelar",
-      }).then((res) => {
+   } function eliminarAtleta(cedula) {
+      muestraMensaje(
+         "¿Estás seguro?",
+         "No podrás revertir esto!",
+         "warning",
+         {
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            confirmButtonText: "Sí, eliminar!"
+         }
+      ).then((res) => {
          if (res.isConfirmed) {
             const datos = new FormData();
             datos.append("cedula", cedula);
@@ -343,7 +337,7 @@ $(document).ready(() => {
             "#tipo_atleta",
             '<option value="">Seleccione un tipo de atleta</option>',
             "tipos",
-            (tipos) => `<option value="${tipos.id_tipo_atleta}">${tipos.nombre_tipo_atleta}</option>`
+            (tipos) => `<option value="${tipos.id_tipo_atleta_encriptado}" data-hash="${tipos.id_tipo_atleta_hash}">${tipos.nombre_tipo_atleta}</option>`
          );
          cargarListadoTipos();
          $("#modalRegistrarTipoAtleta").modal("hide");

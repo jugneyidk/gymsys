@@ -1,8 +1,16 @@
-import { enviaAjax, muestraMensaje, modalListener, REGEX, obtenerNotificaciones } from "./comunes.js";
+import {
+   enviaAjax,
+   muestraMensaje,
+   modalListener,
+   REGEX,
+   obtenerNotificaciones
+} from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+
 $(document).ready(function () {
    cargaListadoWada();
    cargarListadoPorVencer();
-   cargarAtletas();
+   cargarListadoAtletas();
    obtenerNotificaciones();
    setInterval(() => obtenerNotificaciones(), 35000);
    modalListener("WADA");
@@ -41,12 +49,7 @@ $(document).ready(function () {
                 </td>
             </tr>`;
       });
-      if ($.fn.DataTable.isDataTable("#tablaWada")) {
-         $("#tablaWada").DataTable().clear().destroy();
-      }
-      $("#tablaWada tbody").html(html);
-      $("#tablaWada").DataTable({
-         autoWidth: false,
+      initDataTable("#tablaWada", {
          lengthChange: false,
          columnDefs: [
             {
@@ -55,23 +58,9 @@ $(document).ready(function () {
                orderable: false,
             },
          ],
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron registros",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            emptyTable: "No hay registros disponibles",
-            search: "Buscar:",
-            paginate: {
-               first: "Primera",
-               last: "Última",
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-      });
+      }, html);
    }
+
    function actualizarTablaProximosVencer(data) {
       var html = "";
       data.forEach(function (registro) {
@@ -83,33 +72,15 @@ $(document).ready(function () {
                   <td class="align-middle">${registro.vencimiento}</td>
                   <td class="align-middle">
                   ${actualizar === 1
-               ? `<button class='btn btn-block btn-warning me-2' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}' data-tooltip='tooltip' title='Modificar WADA'><i class='fa-regular fa-pen-to-square'></i></button>`
+               ? `<button class='btn btn-block btn-warning me-2' aria-label='Modificar WADA del atleta ${registro.nombre} ${registro.apellido}' data-tooltip='tooltip' title='Modificar WADA' data-id=${registro.cedula}><i class='fa-regular fa-pen-to-square'></i></button>`
                : ""
             }
                   </td>
-              </tr>`;
+               </tr>`;
       });
-      if ($.fn.DataTable.isDataTable("#tablaProximosVencer")) {
-         $("#tablaProximosVencer").DataTable().clear().destroy();
-      }
-      $("#tablaProximosVencer tbody").html(html);
-      $("#tablaProximosVencer").DataTable({
-         autoWidth: false,
-         lengthChange: false,
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron registros",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            emptyTable: "No hay registros disponibles",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-      });
+      initDataTable("#tablaProximosVencer", {
+         lengthChange: false
+      }, html);
    }
 
    function cargarListadoPorVencer() {
@@ -129,11 +100,11 @@ $(document).ready(function () {
          cargarListadoPorVencer();
       });
    });
-   function cargarAtletas() {
+   function cargarListadoAtletas() {
       enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET").then((respuesta) => {
          var opciones = "<option value=''>Seleccione un atleta</option>";
          respuesta.atletas.forEach(function (atleta) {
-            opciones += `<option value='${atleta.cedula}'>${atleta.cedula} - ${atleta.nombre} ${atleta.apellido}</option>`;
+            opciones += `<option value='${atleta.cedula_encriptado}' data-hash='${atleta.cedula_hash}'>${atleta.cedula} - ${atleta.nombre} ${atleta.apellido}</option>`;
          });
          $("#atleta").html(opciones);
       });
@@ -145,14 +116,10 @@ $(document).ready(function () {
       });
    });
    $("#tablaWada").on("click", ".btn-danger", function () {
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "No podrás revertir esto",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro?", "No podrás revertir esto", "warning", {
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
-         confirmButtonText: "Sí, eliminar",
+         confirmButtonColor: "#d33",
+         confirmButtonText: "Sí, eliminar"
       }).then((result) => {
          if (result.isConfirmed) {
             const cedula = $(this).data("id");
@@ -172,8 +139,12 @@ $(document).ready(function () {
    });
 
    function llenarFormularioModificar(wada) {
-      if (wada?.id_atleta) {
-         $("#f1 #atleta").val(wada.id_atleta);
+      if (wada?.id_atleta_hash) {
+         $("#f1 #atleta option").each(function () {
+            if ($(this).data('hash') === wada.id_atleta_hash) {
+               $("#f1 #atleta").val($(this).val());
+            }
+         });
          $("#f1 #inscrito").val(wada.inscrito);
          $("#f1 #ultima_actualizacion").val(wada.ultima_actualizacion);
          $("#f1 #vencimiento").val(wada.vencimiento);

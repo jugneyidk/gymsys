@@ -49,7 +49,10 @@ export function limpiarForm() {
    $("form div .invalid-feedback").text("");
 }
 
-export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true) {
+// Promesa de refresco de token
+let refreshTokenPromise = null;
+
+export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true, esReintento = false) {
    return new Promise((resolve, reject) => {
       $.ajax({
          async: true,
@@ -60,6 +63,10 @@ export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true)
          processData: false,
          cache: false,
          timeout: 10000,
+         headers: {
+            'X-Client-Type': 'web',
+            'Authorization': obtenerTokenJWT()
+         },
          beforeSend: function () {
             if (mostrarCargaMensaje) {
                modalCarga(true);
@@ -69,16 +76,37 @@ export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true)
             resolve(respuesta.data);
          },
          error: function (request, status) {
-            const errorResponse = request.responseJSON.data.error ?? null;
-            const errorMsg =
-               errorResponse ? errorResponse :
-                  status === "timeout"
+            if (request.status === 401 && !esReintento) {
+               if (!refreshTokenPromise) {
+                  refreshTokenPromise = refreshAccessToken()
+                     .then(() => {
+                        refreshTokenPromise = null;
+                     })
+                     .catch((err) => {
+                        refreshTokenPromise = null;
+                        return Promise.reject(err);
+                     });
+               }
+               refreshTokenPromise
+                  .then(() => {
+                     return enviaAjax(datos, url, type, mostrarCargaMensaje, true);
+                  })
+                  .then(resolve)
+                  .catch((err) => {
+                     reject(err);
+                  });
+
+            } else {
+               const errorResponse = request.responseJSON?.data?.error ?? null;
+               const errorMsg = errorResponse
+                  ? errorResponse
+                  : status === "timeout"
                      ? "Servidor ocupado, intente de nuevo"
                      : "Error al procesar la solicitud";
-            if (mostrarCargaMensaje) {
-               muestraMensaje("Error", errorMsg, "error");
+
+               if (mostrarCargaMensaje) muestraMensaje("Error", errorMsg, "error");
+               reject(errorMsg);
             }
-            reject(errorMsg);
          },
          complete: function () {
             if (mostrarCargaMensaje) {
@@ -88,18 +116,55 @@ export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true)
       });
    });
 }
-export function muestraMensaje(titulo, mensaje, icono) {
-   Swal.fire({
-      title: titulo,
-      text: mensaje,
-      icon: icono,
-      showConfirmButton: false,
-      showCancelButton: true,
-      cancelButtonText: "Cerrar",
+
+// Función de refresco de access token
+function refreshAccessToken() {
+   return $.ajax({
+      url: '?p=authrefresh&accion=refreshtoken',
+      method: 'POST'
+   }).then(function (response) {
+      localStorage.setItem('access_token', response.data.accessToken);
+      return Promise.resolve();
+   }).catch(function () {
+      muestraMensaje("Sesión expirada", "Por favor inicia sesión nuevamente.", "error");
+      (function () {
+         const observer = new MutationObserver((mutations, obs) => {
+            for (const m of mutations) {
+               for (const nodo of m.removedNodes) {
+                  // Cuando un nodo swal2-container es eliminado, se cerró el modal
+                  if (nodo.nodeType === 1 && nodo.classList.contains('swal2-container')) {
+                     const url = new URL(window.location.href);
+                     url.searchParams.set('p', 'login');
+                     window.location.href = url.toString();
+                     obs.disconnect();
+                     return;
+                  }
+               }
+            }
+         });
+         // Observar hijos directos de body (inserciones/remociones)
+         observer.observe(document.body, { childList: true });
+      })();
    });
 }
+export function muestraMensaje(titulo, texto, tipo, opciones = {}) {
+   const configDefault = {
+      title: titulo,
+      text: texto,
+      icon: tipo,
+      confirmButtonText: opciones.confirmButtonText || 'Aceptar',
+      confirmButtonColor: opciones.confirmButtonColor || '#198754',
+      cancelButtonText: opciones.cancelButtonText || 'Cancelar',
+      scrollbarPadding: false,
+      theme: localStorage.getItem("theme") || "light",
+   };
 
-export function obtenerNotificaciones(idUsuario) {
+   // Si se proporcionan opciones adicionales, las mezclamos con la configuración por defecto
+   const config = { ...configDefault, ...opciones };
+   return Swal.fire(config);
+}
+
+export function obtenerNotificaciones() {
    enviaAjax("", "?p=notificaciones&accion=obtenerNotificaciones", "GET", false).then((respuesta) => {
       if (respuesta.notificaciones.length < 1) {
          var contenido = `
@@ -155,7 +220,7 @@ export function obtenerNotificaciones(idUsuario) {
    );
    $("body").on("click", "#marcar-todo-leido", function () {
       enviaAjax("", "?p=notificaciones&accion=marcarTodoLeido").then(() => {
-         obtenerNotificaciones(idUsuario);
+         obtenerNotificaciones();
          $("#contador-notificaciones").removeClass("d-inline-block");
          $("#contador-notificaciones").addClass("d-none");
          $("#icono-notificaciones").removeClass("fa-shake");
@@ -318,3 +383,35 @@ export function debounce(func, delay) {
       }, delay);
    };
 }
+export function obtenerTokenJWT() {
+   const token = localStorage.getItem("access_token");
+   return token ? `Bearer ${token}` : "";
+}
+
+export function handleTheme() {
+   const theme = localStorage.getItem("theme") || "light";
+   const newTheme = theme === "dark" ? "light" : "dark";
+   
+   // Actualizar el ícono
+   const icon = document.querySelector('#botonTema i');
+   if (icon) {
+      icon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      icon.setAttribute('title', newTheme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+   }
+   
+   // Actualizar el tema
+   localStorage.setItem("theme", newTheme);
+   document.documentElement.setAttribute("data-bs-theme", newTheme);
+}
+
+(function () {
+   const theme = localStorage.getItem("theme") || "light";
+   document.documentElement.setAttribute("data-bs-theme", theme);
+   
+   // Inicializar el ícono del tema
+   const icon = document.querySelector('#botonTema i');
+   if (icon) {
+      icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      icon.setAttribute('title', theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+   }
+})();

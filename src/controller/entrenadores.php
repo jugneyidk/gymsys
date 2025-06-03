@@ -3,7 +3,6 @@
 namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
-use Gymsys\Model\Rolespermisos;
 use Gymsys\Core\Database;
 use Gymsys\Utils\ExceptionHandler;
 
@@ -18,7 +17,6 @@ class Entrenadores extends BaseController
       $modelClass = $this->getModel("Entrenadores");
       $this->model = new $modelClass($this->database);
       $this->permisos = $this->obtenerPermisos("Entrenadores", $this->database);
-      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoEntrenadores(): array
    {
@@ -27,22 +25,31 @@ class Entrenadores extends BaseController
    }
    public function obtenerEntrenador(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
-      return $this->model->obtenerEntrenador($datos['id']);
+      return $this->model->obtenerEntrenador($datos);
    }
    public function incluirEntrenador(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
       return $this->model->incluirEntrenador($datos);
    }
    public function eliminarEntrenador(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarEntrenador($datos);
    }
    public function modificarEntrenador(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
       return $this->model->modificarEntrenador($datos);
+   }
+   public function listadoGradosInstruccion(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model->listadoGradosInstruccion();
    }
 }

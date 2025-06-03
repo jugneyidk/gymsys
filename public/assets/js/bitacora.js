@@ -1,6 +1,8 @@
-import { enviaAjax, obtenerNotificaciones, modalCarga } from "./comunes.js";
+import { enviaAjax, obtenerNotificaciones, modalCarga, obtenerTokenJWT } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+
 $(document).ready(function () {
-   $("#tablabitacora").DataTable({
+   initDataTable("#tablabitacora", {
       serverSide: true,
       ajax: {
          url: '?p=bitacora&accion=listadoBitacora',
@@ -9,7 +11,11 @@ $(document).ready(function () {
             json.draw = json.data.draw;
             json.recordsTotal = json.data.recordsTotal;
             json.recordsFiltered = json.data.recordsFiltered;
-            return json.data.data; // aquí va el array de filas
+            return json.data.data;
+         },
+         headers: {
+            'X-Client-Type': 'web',
+            'Authorization': obtenerTokenJWT()
          },
          beforeSend: function () {
             modalCarga(true);
@@ -42,7 +48,7 @@ $(document).ready(function () {
          },
          { data: 'fecha' },
          {
-            data: null, // la data completa del registro
+            data: null,
             orderable: false,
             searchable: false,
             render: function (data, type, row) {
@@ -50,24 +56,13 @@ $(document).ready(function () {
             }
          }
       ],
-      language: {
-         lengthMenu: "Mostrar _MENU_ por página",
-         loadingRecords: "Cargando...",
-         zeroRecords: "No se encontraron acciones",
-         info: "Mostrando página _PAGE_ de _PAGES_",
-         infoEmpty: "No hay roles disponibles",
-         infoFiltered: "(filtrado de _MAX_ registros totales)",
-         search: "Buscar:",
-         paginate: {
-            next: "Siguiente",
-            previous: "Anterior",
-         },
-      },
       order: [[4, "desc"]],
    });
+
    obtenerNotificaciones();
    setInterval(() => obtenerNotificaciones(), 35000);
 });
+
 $("#tablabitacora").on("click", ".btn-warning", function () {
    const idAccion = $(this).data('id');
    enviaAjax("", `?p=bitacora&accion=obtenerAccion&id=${idAccion}`, "GET").then((respuesta) => {

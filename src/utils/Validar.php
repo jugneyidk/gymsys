@@ -97,7 +97,7 @@ class Validar
    }
    public static function validarFechasWada(Database $database, string $cedula, string $inscripcion, string $ultimaActualizacion, string $vencimiento): void
    {
-      $consulta = "SELECT fecha_nacimiento FROM usuarios WHERE cedula = :cedula";
+      $consulta = "SELECT fecha_nacimiento FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :cedula";
       $response = $database->query($consulta, [":cedula" => $cedula], true);
       $fechaNacimiento = $response['fecha_nacimiento'] ?: false;
       if (empty($fechaNacimiento)) {

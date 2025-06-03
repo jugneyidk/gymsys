@@ -18,7 +18,6 @@ class TipoAtleta extends BaseController
       $modelClass = $this->getModel("TipoAtleta");
       $this->model = new $modelClass((object) $database);
       $this->permisos = $this->obtenerPermisos("Atletas", $this->database);
-      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoTipoAtletas(): array
    {
@@ -27,11 +26,13 @@ class TipoAtleta extends BaseController
    }
    public function incluirTipoAtleta(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
       return $this->model->incluirTipoAtleta($datos);
    }
    public function eliminarTipoAtleta(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarTipoAtleta($datos);
    }
