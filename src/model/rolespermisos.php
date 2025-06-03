@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -30,35 +31,80 @@ class Rolespermisos
    public static function obtenerPermisosModulo(string $modulo, Database $database): array
    {
       self::$routes = require dirname(__DIR__) . "/core/routes.php";
-      if (empty($_SESSION['rol']) && empty(self::$routes[$modulo]['public'])) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \UnexpectedValueException::class);
+      $esPublica = !empty(self::$routes[$modulo]['public']);
+      $obj = new self($database);
+      $idUsuario = defined('ID_USUARIO') && !empty(ID_USUARIO)
+         ? ID_USUARIO
+         : null;
+      $idRol = null;
+      if ($idUsuario) {
+         $rolInfo = $obj->obtenerRolUsuario(['id' => $idUsuario]);
+         $idRol = Cipher::aesDecrypt($rolInfo['rol']['id_rol']) ?? null;
       }
-      $idRol = $_SESSION['rol'];
-      $consulta = "SELECT m.id_modulo, m.nombre, p.crear, p.leer, p.actualizar, p.eliminar FROM permisos p
-                            INNER JOIN modulos m ON p.modulo = m.id_modulo
-                            WHERE p.id_rol = :id_rol AND m.nombre = :modulo;";
-      $valores = [':id_rol' => $idRol, ':modulo' => $modulo];
-      $permisos = $database->query($consulta, $valores, true);
+      if (empty($idRol)) {
+         if ($esPublica) {
+            // Ruta pública + sin usuario da permiso de sólo lectura
+            return [
+               'leer'      => 1,
+            ];
+         }
+         // Ruta protegida + sin rol denega acceso
+         ExceptionHandler::throwException(
+            "Acceso no autorizado",
+            403,
+            \UnexpectedValueException::class
+         );
+      }
+      $sql = "SELECT
+                  m.id_modulo,
+                  m.nombre,
+                  p.crear,
+                  p.leer,
+                  p.actualizar,
+                  p.eliminar
+            FROM {$_ENV['SECURE_DB']}.permisos p
+            INNER JOIN {$_ENV['SECURE_DB']}.modulos m ON p.modulo = m.id_modulo
+            WHERE p.id_rol = :id_rol 
+               AND m.nombre = :modulo;";
+      $valores = [
+         ':id_rol' => $idRol,
+         ':modulo' => $modulo
+      ];
+      $permisos = $database->query($sql, $valores, true);
       if (empty($permisos)) {
-         $permisos["leer"] = 0;
+         $permisos = [
+            'leer'      => 0,
+         ];
       }
       return $permisos;
    }
+
    public static function obtenerPermisosNav(Database $database): array|bool
    {
-      $id_rol = $_SESSION['rol'];
-      $consulta = "SELECT m.id_modulo, m.nombre, p.leer FROM permisos p
-                            INNER JOIN modulos m ON p.modulo = m.id_modulo
+      $consultaRol = "SELECT p.id_rol FROM {$_ENV['SECURE_DB']}.permisos p
+         INNER JOIN {$_ENV['SECURE_DB']}.usuarios_roles ur ON ur.id_rol = p.id_rol
+         WHERE ur.id_usuario = :id_usuario LIMIT 1;";
+      $idRol = $database->query($consultaRol, [":id_usuario" => ID_USUARIO], true)['id_rol'];
+      $consulta = "SELECT m.id_modulo, m.nombre, p.leer FROM {$_ENV['SECURE_DB']}.permisos p
+                            INNER JOIN {$_ENV['SECURE_DB']}.modulos m ON p.modulo = m.id_modulo
                             WHERE p.id_rol = :id_rol;";
-      $valores = [':id_rol' => $id_rol];
+      $valores = [':id_rol' => $idRol];
       $respuesta = $database->query($consulta, $valores);
+      $consulta = "SELECT CONCAT(u.nombre, ' ', u.apellido) as nombre,
+                     r.nombre as rol FROM {$_ENV['SECURE_DB']}.usuarios u
+                     JOIN {$_ENV['SECURE_DB']}.roles r ON r.id_rol = :id_rol
+                     WHERE u.cedula = :id_usuario;";
+      $valores = [':id_rol' => $idRol, ':id_usuario' => ID_USUARIO];
+      $respuestaUsuario = $database->query($consulta, $valores, true);
+      $respuesta['usuario'] = $respuestaUsuario;
       return $respuesta;
    }
-   public function obtenerRol(array $datos)
+   public function obtenerRol(array $datos): array
    {
       $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $id = filter_var($arrayFiltrado['id'], FILTER_SANITIZE_NUMBER_INT);
+      $idRol = Cipher::aesDecrypt($arrayFiltrado['id']);
+      $id = filter_var($idRol, FILTER_SANITIZE_NUMBER_INT);
       if ($id === '' || $id === null) {
          ExceptionHandler::throwException("El ID de rol ingresado no es válido", 400, \InvalidArgumentException::class);
       }
@@ -76,10 +122,8 @@ class Rolespermisos
    {
       $keys = ['cedula', 'id_rol_asignar'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $idRol = filter_var($arrayFiltrado['id_rol_asignar'], FILTER_SANITIZE_NUMBER_INT);
-      if ($idRol === '' || $idRol === null) {
-         ExceptionHandler::throwException("El ID de rol ingresado no es válido", 400, \InvalidArgumentException::class);
-      }
+      $idRol = Cipher::aesDecrypt($arrayFiltrado['id_rol_asignar']);
+      Validar::sanitizarYValidar($idRol, 'int');
       Validar::validar("cedula", $arrayFiltrado['cedula']);
       return $this->_asignarRol($idRol, $arrayFiltrado['cedula']);
    }
@@ -93,22 +137,24 @@ class Rolespermisos
    {
       Validar::validar("nombre_rol", $datos['nombre_rol']);
       $arrayPermisos = $this->arrayValoresPermisos($datos);
-      $idRol = filter_var($datos['id_rol'] ?? null, FILTER_SANITIZE_NUMBER_INT);
-      $nombreRol = trim($datos['nombre_rol'] ?? null);
-      return $this->_modificarRol($idRol, $nombreRol, $arrayPermisos);
+      $idRol = Cipher::aesDecrypt($datos['id_rol']);
+      Validar::sanitizarYValidar($idRol, 'int');
+      Validar::sanitizarYValidar($datos['nombre_rol'], 'string');
+      return $this->_modificarRol($idRol, $datos['nombre_rol'], $arrayPermisos);
    }
 
    public function eliminarRol(array $datos): array
    {
       $keys = ['id_rol'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $idRol = filter_var($arrayFiltrado['id_rol'], FILTER_SANITIZE_NUMBER_INT);
-      return $this->_eliminarRol($idRol);
+      $idRolDesencriptado = Cipher::aesDecrypt($arrayFiltrado['id_rol']);
+      Validar::sanitizarYValidar($idRolDesencriptado, 'int');
+      return $this->_eliminarRol($idRolDesencriptado);
    }
 
    private function _incluirRol(string $nombre, array $permisos): array
    {
-      $consulta = "SELECT id_rol FROM roles WHERE nombre = :id;";
+      $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $nombre, $consulta);
       if ($existe) {
          ExceptionHandler::throwException("Ya existe un rol con el nombre introducido", 400, \InvalidArgumentException::class);
@@ -122,7 +168,7 @@ class Rolespermisos
          ExceptionHandler::throwException("Ocurrió un error al incluir el rol", 500, \Exception::class);
       }
       $idRol = $this->database->lastInsertId();
-      $consultaPermisos = "INSERT INTO permisos (id_rol, modulo, crear, leer, actualizar, eliminar)
+      $consultaPermisos = "INSERT INTO {$_ENV['SECURE_DB']}.permisos (id_rol, modulo, crear, leer, actualizar, eliminar)
             VALUES 
             (:id_rol, :moduloentrenadores, :centrenadores, :rentrenadores, :uentrenadores, :dentrenadores),
             (:id_rol, :moduloatletas, :catletas, :ratletas, :uatletas, :datletas),
@@ -145,7 +191,7 @@ class Rolespermisos
 
    private function _obtenerRol(int $id): array
    {
-      $consulta = "SELECT id_rol FROM roles WHERE id_rol = :id;";
+      $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $id, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("El rol ingresado no existe", 404, \InvalidArgumentException::class);
@@ -158,9 +204,9 @@ class Rolespermisos
                     p.actualizar, 
                     p.eliminar, 
                     m.nombre AS nombre_modulo
-                FROM roles r
-                LEFT JOIN permisos p ON p.id_rol = r.id_rol
-                LEFT JOIN modulos m ON m.id_modulo = p.modulo
+                FROM {$_ENV['SECURE_DB']}.roles r
+                LEFT JOIN {$_ENV['SECURE_DB']}.permisos p ON p.id_rol = r.id_rol
+                LEFT JOIN {$_ENV['SECURE_DB']}.modulos m ON m.id_modulo = p.modulo
                 WHERE r.id_rol = :id_rol;";
       $valores = [':id_rol' => $id];
       $response = $this->database->query($consulta, $valores);
@@ -172,7 +218,7 @@ class Rolespermisos
    }
    private function _obtenerRolUsuario(string $cedula): array
    {
-      $consulta = "SELECT cedula FROM usuarios WHERE cedula = :id;";
+      $consulta = "SELECT cedula FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("No existe el usuario introducido", 404, \InvalidArgumentException::class);
@@ -182,35 +228,39 @@ class Rolespermisos
                     u.nombre, 
                     u.apellido, 
                     ur.id_rol
-                FROM usuarios u
-                INNER JOIN usuarios_roles ur ON ur.id_usuario = u.cedula
-                INNER JOIN roles r ON r.id_rol = ur.id_rol
+                FROM {$_ENV['SECURE_DB']}.usuarios u
+                INNER JOIN {$_ENV['SECURE_DB']}.usuarios_roles ur ON ur.id_usuario = u.cedula
+                INNER JOIN {$_ENV['SECURE_DB']}.roles r ON r.id_rol = ur.id_rol
                 WHERE u.cedula = :cedula;";
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);
       if (empty($response)) {
          ExceptionHandler::throwException("Ocurrió un error al consultar el rol", 500, \Exception::class);
       }
-      $resultado["rol"] = $response;
+      $resultado["rol"] = $response ?: [];
+      if (!empty($resultado["rol"])) {
+         Cipher::crearHashArray($resultado, "id_rol");
+         Cipher::encriptarCampoArray($resultado, "id_rol", false);
+      }
       return $resultado;
    }
    private function _modificarRol(int $idRol, string $nombreRol, array $permisos): array
    {
 
-      $consulta = "SELECT id_rol FROM roles WHERE id_rol = :id;";
+      $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("No existe el rol introducido", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE roles SET nombre = :nombre
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.roles SET nombre = :nombre
             WHERE id_rol = :id_rol;";
       $valores = [':id_rol' => $idRol, ':nombre' => $nombreRol];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
          ExceptionHandler::throwException("Ocurrió un error al actualizar el rol", 500, \Exception::class);
       }
-      $consultaPermiso = "UPDATE permisos
+      $consultaPermiso = "UPDATE {$_ENV['SECURE_DB']}.permisos
                            SET crear = :crear, leer = :leer, actualizar = :actualizar, eliminar = :eliminar
                            WHERE id_rol = :id_rol AND modulo = :modulo";
       foreach ($this->modulos as $moduloNombre => $moduloId) {
@@ -232,18 +282,18 @@ class Rolespermisos
    }
    private function _asignarRol(int $idRol, string $cedula): array
    {
-      $consulta = "SELECT cedula FROM usuarios WHERE cedula = :id;";
+      $consulta = "SELECT cedula FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("El usuario ingresado no existe", 404, \InvalidArgumentException::class);
       }
-      $consulta = "SELECT id_rol FROM roles WHERE id_rol = :id;";
+      $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("El rol ingresado no existe", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE usuarios_roles 
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles 
                 SET id_rol = :id_rol
                 WHERE id_usuario = :cedula;";
       $valores = [":cedula" => $cedula, ":id_rol" => $idRol];
@@ -258,13 +308,13 @@ class Rolespermisos
    private function _eliminarRol(int $idRol): array
    {
 
-      $consulta = "SELECT id_rol FROM roles WHERE id_rol = :id;";
+      $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
          ExceptionHandler::throwException("El rol introducido no existe", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "DELETE FROM roles WHERE id_rol = :id_rol;";
+      $consulta = "DELETE FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id_rol;";
       $valores = [':id_rol' => $idRol];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
@@ -281,9 +331,13 @@ class Rolespermisos
    }
    private function _listadoRoles(): array
    {
-      $consulta = "SELECT * FROM roles;";
+      $consulta = "SELECT * FROM {$_ENV['SECURE_DB']}.roles;";
       $response = $this->database->query($consulta);
       $resultado["roles"] = $response ?: [];
+      if (!empty($resultado["roles"])) {
+         Cipher::crearHashArray($resultado["roles"], "id_rol");
+         Cipher::encriptarCampoArray($resultado['roles'], "id_rol", false);
+      }
       return $resultado;
    }
 

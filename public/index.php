@@ -10,7 +10,6 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 // header("Access-Control-Allow-Headers: Content-Type");
 // header("Access-Control-Allow-Origin: *");
 try {
-   session_start();
    require_once dirname(__DIR__) . '/config/config.php';
    $apiController = new ApiController();
    $apiController->handleRequest();
@@ -24,6 +23,10 @@ try {
    $apiController->sendResponse(400, "{$e->getMessage()}: {$e->getTraceAsString()}", true);
    die;
 } catch (\Throwable $e) {
+   if (!isset($apiController)) {
+      echo $e->getMessage();
+      die;
+   }
    $errorMessage = json_decode($e->getMessage(), true);
    $apiController->sendResponse($errorMessage["code"] ?? 400, $errorMessage ?? $e->getMessage(), true);
    die;

@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <?php $formulario = "rolespermisos"; ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,7 +12,7 @@
    <?php require_once "comunes/linkcss.php"; ?>
 </head>
 
-<body class="bg-light">
+<body class="bg-body">
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?>;
@@ -52,7 +53,6 @@
                      <table class="table table-striped table-hover" id="tablaroles">
                         <thead>
                            <tr>
-                              <th class="d-none">Id</th>
                               <th>Rol</th>
                               <th>Acción</th>
                            </tr>

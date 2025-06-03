@@ -10,197 +10,227 @@
    <script src="assets/js/chart.min.js" defer></script>
 </head>
 
-<body class="d-flex flex-column vh-100">
+<body class="bg-body-tertiary">
    <?php require_once "comunes/menu.php"; ?>
 
-   <main>
-      <div class="container-lg my-4">
-         <div class="row">
+   <main class="flex-grow-1 py-4">
+      <div class="container-lg px-4">
+         <!-- Sección de Generación de Reportes -->
+         <div class="row mb-4">
             <div class="col-12">
-               <div class="card shadow">
-                  <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                     <h2 class="mb-0">Generar Reportes</h2>
+               <div class="card shadow-sm border-0 rounded-3">
+                  <div class="card-header bg-dark text-white py-3">
+                     <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0">Generación de Reportes</h2>
+                        <?php if ($permisosModulo["crear"]): ?>
+                           <button class="btn btn-light btn-sm" id="btnDescargarPDF">
+                              <i class="fas fa-file-pdf me-2"></i>Exportar PDF
+                           </button>
+                        <?php endif; ?>
+                     </div>
                   </div>
+
                   <div class="card-body">
-                     <form id="formReportes">
-                        <div class="row">
-                           <div class="col-md-6 mb-3">
-                              <label for="tipoReporte" class="form-label">Tipo de Reporte:</label>
-                              <select class="form-select" id="tipoReporte" name="tipoReporte">
-                                 <option value="atletas">Atletas</option>
-                                 <option value="reporteIndividualAtleta">Atletas (individual)</option>
-                                 <option value="entrenadores">Entrenadores</option>
-                                 <option value="eventos">Eventos</option>
-                                 <option value="mensualidades">Mensualidades</option>
-                                 <option value="wada">WADA</option>
-                                 <option value="asistencias">Asistencias</option>
-                              </select>
+                     <form id="formReportes" class="needs-validation" novalidate>
+                        <div class="row g-3">
+                           <!-- Selector de Tipo de Reporte -->
+                           <div class="col-md-6">
+                              <div class="form-floating">
+                                 <select class="form-select" id="tipoReporte" name="tipoReporte" required>
+                                    <option value="atletas">Atletas</option>
+                                    <option value="reporteIndividualAtleta">Atletas (individual)</option>
+                                    <option value="entrenadores">Entrenadores</option>
+                                    <option value="eventos">Eventos</option>
+                                    <option value="mensualidades">Mensualidades</option>
+                                    <option value="wada">WADA</option>
+                                    <option value="asistencias">Asistencias</option>
+                                 </select>
+                                 <label for="tipoReporte">Tipo de Reporte</label>
+                              </div>
                            </div>
+
+                           <!-- Filtros Generales -->
                            <div id="filtrosGenerales" class="col-12">
-                              <div class="row">
-                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
-                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                              <div class="row g-3">
+                                 <div class="col-md-6">
+                                    <div class="form-floating">
+                                       <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
+                                       <label for="fechaInicio">Fecha de Inicio</label>
+                                    </div>
                                  </div>
-                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaFin" class="form-label">Fecha de Fin:</label>
-                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                                 <div class="col-md-6">
+                                    <div class="form-floating">
+                                       <input type="date" class="form-control" id="fechaFin" name="fechaFin">
+                                       <label for="fechaFin">Fecha de Fin</label>
+                                    </div>
                                  </div>
                               </div>
                            </div>
 
+                           <!-- Filtros de Atletas -->
                            <div id="filtrosAtletas" class="col-12 filtros-reporte">
-                              <div class="row">
-                                 <div class="col-md-6 mb-3">
-                                    <label for="edadMin" class="form-label">Edad Mínima:</label>
-                                    <input type="number" class="form-control" id="edadMin" name="edadMin">
-                                 </div>
-                                 <div class="col-md-6 mb-3">
-                                    <label for="edadMax" class="form-label">Edad Máxima:</label>
-                                    <input type="number" class="form-control" id="edadMax" name="edadMax">
-                                 </div>
-                                 <div class="col-md-6 mb-3">
-                                    <label for="genero" class="form-label">Género:</label>
-                                    <select class="form-select" id="genero" name="genero">
-                                       <option value="">Todos</option>
-                                       <option value="Masculino">Masculino</option>
-                                       <option value="Femenino">Femenino</option>
-                                    </select>
-                                 </div>
-                              </div>
-                           </div>
-                           <!-- Filtros para el reporte individual -->
-                           <div id="filtrosIndividualAtleta" class="col-12 filtros-reporte" style="display: none;">
-                              <div class="row">
-                                 <div class="col-md-6 mb-3">
-                                    <label for="cedulaAtleta" class="form-label">Cédula del Atleta:</label>
-                                    <input type="text" class="form-control" id="cedulaAtleta" name="cedulaAtleta">
-                                 </div>
-                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
-                                    <input type="date" class="form-control" id="fechaInicio" name="fechaInicio">
-                                 </div>
-                                 <div class="col-md-6 mb-3">
-                                    <label for="fechaFin" class="form-label">Fecha de Fin:</label>
-                                    <input type="date" class="form-control" id="fechaFin" name="fechaFin">
-                                 </div>
-                              </div>
-                              <div class="row">
-                                 <div class="col-md-12 mb-3">
-                                    <label class="form-label">Selecciona los datos a incluir en el reporte:</label>
-                                    <div class="form-check">
-                                       <input class="form-check-input" type="checkbox" id="checkAsistencias" name="datosReporte[]" value="asistencias">
-                                       <label class="form-check-label" for="checkAsistencias">Asistencias</label>
+                              <div class="row g-3">
+                                 <div class="col-md-4">
+                                    <div class="form-floating">
+                                       <input type="number" class="form-control" id="edadMin" name="edadMin">
+                                       <label for="edadMin">Edad Mínima</label>
                                     </div>
-                                    <div class="form-check">
-                                       <input class="form-check-input" type="checkbox" id="checkCampeonatos" name="datosReporte[]" value="campeonatos">
-                                       <label class="form-check-label" for="checkCampeonatos">Participación en Campeonatos</label>
+                                 </div>
+                                 <div class="col-md-4">
+                                    <div class="form-floating">
+                                       <input type="number" class="form-control" id="edadMax" name="edadMax">
+                                       <label for="edadMax">Edad Máxima</label>
                                     </div>
-                                    <div class="form-check">
-                                       <input class="form-check-input" type="checkbox" id="checkMensualidades" name="datosReporte[]" value="mensualidades">
-                                       <label class="form-check-label" for="checkMensualidades">Pago de Mensualidades</label>
-                                    </div>
-                                    <div class="form-check">
-                                       <input class="form-check-input" type="checkbox" id="checkWADA" name="datosReporte[]" value="wada">
-                                       <label class="form-check-label" for="checkWADA">Cumplimiento WADA</label>
+                                 </div>
+                                 <div class="col-md-4">
+                                    <div class="form-floating">
+                                       <select class="form-select" id="genero" name="genero">
+                                          <option value="">Todos</option>
+                                          <option value="Masculino">Masculino</option>
+                                          <option value="Femenino">Femenino</option>
+                                       </select>
+                                       <label for="genero">Género</label>
                                     </div>
                                  </div>
                               </div>
                            </div>
 
-                           <div id="filtrosEntrenadores" class="col-12 filtros-reporte">
-                              <div class="row">
-                                 <div class="col-md-6 mb-3">
-                                    <label for="gradoInstruccion" class="form-label">Grado de Instrucción:</label>
-                                    <select class="form-select" id="gradoInstruccion" name="gradoInstruccion">
-                                       <option value="">Todos</option>
-                                       <option value="Primaria">Primaria</option>
-                                       <option value="Secundaria">Secundaria</option>
-                                       <option value="Universidad">Universidad</option>
-                                    </select>
+                           <!-- Filtros de Reporte Individual -->
+                           <div id="filtrosIndividualAtleta" class="col-12 filtros-reporte" style="display: none;">
+                              <div class="row g-3">
+                                 <div class="col-md-12">
+                                    <div class="form-floating">
+                                       <input type="text" class="form-control" id="cedulaAtleta" name="cedulaAtleta">
+                                       <label for="cedulaAtleta">Cédula del Atleta</label>
+                                    </div>
                                  </div>
+
+                                 <div class="col-12">
+                                    <div class="card border">
+                                       <div class="card-body">
+                                          <h6 class="card-subtitle mb-3 text-muted">Datos a incluir en el reporte</h6>
+                                          <div class="d-flex flex-wrap gap-3">
+                                             <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkAsistencias" name="datosReporte[]" value="asistencias">
+                                                <label class="form-check-label" for="checkAsistencias">Asistencias</label>
+                                             </div>
+                                             <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkCampeonatos" name="datosReporte[]" value="campeonatos">
+                                                <label class="form-check-label" for="checkCampeonatos">Participación en Campeonatos</label>
+                                             </div>
+                                             <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkMensualidades" name="datosReporte[]" value="mensualidades">
+                                                <label class="form-check-label" for="checkMensualidades">Pago de Mensualidades</label>
+                                             </div>
+                                             <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkWADA" name="datosReporte[]" value="wada">
+                                                <label class="form-check-label" for="checkWADA">Cumplimiento WADA</label>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+
+                           <!-- Filtros de Entrenadores -->
+                           <div id="filtrosEntrenadores" class="col-12 filtros-reporte" style="display: none;">
+                              <div class="form-floating">
+                                 <select class="form-select" id="gradoInstruccion" name="gradoInstruccion">
+                                    <option value="">Todos</option>
+                                    <option value="Primaria">Primaria</option>
+                                    <option value="Secundaria">Secundaria</option>
+                                    <option value="Universidad">Universidad</option>
+                                 </select>
+                                 <label for="gradoInstruccion">Grado de Instrucción</label>
                               </div>
                            </div>
 
                            <div class="col-12">
-                              <button type="button" class="btn btn-primary" id="btnGenerarReporte">Generar
-                                 Reporte</button>
+                              <button type="button" class="btn btn-primary" id="btnGenerarReporte">
+                                 <i class="fas fa-chart-line me-2"></i>Generar Reporte
+                              </button>
                            </div>
                         </div>
                      </form>
-                     <div class="table-responsive mt-4">
-                        <table class="table table-striped table-hover" id="tablaReportes">
-                           <thead>
-                              <tr>
-                                 <th>ID</th>
-                                 <th>Nombre</th>
-                                 <th>Detalles</th>
-                                 <th>Fecha</th>
-                              </tr>
-                           </thead>
-                           <tbody id="listadoReportes"></tbody>
-                        </table>
-                     </div>
-                     <div id="estadisticasReporte" class="mt-4">
-                        <h3>Estadísticas Generadas</h3>
-                        <ul id="listaEstadisticas"></ul>
+
+                     <!-- Resultados del Reporte -->
+                     <div class="mt-4" style="display: none;" id="resultadosReporte">
+                        <div class="card border">
+                           <div class="card-body">
+                              <h5 class="card-title">Resultados</h5>
+                              <div class="table-responsive">
+                                 <table class="table table-hover" id="tablaReportes">
+                                    <thead>
+                                    </thead>
+                                    <tbody id="listadoReportes"></tbody>
+                                 </table>
+                              </div>
+                           </div>
+                        </div>
                      </div>
 
-                     <button class="btn btn-success mt-3" id="btnDescargarPDF">Descargar PDF</button>
+                     <!-- Estadísticas -->
+                     <div id="estadisticasReporte" class="mt-4" style="display: none;">
+                        <div class="card border">
+                           <div class="card-body">
+                              <h5 class="card-title">Estadísticas Generadas</h5>
+                              <ul id="listaEstadisticas" class="list-group list-group-flush"></ul>
+                           </div>
+                        </div>
+                     </div>
                   </div>
                </div>
             </div>
          </div>
 
-         <div class="row my-4">
+         <!-- Sección de Gráficos -->
+         <div class="row g-4">
             <div class="col-12">
-               <h3>Reportes Estadísticos</h3>
-               <div class="card shadow mb-4">
-                  <div style="display: flex; justify-content: space-between;">
-                     <div class="card-body" style="width:60%; height:100%">
-                        <h4>Distribución de Edad de Atletas</h4>
-                        <canvas id="edadAtletasChart"></canvas>
-                     </div>
-                     <div class="card-body" style="width:30%">
-                        <h4>Proporción de Género</h4>
-                        <canvas id="generoChart"></canvas>
-                     </div>
-                  </div>
-               </div>
-               <div class="card shadow mb-4">
+               <h5 class="mb-4">Reportes Estadísticos</h5>
+            </div>
 
-               </div>
-               <div class="card shadow mb-4">
-                  <div style="display: flex; justify-content: space-between;">
-                     <div class="card-body" style="width:50%; ">
-                        <h4>Progreso de Asistencias Mensuales</h4>
-                        <canvas id="asistenciasChart"></canvas>
-                     </div>
-                     <div class="card-body" style="width:20%; ">
-                        <h4>Cumplimiento de WADA</h4>
-                        <canvas id="wadaChart"></canvas>
-                     </div>
-                  </div>
-               </div>
-               <div class="card shadow mb-4">
+            <!-- Gráficos de Distribución -->
+            <div class="col-lg-8">
+               <div class="card shadow-sm border-0 h-100">
                   <div class="card-body">
-                     <h4>Pruebas WADA Próximas a Vencer</h4>
-                     <table class="table table-striped" id="tablaVencimientos">
-                        <thead>
-                           <tr>
-                              <th>Atleta</th>
-                              <th>Fecha de Vencimiento</th>
-                           </tr>
-                        </thead>
-                        <tbody></tbody>
-                     </table>
+                     <h6 class="card-title">Distribución de Edad de Atletas</h6>
+                     <canvas id="edadAtletasChart"></canvas>
                   </div>
                </div>
+            </div>
 
+            <div class="col-lg-4">
+               <div class="card shadow-sm border-0 h-100">
+                  <div class="card-body">
+                     <h6 class="card-title">Proporción de Género</h6>
+                     <canvas id="generoChart"></canvas>
+                  </div>
+               </div>
+            </div>
+
+            <!-- Gráficos de Progreso -->
+            <div class="col-lg-8">
+               <div class="card shadow-sm border-0 h-100">
+                  <div class="card-body">
+                     <h6 class="card-title">Progreso de Asistencias Mensuales</h6>
+                     <canvas id="asistenciasChart"></canvas>
+                  </div>
+               </div>
+            </div>
+
+            <div class="col-lg-4">
+               <div class="card shadow-sm border-0 h-100">
+                  <div class="card-body">
+                     <h6 class="card-title">Cumplimiento de WADA</h6>
+                     <canvas id="wadaChart"></canvas>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
    </main>
+
    <?php require_once "comunes/footer.php"; ?>
    <script src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/reportes.js"></script>

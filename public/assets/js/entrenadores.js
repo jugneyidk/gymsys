@@ -7,6 +7,8 @@ import {
    modalListener,
    obtenerNotificaciones
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+
 $(document).ready(function () {
    function obtenerListadoEntrenadores() {
       enviaAjax("", "?p=entrenadores&accion=listadoEntrenadores", "GET").then((respuesta) => {
@@ -127,9 +129,6 @@ $(document).ready(function () {
    });
    function actualizarListadoEntrenadores(entrenadores) {
       var listado_entrenador = "";
-      if ($.fn.DataTable.isDataTable("#tablaentrenador")) {
-         $("#tablaentrenador").DataTable().destroy();
-      }
       entrenadores.forEach((entrenador) => {
          listado_entrenador +=
             "<tr><td class='align-middle'>" + entrenador.cedula + "</td>";
@@ -144,33 +143,21 @@ $(document).ready(function () {
             entrenador.telefono +
             "</td>";
          listado_entrenador += `<td>${actualizar === 1
-            ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Entrenador" data-id=${entrenador.cedula}><i class='fa-regular fa-pen-to-square'></i></button>`
+            ? `<button class='btn btn-block btn-warning me-2 w-auto' data-bs-toggle='modal' aria-label='Modificar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Modificar Entrenador" data-id=${entrenador.cedula_encriptado}><i class='fa-regular fa-pen-to-square'></i></button>`
             : ""
             }${eliminar === 1
-               ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Entrenador" data-id=${entrenador.cedula}><i class='fa-solid fa-trash-can'></i></button>`
+               ? `<button class='btn btn-block btn-danger w-auto' aria-label='Eliminar entrenador ${entrenador.nombre} ${entrenador.apellido}' data-tooltip="tooltip" data-bs-placement="top" title="Eliminar Entrenador" data-id=${entrenador.cedula_encriptado}><i class='fa-solid fa-trash-can'></i></button>`
                : ""
             } </td>`;
          listado_entrenador += "</tr>";
       });
-      $("#listado").html(listado_entrenador);
-      $("#tablaentrenador").DataTable({
-         columnDefs: [{ targets: [3], orderable: false, searchable: false }],
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron entrenadores",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay entrenadores disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            emptyTable: "No hay registros disponibles",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-         autoWidth: false,
-         order: [[0, "desc"]],
-      });
+      initDataTable("#tablaentrenador", {
+         columnDefs: [{
+            targets: [3],
+            orderable: false,
+            searchable: false
+         }]
+      }, listado_entrenador);
    }
    function llenarFormularioModificar(entrenador) {
       $("#f1 #nombres").val(entrenador.nombre);
@@ -186,7 +173,7 @@ $(document).ready(function () {
       $("#f1 #password").val("");
       $("#f1 #password").prop("disabled", true);
       $("#f1 #accion").val("modificar");
-      $("#f1 #cedula_original").val(entrenador.cedula);
+      $("#f1 #cedula_original").val(entrenador.cedula_encriptado);
       $("#modificar_contraseña").prop("checked", false);
       $("#modificar_contraseña_container").removeClass("d-none");
    }
@@ -198,15 +185,10 @@ $(document).ready(function () {
    }
 
    function eliminarEntrenador(cedula) {
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "No podrás revertir esto!",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro?", "No podrás revertir esto!", "warning", {
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
-         confirmButtonText: "Sí, eliminar!",
-         cancelButtonText: "Cancelar",
+         confirmButtonColor: "#d33",
+         confirmButtonText: "Sí, eliminar!"
       }).then((result) => {
          if (result.isConfirmed) {
             var datos = new FormData();

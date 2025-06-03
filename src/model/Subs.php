@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -33,6 +34,7 @@ class Subs
    {
       $keys = ['id_sub', 'nombre', 'edadMinima', 'edadMaxima'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_sub'] = Cipher::aesDecrypt($arrayFiltrado['id_sub']);
       Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
       Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
       Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
@@ -46,14 +48,19 @@ class Subs
    {
       $keys = ['id_sub'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_sub'], 'int');
-      return $this->_eliminarSub($arrayFiltrado['id_sub']);
+      $idSub = Cipher::aesDecrypt($arrayFiltrado['id_sub']);
+      Validar::sanitizarYValidar($idSub, 'int');
+      return $this->_eliminarSub($idSub);
    }
    private function _listadoSubs(): array
    {
       $consulta = "SELECT * FROM subs";
       $response = $this->database->query($consulta);
       $resultado["subs"] = $response ?: [];
+      if (!empty($resultado["subs"])) {
+         Cipher::crearHashArray($resultado["subs"], "id_sub", true);
+         Cipher::encriptarCampoArray($resultado["subs"], "id_sub", false);
+      }
       return $resultado;
    }
    private function _incluirSub(array $datos): array

@@ -16,9 +16,10 @@ class Database
          ExceptionHandler::throwException("Error al conectar a la base de datos", 500, \PDOException::class);
       }
       $this->pdo->exec("SET NAMES utf8");
-      if (isset($_SESSION['id_usuario'])) {
-         $usuarioActual = $_SESSION['id_usuario'];
+      if (defined('ID_USUARIO')) {
+         $usuarioActual = ID_USUARIO;
          $this->pdo->exec("SET @usuario_actual = '$usuarioActual';");
+         $this->pdo->exec("SET @secure_db = '$_ENV[SECURE_DB]';");
       }
    }
    public function query(string $sql, array $params = [], bool $uniqueFetch = false): array|bool
@@ -44,6 +45,9 @@ class Database
       } catch (\PDOException $e) {
          if ($this->inTransaction) {
             $this->rollBack();
+         }
+         if (ENVIRONMENT != 'DEVELOPMENT') {
+            ExceptionHandler::throwException($this->mensajesDeError($e->getCode()), 500, \RuntimeException::class);
          }
          ExceptionHandler::throwException($e->getMessage(), 500, \RuntimeException::class);
          return false;
@@ -95,5 +99,30 @@ class Database
       if ($this->pdo !== null) {
          $this->pdo = null;
       }
+   }
+   private function mensajesDeError(string $codigo): string
+   {
+      $pdoErrorMessages = [
+         // Conexión
+         '1045' => 'No se pudo conectar a la base de datos. Verifica tus credenciales.',
+         '1049' => 'La base de datos especificada no existe.',
+         '2002' => 'No se puede establecer conexión con el servidor. Intenta más tarde.',
+
+         // Integridad de datos
+         '23000' => 'No se puede completar la operación porque ya existe un registro relacionado o se violan restricciones de integridad.',
+         '1451' => 'No puedes eliminar este registro porque está relacionado con otros datos.',
+         '1452' => 'No se puede guardar el registro porque hace referencia a datos inexistentes.',
+         '1062' => 'Ya existe un registro con esta información. Verifica los datos ingresados.',
+
+         // Sintaxis SQL
+         '42000' => 'Hubo un error al procesar tu solicitud. Verifica los datos e inténtalo nuevamente.',
+
+         // Error general
+         'HY000' => 'Ocurrió un error inesperado en el servidor. Por favor, inténtalo más tarde.',
+
+         // Por defecto
+         'default' => 'Ha ocurrido un problema al procesar tu solicitud. Intenta nuevamente o contacta al administrador.',
+      ];
+      return $pdoErrorMessages[$codigo] ?? $pdoErrorMessages['default'];
    }
 }

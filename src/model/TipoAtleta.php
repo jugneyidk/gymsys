@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -30,14 +31,19 @@ class TipoAtleta
    {
       $keys = ['id_tipo'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], 'int');
-      return $this->_eliminarTipoAtleta($arrayFiltrado['id_tipo']);
+      $idTipo = Cipher::aesDecrypt($arrayFiltrado['id_tipo']);
+      Validar::sanitizarYValidar($idTipo, 'int');
+      return $this->_eliminarTipoAtleta($idTipo);
    }
    public function _listadoTipoAtletas(): array
    {
       $consulta = "SELECT id_tipo_atleta, nombre_tipo_atleta FROM tipo_atleta";
       $response = $this->database->query($consulta);
-      $resultado["tipos"] = $response;
+      $resultado["tipos"] = $response ?: [];
+      if (!empty($resultado["tipos"])) {
+         Cipher::encriptarCampoArray($resultado["tipos"], "id_tipo_atleta");
+         Cipher::crearHashArray($resultado["tipos"], "id_tipo_atleta", false);
+      }
       return $resultado;
    }
    private function _incluirTipoAtleta(string $nombreTipoAtleta, float $tipoCobro): array

@@ -15,8 +15,9 @@ class Login extends BaseController
       $modelClass = $this->getModel("login");
       $this->model = new $modelClass($this->database);
    }
-   public function authUsuario($requestData): array
+   public function authUsuario(array $requestData): array
    {
+      $this->validarMetodoRequest("POST");
       return $this->model->authUsuario($requestData['id_usuario'], $requestData['password']);
    }
 }

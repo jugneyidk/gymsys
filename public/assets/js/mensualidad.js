@@ -1,14 +1,16 @@
 import {
-   muestraMensaje,
    enviaAjax,
    validarKeyUp,
    REGEX,
    obtenerNotificaciones,
+   muestraMensaje,
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
+
 $(document).ready(function () {
    cargaListadoDeudores();
    cargaListadoMensualidades();
-   cargaAtletas();
+   cargarListadoAtletas();
    obtenerNotificaciones();
    setInterval(() => obtenerNotificaciones(), 35000);
    function cargaListadoDeudores() {
@@ -19,19 +21,16 @@ $(document).ready(function () {
               <td class="align-middle">${deudor.nombre} ${deudor.apellido}</td>
               <td class="align-middle">${deudor.cedula}</td>
               <td class="align-middle">${deudor.nombre_tipo_atleta}</td>
-              ${$("#columnaAccion").length > 0
-                  ? `<td class="align-middle">
-                <button class="btn btn-primary btn-seleccionar" data-cedula="${deudor.cedula}" data-nombre="${deudor.nombre} ${deudor.apellido}" data-tipo="${deudor.tipo_cobro}" data-tooltip="tooltip" title="Seleccionar atleta" aria-label="Seleccionar atleta ${deudor.nombre} ${deudor.apellido}"><i class="fa-solid fa-up-right-from-square"></i></button>
-              </td>`
-                  : ""
-               }
+              ${crear == 1 ?
+                  `<td class="align-middle">
+                     <button class="btn btn-primary btn-seleccionar" data-hash="${deudor.cedula_hash}" data-tipo="${deudor.tipo_cobro}" data-tooltip="tooltip" title="Seleccionar atleta" aria-label="Seleccionar atleta ${deudor.nombre} ${deudor.apellido}"><i class="fa-solid fa-up-right-from-square"></i></button>
+                  </td>` : ""}
             </tr>`;
          });
-         if ($.fn.DataTable.isDataTable("#tablaDeudores")) {
-            $("#tablaDeudores").DataTable().destroy();
-         }
-         $("#listadoDeudores").html(html);
-         inicializarDataTable("#tablaDeudores", 5);
+         initDataTable("#tablaDeudores", {
+            pageLength: 5,
+            lengthChange: false
+         }, html);
       });
    }
    $("#listadoPagosRegistrados").on("click", ".btn-danger", function () {
@@ -39,16 +38,10 @@ $(document).ready(function () {
       eliminarMensualidad(id);
    });
    function eliminarMensualidad(id) {
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "No podrás revertir esto!",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro?", "No podrás revertir esto!", "warning", {
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
+         confirmButtonColor: "#d33",
          confirmButtonText: "Sí, eliminar!",
-         cancelButtonText: "Cancelar",
-         scrollbarPadding: false
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
@@ -65,7 +58,6 @@ $(document).ready(function () {
          }
       });
    }
-
    function cargaListadoMensualidades() {
       enviaAjax("", "?p=mensualidad&accion=listadoMensualidades", 'GET').then((respuesta) => {
          var html = "";
@@ -94,65 +86,45 @@ $(document).ready(function () {
           </tr>`;
          });
 
-         if ($.fn.DataTable.isDataTable("#tablaPagosRegistrados")) {
-            $("#tablaPagosRegistrados").DataTable().destroy();
-         }
-         $("#listadoPagosRegistrados").html(html);
-         inicializarDataTable("#tablaPagosRegistrados");
+         inicializarDataTable("#tablaPagosRegistrados", {
+            lengthChange: false
+         }, html);
       });
    }
 
-   function cargaAtletas() {
+   function cargarListadoAtletas() {
       enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET").then((respuesta) => {
-         var html = "<option>Seleccione un atleta</option>";
+         var html = "<option value=''>Seleccione un atleta</option>";
          respuesta.atletas.forEach(function (atleta) {
             // Validación para excluir atletas con tipo_atleta igual a 0 o null
             if (atleta?.tipo_atleta) {
-               html += `<option value="${atleta.cedula}" data-tipo="${atleta.tipo_cobro}">${atleta.nombre} ${atleta.apellido} - ${atleta.cedula}</option>`;
+               html += `<option value="${atleta.cedula_encriptado}" data-tipo="${atleta.tipo_cobro}" data-hash="${atleta.cedula_hash}">${atleta.nombre} ${atleta.apellido} - ${atleta.cedula}</option>`;
             }
          });
          $("#atleta").html(html);
       });
    }
-   function inicializarDataTable(selector, pageLength = 10) {
-      $(selector).DataTable({
-         lengthChange: false,
-         pageLength: pageLength,
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron registros",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            emptyTable: "No hay registros disponibles",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-      });
+   function inicializarDataTable(selector, options = {}, html = null) {
+      initDataTable(selector, options, html);
    }
    $("#tablaDeudores").on("click", ".btn-seleccionar", function () {
-      var cedula = $(this).data("cedula");
+      var hashAtleta = $(this).data("hash");
       var tipo = $(this).data("tipo");
-      $("#atleta").val(cedula);
+      $("#atleta option").each(function () {
+         if ($(this).data('hash') === hashAtleta) {
+            $("#atleta").val($(this).val());
+         }
+      });
       $("#monto").val(tipo);
    });
 
    $("#registrarPago").on("click", function (e) {
       e.preventDefault();
       if (validarEnvio()) {
-         Swal.fire({
-            title: "¿Estás seguro que deseas registrar esta mensualidad?",
-            text: "No podrás revertir esto!",
-            icon: "warning",
+         muestraMensaje("¿Estás seguro que deseas registrar esta mensualidad?", "No podrás revertir esto!", "warning", {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
             confirmButtonText: "Registrar",
-            cancelButtonText: "Cancelar",
-            scrollbarPadding: false
          }).then((result) => {
             if (result.isConfirmed) {
                var datos = new FormData($("#formPago")[0]);
@@ -176,12 +148,15 @@ $(document).ready(function () {
       var esValido = true;
       const form = $("#formPago");
       const fecha = $("#fecha").val();
-      esValido &= validarKeyUp(
-         REGEX.cedula.regex,
-         form.find(`#atleta`),
-         form.find(`#satleta`),
-         "Debe elegir un atleta"
-      );
+      esValido &= $("#atleta").val() !== "";
+      if (!esValido) {
+         $("#atleta").addClass("is-invalid");
+         $("#satleta").text("El atleta es obligatorio");
+      } else {
+         $("#atleta").removeClass("is-invalid");
+         $("#atleta").addClass("is-valid");
+         $("#satleta").text("");
+      }
       esValido &= validarKeyUp(
          REGEX.monto.regex,
          form.find(`#monto`),

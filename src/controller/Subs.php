@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
 
 class Subs extends BaseController
@@ -18,7 +17,6 @@ class Subs extends BaseController
       $modelClass = $this->getModel("Subs");
       $this->model = new $modelClass((object) $this->database);
       $this->permisos = $this->obtenerPermisos("Eventos", $this->database);
-      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
    public function listadoSubs(): array
    {
@@ -27,16 +25,19 @@ class Subs extends BaseController
    }
    public function incluirSub(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
       return $this->model->incluirSub($datos);
    }
    public function modificarSub(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
       return $this->model->modificarSub($datos);
    }
    public function eliminarSub(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarSub($datos);
    }

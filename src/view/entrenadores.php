@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <?php $formulario = "entrenadores"; ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -11,7 +12,7 @@
    <?php require_once "comunes/linkcss.php"; ?>
 </head>
 
-<body class="bg-light">
+<body class="bg-body-tertiary">
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?? 0 ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;

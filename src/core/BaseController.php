@@ -11,7 +11,6 @@ abstract class BaseController
    {
       header('Content-Type: text/html');
       extract($permisosNav);
-      extract($permisosModulo);
       $data['controller'] = $this;
       extract($data);
       require dirname(__DIR__) . "/../src/view/{$vista}.php";
@@ -92,5 +91,12 @@ abstract class BaseController
          ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
       }
       return $permisos;
+   }
+
+   protected function validarPermisos(array $permisos, string $permiso): void
+   {
+      if (empty($permisos[$permiso])) {
+         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+      }
    }
 }

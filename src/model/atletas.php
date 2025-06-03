@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -28,6 +29,8 @@ class Atletas
          }
       }
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['entrenador_asignado'] = Cipher::aesDecrypt($arrayFiltrado['entrenador_asignado']);
+      $arrayFiltrado['tipo_atleta'] = Cipher::aesDecrypt($arrayFiltrado['tipo_atleta']);
       Validar::validarDatos($arrayFiltrado);
       return $this->_incluirAtleta($arrayFiltrado);
    }
@@ -51,7 +54,7 @@ class Atletas
             if (empty($resultadoRepresentante)) ExceptionHandler::throwException("Ocurrió un error al incluir el representante", 500, \Exception::class);
          }
       }
-      $consultaUsuario = "INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+      $consultaUsuario = "INSERT INTO {$_ENV['SECURE_DB']}.usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
             VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico);";
       $valores = [
          ':cedula' => $datos['cedula'],
@@ -87,8 +90,9 @@ class Atletas
    {
       $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("cedula", $arrayFiltrado['id']);
-      return $this->_obtenerAtleta($arrayFiltrado['id']);
+      $cedula = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::validar("cedula", $cedula);
+      return $this->_obtenerAtleta($cedula);
    }
 
    public function modificarAtleta(array $datos): array
@@ -107,6 +111,8 @@ class Atletas
          $keys[] = "password";
       }
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['entrenador_asignado'] = Cipher::aesDecrypt($arrayFiltrado['entrenador_asignado']);
+      $arrayFiltrado['tipo_atleta'] = Cipher::aesDecrypt($arrayFiltrado['tipo_atleta']);
       Validar::validarDatos($arrayFiltrado);
       return $this->_modificarAtleta($arrayFiltrado);
    }
@@ -115,8 +121,9 @@ class Atletas
    {
       $keys = ['cedula'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("cedula", $arrayFiltrado['cedula']);
-      return $this->_eliminarAtleta($arrayFiltrado['cedula']);
+      $cedula = Cipher::aesDecrypt($arrayFiltrado['cedula']);
+      Validar::validar("cedula", $cedula);
+      return $this->_eliminarAtleta($cedula);
    }
 
    public function listadoAtletas(): array
@@ -127,7 +134,12 @@ class Atletas
    {
       $consulta = "SELECT * FROM lista_atletas";
       $response = $this->database->query($consulta);
-      $resultado["atletas"] = $response;
+      $resultado["atletas"] = $response ?: [];
+      if (!empty($resultado["atletas"])) {
+         Cipher::encriptarCampoArray($resultado["atletas"], "cedula");
+         Cipher::encriptarCampoArray($resultado["atletas"], "tipo_atleta", false);
+         Cipher::crearHashArray($resultado["atletas"], "cedula");
+      }
       return $resultado;
    }
 
@@ -152,11 +164,17 @@ class Atletas
                     a.altura, 
                     a.entrenador
                 FROM atleta a
-                INNER JOIN usuarios u ON a.cedula = u.cedula
+                INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
                 WHERE u.cedula = :cedula";
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);
       $resultado['atleta'] = $response;
+      if (!empty($resultado['atleta'])) {
+         Cipher::encriptarCampoArray($resultado, "entrenador");
+         Cipher::crearHashArray($resultado, "entrenador", false);
+         Cipher::encriptarCampoArray($resultado, "id_tipo_atleta");
+         Cipher::crearHashArray($resultado, "id_tipo_atleta", false);
+      }
       return $resultado;
    }
 
@@ -176,7 +194,7 @@ class Atletas
          }
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE usuarios 
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios 
                      SET 
                         nombre = :nombre, 
                         apellido = :apellido, 
@@ -214,7 +232,7 @@ class Atletas
          ExceptionHandler::throwException("No se pudo modificar el atleta", 500, \Exception::class);
       }
       if ($datos['password'] !== null) {
-         $consultaPassword = "UPDATE usuarios_roles
+         $consultaPassword = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles
                     SET password = :password
                     WHERE id_usuario = :cedula;";
          $valoresPassword = [
@@ -241,7 +259,7 @@ class Atletas
       $this->database->beginTransaction();
       $consultas = [
          "DELETE FROM atleta WHERE cedula = :cedula",
-         "DELETE FROM usuarios WHERE cedula = :cedula;"
+         "DELETE FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :cedula;"
       ];
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, [':cedula' => $cedula]);

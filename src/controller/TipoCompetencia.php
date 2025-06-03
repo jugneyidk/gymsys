@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Model\Rolespermisos;
 use Gymsys\Utils\ExceptionHandler;
 
 class TipoCompetencia extends BaseController
@@ -27,16 +26,19 @@ class TipoCompetencia extends BaseController
    }
    public function incluirTipo(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
       return $this->model->incluirTipo($datos);
    }
    public function modificarTipo(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
       return $this->model->modificarTipo($datos);
    }
    public function eliminarTipo(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarTipo($datos);
    }

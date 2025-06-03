@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,7 +9,7 @@
    <?php require_once "comunes/linkcss.php" ?>
 </head>
 
-<body class="bg-light">
+<body class="bg-body">
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?>;
@@ -33,7 +34,7 @@
       </div>
       <div class="row">
          <div class="col">
-            <p class="lead mt-3"><strong>Eventos activos</strong></p>
+            <p class="lead mt-3 text-body"><strong>Eventos activos</strong></p>
             <div id="lista-eventos" class="row">
             </div>
          </div>
@@ -46,87 +47,12 @@
                   <h1 class="modal-title fs-5">Registrar Evento</h1>
                   <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
                </div>
-               <form id="fRegistrarEvento" method="post" action="#">
-                  <div class="modal-body">
-                     <div class="row">
-                        <div class="col-12 col-md-6">
-                           <div class="form-floating">
-                              <input type="text" class="form-control" id="in_nombre" name="nombre"
-                                 placeholder="Nombre del Evento">
-                              <label for="in_nombre" class="form-label">Nombre del Evento</label>
-                              <div class="invalid-feedback" id="sin_nombre">Nombre del evento es obligatorio
-                              </div>
-                           </div>
-                        </div>
-                        <div class="col-12 col-md-6">
-                           <div class="form-floating">
-                              <input type="text" class="form-control" id="in_ubicacion" name="lugar_competencia"
-                                 placeholder="Ubicación">
-                              <label for="in_ubicacion" class="form-label">Ubicación</label>
-                              <div class="invalid-feedback" id="sin_ubicacion">Ubicación es obligatoria</div>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="row">
-                        <div class="col">
-                           <label for="in_date_start" class="form-label">Fecha de Apertura</label>
-                           <input type="date" id="in_date_start" class="form-control" name="fecha_inicio">
-                           <div class="invalid-feedback">Fecha de apertura es obligatoria</div>
-                        </div>
-                        <div class="col">
-                           <label for="in_date_end" class="form-label">Fecha de Clausura</label>
-                           <input type="date" id="in_date_end" class="form-control" name="fecha_fin">
-                           <div class="invalid-feedback">Fecha de clausura es obligatoria</div>
-                        </div>
-                     </div>
-                     <div class="row">
-                        <div class="col-md-4">
-                           <label for="in_categoria" class="form-label">Categoria</label>
-                           <select id="in_categoria" name="categoria" class="form-select form-control">
-                              <option selected>Seleccione una</option>
-                           </select>
-                           <div class="invalid-feedback">Categoría es obligatoria</div>
-                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarCategoria"
-                                 type="button">Registrar
-                                 Categoria</button>
-                           <?php endif; ?>
-                        </div>
-                        <div class="col-md-4">
-                           <label for="in_subs" class="form-label">Subs</label>
-                           <select id="in_subs" name="subs" class="form-select form-control">
-                              <option selected>Seleccione una</option>
-                           </select>
-                           <div class="invalid-feedback">Subs es obligatorio</div>
-                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarSubs"
-                                 type="button">Registrar Subs</button>
-                           <?php endif; ?>
-                        </div>
-                        <div class="col-md-4">
-                           <label for="in_tipo" class="form-label">Tipo</label>
-                           <select id="in_tipo" name="tipo_competencia" class="form-select form-control">
-                              <option selected>Seleccione una</option>
-                           </select>
-                           <div class="invalid-feedback">Tipo es obligatorio</div>
-                           <?php if ($permisosModulo["leer"] && $permisosModulo["crear"] && $permisosModulo["actualizar"] && $permisosModulo["leer"] && $permisosModulo["eliminar"]): ?>
-                              <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipo"
-                                 type="button">Registrar Tipo</button>
-                           <?php endif; ?>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="modal-footer">
-                     <input type="submit" class="btn btn-primary" value="Registrar" type="button">
-                     <input type="reset" class="btn btn-warning" value="Limpiar" type="button">
-                     <button class="btn btn-danger" data-bs-dismiss="modal" type="button">Cancelar</button>
-                  </div>
-               </form>
+               <?php require_once "formularios/registrar_evento.php"; ?>
             </div>
          </div>
       </div>
       <div class="modal fade" id="modalRegistrarCategoria" tabindex="-1" aria-labelledby="modalRegistrarCategoriaLabel"
-         aria-hidden="true">
+         aria-hidden="true" data-bs-focus="false">
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
@@ -191,7 +117,7 @@
       </div>
 
       <div class="modal fade" id="modalRegistrarSubs" tabindex="-1" aria-labelledby="modalRegistrarSubsLabel"
-         aria-hidden="true">
+         aria-hidden="true" data-bs-focus="false">
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
@@ -236,9 +162,8 @@
                   </form>
 
                   <div id="contenedorTablaSubs" class="mt-4" style="display: none;">
-                     <h5 class="text-info">Subs Registrados</h5>
                      <table class="table table-bordered" id="tablaSubs">
-                        <thead class="table-light">
+                        <thead class="table-primary">
                            <tr>
                               <th>#</th>
                               <th>Nombre</th>
@@ -257,9 +182,8 @@
          </div>
       </div>
 
-
       <div class="modal fade" id="modalRegistrarTipo" tabindex="-1" aria-labelledby="modalRegistrarTipoLabel"
-         aria-hidden="true">
+         aria-hidden="true" data-bs-focus="false">
          <div class="modal-dialog modal-lg">
             <div class="modal-content">
                <div class="modal-header">
@@ -286,9 +210,8 @@
                   </form>
 
                   <div id="contenedorTablaTipos" class="mt-4" style="display: none;">
-                     <h5 class="text-info">Tipos Registrados</h5>
                      <table class="table table-bordered" id="tablaTipos">
-                        <thead class="table-light">
+                        <thead class="table-primary">
                            <tr>
                               <th>#</th>
                               <th>Nombre</th>
@@ -433,22 +356,20 @@
                <div class="modal-body">
                   <div class="row">
                      <div class="col my-3 mx-2">
-
-                        <div id="eventosAnteriores" class="mt-3">
-                           <h3 class="lead text-info">Eventos Anteriores</h3>
+                        <div id="eventosAnteriores">
                            <div class="table-responsive">
                               <table id="tablaEventosAnteriores" class="table table-bordered">
                                  <thead>
                                     <tr>
                                        <th>#</th>
                                        <th>Nombre</th>
-                                       <th>Fecha de Inicio</th>
+                                       <th class="d-none d-lg-table-cell">Fecha de Inicio</th>
                                        <th>Fecha Final</th>
-                                       <th>Ubicación</th>
-                                       <th>Estado</th>
+                                       <th class="d-none d-lg-table-cell">Ubicación</th>
+                                       <th>Accion</th>
                                     </tr>
                                  </thead>
-                                 <tbody>
+                                 <tbody id="listadoEventosAnteriores">
 
                                  </tbody>
                               </table>
@@ -645,7 +566,7 @@
                   <span class="d-block"><strong>Ubicación:</strong> <span id="detallesUbicacionAnterior"></span></span>
                   <span class="d-block"><strong>Estado:</strong> <span id="detallesEstadoAnterior"></span></span>
                   <div class="table-responsive">
-                     <table class="table table-bordered" id="tablaTipos">
+                     <table class="table table-bordered" id="tablaEventoAnterior">
                         <thead class="table-light">
                            <tr>
                               <th>#</th>
@@ -737,62 +658,6 @@
                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                   </div>
                </form>
-            </div>
-         </div>
-      </div>
-
-
-
-      <div class="modal" id="modalConsultaAnteriorEsp" aria-hidden="true" aria-labelledby="modalConsultaAnteriorEsp"
-         tabindex="-1">
-         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <h1 class="modal-title fs-4 lead">Consulta Anteriores Especifica Evento</h1>
-                  <button class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal"></button>
-               </div>
-               <div class="modal-body">
-                  <div class="row">
-                     <div class="col my-3 mx-2">
-                        <table id="tablaConsultaAnteriorEsp" class="table table-bordered">
-                           <thead>
-                              <tr>
-                                 <th scope="col">#</th>
-                                 <th scope="col">Nombre</th>
-                                 <th scope="col">Cédula</th>
-                                 <th scope="col">Edad</th>
-                                 <th scope="col">Peso</th>
-                                 <th scope="col">Altura</th>
-                                 <th scope="col">Op</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              <tr>
-                                 <td>1</td>
-                                 <td>Juan Jimenez</td>
-                                 <td>25.123.231</td>
-                                 <td>18</td>
-                                 <td>55 kg</td>
-                                 <td>1.35 cm</td>
-                                 <td></td>
-                              </tr>
-                              <tr>
-                                 <td>2</td>
-                                 <td>Ricardo Sanchez</td>
-                                 <td>30.315.412</td>
-                                 <td>20</td>
-                                 <td>60 kg</td>
-                                 <td>1.25 cm</td>
-                                 <td></td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </div>
-               <div class="modal-footer">
-                  <button class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
-               </div>
             </div>
          </div>
       </div>

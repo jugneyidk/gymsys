@@ -7,6 +7,7 @@ import {
    REGEX,
    validarFecha,
 } from "./comunes.js";
+import { initDataTable } from "./datatables.js";
 $(document).ready(function () {
    function cargarListadoAtletas() {
       enviaAjax("", "?p=atletas&accion=listadoAtletas", "GET").then((respuesta) => {
@@ -32,7 +33,7 @@ $(document).ready(function () {
       datos.forEach((dato, index) => {
          // Encontrar la fila correspondiente en la tabla
          const fila = tabla.row(index).node(); // Obtener el nodo de la fila
-         const id = dato[0];
+         const id = $(fila).find('input[type="checkbox"]').data("id");
          const checkbox = $(fila).find('input[type="checkbox"]').is(":checked")
             ? 1
             : 0; // Obtener la asistencia
@@ -80,28 +81,13 @@ $(document).ready(function () {
                            <td class="align-middle">${atleta.cedula}</td>
                            <td class="align-middle">${atleta.nombre}</td>
                            <td class="d-none d-md-table-cell align-middle">${atleta.apellido}</td>
-                           <td class="align-middle form-switch"><input type="checkbox" class="form-check-input ms-0" data-id="${atleta.cedula}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
+                           <td class="align-middle form-switch"><input type="checkbox" class="form-check-input ms-0" data-id="${atleta.cedula_encriptado}" aria-label='Asistio el atleta ${atleta.cedula}'/></td>
                            <td class="align-middle"><input type="text" class="form-control comentario" data-id="${atleta.nombre}" aria-label='Comentario de asistencia del atleta ${atleta.nombre}'/>
                            </td>
                      </tr>`;
       });
       $("#listadoAsistencias").html(listado);
-      $("#tablaAsistencias").DataTable({
-         language: {
-            lengthMenu: "Mostrar _MENU_ por página",
-            zeroRecords: "No se encontraron registros",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            search: "Buscar:",
-            paginate: {
-               next: "Siguiente",
-               previous: "Anterior",
-            },
-         },
-         autoWidth: false,
-         order: [[0, "desc"]],
-      });
+      initDataTable("#tablaAsistencias", {}, listado);
    }
    function obtenerAsistencias(fecha) {
       if (!fecha) {
@@ -160,16 +146,10 @@ $(document).ready(function () {
          muestraMensaje("Error", "La fecha no es válida", "error");
          return false;
       }
-      Swal.fire({
-         title: "¿Estás seguro?",
-         text: "No podrás revertir esto!",
-         icon: "warning",
+      muestraMensaje("¿Estás seguro?", "No podrás revertir esto!", "warning", {
          showCancelButton: true,
-         confirmButtonColor: "#3085d6",
-         cancelButtonColor: "#d33",
+         confirmButtonColor: "#d33",
          confirmButtonText: "Sí, eliminar!",
-         cancelButtonText: "Cancelar",
-         scrollbarPadding: false,
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();

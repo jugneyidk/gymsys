@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Model\Rolespermisos as ModelRolespermisos;
 use Gymsys\Utils\ExceptionHandler;
 
 class Rolespermisos extends BaseController
@@ -24,36 +23,43 @@ class Rolespermisos extends BaseController
 
    public function obtenerRol(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
       return $this->model->obtenerRol($datos);
    }
    public function obtenerRolUsuario(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
       return $this->model->obtenerRolUsuario($datos);
    }
    public function listadoRoles(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
       return $this->model->listadoRoles($datos);
    }
    public function incluirRol(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
       return $this->model->incluirRol($datos);
    }
    public function modificarRol(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
       return $this->model->modificarRol($datos);
    }
    public function asignarRol(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
       return $this->model->asignarRol($datos);
    }
    public function eliminarRol(array $datos): array
    {
+      $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
       return $this->model->eliminarRol($datos);
    }

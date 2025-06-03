@@ -148,4 +148,9 @@ return [
       'mensaje' => 'El nombre del tipo de evento debe ser letras y/o números (entre 3 y 50 caracteres)',
       'tipo' => 'string'
    ],
+   'medalla' => [
+      'regex' => '/^(oro|plata|bronce)$/',
+      'mensaje' => 'La medalla ingresada no es válida',
+      'tipo' => 'string'
+   ],
 ];

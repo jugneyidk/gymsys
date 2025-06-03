@@ -1,3 +1,4 @@
+<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -11,7 +12,7 @@
    <link rel="stylesheet" href="datatables/datatables.min.css">
 </head>
 
-<body class="bg-light">
+<body class="bg-body">
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?>;

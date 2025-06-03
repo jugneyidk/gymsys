@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -30,12 +31,16 @@ class Entrenadores
          $keys[] = "password";
       }
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['cedula_original'] = Cipher::aesDecrypt($arrayFiltrado['cedula_original']);
       Validar::validarDatos($arrayFiltrado);
       return $this->_modificarEntrenador($arrayFiltrado);
    }
 
-   public function obtenerEntrenador(string $cedula): array
+   public function obtenerEntrenador(array $datos): array
    {
+      $keys = ["id"];
+      $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $cedula = Cipher::aesDecrypt($arrayFiltrado['id']);
       Validar::validar("cedula", $cedula);
       return $this->_obtenerEntrenador($cedula);
    }
@@ -49,8 +54,9 @@ class Entrenadores
    {
       $keys = ["cedula"];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::validar("cedula", $arrayFiltrado['cedula']);
-      return $this->_eliminarEntrenador($arrayFiltrado['cedula']);
+      $cedula = Cipher::aesDecrypt($arrayFiltrado['cedula']);
+      Validar::validar("cedula", $cedula);
+      return $this->_eliminarEntrenador($cedula);
    }
 
    private function _obtenerEntrenador(string $cedula): array
@@ -72,10 +78,13 @@ class Entrenadores
                     u.correo_electronico, 
                     e.grado_instruccion
                 FROM entrenador e
-                INNER JOIN usuarios u ON e.cedula = u.cedula
+                INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON e.cedula = u.cedula
                 WHERE u.cedula = :cedula";
       $valores = [':cedula' => $cedula];
       $response['entrenador'] = $this->database->query($consulta, $valores, true);
+      if (!empty($response['entrenador'])) {
+         Cipher::encriptarCampoArray($response, "cedula");
+      }
       return $response;
    }
    private function _eliminarEntrenador(string $cedula): array
@@ -87,9 +96,9 @@ class Entrenadores
       }
       $this->database->beginTransaction();
       $consultas = [
-         "DELETE FROM usuarios_roles WHERE id_usuario = :cedula;",
+         "DELETE FROM {$_ENV['SECURE_DB']}.usuarios_roles WHERE id_usuario = :cedula;",
          "DELETE FROM entrenador WHERE cedula = :cedula;",
-         "DELETE FROM usuarios WHERE cedula = :cedula;"
+         "DELETE FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :cedula;"
       ];
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, [':cedula' => $cedula]);
@@ -128,11 +137,11 @@ class Entrenadores
             ':token' => $token
          ];
       $consultas = [
-         "INSERT INTO usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
+         "INSERT INTO {$_ENV['SECURE_DB']}.usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
              VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo);",
          "INSERT INTO entrenador (cedula, grado_instruccion)
              VALUES (:cedula, :grado_instruccion);",
-         "INSERT INTO usuarios_roles (id_usuario, id_rol, password, token)
+         "INSERT INTO {$_ENV['SECURE_DB']}.usuarios_roles (id_usuario, id_rol, password, token)
              VALUES (:cedula, :id_rol, :password, :token);"
       ];
       foreach ($consultas as $consulta) {
@@ -154,7 +163,7 @@ class Entrenadores
          ExceptionHandler::throwException("No existe el entrenador", 404, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "UPDATE usuarios SET 
+      $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios SET 
                   cedula = :cedula,
                   nombre = :nombre, 
                   apellido = :apellido, 
@@ -184,8 +193,8 @@ class Entrenadores
          ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
       }
       if (!empty($datos['password'])) {
-         $consultaPassword = "UPDATE usuarios_roles
-                                 SET password = :password
+         $consultaPassword = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles
+                                 SET `password` = :password
                                  WHERE id_usuario = :cedula;";
          $valoresPassword = [
             ':cedula' => $datos['cedula'],
@@ -203,7 +212,21 @@ class Entrenadores
    private function _listadoEntrenadores(): array
    {
       $consulta = "SELECT * FROM lista_entrenadores";
-      $respuesta["entrenadores"] = $this->database->query($consulta);
+      $respuesta["entrenadores"] = $this->database->query($consulta) ?: [];
+      if (!empty($respuesta["entrenadores"])) {
+         Cipher::encriptarCampoArray($respuesta["entrenadores"], "cedula");
+         Cipher::crearHashArray($respuesta["entrenadores"], "cedula");
+      }
       return $respuesta;
+   }
+   public function listadoGradosInstruccion(): array
+   {
+      $consulta = "SELECT DISTINCT grado_instruccion FROM entrenador;";
+      $response = $this->database->query($consulta);
+      if (empty($response)) {
+         ExceptionHandler::throwException("No se encontraron grados de instrucción", 404, \RuntimeException::class);
+      }
+      $resultado['grados'] = $response;
+      return $resultado;
    }
 }

@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
 
@@ -26,6 +27,9 @@ class Eventos
       if ($arrayFiltrado["fecha_inicio"] > $arrayFiltrado["fecha_fin"]) {
          ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", 400, \InvalidArgumentException::class);
       }
+      $arrayFiltrado['categoria'] = Cipher::aesDecrypt($arrayFiltrado['categoria']);
+      $arrayFiltrado['subs'] = Cipher::aesDecrypt($arrayFiltrado['subs']);
+      $arrayFiltrado['tipo_competencia'] = Cipher::aesDecrypt($arrayFiltrado['tipo_competencia']);
       if (!Validar::sanitizarYValidar($arrayFiltrado["categoria"], 'int')) {
          ExceptionHandler::throwException("La categoria no es un valor válido", 400, \InvalidArgumentException::class);
       }
@@ -47,7 +51,8 @@ class Eventos
    {
       $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      $idCompetencia = filter_var($arrayFiltrado['id'], FILTER_SANITIZE_NUMBER_INT);
+      $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::sanitizarYValidar($idCompetencia, 'int');
       return $this->_obtenerResultadosCompetencia($idCompetencia);
    }
    private function _incluirEvento(array $datos): array
@@ -81,6 +86,7 @@ class Eventos
    {
       $keys = ['id_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
          ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
@@ -112,7 +118,7 @@ class Eventos
          ExceptionHandler::throwException("La competencia introducida no existe", 404, \InvalidArgumentException::class);
       }
       $consulta = "SELECT rc.id_competencia, u.cedula, u.nombre, u.apellido, rc.arranque, rc.envion, rc.medalla_arranque, rc.medalla_envion, rc.medalla_total, rc.total FROM resultado_competencia rc
-         INNER JOIN usuarios u ON  rc.id_atleta = u.cedula
+         INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON  rc.id_atleta = u.cedula
          WHERE rc.id_competencia = :id_competencia;";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
       $resultado["resultados"] = $response ?: [];
@@ -123,14 +129,33 @@ class Eventos
       $consulta = "SELECT * FROM lista_eventos_activos;";
       $response = $this->database->query($consulta);
       $resultado["eventos"] = $response ?: [];
+      if (!empty($resultado["eventos"])) {
+         Cipher::crearHashArray($resultado['eventos'], "subs", true);
+         Cipher::crearHashArray($resultado['eventos'], "categoria", true);
+         Cipher::crearHashArray($resultado['eventos'], "tipo_competicion", true);
+         Cipher::encriptarCampoArray($resultado['eventos'], "subs", false);
+         Cipher::encriptarCampoArray($resultado['eventos'], "categoria", false);
+         Cipher::encriptarCampoArray($resultado['eventos'], "tipo_competicion", false);
+         Cipher::encriptarCampoArray($resultado["eventos"], "id_competencia", false);
+      }
       return $resultado;
    }
    public function modificarResultados(array $datos): array
    {
       $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
-      return $this->_modificarResultados($datos);
+      $arrayFiltrado['id_atleta'] = Cipher::aesDecrypt($arrayFiltrado['id_atleta']);
+      Validar::validar("cedula", $arrayFiltrado['id_atleta']);
+      Validar::sanitizarYValidar($arrayFiltrado['id_atleta'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['arranque'], 'float');
+      Validar::sanitizarYValidar($arrayFiltrado['envion'], 'float');
+      Validar::validar("medalla", $arrayFiltrado['medalla_arranque']);
+      Validar::validar("medalla", $arrayFiltrado['medalla_envion']);
+      Validar::validar("medalla", $arrayFiltrado['medalla_total']);
+      Validar::sanitizarYValidar($arrayFiltrado['total'], 'float');
+      return $this->_modificarResultados($arrayFiltrado);
    }
    public function _modificarResultados(array $datos): array
    {
@@ -172,9 +197,18 @@ class Eventos
    }
    private function _listadoEventosAnteriores(): array
    {
-      $consulta = "SELECT * FROM competencia WHERE fecha_fin < CURDATE() OR estado = 'inactivo' ORDER BY fecha_fin DESC LIMIT 5";
+      $consulta = "SELECT * FROM lista_eventos_anteriores;";
       $response = $this->database->query($consulta);
       $resultado["eventos"] = $response ?: [];
+      if (!empty($resultado["eventos"])) {
+         Cipher::crearHashArray($resultado['eventos'], "subs", true);
+         Cipher::crearHashArray($resultado['eventos'], "categoria", true);
+         Cipher::crearHashArray($resultado['eventos'], "tipo_competicion", true);
+         Cipher::encriptarCampoArray($resultado['eventos'], "subs", false);
+         Cipher::encriptarCampoArray($resultado['eventos'], "categoria", false);
+         Cipher::encriptarCampoArray($resultado['eventos'], "tipo_competicion", false);
+         Cipher::encriptarCampoArray($resultado['eventos'], "id_competencia", false);
+      }
       return $resultado;
    }
 
@@ -182,8 +216,9 @@ class Eventos
    {
       $keys = ['id_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
-      return $this->_listadoAtletasInscritos($arrayFiltrado['id_competencia']);
+      $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
+      Validar::sanitizarYValidar($idCompetencia, 'int');
+      return $this->_listadoAtletasInscritos($idCompetencia);
    }
 
    private function _listadoAtletasInscritos(int $idCompetencia): array
@@ -205,17 +240,21 @@ class Eventos
                      rc.total
                   FROM resultado_competencia rc
                   JOIN atleta a ON rc.id_atleta = a.cedula
-                  JOIN usuarios u ON a.cedula = u.cedula
+                  JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
                   WHERE rc.id_competencia = :id_competencia";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
       $resultado["atletas"] = $response ?: [];
+      if (!empty($resultado["atletas"])) {
+         Cipher::encriptarCampoArray($resultado["atletas"], "id_atleta");
+      }
       return $resultado;
    }
    public function inscribirAtletas(array $datos): array
    {
       $keys = ['id_competencia', 'atletas'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
+      Validar::sanitizarYValidar($idCompetencia, 'int');
       if (!is_string($arrayFiltrado['atletas'])) {
          ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
       }
@@ -223,7 +262,11 @@ class Eventos
       if (!is_array($atletas)) {
          ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
       }
-      return $this->_inscribirAtletas($arrayFiltrado['id_competencia'], $atletas);
+      foreach ($atletas as &$idAtleta) {
+         $idAtleta = Cipher::aesDecrypt($idAtleta);
+         Validar::validar("cedula", $idAtleta);
+      }
+      return $this->_inscribirAtletas($idCompetencia, $atletas);
    }
    private function _inscribirAtletas(int $idCompetencia, array $atletas): array
    {
@@ -252,10 +295,9 @@ class Eventos
    {
       $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      if (!filter_var($arrayFiltrado['id'], FILTER_VALIDATE_INT)) {
-         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
-      }
-      return $this->_obtenerCompetencia($arrayFiltrado['id']);
+      $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::sanitizarYValidar($idCompetencia, 'int');
+      return $this->_obtenerCompetencia($idCompetencia);
    }
    private function _obtenerCompetencia(int $idCompetencia): array
    {
@@ -267,12 +309,25 @@ class Eventos
       $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia], true);
       $respuesta["competencia"] = $response ?: [];
+      if (!empty($respuesta["competencia"])) {
+         Cipher::crearHashArray($respuesta, "subs", true);
+         Cipher::crearHashArray($respuesta, "categoria", true);
+         Cipher::crearHashArray($respuesta, "tipo_competicion", true);
+         Cipher::encriptarCampoArray($respuesta, "subs", false);
+         Cipher::encriptarCampoArray($respuesta, "categoria", false);
+         Cipher::encriptarCampoArray($respuesta, "tipo_competicion", false);
+         Cipher::encriptarCampoArray($respuesta, "id_competencia", false);
+      }
       return $respuesta;
    }
    public function modificarEvento(array $datos): array
    {
       $keys = ['id_competencia', 'nombre', 'lugar_competencia', 'fecha_inicio', 'fecha_fin', 'categoria', 'subs', 'tipo_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado["id_competencia"] = Cipher::aesDecrypt($arrayFiltrado["id_competencia"]);
+      $arrayFiltrado['categoria'] = Cipher::aesDecrypt($arrayFiltrado['categoria']);
+      $arrayFiltrado['subs'] = Cipher::aesDecrypt($arrayFiltrado['subs']);
+      $arrayFiltrado['tipo_competencia'] = Cipher::aesDecrypt($arrayFiltrado['tipo_competencia']);
       Validar::validar("nombre_evento", $arrayFiltrado["nombre"]);
       Validar::validar("lugar_competencia", $arrayFiltrado["lugar_competencia"]);
       Validar::validarFecha($arrayFiltrado["fecha_inicio"]);
@@ -336,6 +391,7 @@ class Eventos
    {
       $keys = ['id_competencia'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado["id_competencia"] = Cipher::aesDecrypt($arrayFiltrado["id_competencia"]);
       $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
          ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
@@ -363,7 +419,17 @@ class Eventos
    {
       $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
+      $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
+      $arrayFiltrado['id_atleta'] = Cipher::aesDecrypt($arrayFiltrado['id_atleta']);
+      Validar::validar("cedula", $arrayFiltrado['id_atleta']);
+      Validar::sanitizarYValidar($arrayFiltrado['id_atleta'], 'int');
+      Validar::sanitizarYValidar($arrayFiltrado['arranque'], 'float');
+      Validar::sanitizarYValidar($arrayFiltrado['envion'], 'float');
+      Validar::validar("medalla", $arrayFiltrado['medalla_arranque']);
+      Validar::validar("medalla", $arrayFiltrado['medalla_envion']);
+      Validar::validar("medalla", $arrayFiltrado['medalla_total']);
+      Validar::sanitizarYValidar($arrayFiltrado['total'], 'float');
       return $this->_registrarResultados($arrayFiltrado);
    }
    private function _registrarResultados(array $datos): array
@@ -401,48 +467,45 @@ class Eventos
    }
    public function listadoAtletasDisponibles(array $datos): array
    {
-      $keys = ['categoria', 'sub', 'idCompetencia'];
+      $keys = ['id'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
-      Validar::sanitizarYValidar($arrayFiltrado['categoria'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['sub'], 'int');
-      Validar::sanitizarYValidar($arrayFiltrado['idCompetencia'], 'int');
-      return $this->_listadoAtletasDisponibles($arrayFiltrado);
+      $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id']);
+      Validar::sanitizarYValidar($idCompetencia, 'int');
+      return $this->_listadoAtletasDisponibles($idCompetencia);
    }
-   private function _listadoAtletasDisponibles(array $datos): array
+   private function _listadoAtletasDisponibles(int $idCompetencia): array
    {
-      $consultaCategoria = "SELECT peso_minimo, peso_maximo FROM categorias WHERE id_categoria = :id_categoria";
-      $responseCategoria = $this->database->query($consultaCategoria, [':id_categoria' => $datos['categoria']], true);
-      if (empty($responseCategoria)) {
-         ExceptionHandler::throwException("La categoria ingresada no fue encontrada", 404, \InvalidArgumentException::class);
-      }
-      $consultaSub = "SELECT edad_minima, edad_maxima FROM subs WHERE id_sub = :id_sub";
-      $responseSub = $this->database->query($consultaSub, [':id_sub' => $datos['sub']], true);
-      if (empty($responseSub)) {
-         ExceptionHandler::throwException("La sub ingresada no fue encontrada", 404, \InvalidArgumentException::class);
-      }
+      $consulta = "SELECT c.peso_minimo, c.peso_maximo, s.edad_minima, s.edad_maxima from competencia cm
+                     JOIN categorias c ON cm.categoria = c.id_categoria
+                     JOIN subs s ON cm.subs = s.id_sub
+                     WHERE cm.id_competencia = :id_competencia;";
+      $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia], true);
       $consulta = "SELECT 
-                    a.cedula AS id_atleta,
-                    u.nombre,
-                    u.apellido,
-                    a.peso,
-                    u.fecha_nacimiento
+                     a.cedula AS id_atleta,
+                     u.nombre,
+                     u.apellido,
+                     a.peso,
+                     u.fecha_nacimiento
                   FROM atleta a
-                  JOIN usuarios u ON a.cedula = u.cedula
-                  WHERE a.peso BETWEEN :peso_minimo AND :peso_maximo
+                  INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON u.cedula = a.cedula
+                  LEFT JOIN resultado_competencia rc 
+                     ON rc.id_atleta = a.cedula AND rc.id_competencia = :id_competencia
+                  WHERE 
+                     a.peso BETWEEN :peso_minimo AND :peso_maximo
                      AND TIMESTAMPDIFF(YEAR, u.fecha_nacimiento, CURDATE()) BETWEEN :edad_minima AND :edad_maxima
-                     AND NOT EXISTS (
-                        SELECT 1 
-                        FROM resultado_competencia rc 
-                        WHERE rc.id_competencia = :id_competencia AND rc.id_atleta = a.cedula)";
+                     AND rc.id_atleta IS NULL";
       $valores = [
-         ':peso_minimo' => $responseCategoria['peso_minimo'],
-         ':peso_maximo' => $responseCategoria['peso_maximo'],
-         ':edad_minima' => $responseSub['edad_minima'],
-         ':edad_maxima' => $responseSub['edad_maxima'],
-         ':id_competencia' => $datos['idCompetencia']
+         ':peso_minimo' => $response['peso_minimo'],
+         ':peso_maximo' => $response['peso_maximo'],
+         ':edad_minima' => $response['edad_minima'],
+         ':edad_maxima' => $response['edad_maxima'],
+         ':id_competencia' => $idCompetencia
       ];
       $response = $this->database->query($consulta, $valores);
       $resultado['atletas'] = $response ?: [];
+      if (!empty($resultado['atletas'])) {
+         Cipher::encriptarCampoArray($resultado['atletas'], 'id_atleta');
+      }
       return $resultado;
    }
 }

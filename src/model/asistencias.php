@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\Validar;
 use Gymsys\Utils\ExceptionHandler;
 
@@ -21,6 +22,7 @@ class Asistencias
       Validar::validarFecha($arrayFiltrado['fecha']);
       Validar::validarFechaMayorHoy($arrayFiltrado['fecha']);
       $asistencias = json_decode($arrayFiltrado['asistencias'], true);
+      Cipher::desencriptarCampoArray($asistencias, "id_atleta");
       Validar::validarAsistencias($asistencias);
       return $this->_guardarAsistencias($asistencias, $arrayFiltrado['fecha']);
    }
@@ -68,17 +70,13 @@ class Asistencias
 
    private function _obtenerAsistencias(string $fecha): array
    {
-      $consulta = "SELECT 
-                    a.id_atleta, 
-                    u.nombre, 
-                    u.apellido, 
-                    a.asistio, 
-                    a.comentario 
-                FROM asistencias a
-                INNER JOIN usuarios u ON a.id_atleta = u.cedula
-                WHERE a.fecha = :fecha";
+      $consulta = "SELECT * FROM lista_asistencias a
+                  WHERE a.fecha = :fecha";
       $response = $this->database->query($consulta, [':fecha' => $fecha]);
       $resultado["asistencias"] = $response ?: [];
+      if (!empty($resultado["asistencias"])) {
+         Cipher::encriptarCampoArray($resultado["asistencias"], "id_atleta");
+      }
       return $resultado;
    }
    private function _eliminarAsistencias(string $fecha): array
