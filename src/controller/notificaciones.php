@@ -4,7 +4,6 @@ namespace Gymsys\Controller;
 
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
-use Gymsys\Utils\ExceptionHandler;
 
 class Notificaciones extends BaseController
 {

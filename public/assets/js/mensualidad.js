@@ -12,7 +12,6 @@ $(document).ready(function () {
    cargaListadoMensualidades();
    cargarListadoAtletas();
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
    function cargaListadoDeudores() {
       enviaAjax("", "?p=mensualidad&accion=listadoDeudores", "GET").then((respuesta) => {
          var html = "";

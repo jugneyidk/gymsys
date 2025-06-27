@@ -78,7 +78,6 @@ $(document).ready(() => {
    // Inicialización
    modalListener("Atleta");
    obtenerNotificaciones();
-   setInterval(obtenerNotificaciones, 35000);
    modal.addEventListener("hidden.bs.modal", () => {
       $("#modificar_contraseña_container").addClass("d-none");
       $("#password").prop("disabled", false);

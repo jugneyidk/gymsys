@@ -5,6 +5,7 @@ namespace Gymsys\Model;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
+use Gymsys\Utils\JWTHelper;
 use Gymsys\Utils\Validar;
 
 class Notificaciones
@@ -17,10 +18,15 @@ class Notificaciones
    {
       $this->database = $database;
    }
-   public function obtenerNotificaciones(): array
+   public function obtenerNotificaciones(string $userId = ""): array
    {
-      Validar::validar("cedula", ID_USUARIO);
-      return $this->_obtenerNotificaciones();
+      if (empty($userId)) {
+         $decoded = JWTHelper::obtenerPayload();
+         $userId = $decoded->sub;
+         $userId = Cipher::aesDecrypt($userId);
+      }
+      Validar::validar("cedula", $userId);
+      return $this->_obtenerNotificaciones($userId);
    }
 
    public function marcarLeida(array $datos): array
@@ -83,7 +89,7 @@ class Notificaciones
       return $resultado;
    }
 
-   private function _obtenerNotificaciones(): array
+   private function _obtenerNotificaciones(string $idUsuario): array
    {
       $consulta = "SELECT id,
                         titulo,
@@ -96,7 +102,7 @@ class Notificaciones
                      WHERE n.id_usuario = :id_usuario 
                      ORDER BY id DESC
                      LIMIT 4;";
-      $valores = [":id_usuario" => ID_USUARIO];
+      $valores = [":id_usuario" => $idUsuario];
       $response = $this->database->query($consulta, $valores);
       $resultado["notificaciones"] = $response ?: [];
       Cipher::encriptarCampoArray($resultado["notificaciones"], "id", false);

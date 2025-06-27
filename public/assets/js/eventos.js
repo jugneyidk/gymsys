@@ -30,7 +30,6 @@ $(document).ready(function () {
       });
    });
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
    function cargarEventosAnteriores() {
       enviaAjax("", "?p=eventos&accion=listadoEventosAnteriores", "GET").then((result) => {
             actualizarListadoEventosAnteriores(result.eventos);

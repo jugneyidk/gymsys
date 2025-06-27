@@ -15,7 +15,6 @@ $(document).ready(function () {
       });
    }
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
    cargaListadoRoles();
 
    function validarEnvio(formId) {

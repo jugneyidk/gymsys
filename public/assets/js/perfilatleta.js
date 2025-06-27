@@ -2,7 +2,6 @@ import { enviaAjax, obtenerNotificaciones, modalCarga } from "./comunes.js";
 $(document).ready(function () {
    cargarPerfilUsuario();
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
    async function cargarPerfilUsuario() {
       const idUsuario = obtenerParametro("cedula");
       const respuesta = await enviaAjax("", `?p=perfilatleta&accion=obtenerPerfilUsuario&cedula=${idUsuario}`, "GET");
