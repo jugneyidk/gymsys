@@ -114,13 +114,44 @@ export function iniciarConexionWebSocket() {
     const data = JSON.parse(event.data);
     console.log("Mensaje recibido del WebSocket:", data);
 
-    if (
+    if (data.type === "new_notification" && data.data && Array.isArray(data.data.notificaciones)) {
+      // Recibimos una nueva notificación por websocket
+      let nuevasNotificaciones = data.data.notificaciones;
+      // Obtener las notificaciones actuales en la UI (copia)
+      let notificacionesDOM = [];
+      $("#contenedor-notificaciones li[data-id]").each(function () {
+        const id = $(this).data("id");
+        const titulo = $(this).find(".h6").text();
+        const mensaje = $(this).find(".my-1").text();
+        const leida = !$(this).hasClass("list-group-item-warning");
+        const objetivo = $(this).attr("data-link")?.split("?p=")[1] || "";
+        const fechaDivSmall = $(this).find("div > small.text-muted").attr("title");
+        const fechaSmallAttr = $(this).find("small.text-muted[title]").attr("title");
+        const fecha_creacion = fechaSmallAttr || fechaDivSmall || "";
+        notificacionesDOM.push({ id, titulo, mensaje, leida, objetivo, fecha_creacion });
+      });
+      // Filtrar notificaciones que NO estén ya presentes
+      const nuevasFiltradas = nuevasNotificaciones.filter(notificacion =>
+        !notificacionesDOM.some(n => Number(n.id) === Number(notificacion.id))
+      );
+      if (nuevasFiltradas.length > 0) {
+        // Tomamos la primera (asumimos solo una por mensaje)
+        const nueva = nuevasFiltradas[0];
+        // Unimos la nueva con las anteriores (máximo 4)
+        const nuevasLista = [nueva, ...notificacionesDOM].slice(0, 4);
+        // Actualiza la UI usando el renderizador centralizado
+        actualizarInterfazNotificaciones({ notificaciones: nuevasLista });
+        // Sincronizar con otras pestañas (solo los datos, no el HTML)
+        broadcastChannel.postMessage({
+          type: "update_notifications",
+          data: { notificaciones: nuevasLista },
+        });
+      }
+    } else if (
       data.type === "notifications" ||
-      data.type === "new_notification" ||
       data.type === "broadcast_notification"
     ) {
       // Actualizar las notificaciones en la UI
-      console.log(data.data)
       actualizarInterfazNotificaciones(data.data);
       // Notificar a otras pestañas para que también actualicen
       broadcastChannel.postMessage({
@@ -224,7 +255,7 @@ function actualizarInterfazNotificaciones(respuesta) {
     }" role="button" data-id="${notificacion.id}">
           <div class="d-flex w-100 justify-content-between">
               <span class="mb-1 h6 text-nowrap">${notificacion.titulo}</span>
-              <small class="text-muted ms-3 text-nowrap">${calcularTiempoNotificacion(
+              <small class="text-muted ms-3 text-nowrap" title="${notificacion.fecha_creacion}">${calcularTiempoNotificacion(
                 notificacion.fecha_creacion
               )}</small>
           </div>
