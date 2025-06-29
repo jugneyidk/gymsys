@@ -9,7 +9,18 @@
             </button>
          </div>
       </li>
-      <div id="contenedor-notificaciones">
+      <div>
+         <ul class="list-group" id="contenedor-notificaciones">
+            <li class="list-group-item list-group-item-secondary">
+               <div class="text-nowrap p-2">
+                  <div class="w-100 text-center">
+                     <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Cargando notificaciones...</span>
+                     </div>
+                  </div>
+               </div>
+            </li>
+         </ul>
       </div>
       <li class="list-group-item list-group-item-primary list-group-item-action" role="button"
          id="ver-todas-notificaciones" data-bs-toggle="modal" data-bs-target="#modalVerNotificaciones">

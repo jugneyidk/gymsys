@@ -158,6 +158,24 @@ export function iniciarConexionWebSocket() {
         type: "update_notifications",
         data: data.data,
       });
+    } else if (data.error === "Authentication failed") {
+      console.error("Error de autenticación WebSocket:", data.error);
+      // Si la autenticación falla, intentar refrescar el token y reconectar
+      if (!refreshTokenPromise) {
+        // Si no hay una promesa de refresco en curso, iniciar una
+        refreshTokenPromise = refreshAccessToken()
+          .then(() => {
+            // Una vez que el token se ha refrescado, limpiar la promesa
+            refreshTokenPromise = null;
+            // Reintentar la conexión WebSocket con el nuevo token
+            iniciarConexionWebSocket();
+          })
+          .catch((err) => {
+            // Si el refresco falla, limpiar la promesa y dejar que la lógica de sesión expirada maneje la UI
+            refreshTokenPromise = null;
+            console.error("Fallo al refrescar el token después de error de autenticación WebSocket:", err);
+          });
+      }
     } else if (data.error) {
       console.error("Error del servidor WebSocket:", data.error);
     }
