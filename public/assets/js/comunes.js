@@ -74,6 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
  * Inicia la conexión WebSocket y maneja los eventos.
  */
 export function iniciarConexionWebSocket() {
+  // Actualizar el estado visual del indicador de conexión a "conectando"
+  $("#websocketNotificaciones").addClass("text-warning").attr("title", "Conectando al servidor de notificaciones");
+
   if (
     websocket &&
     (websocket.readyState === WebSocket.OPEN ||
@@ -87,6 +90,11 @@ export function iniciarConexionWebSocket() {
   console.log(websocket);
   websocket.onopen = () => {
     console.log("Conexión WebSocket establecida.");
+    // Actualizar el estado visual del indicador a "conectado"
+    $("#websocketNotificaciones")
+      .removeClass("text-warning text-danger")
+      .addClass("text-success")
+      .attr("title", "Conectado");
     // Autenticar al usuario al abrir la conexión
     const token = obtenerTokenJWT();
     if (token) {
@@ -183,6 +191,11 @@ export function iniciarConexionWebSocket() {
 
   websocket.onclose = (event) => {
     console.log("Conexión WebSocket cerrada:", event.code, event.reason);
+    // Actualizar el estado visual del indicador a "desconectado"
+    $("#websocketNotificaciones")
+      .removeClass("text-warning text-success")
+      .addClass("text-danger")
+      .attr("title", "Desconectado");
     if (pingIntervalId) clearInterval(pingIntervalId);
     pingIntervalId = null;
     // Intentar reconectar si no fue un cierre intencional
@@ -193,6 +206,11 @@ export function iniciarConexionWebSocket() {
 
   websocket.onerror = (error) => {
     console.error("Error WebSocket:", error);
+    // Actualizar el estado visual del indicador a "error de conexión"
+    $("#websocketNotificaciones")
+      .removeClass("text-warning text-success")
+      .addClass("text-danger")
+      .attr("title", "Error de conexión");
     if (pingIntervalId) clearInterval(pingIntervalId);
     pingIntervalId = null;
     if (!reconnectIntervalId) {
@@ -239,13 +257,13 @@ broadcastChannel.onmessage = (event) => {
 function actualizarInterfazNotificaciones(respuesta) {
   if (respuesta.notificaciones.length < 1) {
     var contenido = `
-        <li class="list-group-item list-group-item-secondary">
+        <div class="list-group-item list-group-item-secondary">
             <div class="text-nowrap p-2">
                 <div class="w-100 text-center">
                     <span class="mb-1 h6">No hay notificaciones</span>
                 </div>
             </div>
-        </li>
+        </div>
         `;
     $("#contenedor-notificaciones").html(contenido);
     $("#contador-notificaciones").removeClass("d-inline-block");
