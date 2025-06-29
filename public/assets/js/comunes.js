@@ -55,7 +55,7 @@ let refreshTokenPromise = null;
 // Variables para WebSocket
 let websocket = null;
 const WEBSOCKET_URL = "ws://localhost:8080"; // URL del servidor WebSocket
-const RECONNECT_INTERVAL = 3000; // Intentar reconectar cada 5 segundos
+const RECONNECT_INTERVAL = 10000; // Intentar reconectar cada 5 segundos
 const PING_INTERVAL = 30000; // Enviar ping cada 30 segundos
 let pingIntervalId = null;
 let reconnectIntervalId = null;
@@ -87,7 +87,6 @@ export function iniciarConexionWebSocket() {
   }
 
   websocket = new WebSocket(WEBSOCKET_URL);
-  console.log(websocket);
   websocket.onopen = () => {
     console.log("Conexión WebSocket establecida.");
     // Actualizar el estado visual del indicador a "conectado"
@@ -455,16 +454,16 @@ export function obtenerNotificaciones() {
     console.warn(
       "WebSocket no está abierto. Usando AJAX para obtener notificaciones."
     );
-    // setTimeout(() => {
-    //   enviaAjax(
-    //     "",
-    //     "?p=notificaciones&accion=obtenerNotificaciones",
-    //     "GET",
-    //     false
-    //   ).then((respuesta) => {
-    //     actualizarInterfazNotificaciones(respuesta);
-    //   });
-    // }, 2000);
+    setTimeout(() => {
+      enviaAjax(
+        "",
+        "?p=notificaciones&accion=obtenerNotificaciones",
+        "GET",
+        false
+      ).then((respuesta) => {
+        actualizarInterfazNotificaciones(respuesta);
+      });
+    }, 2000);
   }
 
   // Eventos de click para notificaciones

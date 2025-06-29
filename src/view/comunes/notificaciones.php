@@ -2,7 +2,7 @@
    <ul class="list-group">
       <li class="list-group-item">
          <div class="rounded-0 py-1 d-flex justify-content-between align-items-center">
-            <div class="mb-0 h6 text-nowrap"><i id="websocketNotificaciones" class="fa-solid fa-circle fa-beat-fade fa-2xs d-inline-block"></i> Notificaciones</div>
+            <div class="mb-0 h6 text-nowrap"><i id="websocketNotificaciones" class="fa-solid fa-circle fa-beat-fade fa-2xs d-inline-block"></i> <span class="me-5">Notificaciones</span></div>
             <button class="btn btn-outline-light" aria-label="Marcar todas las notificaciones como leídas"
                title="Marcar todo como leído" id="marcar-todo-leido" data-tooltip="tooltip" data-bs-placement="left">
                <i class="fa-solid fa-envelope-open"></i>
