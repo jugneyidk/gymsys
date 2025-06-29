@@ -55,7 +55,7 @@ let refreshTokenPromise = null;
 // Variables para WebSocket
 let websocket = null;
 const WEBSOCKET_URL = "ws://localhost:8080"; // URL del servidor WebSocket
-const RECONNECT_INTERVAL = 5000; // Intentar reconectar cada 5 segundos
+const RECONNECT_INTERVAL = 3000; // Intentar reconectar cada 5 segundos
 const PING_INTERVAL = 30000; // Enviar ping cada 30 segundos
 let pingIntervalId = null;
 let reconnectIntervalId = null;
@@ -160,15 +160,6 @@ export function iniciarConexionWebSocket() {
       });
     } else if (data.error) {
       console.error("Error del servidor WebSocket:", data.error);
-      if (data.error === "Authentication failed") {
-        muestraMensaje(
-          "Error de autenticación",
-          "Su sesión ha expirado o es inválida. Por favor, inicie sesión nuevamente.",
-          "error"
-        ).then(() => {
-          window.location.href = "?p=login";
-        });
-      }
     }
   };
 
@@ -407,7 +398,21 @@ export function muestraMensaje(titulo, texto, tipo, opciones = {}) {
  */
 export function obtenerNotificaciones() {
   if (websocket && websocket.readyState === WebSocket.OPEN) {
-    // Si el WebSocket está abierto, solicita las notificaciones a través de él
+    // Si hay un refreshTokenPromise pendiente, espera a que termine antes de continuar
+    if (refreshTokenPromise) {
+      refreshTokenPromise
+        .then(() => {
+          // Una vez refrescado el token, vuelve a intentar la petición
+          if (websocket && websocket.readyState === WebSocket.OPEN) {
+            websocket.send(JSON.stringify({ action: "fetch_notifications" }));
+          }
+        })
+        .catch(() => {
+          // Si el refresh falla, dejar que la lógica de sesión expirada maneje la UI
+        });
+      return;
+    }
+    // Si no hay refresh pendiente, procede normalmente
     websocket.send(JSON.stringify({ action: "fetch_notifications" }));
   } else {
     // Fallback a AJAX si el WebSocket no está disponible o no está abierto
