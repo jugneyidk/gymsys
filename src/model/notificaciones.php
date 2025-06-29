@@ -154,32 +154,67 @@ class Notificaciones
       return $resultado['total'] > 0;
    }
 
-   private function crearNotificacion(array $datos): void
+   /**
+    * Crea una nueva notificación en la base de datos.
+    *
+    * @param array $datos Un array asociativo con los datos de la notificación (id_usuario, titulo, mensaje, objetivo).
+    * @return array Un array asociativo con los datos de la notificación creada, incluyendo su ID y fecha de creación.
+    */
+   private function crearNotificacion(array $datos): array
    {
       $consulta = "INSERT INTO {$_ENV['SECURE_DB']}.notificaciones(id_usuario, titulo, mensaje, objetivo)
                      VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
       $this->database->query($consulta, $datos);
+      $id = $this->database->lastInsertId(); // Obtener el último ID insertado
+
+      // Obtener la notificación completa para incluir la fecha de creación y otros campos
+      $consulta = "SELECT id, titulo, mensaje, objetivo, fecha_creacion, id_usuario FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id = :id";
+      $notification = $this->database->query($consulta, [':id' => $id], true);
+
+      return $notification;
    }
 
    // Métodos estáticos
+   /**
+    * Crea notificaciones de WADA y mensualidades pendientes.
+    *
+    * @param Database $database Instancia de la base de datos.
+    * @return array Un array con el estado de la operación, el número de notificaciones creadas
+    *               y un array de notificaciones agrupadas por ID de usuario.
+    */
    public static function crearNotificaciones(Database $database): array
    {
       $notificador = new self($database);
-      $notificaciones_creadas = 0;
+      $all_created_notifications = []; // Array para almacenar todas las notificaciones creadas
 
       try {
          $database->beginTransaction();
 
+         // Obtener notificaciones de WADA y mensualidades
          $notificaciones_wada = $notificador->crearNotificacionesWada();
          $notificaciones_mensualidad = $notificador->crearNotificacionesMensualidad();
 
-         $notificaciones_creadas = ($notificaciones_wada ?? 0) + ($notificaciones_mensualidad ?? 0);
+         // Combinar todas las notificaciones creadas
+         $all_created_notifications = array_merge($notificaciones_wada, $notificaciones_mensualidad);
+
+         // Agrupar notificaciones por ID de usuario
+         $grouped_notifications = [];
+         foreach ($all_created_notifications as $notification) {
+            $userId = $notification['id_usuario'];
+            if (!isset($grouped_notifications[$userId])) {
+               $grouped_notifications[$userId] = [];
+            }
+            // Eliminar 'id_usuario' del objeto de notificación ya que es la clave del grupo
+            unset($notification['id_usuario']);
+            $grouped_notifications[$userId][] = $notification;
+         }
 
          $database->commit();
 
          return [
             "ok" => true,
-            "notificaciones_creadas" => $notificaciones_creadas
+            "notificaciones_creadas" => count($all_created_notifications),
+            "grouped_notifications" => $grouped_notifications // Notificaciones agrupadas por usuario
          ];
       } catch (\Exception $e) {
          $database->rollBack();
@@ -187,7 +222,12 @@ class Notificaciones
       }
    }
 
-   private function crearNotificacionesWada(): int
+   /**
+    * Crea notificaciones relacionadas con la fecha de vencimiento de la WADA de los atletas.
+    *
+    * @return array Un array de notificaciones creadas.
+    */
+   private function crearNotificacionesWada(): array
    {
       $consulta = "SELECT u.cedula, 
                            u.nombre, 
@@ -202,10 +242,10 @@ class Notificaciones
                     ORDER BY w.vencimiento DESC;";
 
       $response = $this->database->query($consulta);
-      $notificaciones_creadas = 0;
+      $created_notifications = []; // Array para almacenar las notificaciones creadas
 
       if (empty($response)) {
-         return $notificaciones_creadas;
+         return $created_notifications; // Retorna un array vacío si no hay atletas
       }
 
       foreach ($response as $atleta) {
@@ -224,13 +264,13 @@ class Notificaciones
             );
 
             if (!$this->notificacionExiste($mensaje, $atleta["entrenador"], "wada")) {
-               $this->crearNotificacion([
+               $new_notification = $this->crearNotificacion([
                   ":id_usuario" => $atleta["entrenador"],
                   ":titulo" => "Una WADA vencerá pronto",
                   ":mensaje" => $mensaje,
                   ":objetivo" => "wada"
                ]);
-               $notificaciones_creadas++;
+               $created_notifications[] = $new_notification; // Almacena la notificación creada
             }
          }
 
@@ -243,21 +283,26 @@ class Notificaciones
             );
 
             if (!$this->notificacionExiste($mensaje, $atleta["entrenador"], "wada")) {
-               $this->crearNotificacion([
+               $new_notification = $this->crearNotificacion([
                   ":id_usuario" => $atleta["entrenador"],
                   ":titulo" => "La WADA ha vencido hoy",
                   ":mensaje" => $mensaje,
                   ":objetivo" => "wada"
                ]);
-               $notificaciones_creadas++;
+               $created_notifications[] = $new_notification; // Almacena la notificación creada
             }
          }
       }
 
-      return $notificaciones_creadas;
+      return $created_notifications; // Retorna el array de notificaciones creadas
    }
 
-   private function crearNotificacionesMensualidad(): int
+   /**
+    * Crea notificaciones relacionadas con mensualidades pendientes.
+    *
+    * @return array Un array de notificaciones creadas.
+    */
+   private function crearNotificacionesMensualidad(): array
    {
       $consulta = "SELECT COUNT(u.cedula) AS cantidad_deudores
                     FROM atleta a
@@ -272,7 +317,7 @@ class Notificaciones
       $cantidad_deudores = $resultado['cantidad_deudores'];
 
       if ($cantidad_deudores === 0) {
-         return 0;
+         return []; // Retorna un array vacío si no hay deudores
       }
 
       $mensaje = sprintf(
@@ -286,20 +331,20 @@ class Notificaciones
       $consulta = "SELECT cedula FROM entrenador;";
       $entrenadores = $this->database->query($consulta);
 
-      $notificaciones_creadas = 0;
+      $created_notifications = []; // Array para almacenar las notificaciones creadas
 
       foreach ($entrenadores as $entrenador) {
          if (!$this->notificacionExiste($mensaje, $entrenador["cedula"], "mensualidad")) {
-            $this->crearNotificacion([
+            $new_notification = $this->crearNotificacion([
                ":id_usuario" => $entrenador["cedula"],
                ":titulo" => "Atletas con mensualidad pendiente",
                ":mensaje" => $mensaje,
                ":objetivo" => "mensualidad"
             ]);
-            $notificaciones_creadas++;
+            $created_notifications[] = $new_notification; // Almacena la notificación creada
          }
       }
 
-      return $notificaciones_creadas;
+      return $created_notifications; // Retorna el array de notificaciones creadas
    }
 }
