@@ -7,6 +7,7 @@
             </div>
             <div class="modal-body">
                 <form id="f1">
+                    <?= $this->csrfField(); ?>
                     <div class="container">
                         <div class="row">
                             <div class="col mb-3" id="datosUsuario">

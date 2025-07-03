@@ -27,24 +27,28 @@ class Atletas extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirAtleta($datos);
    }
    public function modificarAtleta(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarAtleta($datos);
    }
    public function eliminarAtleta(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarAtleta($datos);
    }
    public function obtenerAtleta(array $datos): array
    {
       $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
+      $this->requireCsrf();
       return $this->model->obtenerAtleta($datos);
    }
 }

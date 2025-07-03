@@ -33,23 +33,27 @@ class Entrenadores extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirEntrenador($datos);
    }
    public function eliminarEntrenador(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarEntrenador($datos);
    }
    public function modificarEntrenador(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarEntrenador($datos);
    }
    public function listadoGradosInstruccion(): array
    {
       $this->validarMetodoRequest("GET");
+
       return $this->model->listadoGradosInstruccion();
    }
 }

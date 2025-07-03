@@ -28,6 +28,12 @@ class ApiController extends BaseController
 
    public function handleRequest()
    {
+      if (!isset($_SERVER['HTTP_AUTHORIZATION'])) {
+         $headers = getallheaders();
+         if (isset($headers['Authorization'])) {
+            $_SERVER['HTTP_AUTHORIZATION'] = $headers['Authorization'];
+         }
+      }
       RedirectMiddleware::handle($this->routes, $this->page, $this->method, (bool) $this->accion);
       $this->database = new Database();
       $class = $this->getClass($this->page);
@@ -59,7 +65,7 @@ class ApiController extends BaseController
       // Caso 2: GET para vista (ej: ?p=user)
       else {
          $permisosNav = Rolespermisos::obtenerPermisosNav($this->database) ?: [];
-         $permisosModulo = Rolespermisos::obtenerPermisosModulo($this->page,  $this->database);
+         $permisosModulo = Rolespermisos::obtenerPermisosModulo($this->page, $this->database);
          $controller->renderVista(ucwords($this->page), $permisosNav, $permisosModulo);
          return true;
       }

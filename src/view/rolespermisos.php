@@ -22,6 +22,8 @@
       <div class="row">
          <div class="col">
             <div class="card shadow">
+               <?= str_replace('name="_csrf_token"', 'id="csrf_token_global" name="_csrf_token"', $this->csrfField()); ?>
+
                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
                   <h2 class="mb-0">Gestionar Roles y Permisos</h2>
                   <div>

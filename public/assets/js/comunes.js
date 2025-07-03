@@ -7,14 +7,12 @@ export function validarKeyPress(e, regex) {
       e.preventDefault();
    }
 }
-
 export function validarKeyUp(regex, input, mensaje, textoError) {
    const isValid = regex.test(input.val());
    input.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
    mensaje.text(isValid ? "" : textoError);
    return isValid;
 }
-
 export function modalCarga(cargando) {
    if (cargando) {
       $("#carga").modal("show");
@@ -26,19 +24,18 @@ export function modalCarga(cargando) {
       }, 100);
    }
 }
-
 export function modalListener(titulo) {
    var modal = document.getElementById("modal");
    modal.addEventListener("show.bs.modal", function (event) {
       $("#modalTitulo").text(titulo);
    });
+
    modal.addEventListener("hidden.bs.modal", function (event) {
       $("#modalTitulo").text("");
       $("#accion").val("");
       limpiarForm();
    });
 }
-
 export function limpiarForm() {
    var forms = document.getElementsByTagName("form");
    Array.from(forms).forEach(function (form) {
@@ -48,21 +45,33 @@ export function limpiarForm() {
    $("form input").removeClass("is-invalid");
    $("form div .invalid-feedback").text("");
 }
-
 // Promesa de refresco de token
 let refreshTokenPromise = null;
 
 export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true, esReintento = false) {
    return new Promise((resolve, reject) => {
+      if (datos instanceof FormData) {
+         if (!datos.has('_csrf_token')) {
+            const t = document.getElementById('csrf_token_global')?.value;
+            if (t) datos.append('_csrf_token', t);
+         }
+      } else if (typeof datos === 'string' || datos === undefined || datos === null) {
+         // caso GET no hace falta el token aqui F
+      } else {
+         datos._csrf_token ??= document.getElementById('csrf_token_global')?.value;
+      }
       $.ajax({
          async: true,
-         url: url, // URL pasada como argumento
+         url: url,
          type: type,
          contentType: false,
          data: datos,
          processData: false,
          cache: false,
          timeout: 10000,
+         xhrFields: {
+            withCredentials: true
+         },
          headers: {
             'X-Client-Type': 'web',
             'Authorization': obtenerTokenJWT()
@@ -116,8 +125,6 @@ export function enviaAjax(datos, url, type = "POST", mostrarCargaMensaje = true,
       });
    });
 }
-
-// Función de refresco de access token
 function refreshAccessToken() {
    return $.ajax({
       url: '?p=authrefresh&accion=refreshtoken',
@@ -391,14 +398,14 @@ export function obtenerTokenJWT() {
 export function handleTheme() {
    const theme = localStorage.getItem("theme") || "light";
    const newTheme = theme === "dark" ? "light" : "dark";
-   
+
    // Actualizar el ícono
    const icon = document.querySelector('#botonTema i');
    if (icon) {
       icon.className = newTheme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
       icon.setAttribute('title', newTheme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
    }
-   
+
    // Actualizar el tema
    localStorage.setItem("theme", newTheme);
    document.documentElement.setAttribute("data-bs-theme", newTheme);
@@ -407,7 +414,7 @@ export function handleTheme() {
 (function () {
    const theme = localStorage.getItem("theme") || "light";
    document.documentElement.setAttribute("data-bs-theme", theme);
-   
+
    // Inicializar el ícono del tema
    const icon = document.querySelector('#botonTema i');
    if (icon) {

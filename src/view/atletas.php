@@ -1,4 +1,5 @@
-<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
+<?php if (empty($permisosModulo["leer"]))
+   header("Location: ."); ?>
 <?php $formulario = "atletas"; ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -14,6 +15,8 @@
 </head>
 
 <body class="bg-body">
+   <?= str_replace('name="_csrf_token"','id="csrf_token_global" name="_csrf_token"',$controller->csrfField()); ?>
+
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?? 0 ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;
@@ -57,7 +60,7 @@
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/atletas.js"></script>
-   <?php echo ($controller->csrfField()); ?>
+   
 </body>
 
 </html>

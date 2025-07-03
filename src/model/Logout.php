@@ -14,7 +14,12 @@ class Logout
    }
    public function logOut(): bool
    {
+       if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+      unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
       $this->deleteRefreshToken();
+       $this->destroySession();  
       if (isset($_COOKIE['refresh_token'])) {
          ExceptionHandler::throwException("Ocurrio un error al cerrar la sesión", 500, \UnexpectedValueException::class);
       }
@@ -25,6 +30,20 @@ class Logout
       setcookie('refresh_token', '', time() - 3600, '/');
       unset($_COOKIE['refresh_token']);
    }
+   private function destroySession(): void
+{
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $p = session_get_cookie_params();
+        setcookie(session_name(), '', time() - 42000,
+                  $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+    }
+    session_destroy();
+}
+
    private function deleteRefreshToken(): void
    {
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles SET token = NULL WHERE token = :token;";
