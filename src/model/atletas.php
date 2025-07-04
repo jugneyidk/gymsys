@@ -6,6 +6,7 @@ use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\Validar;
+use Gymsys\Model\Representantes;
 
 class Atletas
 {
@@ -43,16 +44,14 @@ class Atletas
       }
       $this->database->beginTransaction();
       if (!empty($datos['cedula_representante'])) {
-         $rep = $this->existeRepresentante($datos['cedula_representante']);
-         if (empty($rep)) {
-            $resultadoRepresentante = $this->incluirRepresentante(
-               $datos['cedula_representante'],
-               $datos['nombre_representante'],
-               $datos['telefono_representante'],
-               $datos['parentesco_representante']
-            );
-            if (empty($resultadoRepresentante)) ExceptionHandler::throwException("Ocurrió un error al incluir el representante", 500, \Exception::class);
-         }
+         $rep =  new Representantes($this->database);
+         $representante = [
+            'cedula' => $datos['cedula_representante'],
+            'nombre' => $datos['nombre_representante'] ?: null,
+            'telefono' => $datos['telefono_representante'] ?: null,
+            'parentesco' => $datos['parentesco_representante'] ?: null
+         ];
+         $existeRepresentante = $rep->incluirRepresentante($representante);
       }
       $consultaUsuario = "INSERT INTO {$_ENV['SECURE_DB']}.usuarios (cedula, nombre, apellido, genero, fecha_nacimiento, lugar_nacimiento, estado_civil, telefono, correo_electronico)
             VALUES (:cedula, :nombre, :apellido, :genero, :fecha_nacimiento, :lugar_nacimiento, :estado_civil, :telefono, :correo_electronico);";
@@ -77,7 +76,7 @@ class Atletas
          ':tipo_atleta' => $datos['tipo_atleta'],
          ':peso' => $datos['peso'],
          ':altura' => $datos['altura'],
-         ':representante' => $datos['cedula_representante']
+         ':representante' => $existeRepresentante ? $representante['cedula'] : null,
       ];
       $response = $this->database->query($consultaAtleta, $valoresAtleta);
       if (empty($response)) ExceptionHandler::throwException("Ocurrió un error al incluir el atleta", 500, \Exception::class);
@@ -162,9 +161,14 @@ class Atletas
                     a.tipo_atleta AS id_tipo_atleta, 
                     a.peso, 
                     a.altura, 
-                    a.entrenador
+                    a.entrenador,
+                    r.cedula AS cedula_representante,
+                    r.nombre_completo AS nombre_representante,
+                    r.telefono AS telefono_representante,
+                    r.parentesco AS parentesco_representante
                 FROM atleta a
                 INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
+                LEFT JOIN representantes r ON a.representante = r.cedula
                 WHERE u.cedula = :cedula";
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);
@@ -188,10 +192,14 @@ class Atletas
          return $resultado;
       }
       if (!empty($datos['cedula_representante'])) {
-         $resultadoRepresentante = $this->incluirRepresentante($datos['cedula_representante'], $datos['nombre_representante'], $datos['telefono_representante'], $datos['parentesco_representante']);
-         if (!$resultadoRepresentante) {
-            ExceptionHandler::throwException("Ocurrio un error al incluir el representante", 500, \Exception::class);
-         }
+         $representante = [
+            'cedula' => $datos['cedula_representante'],
+            'nombre' => $datos['nombre_representante'] ?: null,
+            'telefono' => $datos['telefono_representante'] ?: null,
+            'parentesco' => $datos['parentesco_representante'] ?: null
+         ];
+         $rep = new Representantes($this->database);
+         $existeRepresentante = $rep->incluirRepresentante($representante);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios 
@@ -210,7 +218,8 @@ class Atletas
                         entrenador = :id_entrenador, 
                         tipo_atleta = :tipo_atleta, 
                         peso = :peso, 
-                        altura = :altura 
+                        altura = :altura,
+                        representante = :representante
                      WHERE cedula = :cedula;";
       $valores = [
          ':cedula' => $datos['cedula'],
@@ -225,7 +234,8 @@ class Atletas
          ':id_entrenador' => $datos['entrenador_asignado'],
          ':tipo_atleta' => $datos['tipo_atleta'],
          ':peso' => $datos['peso'],
-         ':altura' => $datos['altura']
+         ':altura' => $datos['altura'],
+         ':representante' => !empty($existeRepresentante) ? $representante['cedula'] : null
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
@@ -270,32 +280,5 @@ class Atletas
       $this->database->commit();
       $resultado['mensaje'] = "El atleta se ha eliminado exitosamente";
       return $resultado;
-   }
-   private function existeRepresentante(string $cedula): bool
-   {
-      $consulta = "SELECT cedula, nombre_completo FROM representantes WHERE cedula = :cedula";
-      $response = $this->database->query($consulta, [':cedula' => $cedula], true);
-      return !empty($response); // Devuelve los datos si existe o false
-   }
-
-   public function incluirRepresentante(string $cedula, string $nombreCompleto, string $telefono, string $parentesco): bool
-   {
-      $consulta = "INSERT INTO representantes (cedula, nombre_completo, telefono, parentesco) 
-                  VALUES (:cedula, :nombreCompleto, :telefono, :parentesco)
-                  ON DUPLICATE KEY UPDATE 
-                     nombre_completo = :nombreCompleto,
-                     telefono = :telefono,
-                     parentesco = :parentesco;";
-      $valores = [
-         ':cedula' => $cedula,
-         ':nombreCompleto' => $nombreCompleto,
-         ':telefono' => $telefono,
-         ':parentesco' => $parentesco
-      ];
-      $response = $this->database->query($consulta, $valores);
-      if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el representante", 500, \Exception::class);
-      }
-      return true;
    }
 }

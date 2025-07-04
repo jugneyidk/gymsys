@@ -20,6 +20,7 @@ return [
    "recovery" => ["enabled" => true, "public" => true, "hasView" => true],
    "restablecer" => ["enabled" => true, "public" => true, "hasView" => true],
    "reportes" => ["enabled" => true, "public" => false, "hasView" => true],
+   "representantes" => ["enabled" => true, "public" => false, "hasView" => false],
    "rolespermisos" => ["enabled" => true, "public" => false, "hasView" => true],
    "subs" => ["enabled" => true, "public" => false, "hasView" => false],
    "tipoatleta" => ["enabled" => true, "public" => false, "hasView" => false],

@@ -104,7 +104,7 @@ return [
       'tipo' => 'int'
    ],
    'parentesco_representante' => [
-      'regex' => '/^([a-zA-ZáéíóúÁÉÍÓÚ\s]{3,50}|)$/',
+      'regex' => '/^([a-zA-ZáéíóúñÁÉÍÓÚÑ\s]{3,50}|)$/',
       'mensaje' => 'Solo letras y espacios (3-50 caracteres)',
       'tipo' => 'string'
    ],

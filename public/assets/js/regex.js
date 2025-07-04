@@ -90,7 +90,7 @@ const REGEX = {
     mensaje: "El teléfono del representante debe ser 04XXXXXXXXX",
   },
   parentesco_representante: {
-    regex: /^[a-zA-ZáéíóúÁÉÍÓÚ\s]{1,50}$/,
+    regex: /^[a-zA-ZáéíóúñÁÉÍÓÚÑ\s]{1,50}$/,
     mensaje: "El parentesco debe ser de 1-50 caracteres",
   },
   detalles: {

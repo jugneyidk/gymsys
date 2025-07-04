@@ -5,7 +5,7 @@ namespace Gymsys\Controller;
 use Gymsys\Core\BaseController;
 use Gymsys\Core\Database;
 
-class Atletas extends BaseController
+class Representantes extends BaseController
 {
    private Database $database;
    private object $model;
@@ -13,37 +13,37 @@ class Atletas extends BaseController
    public function __construct(Database $database)
    {
       $this->database = $database;
-      $modelClass = $this->getModel("Atletas");
+      $modelClass = $this->getModel("Representantes");
       $this->model = new $modelClass((object) $this->database);
       $this->permisos = $this->obtenerPermisos("Atletas", $this->database);
    }
-   public function listadoAtletas(): array
+   public function listadoRepresentantes(): array
    {
       $this->validarMetodoRequest("GET");
-      return $this->model->listadoAtletas();
+      return $this->model->listadoRepresentantes();
    }
-   public function incluirAtleta(array $datos): array
+   public function incluirRepresentante(array $datos): array
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
-      return $this->model->incluirAtleta($datos);
+      return $this->model->incluirRepresentante($datos);
    }
-   public function modificarAtleta(array $datos): array
+   public function modificarRepresentante(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
-      return $this->model->modificarAtleta($datos);
+      return $this->model->modificarRepresentante($datos);
    }
-   public function eliminarAtleta(array $datos): array
+   public function eliminarRepresentante(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
-      return $this->model->eliminarAtleta($datos);
+      return $this->model->eliminarRepresentante($datos);
    }
-   public function obtenerAtleta(array $datos): array
+   public function obtenerRepresentante(array $datos): array
    {
       $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
-      return $this->model->obtenerAtleta($datos);
+      return $this->model->obtenerRepresentante($datos);
    }
 }

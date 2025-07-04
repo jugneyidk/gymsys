@@ -16,6 +16,7 @@ class Database
          ExceptionHandler::throwException("Error al conectar a la base de datos", 500, \PDOException::class);
       }
       $this->pdo->exec("SET NAMES utf8");
+      $this->setIsolationLevel('REPEATABLE READ');
       if (defined('ID_USUARIO')) {
          $usuarioActual = ID_USUARIO;
          $this->pdo->exec("SET @usuario_actual = '$usuarioActual';");
@@ -99,6 +100,10 @@ class Database
       if ($this->pdo !== null) {
          $this->pdo = null;
       }
+   }
+   public function setIsolationLevel(string $level): void
+   {
+      $this->pdo->exec("SET TRANSACTION ISOLATION LEVEL $level;");
    }
    private function mensajesDeError(string $codigo): string
    {
