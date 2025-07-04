@@ -14,7 +14,7 @@ class JWTHelper
       $payloadAccess = [
          'sub' => $idUsuario,
          'iat' => $now,
-         'exp' => $now + (15 * 60),
+         'exp' => $now + (1 * 60),
          'type' => 'access'
       ];
       $payloadRefresh = [

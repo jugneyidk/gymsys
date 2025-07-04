@@ -16,7 +16,6 @@ $(document).ready(function () {
       });
    }
    obtenerNotificaciones(idUsuario);
-   setInterval(() => obtenerNotificaciones(idUsuario), 35000);
    obtenerListadoEntrenadores();
 
    modalListener("Entrenador");

@@ -19,7 +19,6 @@ $(document).ready(function () {
       });
    }
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
    function enviarAsistencias() {
       var fecha = $("#fechaAsistencia").val() ?? null;
       if (!fecha) {

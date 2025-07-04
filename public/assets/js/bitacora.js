@@ -60,7 +60,6 @@ $(document).ready(function () {
    });
 
    obtenerNotificaciones();
-   setInterval(() => obtenerNotificaciones(), 35000);
 });
 
 $("#tablabitacora").on("click", ".btn-warning", function () {

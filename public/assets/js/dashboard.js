@@ -7,7 +7,6 @@ $(document).ready(function () {
    cargarUltimasAcciones();
    cargarMensualidadesPendientes();
    cargarWadasPendientes();
-   setInterval(() => obtenerNotificaciones(), 35000);
    async function cargarUltimasNotificaciones() {
       const respuesta = await enviaAjax("", `?p=notificaciones&accion=obtenerNotificaciones`, "GET");
       renderUltimasNotificaciones(respuesta.notificaciones);
