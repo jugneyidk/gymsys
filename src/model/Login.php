@@ -19,10 +19,6 @@ class Login
    public function authUsuario(array $datos): array
    {
       $aesKey = base64_decode(Cipher::desencriptarRSA($datos['encryptedKey']));
-      $decoded = Cipher::descodificarBase64($datos['encryptedData']);
-      $iv_length = openssl_cipher_iv_length('AES-256-CTR');
-      $iv = substr($decoded, 0, $iv_length);
-      $ciphertext = substr($decoded, $iv_length);
       if (strlen($aesKey) !== 32) {
          throw new \RuntimeException('La clave AES no tiene 32 bytes, tiene: ' . strlen($aesKey));
       }
