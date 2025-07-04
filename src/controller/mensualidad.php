@@ -32,12 +32,14 @@ class Mensualidad extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirMensualidad($datos);
    }
    public function eliminarMensualidad(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarMensualidad($datos);
    }
 }

@@ -53,7 +53,7 @@
                         <div class="card-header"><i class="fas fa-cogs"></i> WADA</div>
                         <div class="card-body">
                            <h5 class="card-title" id="wadasPendientes">-</h5>
-                           <small class="card-text">WADAS pendientes.</small>
+                           <small class="card-text">WADAS pendientes. </small>
                         </div>
                      </div>
                   </div>

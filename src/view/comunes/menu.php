@@ -9,7 +9,7 @@ if (!empty(ID_USUARIO)) {
 ?>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
    <div class="container-fluid">
-      <a class="navbar-brand" href="?p=landing">Gimnasio Eddie Suarez UPTAEB</a>
+      <a class="navbar-brand" href="?p=landing">Gimnasio Eddie Suarez UPTAEB </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
          aria-controls="navbarNav" aria-expanded="false" aria-label="Expandir menú de navegacion">
          <span class="navbar-toggler-icon"></span>

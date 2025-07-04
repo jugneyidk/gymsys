@@ -1,12 +1,13 @@
 RewriteEngine On
 
-# Evita redirigir si ya estamos en /public
-RewriteCond %{REQUEST_URI} !^/public/
+# Reenvía Authorization a PHP
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-# Redirige todo a public/
+# Redirige todo a /public
+RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ public/$1 [L]
 
-# Bloquea acceso a carpetas sensibles desde la raíz
+# Bloquea acceso a carpetas sensibles
 RewriteRule ^(src|config|model|core|docs|test|vendor|cache) - [F,L,NC]
 
 <FilesMatch "\.(env|log|sql|htaccess|gitignore|md)|composer\.(json|lock)$">

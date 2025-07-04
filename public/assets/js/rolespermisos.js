@@ -128,6 +128,8 @@ $(document).ready(function () {
       }).then((result) => {
          if (result.isConfirmed) {
             const datos = new FormData();
+            const token = document.getElementById('csrf_token_global').value;
+            datos.append('_csrf_token', token);
             datos.append("id_rol", id_rol);
             enviaAjax(datos, "?p=rolespermisos&accion=eliminarRol").then((respuesta) => {
                muestraMensaje(

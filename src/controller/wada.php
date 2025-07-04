@@ -33,6 +33,7 @@ class Wada extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirWada($datos);
    }
    public function obtenerWada(array $datos): array
@@ -44,12 +45,14 @@ class Wada extends BaseController
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarWada($datos);
    }
    public function eliminarWada(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarWada($datos);
    }
 }

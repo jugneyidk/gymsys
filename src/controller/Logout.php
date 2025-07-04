@@ -17,6 +17,10 @@ class Logout extends BaseController
    }
    public function logOut(): never
    {
+       if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+      unset($_SESSION['csrf_token'], $_SESSION['csrf_token_time']);
       $response = $this->model->logOut();
       if ($response) {
          header("Location: . ");
