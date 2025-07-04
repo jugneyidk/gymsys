@@ -5,6 +5,17 @@ $(document).ready(function () {
    $("#login").on("submit", function (e) {
       e.preventDefault();
    });
+
+   // Manejador para enviar el formulario con Enter
+   function handleEnterKey(e) {
+      if (e.key === 'Enter' && validarEnvio()) {
+         e.preventDefault();
+         $("#submit").click();
+      }
+   }
+
+   // Agregar manejadores de eventos para Enter
+   $("#id_usuario, #password").on('keydown', handleEnterKey);
    $("#submit").on("click", async function () {
       if (!window.JSEncrypt) {
          alert('No se ha cargado JSEncrypt.');
