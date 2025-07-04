@@ -303,6 +303,16 @@ export function enviaAjax(
   esReintento = false
 ) {
   return new Promise((resolve, reject) => {
+   if (datos instanceof FormData) {
+         if (!datos.has('_csrf_token')) {
+            const t = document.getElementById('csrf_token_global')?.value;
+            if (t) datos.append('_csrf_token', t);
+         }
+      } else if (typeof datos === 'string' || datos === undefined || datos === null) {
+         // caso GET no hace falta el token aqui F
+      } else {
+         datos._csrf_token ??= document.getElementById('csrf_token_global')?.value;
+      }
     $.ajax({
       async: true,
       url: url, // URL pasada como argumento

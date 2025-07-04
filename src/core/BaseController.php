@@ -107,6 +107,10 @@ abstract class BaseController
          );
       }
    }
+public function accionCsrfGlobal(): array
+{
+    return [ 'csrf_token' => $this->generateCsrfToken() ];
+}
 
    protected function obtenerPermisos(string $modulo, Database $database): array
    {
