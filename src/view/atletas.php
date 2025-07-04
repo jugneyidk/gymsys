@@ -11,7 +11,6 @@
       content="Gestion de atletas en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
    <title>Inscripción de Atletas - Sistema</title>
    <?php require_once "comunes/linkcss.php"; ?>
-   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body class="bg-body">
@@ -29,9 +28,15 @@
                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
                   <h2 class="mb-0">Gestionar Atletas</h2>
                   <?php if (!empty($permisosModulo["crear"])): ?>
-                     <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
-                        Registrar <i class="fa-solid fa-plus"></i>
-                     </button>
+                     <div>
+                        <!-- <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalRepresentantes">
+                           Representantes
+                        </button> -->
+
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
+                           Registrar <i class="fa-solid fa-plus"></i>
+                        </button>
+                     </div>
                   <?php endif; ?>
                </div>
                <div class="card-body">
@@ -57,6 +62,7 @@
    </main>
    <?php require_once "comunes/modal_tipos_atletas.php"; ?>
    <?php require_once "comunes/modal.php"; ?>
+   <?php require_once "comunes/modal_representantes.php"; ?>
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/atletas.js"></script>

@@ -92,6 +92,7 @@ class NotificationServer implements MessageComponentInterface
     }
 
     public function onError(ConnectionInterface $conn, \Throwable $e): void
+
     {
         echo "Ha ocurrido un error en la conexión {$conn->resourceId}: {$e->getMessage()}\n";
         $conn->close();
