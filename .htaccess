@@ -8,7 +8,7 @@ RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ public/$1 [L]
 
 # Bloquea acceso a carpetas sensibles
-RewriteRule ^(src|config|model|core|docs|test|vendor|cache) - [F,L,NC]
+RewriteRule ^(src|config|model|core|docs|test|vendor|cache|keys) - [F,L,NC]
 
 <FilesMatch "\.(env|log|sql|htaccess|gitignore|md)|composer\.(json|lock)$">
     Order allow,deny
