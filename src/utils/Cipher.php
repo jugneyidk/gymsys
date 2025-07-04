@@ -5,10 +5,14 @@ namespace Gymsys\Utils;
 class Cipher
 {
    private const CIPHER = "AES-256-CTR";
-   private static string $key;
+   private static string $aesKey;
+   private static string $rsaPrivateKey;
+   private static string $rsaPublicKey;
    private static function init(): void
    {
-      self::$key = $_ENV["AES_KEY"];
+      self::$aesKey = $_ENV["AES_KEY"];
+      self::$rsaPrivateKey = file_get_contents(__DIR__ . "/../../keys/private.key");
+      self::$rsaPublicKey = file_get_contents(__DIR__ . "/../../public/public.key");
    }
    /**
     * Cifra una cadena con el algoritmo configurado y devuelve el resultado codificado en base64.
@@ -25,10 +29,10 @@ class Cipher
       if (!$ivFijo) {
          $iv_length = openssl_cipher_iv_length(self::CIPHER);
          $iv = openssl_random_pseudo_bytes($iv_length); // IV aleatorio
-         $encrypted = openssl_encrypt($data, self::CIPHER, self::$key, OPENSSL_RAW_DATA, $iv);
+         $encrypted = openssl_encrypt($data, self::CIPHER, self::$aesKey, OPENSSL_RAW_DATA, $iv);
          $resultado = $iv . $encrypted;
       } else {
-         $resultado = openssl_encrypt($data, self::CIPHER, self::$key, OPENSSL_RAW_DATA);
+         $resultado = openssl_encrypt($data, self::CIPHER, self::$aesKey, OPENSSL_RAW_DATA);
       }
       // Codificamos ambos en base64 para usarlos en URL
       return self::codificarBase64($resultado);
@@ -42,19 +46,22 @@ class Cipher
     * @param bool $ivFijo            Determina si se usa un IV aleatorio.
     * @return string|bool            Cadena descifrada o false en caso de error.
     */
-   public static function aesDecrypt(string $encryptedData, bool $ivFijo = false): bool|string
+   public static function aesDecrypt(string $encryptedData, bool $ivFijo = false, string $aesKey = ""): bool|string
    {
       self::init();
+      if (empty($aesKey)) {
+         $aesKey = self::$aesKey;
+      }
       try {
          if (!$ivFijo) {
             $iv_length = openssl_cipher_iv_length(self::CIPHER);
             $decoded = self::descodificarBase64($encryptedData);
             $iv = substr($decoded, 0, $iv_length);
             $ciphertext = substr($decoded, $iv_length);
-            return openssl_decrypt($ciphertext, self::CIPHER, self::$key, OPENSSL_RAW_DATA, $iv);
+            return openssl_decrypt($ciphertext, self::CIPHER, $aesKey, OPENSSL_RAW_DATA, $iv);
          }
          $decoded = self::descodificarBase64($encryptedData);
-         return openssl_decrypt($decoded, self::CIPHER, self::$key, OPENSSL_RAW_DATA);
+         return openssl_decrypt($decoded, self::CIPHER, $aesKey, OPENSSL_RAW_DATA);
       } catch (\Throwable $th) {
          ExceptionHandler::throwException($th->getMessage(), 500, \UnexpectedValueException::class);
          return false;
@@ -106,6 +113,42 @@ class Cipher
       $data = hash("md5", $data);
       return $data;
    }
+
+   /**
+    * Encripta una cadena de texto con el algoritmo RSA
+    *
+    * @param string $data Data a encriptar
+    * @param string $publicKey Clave publica
+    * @return string Cadena encriptada
+    */
+   public static function encriptarRSA(string $data): string
+   {
+      self::init();
+      $encrypted = '';
+      if (!openssl_public_encrypt($data, $encrypted, self::$rsaPublicKey, OPENSSL_PKCS1_OAEP_PADDING)) {
+         ExceptionHandler::throwException('Fallo al encriptar en RSA', 500, \UnexpectedValueException::class);
+      }
+      return self::codificarBase64($encrypted);
+   }
+
+   /**
+    * Desencripta una cadena de texto con el algoritmo RSA
+    *
+    * @param string $encryptedData Cadena encriptada
+    * @param string $privateKey Clave privada
+    * @return string Cadena desencriptada
+    */
+   public static function desencriptarRSA(string $encryptedData): string
+   {
+      self::init();
+      $decoded = self::descodificarBase64($encryptedData);
+      $decrypted = '';
+      if (!openssl_private_decrypt($decoded, $decrypted, self::$rsaPrivateKey)) {
+         ExceptionHandler::throwException('Fallo al desencriptar en RSA', 500, \UnexpectedValueException::class);
+      }
+      return $decrypted;
+   }
+
    public static function crearHashArray(array &$datos, string $nombreCampo, bool $clonarValor = true): bool
    {
       foreach ($datos as $index => $row) {

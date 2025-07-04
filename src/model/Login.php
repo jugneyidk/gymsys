@@ -3,6 +3,7 @@
 namespace Gymsys\Model;
 
 use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use Gymsys\Utils\ExceptionHandler;
 use Gymsys\Utils\JWTHelper;
 use Gymsys\Utils\Validar;
@@ -15,13 +16,22 @@ class Login
    {
       $this->database = $database;
    }
-   public function authUsuario(string $id_usuario, string $password): array
+   public function authUsuario(array $datos): array
    {
-      Validar::validar("cedula", $id_usuario);
-      Validar::validar("password", $password);
+      $aesKey = base64_decode(Cipher::desencriptarRSA($datos['encryptedKey']));
+      $decoded = Cipher::descodificarBase64($datos['encryptedData']);
+      $iv_length = openssl_cipher_iv_length('AES-256-CTR');
+      $iv = substr($decoded, 0, $iv_length);
+      $ciphertext = substr($decoded, $iv_length);
+      if (strlen($aesKey) !== 32) {
+         throw new \RuntimeException('La clave AES no tiene 32 bytes, tiene: ' . strlen($aesKey));
+      }
+      $datos = json_decode(Cipher::aesDecrypt($datos['encryptedData'], false, $aesKey), true);
+      Validar::validar("cedula", $datos['id_usuario']);
+      Validar::validar("password", $datos['password']);
       LoginAttempts::checkAttempts();
       try {
-         $response = $this->_autenticarUsuario($id_usuario, $password);
+         $response = $this->_autenticarUsuario($datos['id_usuario'], $datos['password']);
          // Si la autenticación es exitosa, limpiar los intentos fallidos
          LoginAttempts::clearAttempts();
          return $response;
@@ -29,6 +39,7 @@ class Login
          // Registrar intento fallido
          LoginAttempts::recordFailedAttempt();
          ExceptionHandler::throwException($e->getMessage(), 400, $e);
+         return [];
       }
    }
    private function _autenticarUsuario(string $id_usuario, string $password): array

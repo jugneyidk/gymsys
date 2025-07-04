@@ -2,6 +2,98 @@ import REGEX from "./regex.js";
 
 export { REGEX };
 
+/**
+ * Generates a random AES-256 key and IV.
+ * @returns {{ claveAES: CryptoKey, iv: Uint8Array }}
+ */
+export async function generarClaveAES() {
+  const claveAES = await window.crypto.subtle.generateKey(
+    { name: 'AES-CTR', length: 256 },
+    true,
+    ['encrypt', 'decrypt']
+  );
+  const iv = window.crypto.getRandomValues(new Uint8Array(16));
+  return { claveAES, iv };
+}
+
+/**
+ * Encrypts a string with AES-256-CTR.
+ * @param {string} texto - Text to encrypt.
+ * @param {CryptoKey} claveAES - AES key.
+ * @param {Uint8Array} iv - Initialization vector.
+ * @returns {Promise<string>} - Base64 encoded ciphertext.
+ */
+/**
+ * Codifica un string o buffer en base64 url-safe (sin =, +/ reemplazados por -_)
+ * @param {Uint8Array} buffer
+ * @returns {string}
+ */
+export function codificarBase64(buffer) {
+  let bin = '';
+  buffer.forEach(b => bin += String.fromCharCode(b));
+  let base64 = btoa(bin);
+  base64 = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  return base64;
+}
+
+export async function encriptarAES(texto, claveAES, iv) {
+  const encoder = new TextEncoder();
+  const datos = encoder.encode(texto);
+  const cifrado = await window.crypto.subtle.encrypt(
+    { name: 'AES-CTR', counter: iv, length: 64 },
+    claveAES,
+    datos
+  );
+  // Concatenar IV + ciphertext
+  const cifradoArray = new Uint8Array(cifrado);
+  const combinado = new Uint8Array(iv.length + cifradoArray.length);
+  combinado.set(iv, 0);
+  combinado.set(cifradoArray, iv.length);
+  const resultado = codificarBase64(combinado);
+  return resultado;
+}
+
+/**
+ * Encrypts all form fields as JSON using AES-256-CTR.
+ * @param {HTMLFormElement} form - Form to encrypt.
+ * @param {CryptoKey} claveAES - AES key.
+ * @param {Uint8Array} iv - Initialization vector.
+ * @returns {Promise<string>} - Base64 encoded ciphertext.
+ */
+export async function encriptarFormularioAES(form, claveAES, iv) {
+  const datos = {};
+  Array.from(form.elements).forEach(el => {
+    if (el.name && !el.disabled && ['INPUT','SELECT','TEXTAREA'].includes(el.tagName)) {
+      datos[el.name] = el.value;
+    }
+  });
+  return await encriptarAES(JSON.stringify(datos), claveAES, iv);
+}
+
+/**
+ * Encrypts the AES key with RSA using the server's public key.
+ * @param {CryptoKey} claveAES - AES key to encrypt.
+ * @returns {Promise<string>} - Base64 encrypted AES key.
+ * @throws {Error} - If public key is missing or encryption fails.
+ */
+export async function encriptarClaveAESRSA(claveAES) {
+  // Export AES key as raw bytes
+  const rawKey = new Uint8Array(await window.crypto.subtle.exportKey('raw', claveAES));
+  // Fetch public key
+  const resp = await fetch('public.key');
+  if (!resp.ok) throw new Error('No se pudo obtener la clave pública');
+  const pubKeyPEM = await resp.text();
+  if (!pubKeyPEM.includes('BEGIN PUBLIC KEY')) throw new Error('Clave pública no válida');
+  // Use JSEncrypt
+  const jsEncrypt = new window.JSEncrypt();
+  jsEncrypt.setPublicKey(pubKeyPEM);
+  // Codificar la clave AES en base64 estándar antes de cifrar con RSA
+  const base64Key = btoa(String.fromCharCode(...rawKey));
+  const encrypted = jsEncrypt.encrypt(base64Key);
+  if (!encrypted) throw new Error('Fallo al encriptar la clave AES con RSA');
+  return encrypted;
+}
+
 export function validarKeyPress(e, regex) {
   if (!regex.test(e.key)) {
     e.preventDefault();

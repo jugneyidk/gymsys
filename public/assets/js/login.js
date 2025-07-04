@@ -1,18 +1,35 @@
-import { enviaAjax, validarKeyPress, validarKeyUp, REGEX } from "./comunes.js";
+import { enviaAjax, validarKeyPress, validarKeyUp, REGEX, generarClaveAES, encriptarFormularioAES, encriptarClaveAESRSA } from "./comunes.js";
+
 $(document).ready(function () {
    localStorage.removeItem("access_token");
    $("#login").on("submit", function (e) {
       e.preventDefault();
    });
-   $("#submit").on("click", function () {
-      var datos = new FormData($("#login")[0]);
+   $("#submit").on("click", async function () {
+      if (!window.JSEncrypt) {
+         alert('No se ha cargado JSEncrypt.');
+         return;
+      }
       if (validarEnvio()) {
-         enviaAjax(datos, "?p=login&accion=authUsuario").then((respuesta) => {
-            if (respuesta.auth === true) {
-               localStorage.setItem("access_token", respuesta.accessToken);
-               location = ".";
-            }
-         });
+         try {
+            const form = document.getElementById('login');
+            const { claveAES, iv } = await generarClaveAES();
+            const encryptedData = await encriptarFormularioAES(form, claveAES, iv);
+            const encryptedKey = await encriptarClaveAESRSA(claveAES);
+            // Prepara datos para enviar
+            const datos = new FormData();
+            datos.append('encryptedData', encryptedData);
+            datos.append('encryptedKey', encryptedKey);
+            // Enviar por AJAX
+            enviaAjax(datos, "?p=login&accion=authUsuario").then((respuesta) => {
+               if (respuesta.auth === true) {
+                  localStorage.setItem("access_token", respuesta.accessToken);
+                  location = ".";
+               }
+            });
+         } catch (err) {
+            alert('Error en el cifrado: ' + err.message);
+         }
       }
    });
    $("#id_usuario").on("keyup", function () {

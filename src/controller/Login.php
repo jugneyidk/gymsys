@@ -18,6 +18,6 @@ class Login extends BaseController
    public function authUsuario(array $requestData): array
    {
       $this->validarMetodoRequest("POST");
-      return $this->model->authUsuario($requestData['id_usuario'], $requestData['password']);
+      return $this->model->authUsuario($requestData);
    }
 }

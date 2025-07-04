@@ -55,7 +55,7 @@
       <a href="mailto:jugneycontacto@correo.com" title="Enviar un correo"><i class="fas fa-envelope"></i></a>
     </div>
   </div>
-
+  <script src="assets/js/jsencrypt.min.js"></script>
   <script src="assets/js/popper.min.js"></script>
   <script src="assets/js/jquery.min.js"></script>
   <script src="assets/js/bootstrap.min.js"></script>
