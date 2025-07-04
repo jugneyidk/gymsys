@@ -20,7 +20,7 @@ class Login
    {
       $aesKey = base64_decode(Cipher::desencriptarRSA($datos['encryptedKey']));
       if (strlen($aesKey) !== 32) {
-         throw new \RuntimeException('La clave AES no tiene 32 bytes, tiene: ' . strlen($aesKey));
+         ExceptionHandler::throwException("La clave AES no tiene 32 bytes, tiene: " . strlen($aesKey), 400, \RuntimeException::class);
       }
       $datos = json_decode(Cipher::aesDecrypt($datos['encryptedData'], false, $aesKey), true);
       Validar::validar("cedula", $datos['id_usuario']);
@@ -59,7 +59,7 @@ class Login
             ]);
          }
       } else {
-         throw new \InvalidArgumentException("Los datos de usuario ingresado son incorrectos");
+         ExceptionHandler::throwException("Los datos de usuario ingresado son incorrectos", 400, \InvalidArgumentException::class);
       }
       return $response;
    }
