@@ -7,14 +7,12 @@ export function validarKeyPress(e, regex) {
     e.preventDefault();
   }
 }
-
 export function validarKeyUp(regex, input, mensaje, textoError) {
   const isValid = regex.test(input.val());
   input.toggleClass("is-invalid", !isValid).toggleClass("is-valid", isValid);
   mensaje.text(isValid ? "" : textoError);
   return isValid;
 }
-
 export function modalCarga(cargando) {
   if (cargando) {
     $("#carga").modal("show");
@@ -26,7 +24,6 @@ export function modalCarga(cargando) {
     }, 100);
   }
 }
-
 export function modalListener(titulo) {
   var modal = document.getElementById("modal");
   modal.addEventListener("show.bs.modal", function (event) {
@@ -38,7 +35,6 @@ export function modalListener(titulo) {
     limpiarForm();
   });
 }
-
 export function limpiarForm() {
   var forms = document.getElementsByTagName("form");
   Array.from(forms).forEach(function (form) {
@@ -48,7 +44,6 @@ export function limpiarForm() {
   $("form input").removeClass("is-invalid");
   $("form div .invalid-feedback").text("");
 }
-
 // Promesa de refresco de token
 let refreshTokenPromise = null;
 

@@ -1,4 +1,5 @@
 <form method="post" id="form_incluir" autocomplete="off">
+   <?= $this->csrfField(); ?>
    <input type="text" class="d-none" id="id_rol" name="id_rol">
    <div class="row mt-3">
       <div class="col">

@@ -27,18 +27,21 @@ class Categorias extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirCategoria($datos);
    }
    public function modificarCategoria(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarCategoria($datos);
    }
    public function eliminarCategoria(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarCategoria($datos);
    }
 }

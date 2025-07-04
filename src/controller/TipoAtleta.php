@@ -28,12 +28,14 @@ class TipoAtleta extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirTipoAtleta($datos);
    }
    public function eliminarTipoAtleta(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarTipoAtleta($datos);
    }
 }

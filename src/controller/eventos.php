@@ -22,42 +22,49 @@ class Eventos extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirEvento($datos);
    }
    public function eliminarEvento(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarEvento($datos);
    }
    public function modificarEvento(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarEvento($datos);
    }
    public function inscribirAtletas(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->inscribirAtletas($datos);
    }
    public function registrarResultados(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->registrarResultados($datos);
    }
    public function modificarResultados(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarResultados($datos);
    }
    public function cerrarEvento(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->cerrarEvento($datos);
    }
    public function listadoEventos(): array

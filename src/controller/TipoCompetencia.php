@@ -28,18 +28,21 @@ class TipoCompetencia extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirTipo($datos);
    }
    public function modificarTipo(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarTipo($datos);
    }
    public function eliminarTipo(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarTipo($datos);
    }
 }

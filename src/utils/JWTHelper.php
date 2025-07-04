@@ -14,7 +14,7 @@ class JWTHelper
       $payloadAccess = [
          'sub' => $idUsuario,
          'iat' => $now,
-         'exp' => $now + (15 * 60),
+         'exp' => $now + (1 * 60),
          'type' => 'access'
       ];
       $payloadRefresh = [
@@ -42,16 +42,18 @@ class JWTHelper
       }
       return $payload;
    }
-   private static function obtenerBearerToken(): string|null
-   {
-      $headers = apache_request_headers();
-      $authHeader = $headers['Authorization'] ?? null;
-      if (empty($authHeader)) {
-         ExceptionHandler::throwException('No se encontro el token', 403, \Exception::class);
-      }
-      $bearerToken = explode(' ', $authHeader);
-      return $bearerToken[1] ?? null;
-   }
+  private static function obtenerBearerToken(): string|null
+{
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
+    $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? null);
+    if (empty($authHeader)) {
+        ExceptionHandler::throwException('No se encontro el token', 403, \Exception::class);
+    }
+    $bearerToken = explode(' ', $authHeader);
+    return $bearerToken[1] ?? null;
+}
+
+
    public static function decodificarToken(string $token): \stdClass|false
    {
       $key = $_ENV['JWT_SECRET'];

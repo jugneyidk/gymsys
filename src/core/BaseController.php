@@ -9,6 +9,9 @@ abstract class BaseController
 {
    public function renderVista(string $vista, array $permisosNav, array $permisosModulo): never
    {
+      if (session_status() === PHP_SESSION_NONE) {
+         session_start();
+      }
       header('Content-Type: text/html');
       extract($permisosNav);
       $data['controller'] = $this;
@@ -57,20 +60,29 @@ abstract class BaseController
    }
    protected function generateCsrfToken(): string
    {
-      $this->cleanExpiredTokens();
-      $token = bin2hex(random_bytes(32));
-      $_SESSION['csrf_tokens'][$token] = time(); // puedes limitar por tiempo si quieres
-      return $token;
+      if (session_status() !== PHP_SESSION_ACTIVE) {
+         session_start();
+      }
+      $lifetime = 30;
+      if (
+         isset($_SESSION['csrf_token'], $_SESSION['csrf_token_time'])
+         && (time() - $_SESSION['csrf_token_time']) < $lifetime
+      ) {
+
+         return $_SESSION['csrf_token'];
+      }
+      $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+      $_SESSION['csrf_token_time'] = time();
+      return $_SESSION['csrf_token'];
    }
    protected function verifyCsrfToken(): bool
    {
-      $submittedToken = $_POST['_csrf_token'] ?? '';
-      if (empty($submittedToken)) return false;
-      if (isset($_SESSION['csrf_tokens'][$submittedToken])) {
-         unset($_SESSION['csrf_tokens'][$submittedToken]);
-         return true;
+      if (session_status() !== PHP_SESSION_ACTIVE) {
+         session_start();
       }
-      return false;
+      $submitted = $_POST['_csrf_token'] ?? '';
+      $session = $_SESSION['csrf_token'] ?? '';
+      return hash_equals($session, $submitted);
    }
    protected function cleanExpiredTokens(int $expirySeconds = 600): void
    {
@@ -79,11 +91,23 @@ abstract class BaseController
          return ($now - $timestamp) < $expirySeconds;
       });
    }
-
    protected function csrfField(): string
    {
-      return '<input type="hidden" name="_csrf_token" value=' . htmlspecialchars($this->generateCsrfToken()) . '>';
+      $token = $this->generateCsrfToken();
+      return '<input type="hidden" name="_csrf_token" value="' . htmlspecialchars($token) . '">';
    }
+
+   protected function requireCsrf(): void
+   {
+      if (!$this->verifyCsrfToken()) {
+         ExceptionHandler::throwException(
+            'Token CSRF inválido',
+            403,
+            \Exception::class
+         );
+      }
+   }
+
    protected function obtenerPermisos(string $modulo, Database $database): array
    {
       $permisos = Rolespermisos::obtenerPermisosModulo($modulo, $database);
@@ -92,11 +116,23 @@ abstract class BaseController
       }
       return $permisos;
    }
-
    protected function validarPermisos(array $permisos, string $permiso): void
    {
       if (empty($permisos[$permiso])) {
          ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
       }
+   }
+   public function accionCsrfNuevo(): array
+   {
+      if (session_status() !== PHP_SESSION_ACTIVE) {
+         session_start();
+      }
+
+      $this->cleanExpiredTokens();
+
+      $nuevo = bin2hex(random_bytes(32));
+      $_SESSION['csrf_tokens'][$nuevo] = time();
+
+      return ['nuevo_csrf_token' => $nuevo];
    }
 }

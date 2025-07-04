@@ -18,9 +18,14 @@ class Rolespermisos extends BaseController
       $modelClass = $this->getModel("Rolespermisos");
       $this->model = new $modelClass($this->database);
       $this->permisos = $this->obtenerPermisos("Rolespermisos", $this->database);
-      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+      if ($this->permisos['leer'] == 0)
+         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
    }
-
+   public function obtenerPermisosNav(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return $this->model::obtenerPermisosNav($this->database);
+   }
    public function obtenerRol(array $datos): array
    {
       $this->validarPermisos($this->permisos, "leer");
@@ -43,24 +48,33 @@ class Rolespermisos extends BaseController
    {
       $this->validarPermisos($this->permisos, "crear");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->incluirRol($datos);
+   }
+   public function csrfnuevo(): array
+   {
+      $this->validarMetodoRequest("GET");
+      return ['nuevo_csrf_token' => $this->generateCsrfToken()];
    }
    public function modificarRol(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->modificarRol($datos);
    }
    public function asignarRol(array $datos): array
    {
       $this->validarPermisos($this->permisos, "actualizar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->asignarRol($datos);
    }
    public function eliminarRol(array $datos): array
    {
       $this->validarPermisos($this->permisos, "eliminar");
       $this->validarMetodoRequest("POST");
+      $this->requireCsrf();
       return $this->model->eliminarRol($datos);
    }
 }

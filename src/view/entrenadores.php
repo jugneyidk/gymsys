@@ -1,4 +1,5 @@
-<?php if (empty($permisosModulo["leer"])) header("Location: ."); ?>
+<?php if (empty($permisosModulo["leer"]))
+   header("Location: ."); ?>
 <?php $formulario = "entrenadores"; ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -13,6 +14,7 @@
 </head>
 
 <body class="bg-body-tertiary">
+   <?= str_replace('name="_csrf_token"','id="csrf_token_global" name="_csrf_token"',$controller->csrfField()); ?>
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?? 0 ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;
@@ -26,11 +28,11 @@
                   <h2 class="mb-0">Gestionar Entrenadores</h2>
                   <?php
                   if (!empty($permisosModulo["crear"])):
-                  ?>
+                     ?>
                      <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
                         Registrar <i class="fa-solid fa-plus"></i>
                      </button>
-                  <?php
+                     <?php
                   endif;
                   ?>
                </div>

@@ -93,6 +93,7 @@ $(document).ready(() => {
       .addClass("d-none");
   };
 
+
   // Inicialización
   modalListener("Atleta");
   obtenerNotificaciones();
@@ -100,7 +101,6 @@ $(document).ready(() => {
     $("#modificar_contraseña_container").addClass("d-none");
     $("#password").prop("disabled", false);
   });
-
   cargarOpciones(
     "?p=tipoatleta&accion=listadoTipoAtletas",
     "#tipo_atleta",
