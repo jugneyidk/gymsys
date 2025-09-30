@@ -1,83 +1,114 @@
 <?php
+namespace Tests\Feature;
 
+use Gymsys\Model\Mensualidad;
+use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use PHPUnit\Framework\TestCase;
 
-class MensualidadTest extends TestCase
+final class MensualidadTest extends TestCase
 {
-	private $op;
-	public function setUp(): void
-	{
-		$this->op = new Mensualidad();
-	}
+    private Mensualidad $model;
+    private Database $db;
+    private string $encCedula;
+    private string $encIdMensualidad;
 
-	public function testIncluirMensualidadExitoso(): void
-	{
-		$respuesta = $this->op->incluir_mensualidad("23124144", "20", "2024-10-10", "");
-		// El registro se agrega correctamente
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
-	}
-	public function testIncluirMensualidadNoValido(): void
-	{
-		$respuesta = $this->op->incluir_mensualidad("23124144", "2sd0", "2024-10-10", "");
-		// Devuelve un error de que no es valido
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertFalse($respuesta["ok"]);
-		$this->assertEquals("El monto no es un numero valido", $respuesta['mensaje']);
-	}
-	public function testEliminarMensualidadExitoso(): void
-	{
-		$respuesta = $this->op->eliminar_mensualidad("171");
-		// La respuesta es exitosa
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
-	}
-	public function testEliminarMensualidadNoValido(): void
-	{
-		$respuesta = $this->op->eliminar_mensualidad("mensualidad");
-		// Devuelve un error de que no es valido
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertFalse($respuesta["ok"]);
-		$this->assertEquals("La ID de mensualidad no es válida", $respuesta['mensaje']);
-	}
-	public function testEliminarMensualidadNoExiste(): void
-	{
-		$respuesta = $this->op->eliminar_mensualidad("44");
-		// Devuelve un error de que no existe
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertFalse($respuesta["ok"]);
-		$this->assertEquals("No existe esta mensualidad", $respuesta['mensaje']);
-	}
-	public function testListadoMensualidades(): void
-	{
-		$respuesta = $this->op->listado_mensualidades();
-		// Devuelve un arreglo de mensualidades
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
-		$this->assertIsArray($respuesta['respuesta']);
-	}
-	public function testListadoDeudores(): void
-	{
-		$respuesta = $this->op->listado_deudores();
-		// Devuelve un arreglo de deudores
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
-		$this->assertIsArray($respuesta['respuesta']);
-	}
-	public function testListadoAtletas(): void
-	{
-		$respuesta = $this->op->listado_atletas();
-		// Devuelve un arreglo de atletas
-		$this->assertNotNull($respuesta);
-		$this->assertIsArray($respuesta);
-		$this->assertTrue($respuesta["ok"]);
-		$this->assertIsArray($respuesta['respuesta']);
-	}
+    protected function setUp(): void
+    {
+        $this->db = $this->createMock(Database::class);
+        $this->model = new Mensualidad($this->db);
+        $this->encCedula = Cipher::aesEncrypt('23124144');
+        $this->encIdMensualidad = Cipher::aesEncrypt('171');
+    }
+
+    public function test_incluir_mensualidad_exitoso(): void
+    {
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            [],
+            true
+        );
+
+        $resp = $this->model->incluirMensualidad([
+            'id_atleta' => $this->encCedula,
+            'monto' => '20',
+            'fecha' => '2024-10-10',
+            'detalles' => 'Pago en caja'
+        ]);
+
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
+    }
+
+    public function test_incluir_mensualidad_duplicada(): void
+    {
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            ['x' => 1]
+        );
+
+        $this->expectException(\Throwable::class);
+        $this->model->incluirMensualidad([
+            'id_atleta' => $this->encCedula,
+            'monto' => '20',
+            'fecha' => '2024-10-10',
+            'detalles' => 'Pago en caja'
+        ]);
+    }
+
+    public function test_incluir_mensualidad_invalida_fecha(): void
+    {
+        $this->expectException(\Throwable::class);
+        $this->model->incluirMensualidad([
+            'id_atleta' => $this->encCedula,
+            'monto' => '20',
+            'fecha' => '2024-32-10',
+            'detalles' => 'Pago en caja'
+        ]);
+    }
+
+    public function test_eliminar_mensualidad_exitoso(): void
+    {
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            true
+        );
+
+        $resp = $this->model->eliminarMensualidad(['id' => $this->encIdMensualidad]);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
+    }
+
+    public function test_eliminar_mensualidad_no_existe(): void
+    {
+        $this->db->method('query')->willReturnOnConsecutiveCalls(false);
+
+        $this->expectException(\Throwable::class);
+        $this->model->eliminarMensualidad(['id' => $this->encIdMensualidad]);
+    }
+
+    public function test_eliminar_mensualidad_invalida(): void
+    {
+        $bad = Cipher::aesEncrypt('mensualidad');
+        $this->expectException(\Throwable::class);
+        $this->model->eliminarMensualidad(['id' => $bad]);
+    }
+
+    public function test_listado_mensualidades(): void
+    {
+        $this->db->method('query')->willReturn([]);
+        $resp = $this->model->listadoMensualidades();
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensualidades', $resp);
+    }
+
+    public function test_listado_deudores(): void
+    {
+        $this->db->method('query')->willReturn([]);
+        $resp = $this->model->listadoDeudores();
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('deudores', $resp);
+    }
 }

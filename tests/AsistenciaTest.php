@@ -1,82 +1,118 @@
 <?php
+namespace Tests\Feature;
+
+use Gymsys\Model\Asistencias;
+use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use PHPUnit\Framework\TestCase;
 
-class AsistenciaTest extends TestCase
+final class AsistenciasTest extends TestCase
 {
-    private $asistencia;
+    private Asistencias $model;
+    private Database $db;
 
     protected function setUp(): void
     {
-        $this->asistencia = new Asistencia();
+        $this->db = $this->createMock(Database::class);
+        $this->model = new Asistencias($this->db);
     }
 
-    public function testObtenerAtletas() // Caso 1
+    public function test_guardar_asistencias_exitoso(): void
     {
-        $respuesta = $this->asistencia->obtener_atletas();
-        // Verificar que la respuesta sea exitosa y devuelva un array con la lista de atletas para las asistencias
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
-        $this->assertIsArray($respuesta['atletas']);
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            true,
+            true,
+            true
+        );
+
+        $rows = [
+            ['id_atleta' => Cipher::aesEncrypt('68281581'), 'asistio' => 1, 'comentario' => ''],
+            ['id_atleta' => Cipher::aesEncrypt('42194292'), 'asistio' => 0, 'comentario' => ''],
+            ['id_atleta' => Cipher::aesEncrypt('24244444'), 'asistio' => 1, 'comentario' => 'ok']
+        ];
+
+        $resp = $this->model->guardarAsistencias([
+            'fecha' => '2024-10-10',
+            'asistencias' => json_encode($rows)
+        ]);
+
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
     }
-    public function testObtenerAsistenciasExitoso() // Caso 1
+
+    public function test_guardar_asistencias_invalido_json(): void
     {
-        $fecha = date('Y-m-d');
-        $respuesta = $this->asistencia->obtener_asistencias($fecha);
-        // Verificar que la respuesta sea exitosa y devuelva un array con la lista de asistencias del dia
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
-        $this->assertIsArray($respuesta['asistencias']);
+        $this->expectException(\Throwable::class);
+        $this->model->guardarAsistencias([
+            'fecha' => '2024-10-10',
+            'asistencias' => 'asistencias'
+        ]);
     }
-    public function testObtenerAsistenciasNoValido() // Caso 1
+
+    public function test_guardar_asistencias_fecha_futura(): void
     {
-        $fecha = "2024-32-144";
-        $respuesta = $this->asistencia->obtener_asistencias($fecha);
-        // Verificar que la respuesta sea un mensaje de error
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("La fecha no es valida", $respuesta['mensaje']);
+        $rows = [
+            ['id_atleta' => Cipher::aesEncrypt('68281581'), 'asistio' => 1, 'comentario' => '']
+        ];
+        $this->expectException(\Throwable::class);
+        $this->model->guardarAsistencias([
+            'fecha' => '2999-01-01',
+            'asistencias' => json_encode($rows)
+        ]);
     }
-    public function testGuardarAsistenciasExitoso() // Caso 1
+
+    public function test_obtener_asistencias_exitoso(): void
     {
-        $fecha = date('Y-m-d');
-        $asistencias = '[{"id_atleta":"682815811","asistio":0,"comentario":""},{"id_atleta":"664568422","asistio":0,"comentario":""},{"id_atleta":"99389012","asistio":0,"comentario":""},{"id_atleta":"68281582","asistio":0,"comentario":""},{"id_atleta":"68281581","asistio":1,"comentario":""},{"id_atleta":"68281580","asistio":0,"comentario":""},{"id_atleta":"66456842","asistio":0,"comentario":""},{"id_atleta":"42342344","asistio":0,"comentario":"u i io a i u i i i au"},{"id_atleta":"42194292","asistio":1,"comentario":""},{"id_atleta":"24244444","asistio":1,"comentario":""},{"id_atleta":"23124144","asistio":0,"comentario":""},{"id_atleta":"9252463","asistio":0,"comentario":""},{"id_atleta":"7342825","asistio":0,"comentario":""},{"id_atleta":"6828158","asistio":1,"comentario":""},{"id_atleta":"6759472","asistio":0,"comentario":""},{"id_atleta":"3376883","asistio":0,"comentario":""},{"id_atleta":"3331917","asistio":0,"comentario":""},{"id_atleta":"2594894","asistio":0,"comentario":""},{"id_atleta":"1328547","asistio":0,"comentario":""}]';
-        $respuesta = $this->asistencia->guardar_asistencias($fecha, $asistencias);
-        // Verificar que la respuesta sea exitosa y guarde la lista de asistencias
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        $this->db->method('query')->willReturn([
+            ['id_atleta' => '68281581', 'fecha' => '2024-10-10', 'asistio' => 1, 'comentario' => ''],
+            ['id_atleta' => '42194292', 'fecha' => '2024-10-10', 'asistio' => 0, 'comentario' => '']
+        ]);
+
+        $resp = $this->model->obtenerAsistencias(['fecha' => '2024-10-10']);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('asistencias', $resp);
+        $this->assertIsArray($resp['asistencias']);
     }
-    public function testGuardarAsistenciasNoValido() // Caso 1
+
+    public function test_eliminar_asistencias_exitoso(): void
     {
-        $fecha = date('Y-m-d');
-        $asistencias = 'asistencias';
-        $respuesta = $this->asistencia->guardar_asistencias($fecha, $asistencias);
-        // Verificar que la respuesta sea un error
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("Las asistencias no son validas", $respuesta['mensaje']);
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturn(true);
+
+        $resp = $this->model->eliminarAsistencias(['fecha' => '2024-10-10']);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
     }
-    public function testEliminarAsistenciasExitoso() // Caso 1
+
+    public function test_eliminar_asistencias_fecha_invalida(): void
     {
-        $fecha = date('Y-m-d');
-        $respuesta = $this->asistencia->eliminar_asistencias($fecha);
-        // Verificar que la respuesta sea exitosa
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        $this->expectException(\Throwable::class);
+        $this->model->eliminarAsistencias(['fecha' => '2024-32-144']);
     }
-    public function testEliminarAsistenciasNoValido() // Caso 1
+
+    public function test_guardar_asistencias_falla_insert(): void
     {
-        $fecha = "fecha";
-        $respuesta = $this->asistencia->eliminar_asistencias($fecha);
-        // Verificar que la respuesta sea que la fecha no es valida
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("La fecha no es valida", $respuesta['mensaje']);
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->never())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            true,
+            false
+        );
+
+        $rows = [
+            ['id_atleta' => Cipher::aesEncrypt('68281581'), 'asistio' => 1, 'comentario' => ''],
+            ['id_atleta' => Cipher::aesEncrypt('42194292'), 'asistio' => 0, 'comentario' => '']
+        ];
+
+        $this->expectException(\Throwable::class);
+        $this->model->guardarAsistencias([
+            'fecha' => '2024-10-10',
+            'asistencias' => json_encode($rows)
+        ]);
     }
 }

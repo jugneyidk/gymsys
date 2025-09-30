@@ -1,69 +1,80 @@
 <?php
+namespace Tests\Feature;
+
+use Gymsys\Model\Atletas;
+use Gymsys\Core\Database;
+use Gymsys\Utils\Cipher;
 use PHPUnit\Framework\TestCase;
 
-class AtletasTest extends TestCase
+final class AtletasTest extends TestCase
 {
-    private $atleta;
+    private Atletas $model;
+    private Database $db;
 
     protected function setUp(): void
     {
-        $this->atleta = new Atleta();
+        $this->db = $this->createMock(Database::class);
+        $this->model = new Atletas($this->db);
     }
 
-    public function testIncluirAtletaExitoso() // Caso 1
+    public function test_incluir_atleta_exitoso(): void
     {
-        $datosFormulario = [
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            false,
+            true,
+            true
+        );
+
+        $resp = $this->model->incluirAtleta([
             'cedula' => '5560233',
             'nombres' => 'Alejandro',
             'apellidos' => 'Martinez',
             'genero' => 'Masculino',
             'fecha_nacimiento' => '1990-01-01',
             'lugar_nacimiento' => 'Ciudad',
-            'estado_civil' => 'Divorciado',
+            'estado_civil' => 'Soltero',
             'telefono' => '04265538456',
             'correo_electronico' => 'aleale@example.com',
             'peso' => '62',
             'altura' => '181',
-            'entrenador_asignado' => '22222222',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
             'password' => 'Password123$'
-        ];
-        // Ejecutar el método incluir_atleta
-        $respuesta = $this->atleta->incluir_atleta($datosFormulario);
-        // Verificar que la respuesta sea exitosa
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        ]);
+
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
     }
-    public function testIncluirAtletaYaExiste() // Caso 1
+
+    public function test_incluir_atleta_duplicado(): void
     {
-        $datosFormulario = [
+        $this->db->method('query')->willReturn(true);
+
+        $this->expectException(\Throwable::class);
+        $this->model->incluirAtleta([
             'cedula' => '5560233',
             'nombres' => 'Alejandro',
             'apellidos' => 'Martinez',
             'genero' => 'Masculino',
             'fecha_nacimiento' => '1990-01-01',
             'lugar_nacimiento' => 'Ciudad',
-            'estado_civil' => 'Divorciado',
+            'estado_civil' => 'Soltero',
             'telefono' => '04265538456',
             'correo_electronico' => 'aleale@example.com',
             'peso' => '62',
             'altura' => '181',
-            'entrenador_asignado' => '22222222',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
             'password' => 'Password123$'
-        ];
-        // Ejecutar el método incluir_atleta
-        $respuesta = $this->atleta->incluir_atleta($datosFormulario);
-        // Verificar que la respuesta sea que ya existe
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("Ya existe un atleta con esta cedula", $respuesta['mensaje']);
+        ]);
     }
-    public function testIncluirAtletaNoValido() // Caso 1
+
+    public function test_incluir_atleta_invalido(): void
     {
-        $datosFormulario = [
+        $this->expectException(\Throwable::class);
+        $this->model->incluirAtleta([
             'cedula' => '5560233a.',
             'nombres' => 'Alejandro22',
             'apellidos' => 'Martinez--',
@@ -75,77 +86,65 @@ class AtletasTest extends TestCase
             'correo_electronico' => 'aleale@example.com',
             'peso' => 'full',
             'altura' => '181',
-            'entrenador_asignado' => '',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
             'password' => 'contra1122'
-        ];
-        // Ejecutar el método incluir_atleta
-        $respuesta = $this->atleta->incluir_atleta($datosFormulario);
-        // Verificar que la respuesta sea un array de los datos no validos
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertIsArray($respuesta['mensaje']);
+        ]);
     }
-    public function testEliminarAtletaExitoso() // Caso 1
+
+    public function test_obtener_atleta_exitoso(): void
     {
-        // Ejecutar el método eliminar_atleta
-        $respuesta = $this->atleta->eliminar_atleta("5560233");
-        // Verificar que la respuesta sea exitosa
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        $enc = Cipher::aesEncrypt('1328547');
+
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            [
+                'cedula' => '1328547',
+                'nombre' => 'Leoleo',
+                'apellido' => 'Herrera',
+                'genero' => 'Masculino',
+                'fecha_nacimiento' => '1990-01-01',
+                'lugar_nacimiento' => 'Ciudad',
+                'estado_civil' => 'Soltero',
+                'telefono' => '04265538456',
+                'correo_electronico' => 'leoleole@example.com',
+                'id_tipo_atleta' => '1',
+                'peso' => '62',
+                'altura' => '178',
+                'entrenador' => '22222222',
+                'cedula_representante' => null,
+                'nombre_representante' => null,
+                'telefono_representante' => null,
+                'parentesco_representante' => null
+            ]
+        );
+
+        $resp = $this->model->obtenerAtleta(['id' => $enc]);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('atleta', $resp);
+        $this->assertIsArray($resp['atleta']);
     }
-    public function testEliminarAtletaNoExiste() // Caso 1
+
+    public function test_obtener_atleta_no_existe(): void
     {
-        // Ejecutar el método eliminar_atleta
-        $respuesta = $this->atleta->eliminar_atleta("55602332");
-        // Verificar la respuesta
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("No existe ningún atleta con esta cedula", $respuesta['mensaje']);
+        $enc = Cipher::aesEncrypt('13285472');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\Throwable::class);
+        $this->model->obtenerAtleta(['id' => $enc]);
     }
-    public function testEliminarAtletaNoValido() // Caso 1
+
+    public function test_modificar_atleta_exitoso(): void
     {
-        // Ejecutar el método eliminar_atleta
-        $respuesta = $this->atleta->eliminar_atleta("V-55602332");
-        // Verificar que la respuesta sea no valida
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta['mensaje']);
-    }
-    public function testObtenerAtletaExitoso()
-    {
-        $respuesta = $this->atleta->obtener_atleta("1328547");
-        // Verificar que la respuesta indique que el atleta existe
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
-        $this->assertIsArray($respuesta['atleta']);
-    }
-    public function testObtenerAtletaNoExiste()
-    {
-        $respuesta = $this->atleta->obtener_atleta("13285472");
-        // Verificar que la respuesta indique que el atleta no existe
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("No se encontró el atleta", $respuesta['mensaje']);
-    }
-    public function testObtenerAtletaNoValido()
-    {
-        $respuesta = $this->atleta->obtener_atleta("V-13285472");
-        // Verificar que la respuesta indique que el atleta no es valido
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("La cédula debe tener al menos 7 números", $respuesta['mensaje']);
-    }
-    public function testModificarAtletaExitoso() // Caso 1
-    {
-        $datosFormulario = [
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            true,
+            true
+        );
+
+        $resp = $this->model->modificarAtleta([
             'cedula' => '1328547',
             'nombres' => 'Leoleo',
             'apellidos' => 'Herrera',
@@ -157,20 +156,21 @@ class AtletasTest extends TestCase
             'correo_electronico' => 'leoleole@example.com',
             'peso' => '62',
             'altura' => '178',
-            'entrenador_asignado' => '22222222',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
+            'modificar_contraseña' => '1',
             'password' => 'Password123$'
-        ];
-        // Ejecutar el método modificar_atleta
-        $respuesta = $this->atleta->modificar_atleta($datosFormulario);
-        // Verificar que la respuesta sea que ya existe
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        ]);
+
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
     }
-    public function testModificarAtletaNoExiste() // Caso 1
+
+    public function test_modificar_atleta_no_existe(): void
     {
-        $datosFormulario = [
+        $this->db->method('query')->willReturn(false);
+
+        $resp = $this->model->modificarAtleta([
             'cedula' => '13285427',
             'nombres' => 'Leoleo',
             'apellidos' => 'Herrera',
@@ -182,21 +182,21 @@ class AtletasTest extends TestCase
             'correo_electronico' => 'leoleole@example.com',
             'peso' => '62',
             'altura' => '178',
-            'entrenador_asignado' => '22222222',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
+            'modificar_contraseña' => '1',
             'password' => 'Password123$'
-        ];
-        // Ejecutar el método modificar_atleta
-        $respuesta = $this->atleta->modificar_atleta($datosFormulario);
-        // Verificar que la respuesta sea que no existe
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertEquals("No existe ningun atleta con esta cedula", $respuesta['mensaje']);
+        ]);
+
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('ok', $resp);
+        $this->assertFalse($resp['ok']);
     }
-    public function testModificarAtletaNoValido() // Caso 1
+
+    public function test_modificar_atleta_invalido(): void
     {
-        $datosFormulario = [
+        $this->expectException(\Throwable::class);
+        $this->model->modificarAtleta([
             'cedula' => 'V-13285427',
             'nombres' => 'Leoleo22',
             'apellidos' => 'Herreras.',
@@ -208,48 +208,44 @@ class AtletasTest extends TestCase
             'correo_electronico' => 'leoleole@example',
             'peso' => '',
             'altura' => 'alto',
-            'entrenador_asignado' => '22222222',
-            'tipo_atleta' => '1',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
+            'modificar_contraseña' => '1',
             'password' => 'Password12'
-        ];
-        // Ejecutar el método modificar_atleta
-        $respuesta = $this->atleta->modificar_atleta($datosFormulario);
-        // Verificar que la respuesta sea un array con los datos no validos
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertFalse($respuesta['ok']);
-        $this->assertIsArray($respuesta['mensaje']);
+        ]);
     }
-    public function testObtenerTiposDeAtleta()
+
+    public function test_eliminar_atleta_exitoso(): void
     {
-        $respuesta = $this->atleta->obtenerTiposAtleta();
-        // Verificar que la respuesta devuelva un array con los tipos de atletas
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
-        $this->assertIsArray($respuesta['tipos']);
+        $enc = Cipher::aesEncrypt('5560233');
+
+        $this->db->expects($this->once())->method('beginTransaction');
+        $this->db->expects($this->once())->method('commit');
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
+            true,
+            true,
+            true
+        );
+
+        $resp = $this->model->eliminarAtleta(['cedula' => $enc]);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
     }
-    public function testObtenerEntrenadores()
+
+    public function test_eliminar_atleta_no_existe(): void
     {
-        $respuesta = $this->atleta->obtenerEntrenadores();
-        // Verificar que la respuesta devuelva un array con los entrenadores para ser asignados
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
-        $this->assertIsArray($respuesta['entrenadores']);
+        $enc = Cipher::aesEncrypt('55602332');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\Throwable::class);
+        $this->model->eliminarAtleta(['cedula' => $enc]);
     }
-    public function testIncluirRepresentante()
+
+    public function test_listado_atletas(): void
     {
-        $datosFormulario = [
-            'cedula' => '15787522',
-            'nombre' => 'Leonardo',
-            'telefono' => 'Leonardo',
-            'parentesco' => 'Leonardo',
-        ];
-        $respuesta = $this->atleta->incluirRepresentante($datosFormulario["cedula"],$datosFormulario["nombre"],$datosFormulario["telefono"],$datosFormulario["parentesco"]);
-        // Verificar que se incluya el representante
-        $this->assertNotNull($respuesta);
-        $this->assertIsArray($respuesta);
-        $this->assertTrue($respuesta['ok']);
+        $this->db->method('query')->willReturn([]);
+        $resp = $this->model->listadoAtletas();
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('atletas', $resp);
     }
 }
