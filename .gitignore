@@ -4,3 +4,5 @@
 .env
 /cache/
 /.history/
+.phpunit.result.cache
+/.phpunit.cache

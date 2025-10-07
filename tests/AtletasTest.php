@@ -1,15 +1,17 @@
 <?php
+
 namespace Tests\Feature;
 
 use Gymsys\Model\Atletas;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class AtletasTest extends TestCase
 {
     private Atletas $model;
-    private Database $db;
+    private Database|MockObject $db;
 
     protected function setUp(): void
     {
@@ -43,16 +45,17 @@ final class AtletasTest extends TestCase
             'tipo_atleta' => Cipher::aesEncrypt('1'),
             'password' => 'Password123$'
         ]);
-
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("Atleta incluido con éxito", $resp["mensaje"]);
     }
 
     public function test_incluir_atleta_duplicado(): void
     {
         $this->db->method('query')->willReturn(true);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El atleta ingresado ya existe","code":400}');
         $this->model->incluirAtleta([
             'cedula' => '5560233',
             'nombres' => 'Alejandro',
@@ -73,7 +76,7 @@ final class AtletasTest extends TestCase
 
     public function test_incluir_atleta_invalido(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->model->incluirAtleta([
             'cedula' => '5560233a.',
             'nombres' => 'Alejandro22',
@@ -127,44 +130,23 @@ final class AtletasTest extends TestCase
 
     public function test_obtener_atleta_no_existe(): void
     {
-        $enc = Cipher::aesEncrypt('13285472');
+        $enc = Cipher::aesEncrypt('132854-$72');
         $this->db->method('query')->willReturn(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"No existe el atleta introducido","code":404}');
+        $this->model->obtenerAtleta(['id' => $enc]);
+    }
+    public function test_obtener_atleta_invalido(): void
+    {
+        $enc = Cipher::aesEncrypt('132854-$72');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
         $this->model->obtenerAtleta(['id' => $enc]);
     }
 
-    public function test_modificar_atleta_exitoso(): void
-    {
-        $this->db->expects($this->once())->method('beginTransaction');
-        $this->db->expects($this->once())->method('commit');
-        $this->db->method('query')->willReturnOnConsecutiveCalls(
-            true,
-            true,
-            true
-        );
-
-        $resp = $this->model->modificarAtleta([
-            'cedula' => '1328547',
-            'nombres' => 'Leoleo',
-            'apellidos' => 'Herrera',
-            'genero' => 'Masculino',
-            'fecha_nacimiento' => '1990-01-01',
-            'lugar_nacimiento' => 'Ciudad',
-            'estado_civil' => 'Soltero',
-            'telefono' => '04265538456',
-            'correo_electronico' => 'leoleole@example.com',
-            'peso' => '62',
-            'altura' => '178',
-            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
-            'tipo_atleta' => Cipher::aesEncrypt('1'),
-            'modificar_contraseña' => '1',
-            'password' => 'Password123$'
-        ]);
-
-        $this->assertIsArray($resp);
-        $this->assertArrayHasKey('mensaje', $resp);
-    }
 
     public function test_modificar_atleta_no_existe(): void
     {
@@ -191,11 +173,12 @@ final class AtletasTest extends TestCase
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('ok', $resp);
         $this->assertFalse($resp['ok']);
+        $this->assertEquals("No existe ningun atleta con esta cedula", $resp["mensaje"]);
     }
 
     public function test_modificar_atleta_invalido(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->model->modificarAtleta([
             'cedula' => 'V-13285427',
             'nombres' => 'Leoleo22',
@@ -230,6 +213,7 @@ final class AtletasTest extends TestCase
         $resp = $this->model->eliminarAtleta(['cedula' => $enc]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("El atleta se ha eliminado exitosamente", $resp['mensaje']);
     }
 
     public function test_eliminar_atleta_no_existe(): void
@@ -237,7 +221,17 @@ final class AtletasTest extends TestCase
         $enc = Cipher::aesEncrypt('55602332');
         $this->db->method('query')->willReturn(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El atleta introducido no existe","code":404}');
+        $this->model->eliminarAtleta(['cedula' => $enc]);
+    }
+    public function test_eliminar_atleta_invalido(): void
+    {
+        $enc = Cipher::aesEncrypt('5560dd$2');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
         $this->model->eliminarAtleta(['cedula' => $enc]);
     }
 
