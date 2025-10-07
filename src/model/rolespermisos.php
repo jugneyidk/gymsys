@@ -288,14 +288,14 @@ class Rolespermisos
    }
 
    private function _incluirRol(string $nombre, array $permisos): array
-   {
+   { 
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $nombre, $consulta);
       if ($existe) {
          ExceptionHandler::throwException("Ya existe un rol con el nombre introducido", 400, \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
-      $consulta = "INSERT INTO roles (nombre)
+      $consulta = "INSERT INTO {$_ENV['SECURE_DB']}.roles (nombre)
                 VALUES (:nombre);";
       $valores = [':nombre' => $nombre];
       $response = $this->database->query($consulta, $valores);

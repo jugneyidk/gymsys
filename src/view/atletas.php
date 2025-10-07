@@ -14,7 +14,7 @@
 </head>
 
 <body class="bg-body">
-   <?= str_replace('name="_csrf_token"','id="csrf_token_global" name="_csrf_token"',$controller->csrfField()); ?>
+ <?= str_replace('name="_csrf_token"','id="csrf_token_global" name="_csrf_token"',$controller->csrfField()); ?>
 
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?? 0 ?>;

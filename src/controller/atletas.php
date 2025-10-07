@@ -47,7 +47,7 @@ class Atletas extends BaseController
    {
       $this->validarPermisos($this->permisos, "leer");
       $this->validarMetodoRequest("GET");
-      $this->requireCsrf();
+    
       return $this->model->obtenerAtleta($datos);
    }
 }
