@@ -130,7 +130,7 @@ final class AtletasTest extends TestCase
 
     public function test_obtener_atleta_no_existe(): void
     {
-        $enc = Cipher::aesEncrypt('132854-$72');
+        $enc = Cipher::aesEncrypt('13285472');
         $this->db->method('query')->willReturn(false);
 
         $this->expectException(\InvalidArgumentException::class);

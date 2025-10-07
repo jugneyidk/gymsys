@@ -4,12 +4,13 @@ namespace Tests\Feature;
 use Gymsys\Model\Asistencias;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class AsistenciasTest extends TestCase
 {
     private Asistencias $model;
-    private Database $db;
+    private Database|MockObject $db;
 
     protected function setUp(): void
     {

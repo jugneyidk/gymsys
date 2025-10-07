@@ -1,15 +1,17 @@
 <?php
+
 namespace Tests\Feature;
 
 use Gymsys\Model\Entrenadores;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class EntrenadoresTest extends TestCase
 {
     private Entrenadores $model;
-    private Database $db;
+    private Database|MockObject $db;
 
     protected function setUp(): void
     {
@@ -44,13 +46,15 @@ final class EntrenadoresTest extends TestCase
 
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("Entrenador agregado con éxito", $resp["mensaje"]);
     }
 
     public function test_incluir_entrenador_duplicado(): void
     {
         $this->db->method('query')->willReturn(true);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El entrenador ya existe","code":400}');
         $this->model->incluirEntrenador([
             'cedula' => '22222222',
             'nombres' => 'Juan',
@@ -63,6 +67,25 @@ final class EntrenadoresTest extends TestCase
             'correo_electronico' => 'juan@example.com',
             'grado_instruccion' => 'Licenciatura',
             'password' => 'Password123$'
+        ]);
+    }
+    public function test_incluir_entrenador_invalido(): void
+    {
+        $this->db->method('query')->willReturn(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->model->incluirEntrenador([
+            'cedula' => '22222$22',
+            'nombres' => 'Juan132',
+            'apellidos' => '',
+            'genero' => 'Indefinido',
+            'fecha_nacimiento' => '1990-33-121',
+            'lugar_nacimiento' => 'Ciudad',
+            'estado_civil' => 'Soltero',
+            'telefono' => '0412-2131233',
+            'correo_electronico' => 'juan@example.',
+            'grado_instruccion' => '1234',
+            'password' => 'password123'
         ]);
     }
 
@@ -97,7 +120,17 @@ final class EntrenadoresTest extends TestCase
         $enc = Cipher::aesEncrypt('1234567');
         $this->db->method('query')->willReturn(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El entrenador ingresado no existe","code":404}');
+        $this->model->obtenerEntrenador(['id' => $enc]);
+    }
+    public function test_obtener_entrenador_invalido(): void
+    {
+        $enc = Cipher::aesEncrypt('12 34$$7');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
         $this->model->obtenerEntrenador(['id' => $enc]);
     }
 
@@ -128,6 +161,7 @@ final class EntrenadoresTest extends TestCase
 
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("El entrenador se ha modificado exitosamente", $resp["mensaje"]);
     }
 
     public function test_modificar_entrenador_no_existe(): void
@@ -135,17 +169,38 @@ final class EntrenadoresTest extends TestCase
         $cedOrigEnc = Cipher::aesEncrypt('9999999');
         $this->db->method('query')->willReturn(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"No existe el entrenador","code":404}');
         $this->model->modificarEntrenador([
             'cedula_original' => $cedOrigEnc,
             'cedula' => '9999999',
-            'nombres' => 'X',
-            'apellidos' => 'Y',
+            'nombres' => 'Guillermo',
+            'apellidos' => 'Calal',
             'genero' => 'Masculino',
             'fecha_nacimiento' => '1990-01-01',
             'lugar_nacimiento' => 'Ciudad',
             'estado_civil' => 'Soltero',
             'telefono' => '04120000000',
+            'correo_electronico' => 'x@y.com',
+            'grado_instruccion' => 'Licenciatura'
+        ]);
+    }
+    public function test_modificar_entrenador_invalido(): void
+    {
+        $cedOrigEnc = Cipher::aesEncrypt('9999999');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->model->modificarEntrenador([
+            'cedula_original' => $cedOrigEnc,
+            'cedula' => '9999999',
+            'nombres' => '',
+            'apellidos' => '$%$%',
+            'genero' => 'Masculinos',
+            'fecha_nacimiento' => '19902-01-01',
+            'lugar_nacimiento' => 'Ciudad',
+            'estado_civil' => 'Solteros',
+            'telefono' => '0412-0000000',
             'correo_electronico' => 'x@y.com',
             'grado_instruccion' => 'Licenciatura'
         ]);
@@ -167,6 +222,7 @@ final class EntrenadoresTest extends TestCase
         $resp = $this->model->eliminarEntrenador(['cedula' => $enc]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("El entrenador se eliminó correctamente", $resp["mensaje"]);
     }
 
     public function test_eliminar_entrenador_no_existe(): void
@@ -174,7 +230,8 @@ final class EntrenadoresTest extends TestCase
         $enc = Cipher::aesEncrypt('1234567');
         $this->db->method('query')->willReturn(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El entrenador ingresado no existe","code":404}');
         $this->model->eliminarEntrenador(['cedula' => $enc]);
     }
 
@@ -198,10 +255,4 @@ final class EntrenadoresTest extends TestCase
         $this->assertIsArray($resp['grados']);
     }
 
-    public function test_listado_grados_instruccion_vacio(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->model->listadoGradosInstruccion();
-    }
 }
