@@ -4,12 +4,13 @@ namespace Tests\Feature;
 use Gymsys\Model\Mensualidad;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class MensualidadTest extends TestCase
 {
     private Mensualidad $model;
-    private Database $db;
+    private Database|MockObject $db;
     private string $encCedula;
     private string $encIdMensualidad;
 
