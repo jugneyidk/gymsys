@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use Gymsys\Model\Mensualidad;
@@ -40,6 +41,7 @@ final class MensualidadTest extends TestCase
 
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals('La mensualidad se agrego correctamente', $resp['mensaje']);
     }
 
     public function test_incluir_mensualidad_duplicada(): void
@@ -48,7 +50,8 @@ final class MensualidadTest extends TestCase
             ['x' => 1]
         );
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Ya existe una mensualidad para este atleta en ese mes","code":400}');
         $this->model->incluirMensualidad([
             'id_atleta' => $this->encCedula,
             'monto' => '20',
@@ -57,9 +60,10 @@ final class MensualidadTest extends TestCase
         ]);
     }
 
-    public function test_incluir_mensualidad_invalida_fecha(): void
+    public function test_incluir_mensualidad_invalida(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La fecha introducida no es v\u00e1lida","code":400}');
         $this->model->incluirMensualidad([
             'id_atleta' => $this->encCedula,
             'monto' => '20',
@@ -80,13 +84,15 @@ final class MensualidadTest extends TestCase
         $resp = $this->model->eliminarMensualidad(['id' => $this->encIdMensualidad]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals('La mensualidad se eliminó exitosamente', $resp['mensaje']);
     }
 
     public function test_eliminar_mensualidad_no_existe(): void
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(false);
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La mensualidad ingresada no existe","code":404}');
         $this->model->eliminarMensualidad(['id' => $this->encIdMensualidad]);
     }
 
