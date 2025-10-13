@@ -49,7 +49,13 @@ class Cipher
          if (!$ivFijo) {
             $iv_length = openssl_cipher_iv_length(self::CIPHER);
             $decoded = self::descodificarBase64($encryptedData);
+            if (strlen($decoded) < $iv_length) {
+               throw new \UnexpectedValueException("Datos cifrados inválidos: longitud insuficiente para contener el IV");
+            }
             $iv = substr($decoded, 0, $iv_length);
+            if (strlen($iv) !== $iv_length) {
+               throw new \UnexpectedValueException("IV inválido: se esperaban $iv_length bytes, se obtuvieron " . strlen($iv) . " bytes");
+            }
             $ciphertext = substr($decoded, $iv_length);
             return openssl_decrypt($ciphertext, self::CIPHER, self::$key, OPENSSL_RAW_DATA, $iv);
          }
