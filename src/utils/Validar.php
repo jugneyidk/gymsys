@@ -158,7 +158,7 @@ class Validar
                $valor = (int)$valor;
                return true;
             }
-            return false;
+            ExceptionHandler::throwException("El valor ingresado no es un número entero válido", 400, \InvalidArgumentException::class);
 
          case 'float':
             $valor = filter_var($valor, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
@@ -166,7 +166,7 @@ class Validar
                $valor = (float)$valor;
                return true;
             }
-            return false;
+            ExceptionHandler::throwException("El valor ingresado no es un número decimal válido", 400, \InvalidArgumentException::class);
 
          case 'string':
             $valor = htmlspecialchars($valor);
@@ -174,17 +174,26 @@ class Validar
 
          case 'email':
             $valor = filter_var($valor, FILTER_SANITIZE_EMAIL);
-            return filter_var($valor, FILTER_VALIDATE_EMAIL) !== false;
+            if (filter_var($valor, FILTER_VALIDATE_EMAIL) !== false) {
+               return true;
+            }
+            ExceptionHandler::throwException("El correo electrónico ingresado no es válido", 400, \InvalidArgumentException::class);
 
          case 'url':
             $valor = filter_var($valor, FILTER_SANITIZE_URL);
-            return filter_var($valor, FILTER_VALIDATE_URL) !== false;
+            if (filter_var($valor, FILTER_VALIDATE_URL) !== false) {
+               return true;
+            }
+            ExceptionHandler::throwException("La URL ingresada no es válida", 400, \InvalidArgumentException::class);
 
          case 'bool':
             $valor = filter_var($valor, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            return $valor !== null;
+            if ($valor !== null) {
+               return true;
+            }
+            ExceptionHandler::throwException("El valor booleano ingresado no es válido", 400, \InvalidArgumentException::class);
          default:
-            return false; // tipo no soportado
+            ExceptionHandler::throwException("Tipo de dato no soportado para validación", 400, \InvalidArgumentException::class);
       }
    }
 }
