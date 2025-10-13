@@ -40,7 +40,7 @@ class Notificaciones
    {
       $idUsuario = ID_USUARIO;
       if (empty($idUsuario)) {
-         ExceptionHandler::throwException("No se ha iniciado sesión", 403, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("No se ha iniciado sesión", \UnexpectedValueException::class, 403);
       }
       Validar::validar("cedula", $idUsuario);
       return $this->_marcarTodoLeido($idUsuario);
@@ -51,7 +51,7 @@ class Notificaciones
       $arrayFiltrado = Validar::validarArray($datos, $keys);
       $pagina = filter_var($arrayFiltrado['pagina'], FILTER_SANITIZE_NUMBER_INT);
       if (!is_numeric($pagina)) {
-         ExceptionHandler::throwException("El valor de 'pagina' no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El valor de 'pagina' no es válido", \InvalidArgumentException::class);
       }
       return $this->_verTodas($pagina);
    }
@@ -62,7 +62,7 @@ class Notificaciones
       $consulta = "SELECT id FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id = :id;";
       $existe = Validar::existe($this->database, $idNotificacion, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La notificacion no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La notificacion no existe", \RuntimeException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.notificaciones SET leida = 1
@@ -78,7 +78,7 @@ class Notificaciones
       $consulta = "SELECT id FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id_usuario = :id;";
       $existe = Validar::existe($this->database, $idUsuario, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No tiene notificaciones", 404, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("No tiene notificaciones", \UnexpectedValueException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.notificaciones SET leida = 1

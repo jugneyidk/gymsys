@@ -74,7 +74,7 @@ class Bitacora
       $consulta = "SELECT id_accion FROM {$_ENV['SECURE_DB']}.bitacora WHERE id_accion = :id";
       $existe = Validar::existe($this->database, $idAccion, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe la accion", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe la accion", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT * FROM {$_ENV['SECURE_DB']}.bitacora WHERE id_accion = :id_accion";
       $valores = [':id_accion' => $idAccion];

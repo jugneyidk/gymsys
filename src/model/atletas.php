@@ -40,9 +40,11 @@ class Atletas
       $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $datos['cedula'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("El atleta ingresado ya existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El atleta ingresado ya existe", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
+      $existeRepresentante = false;
+      $representante = null;
       if (!empty($datos['cedula_representante'])) {
          $rep =  new Representantes($this->database);
          $representante = [
@@ -67,7 +69,7 @@ class Atletas
          ':correo_electronico' => $datos['correo_electronico']
       ];
       $response = $this->database->query($consultaUsuario, $valores);
-      if (empty($response)) ExceptionHandler::throwException("Ocurrió un error al incluir el usuario", 500, \Exception::class);
+      if (empty($response)) ExceptionHandler::throwException("Ocurrió un error al incluir el usuario", \Exception::class, 500);
       $consultaAtleta = "INSERT INTO atleta (cedula, entrenador, tipo_atleta, peso, altura, representante)
             VALUES (:cedula, :id_entrenador, :tipo_atleta, :peso, :altura, :representante);";
       $valoresAtleta = [
@@ -79,7 +81,7 @@ class Atletas
          ':representante' => $existeRepresentante ? $representante['cedula'] : null,
       ];
       $response = $this->database->query($consultaAtleta, $valoresAtleta);
-      if (empty($response)) ExceptionHandler::throwException("Ocurrió un error al incluir el atleta", 500, \Exception::class);
+      if (empty($response)) ExceptionHandler::throwException("Ocurrió un error al incluir el atleta", \Exception::class, 500);
       $this->database->commit();
       $resultado["mensaje"] = "Atleta incluido con éxito";
       return $resultado;
@@ -147,7 +149,7 @@ class Atletas
       $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe el atleta introducido", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe el atleta introducido", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT u.cedula, 
                     u.nombre, 
@@ -239,7 +241,7 @@ class Atletas
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se pudo modificar el atleta", 500, \Exception::class);
+         ExceptionHandler::throwException("No se pudo modificar el atleta", \Exception::class, 500);
       }
       if ($datos['password'] !== null) {
          $consultaPassword = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles
@@ -251,7 +253,7 @@ class Atletas
          ];
          $response = $this->database->query($consultaPassword, $valoresPassword);
          if (empty($response)) {
-            ExceptionHandler::throwException("No se pudo modificar el atleta", 500, \Exception::class);
+            ExceptionHandler::throwException("No se pudo modificar el atleta", \Exception::class, 500);
          }
       }
       $this->database->commit();
@@ -264,7 +266,7 @@ class Atletas
       $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El atleta introducido no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El atleta introducido no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consultas = [
@@ -274,7 +276,7 @@ class Atletas
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, [':cedula' => $cedula]);
          if (empty($response)) {
-            ExceptionHandler::throwException("Ocurrió un error al eliminar el atleta", 500, \RuntimeException::class);
+            ExceptionHandler::throwException("Ocurrió un error al eliminar el atleta", \RuntimeException::class, 500);
          }
       }
       $this->database->commit();

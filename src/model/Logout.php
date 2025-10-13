@@ -21,7 +21,7 @@ class Logout
       $this->deleteRefreshToken();
        $this->destroySession();  
       if (isset($_COOKIE['refresh_token'])) {
-         ExceptionHandler::throwException("Ocurrio un error al cerrar la sesión", 500, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("Ocurrio un error al cerrar la sesión", \UnexpectedValueException::class, 403);
       }
       return true;
    }
@@ -50,7 +50,7 @@ class Logout
       $valores = [':token' => $_COOKIE['refresh_token']];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrio un error al cerrar la sesión", 500, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("Ocurrio un error al cerrar la sesión", \UnexpectedValueException::class, 403);
       }
       $this->deleteRefreshTokenCookie();
       return;

@@ -28,7 +28,7 @@ class PerfilAtleta
       $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (empty($existe)) {
-         ExceptionHandler::throwException("No existe el usuario introducido", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe el usuario introducido", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT 
                         u.cedula, 
@@ -53,7 +53,7 @@ class PerfilAtleta
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al obtener el usuario", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al obtener el usuario", \RuntimeException::class, 500);
       }
       $resultado["usuario"] = $response;
       return $resultado;

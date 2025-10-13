@@ -24,12 +24,12 @@ class AuthRefresh
       if (!$tokenRefreshGuardado) {
          setcookie('refresh_token', '', time() - 3600, '/');
          unset($_COOKIE['refresh_token']);
-         ExceptionHandler::throwException('Token no encontrado', 403, \Exception::class);
+         ExceptionHandler::throwException('Token no encontrado', \InvalidArgumentException::class, 403);
       }
       $tokenDescodificado = JWTHelper::decodificarToken($tokenRefreshGuardado);
       $idTokenDB = Cipher::aesDecrypt($tokenDescodificado->sub) ?? null;
       if ($idTokenDB !== $idUsuario) {
-         ExceptionHandler::throwException('Token inválido', 403, \Exception::class);
+         ExceptionHandler::throwException('Token inválido', \InvalidArgumentException::class, 403);
       }
       $tokens = JWTHelper::generarTokens($idUsuario);
       $this->database->beginTransaction();
@@ -37,7 +37,7 @@ class AuthRefresh
       $valoresToken = [':id_usuario' => $idUsuario, ':token' => $tokens['refreshToken']];
       $response = $this->database->query($consultaToken, $valoresToken);
       if (empty($response)) {
-         ExceptionHandler::throwException('Error al actualizar el token', 500, \Exception::class);
+         ExceptionHandler::throwException('Error al actualizar el token', \RuntimeException::class, 500);
       }
       $this->database->commit();
       $clientType = $_SERVER['HTTP_X_CLIENT_TYPE'] ?? 'web';

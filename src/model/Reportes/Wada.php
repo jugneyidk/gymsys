@@ -33,7 +33,7 @@ class Wada
 
       $result = $database->query($consulta, $valores);
       if (!$result) {
-         ExceptionHandler::throwException("No se encontraron registros WADA con los filtros especificados", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron registros WADA con los filtros especificados", \RuntimeException::class, 500);
       }
       return $result;
    }

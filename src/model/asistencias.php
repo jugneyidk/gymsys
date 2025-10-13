@@ -60,7 +60,7 @@ class Asistencias
          ];
          $response = $this->database->query($consulta, $valores);
          if (!$response) {
-            ExceptionHandler::throwException("Ocurrió un error al incluir las asistencias", 500, \RuntimeException::class);
+            ExceptionHandler::throwException("Ocurrió un error al incluir las asistencias", \RuntimeException::class);
          }
       }
       $this->database->commit();
@@ -88,7 +88,7 @@ class Asistencias
       $valores = [':fecha' => $fecha];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Hubo un error al eliminar las asistencias", 500, \RuntimeException::class);
+         ExceptionHandler::throwException("Hubo un error al eliminar las asistencias", \RuntimeException::class);
       }
       $this->database->commit();
       $resultado["mensaje"] = "Las asistencias del dia '{$fecha}' se eliminaron correctamente";

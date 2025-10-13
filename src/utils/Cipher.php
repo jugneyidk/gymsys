@@ -62,7 +62,7 @@ class Cipher
          $decoded = self::descodificarBase64($encryptedData);
          return openssl_decrypt($decoded, self::CIPHER, self::$key, OPENSSL_RAW_DATA);
       } catch (\Throwable $th) {
-         ExceptionHandler::throwException($th->getMessage(), 500, \UnexpectedValueException::class);
+         ExceptionHandler::throwException($th->getMessage(), \InvalidArgumentException::class);
          return false;
       }
    }

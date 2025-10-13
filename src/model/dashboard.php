@@ -22,7 +22,7 @@ class Dashboard
       $consulta = "SELECT * FROM estadisticas_dashboard;";
       $response = $this->database->query($consulta, uniqueFetch: true);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se encontraron estadisticas", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No se encontraron estadisticas", \UnexpectedValueException::class, 403);
       }
       $resultado["estadisticas"] = $response ?: ["total_atletas" => 0, "total_entrenadores" => 0,  "total_wadas_pendientes" => 0, "total_deudores" => 0];
       return $resultado;

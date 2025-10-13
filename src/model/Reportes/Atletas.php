@@ -82,7 +82,7 @@ class Atletas
 
       $existe = $database->query($consultaExistencia, [":cedula" => $cedula], false);
       if (empty($existe)) {
-         ExceptionHandler::throwException("No se encontró el atleta con la cédula especificada", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No se encontró el atleta con la cédula especificada", \InvalidArgumentException::class, 404);
       }
 
       // Si el atleta existe, obtenemos su información detallada
@@ -103,7 +103,7 @@ class Atletas
 
       $response = $database->query($consulta, [":cedula" => $cedula]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Error al obtener la información del atleta", 500, \RuntimeException::class);
+         ExceptionHandler::throwException("Error al obtener la información del atleta", \RuntimeException::class, 500);
       }
 
       return $response;

@@ -33,7 +33,7 @@ class Recovery
       $valores = [':email' => $email, ':cedula' => $cedula];
       $usuario = $this->database->query($consulta, $valores, true);
       if (empty($usuario)) {
-         ExceptionHandler::throwException("Los datos no coinciden", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Los datos no coinciden", \InvalidArgumentException::class, 404);
       }
       $token = bin2hex(random_bytes(16));
       $expira = date("Y-m-d H:i:s", strtotime("+1 hour"));
@@ -48,7 +48,7 @@ class Recovery
       $nombreCompleto = $usuario['nombre'] . ' ' . $usuario['apellido'];
       if (!$this->enviarCorreoRecuperacion($email, $token, $nombreCompleto)) {
          $this->database->rollBack();
-         ExceptionHandler::throwException("Error al enviar el correo. Intenta nuevamente", 500, \RuntimeException::class);
+         ExceptionHandler::throwException("Error al enviar el correo. Intenta nuevamente", \Exception::class, 500);
       }
       $this->database->commit();
       return ["mensaje" => "Se ha enviado un enlace de recuperación a tu correo"];
@@ -57,7 +57,7 @@ class Recovery
    private function enviarCorreoRecuperacion(string $email, string $token, string $nombreCompleto): bool
    {
       if (empty($email) || empty($token)) {
-         ExceptionHandler::throwException("No se han proporcionado los datos necesarios para enviar el correo", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No se han proporcionado los datos necesarios para enviar el correo", \InvalidArgumentException::class);
       }
       $tokenCodificado = Cipher::codificarBase64($token);
       $enlace = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http')
@@ -156,7 +156,7 @@ class Recovery
                            color:#777777;
                         ">
                         <span style="display:block; color:#777777;">
-                           © $year – $this->name – Mantén tu cuenta segura
+                           &copy; $year – $this->name – Mantén tu cuenta segura
                         </span>
                         <br>
                         <span style="display:block; margin-top:0; font-size:10px; color:#777777;">
@@ -197,7 +197,7 @@ class Recovery
          $mail->clearAllRecipients();
          $mail->clearAttachments();
          $mail->clearCustomHeaders();
-         ExceptionHandler::throwException("Error al enviar el correo. Intenta nuevamente", 500, \RuntimeException::class);
+         ExceptionHandler::throwException("Error al enviar el correo. Intenta nuevamente", \Exception::class, 500);
          return false;
       }
    }

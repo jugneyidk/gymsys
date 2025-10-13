@@ -13,7 +13,7 @@ class Database
       $database = require_once dirname(__DIR__) . "/../config/database.php";
       $this->pdo = new \PDO("mysql:host={$database['host']};dbname={$database['bd']}", $database['usuario'], $database['password'], $database['options']);
       if (empty($this->pdo)) {
-         ExceptionHandler::throwException("Error al conectar a la base de datos", 500, \PDOException::class);
+         ExceptionHandler::throwException("Error al conectar a la base de datos", \Exception::class, 500);
       }
       $this->pdo->exec("SET NAMES utf8");
       $this->setIsolationLevel('REPEATABLE READ');
@@ -26,7 +26,7 @@ class Database
    public function query(string $sql, array $params = [], bool $uniqueFetch = false): array|bool
    {
       if (empty($sql)) {
-         ExceptionHandler::throwException("Error de la query SQL", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Error de la query SQL", \InvalidArgumentException::class);
       }
       try {
          $stmt = $this->pdo->prepare($sql);
@@ -48,9 +48,9 @@ class Database
             $this->rollBack();
          }
          if (ENVIRONMENT != 'DEVELOPMENT') {
-            ExceptionHandler::throwException($this->mensajesDeError($e->getCode()), 500, \RuntimeException::class);
+            ExceptionHandler::throwException($this->mensajesDeError($e->getCode()), \RuntimeException::class, 500);
          }
-         ExceptionHandler::throwException($e->getMessage(), 500, \RuntimeException::class);
+         ExceptionHandler::throwException($e->getMessage(), \RuntimeException::class, 500);
          return false;
       }
    }

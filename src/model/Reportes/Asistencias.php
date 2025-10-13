@@ -10,7 +10,7 @@ class Asistencias
    public static function obtenerReporteAsistencias(Database $database, array $filtros): array
    {
       if (empty($filtros['fechaInicio']) || empty($filtros['fechaFin'])) {
-         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de asistencias", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de asistencias", \InvalidArgumentException::class, 404);
       }
 
       $consulta = "SELECT CONCAT(u.nombre, ' ', u.apellido) AS nombre,
@@ -28,7 +28,7 @@ class Asistencias
 
       $response = $database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("No se encontraron asistencias en el período especificado", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron asistencias en el período especificado", \RuntimeException::class, 500);
       }
       return $response;
    }

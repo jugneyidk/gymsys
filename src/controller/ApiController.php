@@ -45,7 +45,7 @@ class ApiController extends BaseController
          case 'GET':
             $this->handleGet($controller);
          default:
-            ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
+            ExceptionHandler::throwException("Método no permitido", \UnexpectedValueException::class, 403);
       }
    }
    protected function getRequestData(): array
@@ -57,7 +57,7 @@ class ApiController extends BaseController
       // Caso 1: GET para API (ej: ?p=user&accion=getData)
       if ($this->accion) {
          if (!method_exists($controller, $this->accion)) {
-            ExceptionHandler::throwException("Error en la solicitud: no se encontró el metodo", 400, \BadMethodCallException::class);
+            ExceptionHandler::throwException("Error en la solicitud: no se encontró el metodo", \InvalidArgumentException::class);
          }
          $data = $controller->{$this->accion}($this->requestData);
          return $this->sendResponse(200, $data);
@@ -74,7 +74,7 @@ class ApiController extends BaseController
    {
       // Validar acción en POST (ej: ?p=user&accion=modificar)
       if (empty($this->accion) || !method_exists($controller, $this->accion)) {
-         ExceptionHandler::throwException("Error en la solicitud: el método llamado no existe", 400, \BadMethodCallException::class);
+         ExceptionHandler::throwException("Error en la solicitud: el método llamado no existe", \InvalidArgumentException::class);
       }
       $response = $controller->{$this->accion}($this->requestData);
       return $this->sendResponse(200, $response);

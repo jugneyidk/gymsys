@@ -66,7 +66,7 @@ class Wada
       $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("La WADA para este atleta ya existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La WADA para este atleta ya existe", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO wada (id_atleta, estado, inscrito, ultima_actualizacion, vencimiento) 
@@ -80,7 +80,7 @@ class Wada
       ];
       $response = $this->database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir la WADA", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir la WADA", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "La WADA se registró exitosamente";
@@ -92,7 +92,7 @@ class Wada
       $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La WADA del atleta introducido no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La WADA del atleta introducido no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE wada SET estado = :estado, inscrito = :inscrito, ultima_actualizacion = :ultima_actualizacion, vencimiento = :vencimiento WHERE id_atleta = :id_atleta";
@@ -105,7 +105,7 @@ class Wada
       ];
       $response = $this->database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la WADA", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar la WADA", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "La WADA se modificó exitosamente";
@@ -117,12 +117,12 @@ class Wada
       $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La WADA de este atleta no existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La WADA de este atleta no existe", \InvalidArgumentException::class);
       }
       $consulta = "SELECT * FROM wada WHERE id_atleta = :id_atleta";
       $response = $this->database->query($consulta, [":id_atleta" => $cedula], true);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al obtener la WADA", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al obtener la WADA", \RuntimeException::class, 500);
       }
       $resultado["wada"] = $response;
       Cipher::crearHashArray($resultado, "id_atleta");
@@ -135,13 +135,13 @@ class Wada
       $consulta = "SELECT id_atleta FROM wada WHERE id_atleta = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La WADA del atleta introducido no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La WADA del atleta introducido no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM wada WHERE id_atleta = :id_atleta";
       $response = $this->database->query($consulta, [':id_atleta' => $cedula]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la WADA", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la WADA", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $resultado['mensaje'] = "La WADA se eliminó exitosamente";

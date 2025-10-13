@@ -40,7 +40,7 @@ class TipoCompetencia
       $arrayFiltrado = Validar::validarArray($datos, $keys);
       $arrayFiltrado['id_tipo'] = Cipher::aesDecrypt($arrayFiltrado['id_tipo']);
       if (!Validar::sanitizarYValidar($arrayFiltrado['id_tipo'], "int")) {
-         ExceptionHandler::throwException("El ID del tipo de competencia no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El ID del tipo de competencia no es válido", \InvalidArgumentException::class);
       }
       return $this->_eliminarTipo($arrayFiltrado['id_tipo']);
    }
@@ -60,13 +60,13 @@ class TipoCompetencia
       $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $nombreTipo, $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe este tipo de competencia", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe este tipo de competencia", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO tipo_competencia (nombre) VALUES (:nombre)";
       $response = $this->database->query($consulta, [':nombre' => $nombreTipo]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el tipo de competencia", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir el tipo de competencia", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El tipo de competencia se registró exitosamente";
@@ -77,12 +77,12 @@ class TipoCompetencia
       $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
       $existe = Validar::existe($this->database, $datos['id_tipo'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El tipo de competencia ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El tipo de competencia ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE nombre = :id AND id_tipo_competencia != " . $datos['id_tipo'] . ";";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe un tipo de competencia con este nombre", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe un tipo de competencia con este nombre", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE tipo_competencia SET nombre = :nombre WHERE id_tipo_competencia = :id_tipo";
@@ -92,7 +92,7 @@ class TipoCompetencia
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar el tipo de competencia", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar el tipo de competencia", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "El tipo de competencia se modificó exitosamente";
@@ -103,13 +103,13 @@ class TipoCompetencia
       $consulta = "SELECT id_tipo_competencia FROM tipo_competencia WHERE id_tipo_competencia = :id;";
       $existe = Validar::existe($this->database, $idTipo, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("Este tipo de competencia no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Este tipo de competencia no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM tipo_competencia WHERE id_tipo_competencia = :id_tipo";
       $response = $this->database->query($consulta, [':id_tipo' => $idTipo]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar el tipo de competencia", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar el tipo de competencia", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "El tipo de competencia se eliminó exitosamente";

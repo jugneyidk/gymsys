@@ -19,7 +19,7 @@ class Rolespermisos extends BaseController
       $this->model = new $modelClass($this->database);
       $this->permisos = $this->obtenerPermisos("Rolespermisos", $this->database);
       if ($this->permisos['leer'] == 0)
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \InvalidArgumentException::class);
    }
    public function obtenerPermisosNav(): array
    {

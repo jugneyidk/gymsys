@@ -10,7 +10,7 @@ class Mensualidades
    public static function obtenerReporteMensualidades(Database $database, array $filtros): array
    {
       if (empty($filtros['fechaInicio']) || empty($filtros['fechaFin'])) {
-         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de mensualidades", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de mensualidades", \InvalidArgumentException::class, 404);
       }
 
       $consulta = "SELECT
@@ -29,7 +29,7 @@ class Mensualidades
 
       $response = $database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("No se encontraron mensualidades en el período especificado", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron mensualidades en el período especificado", \RuntimeException::class, 500);
       }
       return $response;
    }
@@ -50,7 +50,7 @@ class Mensualidades
       ];
       $response = $database->query($consulta, $valores, true);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se encontraron mensualidades en el período especificado", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron mensualidades en el período especificado", \RuntimeException::class, 500);
       }
       $resultado['resumen_estadistico'] = $response;
       $consultaPorMes = "SELECT

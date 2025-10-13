@@ -47,7 +47,7 @@ class JWTHelper
     $headers = function_exists('getallheaders') ? getallheaders() : [];
     $authHeader = $headers['Authorization'] ?? ($headers['authorization'] ?? null);
     if (empty($authHeader)) {
-        ExceptionHandler::throwException('No se encontro el token', 403, \Exception::class);
+        ExceptionHandler::throwException('No se encontro el token', \Exception::class, 403);
     }
     $bearerToken = explode(' ', $authHeader);
     return $bearerToken[1] ?? null;
@@ -62,8 +62,8 @@ class JWTHelper
       } catch (\Firebase\JWT\ExpiredException $e) {
          ExceptionHandler::throwException(
             'Token expirado',
-            401,
-            \Exception::class
+             \Exception::class,
+             401
          );
          return false;
       } catch (\Exception $e) {
@@ -78,7 +78,7 @@ class JWTHelper
    public static function guardarRefreshCookie(string $refreshToken): bool
    {
       if (empty($refreshToken)) {
-         ExceptionHandler::throwException('No se proporcionó un token de refresco', 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException('No se proporcionó un token de refresco', \InvalidArgumentException::class, 401);
       }
       $options = [
          'expires' => time() + 60 * 60 * 24 * 3,
@@ -91,7 +91,7 @@ class JWTHelper
          setcookie("refresh_token", $refreshToken, $options);
          return true;
       } catch (\Exception $e) {
-         ExceptionHandler::throwException('Error al guardar el token de refresco', 500, \Exception::class);
+         ExceptionHandler::throwException('Error al guardar el token de refresco', \Exception::class, 500);
          return false;
       }
    }

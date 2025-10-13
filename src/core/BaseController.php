@@ -39,7 +39,7 @@ abstract class BaseController
    {
       $class = "Gymsys\Controller\\" . ucwords($page);
       if (!class_exists($class)) {
-         ExceptionHandler::throwException("No existe el controlador con este nombre", 400, \BadFunctionCallException::class);
+         ExceptionHandler::throwException("No existe el controlador con este nombre", \InvalidArgumentException::class);
       }
       return $class;
    }
@@ -47,14 +47,14 @@ abstract class BaseController
    {
       $class = "Gymsys\Model\\" . ucwords($page);
       if (!class_exists($class)) {
-         ExceptionHandler::throwException("No existe el modelo con este nombre", 400, \BadFunctionCallException::class);
+         ExceptionHandler::throwException("No existe el modelo con este nombre", \InvalidArgumentException::class);
       }
       return $class;
    }
    public function validarMetodoRequest(string $metodo): void
    {
       if ($_SERVER['REQUEST_METHOD'] !== $metodo) {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
+         ExceptionHandler::throwException("Método no permitido", \UnexpectedValueException::class, 401);
       }
       return;
    }
@@ -102,8 +102,8 @@ abstract class BaseController
       if (!$this->verifyCsrfToken()) {
          ExceptionHandler::throwException(
             'Token CSRF inválido',
-            403,
-            \Exception::class
+            \Exception::class,
+            403
          );
       }
    }
@@ -116,14 +116,14 @@ public function accionCsrfGlobal(): array
    {
       $permisos = Rolespermisos::obtenerPermisosModulo($modulo, $database);
       if (empty($permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \Exception::class, 403);
       }
       return $permisos;
    }
    protected function validarPermisos(array $permisos, string $permiso): void
    {
       if (empty($permisos[$permiso])) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \Exception::class, 403);
       }
    }
    public function accionCsrfNuevo(): array

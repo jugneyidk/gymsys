@@ -28,7 +28,7 @@ class Login
       } catch (\Exception $e) {
          // Registrar intento fallido
          LoginAttempts::recordFailedAttempt();
-         ExceptionHandler::throwException($e->getMessage(), 400, $e);
+         ExceptionHandler::throwException($e->getMessage(), get_class($e));
       }
    }
    private function _autenticarUsuario(string $id_usuario, string $password): array
@@ -62,7 +62,7 @@ class Login
       $valores = [':token' => $refreshToken, ':id_usuario' => $idUsuario];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrio un error al guardar la sesión", 500, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("Ocurrio un error al guardar la sesión", \UnexpectedValueException::class, 500);
          return false;
       }
       return true;

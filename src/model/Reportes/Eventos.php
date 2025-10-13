@@ -10,7 +10,7 @@ class Eventos
    public static function obtenerReporteEventos(Database $database, array $filtros): array
    {
       if (empty($filtros['fechaInicio']) || empty($filtros['fechaFin'])) {
-         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de eventos", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Las fechas de inicio y fin son requeridas para el reporte de eventos", \RuntimeException::class, 500);
       }
 
       $consulta = "SELECT 

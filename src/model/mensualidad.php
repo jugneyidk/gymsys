@@ -27,7 +27,7 @@ class Mensualidad
       Validar::validarFecha($arrayFiltrado['fecha']);
       Validar::validar("detalles", $arrayFiltrado['detalles']);
       if (!filter_var((float)$arrayFiltrado['monto'], FILTER_VALIDATE_FLOAT) && $arrayFiltrado['monto'] < 0) {
-         ExceptionHandler::throwException("El monto no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El monto no es válido", \InvalidArgumentException::class);
       }
       return $this->_incluirMensualidad($arrayFiltrado);
    }
@@ -55,7 +55,7 @@ class Mensualidad
       $this->database->beginTransaction();
       $existeValidacion = $this->existeMensualidadEnMes($datos);
       if (!empty($existeValidacion)) {
-         ExceptionHandler::throwException("Ya existe una mensualidad para este atleta en ese mes", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una mensualidad para este atleta en ese mes", \InvalidArgumentException::class);
       }
       $consulta = "INSERT INTO mensualidades (id_atleta, monto, fecha, detalles) 
                      VALUES (:id_atleta, :monto, :fecha, :detalles)";
@@ -67,7 +67,7 @@ class Mensualidad
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrio un error al agregar la mensualidad", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrio un error al agregar la mensualidad", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "La mensualidad se agrego correctamente";
@@ -78,14 +78,14 @@ class Mensualidad
       $consulta = "SELECT id_mensualidad FROM mensualidades WHERE id_mensualidad = :id;";
       $existe = Validar::existe($this->database, $id, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La mensualidad ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La mensualidad ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM mensualidades WHERE id_mensualidad = :id";
       $valores = [':id' => $id];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la mensualidad", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la mensualidad", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "La mensualidad se eliminó exitosamente";

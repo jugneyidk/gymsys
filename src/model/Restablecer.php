@@ -36,12 +36,12 @@ class Restablecer
       $consulta = "SELECT expira FROM {$_ENV['SECURE_DB']}.`reset` WHERE token = :token";
       $resultado = $this->database->query($consulta, [':token' => $token], true);
       if (empty($resultado)) {
-         ExceptionHandler::throwException("Token inválido", 400, \RuntimeException::class);
+         ExceptionHandler::throwException("Token inválido", \Exception::class, 500);
       }
       $actual = date("Y-m-d H:i:s");
       if ($resultado['expira'] < $actual) {
          $this->eliminarTokensExpirados();
-         ExceptionHandler::throwException("Token expirado", 400, \RuntimeException::class);
+         ExceptionHandler::throwException("Token expirado", \Exception::class, 500);
       }
       return ['token' => $token];
    }
@@ -59,7 +59,7 @@ class Restablecer
       } catch (\Throwable $th) {
          $this->database->rollBack();
          $decoded = json_decode($th->getMessage(), true);
-         ExceptionHandler::throwException($decoded['error'], $decoded['code'], \RuntimeException::class);
+         ExceptionHandler::throwException($decoded['error'], \RuntimeException::class, $decoded['code']);
          return false;
       }
    }

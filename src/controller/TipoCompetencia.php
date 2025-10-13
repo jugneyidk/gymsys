@@ -17,7 +17,7 @@ class TipoCompetencia extends BaseController
       $modelClass = $this->getModel("TipoCompetencia");
       $this->model = new $modelClass((object) $this->database);
       $this->permisos = $this->obtenerPermisos("Eventos", $this->database);
-      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+      if ($this->permisos['leer'] == 0) ExceptionHandler::throwException("Acceso no autorizado", \InvalidArgumentException::class);
    }
    public function listadoTipos(): array
    {

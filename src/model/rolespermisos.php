@@ -45,7 +45,7 @@ class Rolespermisos
    private static function obtenerClaveCache(?int $idRol, ?string $modulo = null): string
    {
       if ($idRol === null) {
-         ExceptionHandler::throwException("ID de rol no ingresado", 403, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("ID de rol no ingresado", \InvalidArgumentException::class, 403);
       }
       
       $key = 'rol_' . $idRol;
@@ -121,8 +121,8 @@ class Rolespermisos
          }
          ExceptionHandler::throwException(
             "Acceso no autorizado",
-            403,
-            \UnexpectedValueException::class
+            \UnexpectedValueException::class,
+            403
          );
       }
       
@@ -234,7 +234,7 @@ class Rolespermisos
       $idRol = Cipher::aesDecrypt($arrayFiltrado['id']);
       $id = filter_var($idRol, FILTER_SANITIZE_NUMBER_INT);
       if ($id === '' || $id === null) {
-         ExceptionHandler::throwException("El ID de rol ingresado no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El ID de rol ingresado no es válido", \InvalidArgumentException::class);
       }
       return $this->_obtenerRol((int) $id);
    }
@@ -292,7 +292,7 @@ class Rolespermisos
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $nombre, $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe un rol con el nombre introducido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe un rol con el nombre introducido", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO {$_ENV['SECURE_DB']}.roles (nombre)
@@ -300,7 +300,7 @@ class Rolespermisos
       $valores = [':nombre' => $nombre];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir el rol", \Exception::class, 500);
       }
       $idRol = $this->database->lastInsertId();
       $consultaPermisos = "INSERT INTO {$_ENV['SECURE_DB']}.permisos (id_rol, modulo, crear, leer, actualizar, eliminar)
@@ -317,7 +317,7 @@ class Rolespermisos
       $permisos[':id_rol'] = $idRol;
       $response = $this->database->query($consultaPermisos, $permisos);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir el rol", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El rol se agregó exitosamente";
@@ -329,7 +329,7 @@ class Rolespermisos
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $id, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El rol ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El rol ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT 
                     r.nombre AS nombre_rol, 
@@ -346,7 +346,7 @@ class Rolespermisos
       $valores = [':id_rol' => $id];
       $response = $this->database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("Ocurrió un error al consultar el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al consultar el rol", \Exception::class, 500);
       }
       $resultado["rol"] = $response;
       return $resultado;
@@ -356,7 +356,7 @@ class Rolespermisos
       $consulta = "SELECT cedula FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe el usuario introducido", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe el usuario introducido", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT 
                     r.nombre AS nombre_rol, 
@@ -370,7 +370,7 @@ class Rolespermisos
       $valores = [':cedula' => $cedula];
       $response = $this->database->query($consulta, $valores, true);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al consultar el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al consultar el rol", \Exception::class, 500);
       }
       $resultado["rol"] = $response ?: [];
       if (!empty($resultado["rol"])) {
@@ -385,7 +385,7 @@ class Rolespermisos
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe el rol introducido", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe el rol introducido", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.roles SET nombre = :nombre
@@ -393,7 +393,7 @@ class Rolespermisos
       $valores = [':id_rol' => $idRol, ':nombre' => $nombreRol];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al actualizar el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al actualizar el rol", \Exception::class, 500);
       }
       $consultaPermiso = "UPDATE {$_ENV['SECURE_DB']}.permisos
                            SET crear = :crear, leer = :leer, actualizar = :actualizar, eliminar = :eliminar
@@ -408,7 +408,7 @@ class Rolespermisos
             ':modulo' => $moduloId,
          ]);
          if (empty($response)) {
-            ExceptionHandler::throwException("Ocurrió un error al actualizar el rol", 500, \Exception::class);
+            ExceptionHandler::throwException("Ocurrió un error al actualizar el rol", \Exception::class, 500);
          }
       }
       $this->database->commit();
@@ -420,12 +420,12 @@ class Rolespermisos
       $consulta = "SELECT cedula FROM {$_ENV['SECURE_DB']}.usuarios WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El usuario ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El usuario ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El rol ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El rol ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles 
@@ -434,7 +434,7 @@ class Rolespermisos
       $valores = [":cedula" => $cedula, ":id_rol" => $idRol];
       $response = $this->database->query($consulta, $valores);
       if (!$response) {
-         ExceptionHandler::throwException("Ocurrió un error al asignar el rol al usuario", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al asignar el rol al usuario", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El rol del usuario '{$cedula}' fue cambiado exitosamente";
@@ -446,14 +446,14 @@ class Rolespermisos
       $consulta = "SELECT id_rol FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id;";
       $existe = Validar::existe($this->database, $idRol, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El rol introducido no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El rol introducido no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM {$_ENV['SECURE_DB']}.roles WHERE id_rol = :id_rol;";
       $valores = [':id_rol' => $idRol];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar el rol", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar el rol", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El rol fue eliminado exitosamente";

@@ -64,7 +64,7 @@ class Entrenadores
       $consulta = "SELECT cedula FROM entrenador WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El entrenador ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El entrenador ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT 
                     u.cedula, 
@@ -92,7 +92,7 @@ class Entrenadores
       $consulta = "SELECT cedula FROM entrenador WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $cedula, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El entrenador ingresado no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El entrenador ingresado no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consultas = [
@@ -103,7 +103,7 @@ class Entrenadores
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, [':cedula' => $cedula]);
          if (!$response) {
-            ExceptionHandler::throwException("Ocurrió un error al eliminar el entrenador", 500, \RuntimeException::class);
+            ExceptionHandler::throwException("Ocurrió un error al eliminar el entrenador", \RuntimeException::class, 500);
          }
       }
       $this->database->commit();
@@ -115,7 +115,7 @@ class Entrenadores
       $consulta = "SELECT cedula FROM entrenador WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $datos['cedula'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("El entrenador ya existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El entrenador ya existe", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $id_rol = 1;
@@ -147,7 +147,7 @@ class Entrenadores
       foreach ($consultas as $consulta) {
          $response = $this->database->query($consulta, $valores);
          if ($response === false) {
-            ExceptionHandler::throwException("Ocurrió un error al incluir el entrenador", 500, \RuntimeException::class);
+            ExceptionHandler::throwException("Ocurrió un error al incluir el entrenador", \RuntimeException::class, 500);
          }
       }
       $this->database->commit();
@@ -160,7 +160,7 @@ class Entrenadores
       $consulta = "SELECT cedula FROM entrenador WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $datos['cedula_original'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe el entrenador", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe el entrenador", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE {$_ENV['SECURE_DB']}.usuarios SET 
@@ -190,7 +190,7 @@ class Entrenadores
       ];
       $response = $this->database->query($consulta, $valores);
       if ($response === false) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", \RuntimeException::class, 500);
       }
       if (!empty($datos['password'])) {
          $consultaPassword = "UPDATE {$_ENV['SECURE_DB']}.usuarios_roles
@@ -202,7 +202,7 @@ class Entrenadores
          ];
          $responseRoles = $this->database->query($consultaPassword, $valoresPassword);
          if (empty($responseRoles)) {
-            ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", 500, \RuntimeException::class);
+            ExceptionHandler::throwException("Ocurrió un error al modificar el entrenador", \RuntimeException::class, 500);
          }
       }
       $this->database->commit();
@@ -224,7 +224,7 @@ class Entrenadores
       $consulta = "SELECT DISTINCT grado_instruccion FROM entrenador;";
       $response = $this->database->query($consulta);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se encontraron grados de instrucción", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron grados de instrucción", \RuntimeException::class, 404);
       }
       $resultado['grados'] = $response;
       return $resultado;

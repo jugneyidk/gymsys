@@ -26,7 +26,7 @@ class Subs
       Validar::sanitizarYValidar($arrayFiltrado['edadMinima'], 'int');
       Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
       if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
-         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", \InvalidArgumentException::class);
       }
       return $this->_incluirSub($arrayFiltrado);
    }
@@ -40,7 +40,7 @@ class Subs
       Validar::sanitizarYValidar($arrayFiltrado['edadMaxima'], 'int');
       Validar::validar("nombre_sub", $arrayFiltrado['nombre']);
       if ($arrayFiltrado['edadMaxima'] <= $arrayFiltrado['edadMinima']) {
-         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La edad máxima no puede ser menor o igual a la edad mínima", \InvalidArgumentException::class);
       }
       return $this->_modificarSub($arrayFiltrado);
    }
@@ -68,7 +68,7 @@ class Subs
       $consulta = "SELECT id_sub FROM subs WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una sub con este nombre", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO subs (nombre, edad_minima, edad_maxima) 
@@ -80,7 +80,7 @@ class Subs
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir la sub", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir la sub", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La sub se registró exitosamente";
@@ -91,12 +91,12 @@ class Subs
       $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
       $existe = Validar::existe($this->database, $datos['id_sub'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La sub ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT id_sub FROM subs WHERE nombre = :id AND id_sub != " . $datos['id_sub'] . ";";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una sub con este nombre", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una sub con este nombre", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE subs 
@@ -110,7 +110,7 @@ class Subs
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la sub", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar la sub", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La sub se modificó exitosamente";
@@ -121,13 +121,13 @@ class Subs
       $consulta = "SELECT id_sub FROM subs WHERE id_sub = :id;";
       $existe = Validar::existe($this->database, $idSub, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La sub ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La sub ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM subs WHERE id_sub = :id";
       $response = $this->database->query($consulta, [':id' => $idSub]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la sub", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la sub", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La sub se eliminó exitosamente";

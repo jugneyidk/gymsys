@@ -47,7 +47,7 @@ class Reportes
                 FROM atleta a
                 INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON a.cedula = u.cedula
                 GROUP BY u.genero",
-         default => ExceptionHandler::throwException("Tipo de estadística no válido", 500, \InvalidArgumentException::class)
+         default => ExceptionHandler::throwException("Tipo de estadística no válido", \InvalidArgumentException::class)
       };
       $response = $this->database->query($consulta);
       $resultado['estadisticas'] = $response ?: [];
@@ -122,11 +122,11 @@ class Reportes
          'wada' => Wada::obtenerReporteWada($this->database, $filtros),
          'eventos' => Eventos::obtenerReporteEventos($this->database, $filtros),
          'asistencias' => Asistencias::obtenerReporteAsistencias($this->database, $filtros),
-         default => ExceptionHandler::throwException("Tipo de reporte no válido", 400, \InvalidArgumentException::class)
+         default => ExceptionHandler::throwException("Tipo de reporte no válido", \InvalidArgumentException::class, 500)
       };
 
       if (!$reporte) {
-         ExceptionHandler::throwException("No se encontraron reportes", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron reportes", \RuntimeException::class, 404);
       }
 
       $estadisticas = match ($tipoReporte) {
@@ -136,11 +136,11 @@ class Reportes
          'wada' => Wada::obtenerEstadisticasWada($this->database, $filtros),
          'eventos' => Eventos::obtenerEstadisticasEventos($this->database, $filtros),
          'asistencias' => Asistencias::obtenerEstadisticasAsistencias($this->database, $filtros),
-         default => ExceptionHandler::throwException("Tipo de Estadisticas no válido", 400, \InvalidArgumentException::class)
+         default => ExceptionHandler::throwException("Tipo de Estadisticas no válido", \InvalidArgumentException::class, 500)
       };
 
       if (!$estadisticas) {
-         ExceptionHandler::throwException("No se encontraron estadisticas", 404, \RuntimeException::class);
+         ExceptionHandler::throwException("No se encontraron estadisticas", \RuntimeException::class, 404);
       }
 
       return ["reportes" => $reporte, "estadisticas" => $estadisticas];

@@ -46,7 +46,7 @@ class Representantes
         ];
         $response = $this->database->query($consulta, $valores);
         if (empty($response)) {
-            ExceptionHandler::throwException("Ocurrió un error al incluir el representante", 500, \Exception::class);
+            ExceptionHandler::throwException("Ocurrió un error al incluir el representante", \Exception::class, 500);
         }
         $resultado["mensaje"] = "El representante se ha incluido exitosamente";
         return $resultado;
@@ -68,7 +68,7 @@ class Representantes
                     WHERE r.cedula = :cedula";
         $response = $this->database->query($consulta, [':cedula' => $cedula], true) ?: [];
         if (empty($response)) {
-            ExceptionHandler::throwException("No se encontro el representante", 404, \InvalidArgumentException::class);
+            ExceptionHandler::throwException("No se encontro el representante", \InvalidArgumentException::class, 404);
         }
         return $response;
     }

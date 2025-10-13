@@ -41,8 +41,8 @@ class LoginAttempts
          $timeLeft = self::BLOCK_TIME - (time() - $data['timestamp']);
          ExceptionHandler::throwException(
             "Demasiados intentos fallidos. Por favor, espere " . ceil($timeLeft / 60) . " minutos antes de intentar de nuevo.",
-            429,
-            \RuntimeException::class
+            \RuntimeException::class,
+            429
          );
       }
 

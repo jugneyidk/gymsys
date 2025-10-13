@@ -27,7 +27,7 @@ class Categorias
       Validar::validar("peso", $arrayFiltrado['pesoMinimo']);
       Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
       if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
-         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", \InvalidArgumentException::class);
       }
       return $this->_incluirCategoria($arrayFiltrado);
    }
@@ -41,7 +41,7 @@ class Categorias
       Validar::validar("peso", $arrayFiltrado['pesoMaximo']);
       Validar::sanitizarYValidar($arrayFiltrado['id_categoria'], 'int');
       if ($arrayFiltrado['pesoMaximo'] <= $arrayFiltrado['pesoMinimo']) {
-         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El peso máximo no puede ser menor o igual al peso mínimo", \InvalidArgumentException::class);
       }
       return $this->_modificarCategoria($arrayFiltrado);
    }
@@ -69,7 +69,7 @@ class Categorias
       $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una categoria con este nombre", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO categorias (nombre, peso_minimo, peso_maximo) VALUES (:nombre, :pesoMinimo, :pesoMaximo)";
@@ -80,7 +80,7 @@ class Categorias
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al agregar la categoría", 500, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ocurrió un error al agregar la categoría", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La categoría se registró exitosamente";
@@ -91,12 +91,12 @@ class Categorias
       $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
       $existe = Validar::existe($this->database, $datos['id_categoria'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe la categoria ingresada", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe la categoria ingresada", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT id_categoria FROM categorias WHERE nombre = :id AND id_categoria != " . $datos["id_categoria"] . ";";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una categoria con este nombre", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una categoria con este nombre", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE categorias 
@@ -110,7 +110,7 @@ class Categorias
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la categoria", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar la categoria", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La categoría se modificó exitosamente";
@@ -121,13 +121,13 @@ class Categorias
       $consulta = "SELECT id_categoria FROM categorias WHERE id_categoria = :id;";
       $existe = Validar::existe($this->database, $idCategoria, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La categoria ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La categoria ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM categorias WHERE id_categoria = :id";
       $response = $this->database->query($consulta, [':id' => $idCategoria]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la categoria", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la categoria", \Exception::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "La categoria se eliminó exitosamente";

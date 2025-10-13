@@ -51,7 +51,7 @@ class TipoAtleta
       $consulta = "SELECT id_tipo_atleta FROM tipo_atleta WHERE nombre_tipo_atleta = :id;";
       $existe = Validar::existe($this->database, $nombreTipoAtleta, $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("El tipo de atleta ingresado ya existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El tipo de atleta ingresado ya existe", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO tipo_atleta (nombre_tipo_atleta, tipo_cobro) VALUES (:nombre_tipo_atleta, :tipo_cobro);";
@@ -61,7 +61,7 @@ class TipoAtleta
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se pudo ingresar el tipo de atleta", 500, \Exception::class);
+         ExceptionHandler::throwException("No se pudo ingresar el tipo de atleta", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El tipo de atleta se agregó exitosamente";
@@ -73,13 +73,13 @@ class TipoAtleta
       $consulta = "SELECT id_tipo_atleta FROM tipo_atleta WHERE id_tipo_atleta = :id;";
       $existe = Validar::existe($this->database, $tipoAtleta, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El tipo de atleta introducido no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El tipo de atleta introducido no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM tipo_atleta WHERE id_tipo_atleta = :tipo_atleta;";
       $response = $this->database->query($consulta, [':tipo_atleta' => $tipoAtleta]);
       if (empty($response)) {
-         ExceptionHandler::throwException("No se pudo eliminar el tipo de atleta", 500, \Exception::class);
+         ExceptionHandler::throwException("No se pudo eliminar el tipo de atleta", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El tipo de atleta se ha eliminado exitosamente";

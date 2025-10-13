@@ -25,19 +25,19 @@ class Eventos
       Validar::validarFecha($arrayFiltrado["fecha_inicio"]);
       Validar::validarFecha($arrayFiltrado["fecha_fin"]);
       if ($arrayFiltrado["fecha_inicio"] > $arrayFiltrado["fecha_fin"]) {
-         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", \InvalidArgumentException::class);
       }
       $arrayFiltrado['categoria'] = Cipher::aesDecrypt($arrayFiltrado['categoria']);
       $arrayFiltrado['subs'] = Cipher::aesDecrypt($arrayFiltrado['subs']);
       $arrayFiltrado['tipo_competencia'] = Cipher::aesDecrypt($arrayFiltrado['tipo_competencia']);
       if (!Validar::sanitizarYValidar($arrayFiltrado["categoria"], 'int')) {
-         ExceptionHandler::throwException("La categoria no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La categoria no es un valor válido", \InvalidArgumentException::class);
       }
       if (!Validar::sanitizarYValidar($arrayFiltrado["subs"], 'int')) {
-         ExceptionHandler::throwException("La sub no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La sub no es un valor válido", \InvalidArgumentException::class);
       }
       if (!Validar::sanitizarYValidar($arrayFiltrado["tipo_competencia"], 'int')) {
-         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", \InvalidArgumentException::class);
       }
       return $this->_incluirEvento($arrayFiltrado);
    }
@@ -60,7 +60,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE nombre = :id;";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una competencia con el nombre introducido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una competencia con el nombre introducido", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO competencia(tipo_competicion, nombre, categoria, subs, lugar_competencia, fecha_inicio, fecha_fin, estado)
@@ -76,7 +76,7 @@ class Eventos
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al incluir el evento", 500, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ocurrió un error al incluir el evento", \InvalidArgumentException::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El evento se registró exitosamente";
@@ -89,7 +89,7 @@ class Eventos
       $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
-         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia ingresada es invalida", \InvalidArgumentException::class);
       }
       return $this->_cerrarEvento($arrayFiltrado['id_competencia']);
    }
@@ -98,13 +98,13 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La competencia introducida no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia introducida no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE competencia SET estado = 'inactivo' WHERE id_competencia = :id_competencia";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al cerrar el evento", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al cerrar el evento", \Exception::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "El evento se cerró exitosamente";
@@ -115,7 +115,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La competencia introducida no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia introducida no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT rc.id_competencia, u.cedula, u.nombre, u.apellido, rc.arranque, rc.envion, rc.medalla_arranque, rc.medalla_envion, rc.medalla_total, rc.total FROM resultado_competencia rc
          INNER JOIN {$_ENV['SECURE_DB']}.usuarios u ON  rc.id_atleta = u.cedula
@@ -162,7 +162,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = " . $datos['id_competencia'] . " AND id_atleta = :id;";
       $existe = Validar::existe($this->database, $datos['id_atleta'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El atleta o competencia no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El atleta o competencia no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE resultado_competencia 
@@ -185,7 +185,7 @@ class Eventos
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar el resultado", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar el resultado", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "El resultado se modificó exitosamente";
@@ -226,7 +226,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("No existe la competencia ingresada", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("No existe la competencia ingresada", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT 
                      a.cedula AS id_atleta,
@@ -256,11 +256,11 @@ class Eventos
       $idCompetencia = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       Validar::sanitizarYValidar($idCompetencia, 'int');
       if (!is_string($arrayFiltrado['atletas'])) {
-         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", \InvalidArgumentException::class);
       }
       $atletas = json_decode($arrayFiltrado['atletas'], true);
       if (!is_array($atletas)) {
-         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El formato de los datos de atletas no es válido", \InvalidArgumentException::class);
       }
       foreach ($atletas as &$idAtleta) {
          $idAtleta = Cipher::aesDecrypt($idAtleta);
@@ -273,7 +273,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("Esta competencia no existe", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Esta competencia no existe", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
@@ -284,7 +284,7 @@ class Eventos
          ];
          $response = $this->database->query($consulta, $valores);
          if (empty($response)) {
-            ExceptionHandler::throwException("Ocurrió un error al inscribir los atletas", 500, \Exception::class);
+            ExceptionHandler::throwException("Ocurrió un error al inscribir los atletas", \RuntimeException::class, 500);
          }
       }
       $this->database->commit();
@@ -304,7 +304,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT * FROM competencia WHERE id_competencia = :id_competencia";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia], true);
@@ -333,17 +333,17 @@ class Eventos
       Validar::validarFecha($arrayFiltrado["fecha_inicio"]);
       Validar::validarFecha($arrayFiltrado["fecha_fin"]);
       if ($arrayFiltrado["fecha_inicio"] > $arrayFiltrado["fecha_fin"]) {
-         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La fecha de inicio no puede ser mayor que la fecha de fin", \InvalidArgumentException::class);
       }
-      if (!Validar::sanitizarYValidar($arrayFiltrado["id_competencia"], 'int')) ExceptionHandler::throwException("La competencia ingresada no es un valor válido", 400, \InvalidArgumentException::class);
+      if (!Validar::sanitizarYValidar($arrayFiltrado["id_competencia"], 'int')) ExceptionHandler::throwException("La competencia ingresada no es un valor válido", \InvalidArgumentException::class);
       if (!Validar::sanitizarYValidar($arrayFiltrado["categoria"], 'int')) {
-         ExceptionHandler::throwException("La categoria no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La categoria no es un valor válido", \InvalidArgumentException::class);
       }
       if (!Validar::sanitizarYValidar($arrayFiltrado["subs"], 'int')) {
-         ExceptionHandler::throwException("La sub no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La sub no es un valor válido", \InvalidArgumentException::class);
       }
       if (!Validar::sanitizarYValidar($arrayFiltrado["tipo_competencia"], 'int')) {
-         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El tipo de competencia no es un valor válido", \InvalidArgumentException::class);
       }
       return $this->_modificarEvento($arrayFiltrado);
    }
@@ -352,12 +352,12 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $datos['id_competencia'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "SELECT id_competencia FROM competencia WHERE nombre = :id AND id_competencia != " . $datos['id_competencia'] . ";";
       $existe = Validar::existe($this->database, $datos['nombre'], $consulta);
       if ($existe) {
-         ExceptionHandler::throwException("Ya existe una competencia con este nombre", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("Ya existe una competencia con este nombre", \InvalidArgumentException::class);
       }
       $this->database->beginTransaction();
       $consulta = "UPDATE competencia 
@@ -382,7 +382,7 @@ class Eventos
       $response = $this->database->query($consulta, $valores);
       $this->database->commit();
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al modificar la competencia", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al modificar la competencia", \RuntimeException::class, 500);
       }
       $respuesta["mensaje"] = "La competencia se modificó exitosamente";
       return $respuesta;
@@ -394,7 +394,7 @@ class Eventos
       $arrayFiltrado["id_competencia"] = Cipher::aesDecrypt($arrayFiltrado["id_competencia"]);
       $idCompetencia = Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
       if (!$idCompetencia) {
-         ExceptionHandler::throwException("La competencia ingresada es invalida", 400, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia ingresada es invalida", \InvalidArgumentException::class);
       }
       return $this->_eliminarEvento($arrayFiltrado['id_competencia']);
    }
@@ -403,13 +403,13 @@ class Eventos
       $consulta = "SELECT id_competencia FROM competencia WHERE id_competencia = :id;";
       $existe = Validar::existe($this->database, $idCompetencia, $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("La competencia ingresada no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("La competencia ingresada no existe", \InvalidArgumentException::class, 404);
       }
       $this->database->beginTransaction();
       $consulta = "DELETE FROM competencia WHERE id_competencia = :id_competencia";
       $response = $this->database->query($consulta, [':id_competencia' => $idCompetencia]);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al eliminar la competencia", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al eliminar la competencia", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $resultado["mensaje"] = "La competencia se eliminó exitosamente";
@@ -437,7 +437,7 @@ class Eventos
       $consulta = "SELECT id_competencia FROM resultado_competencia WHERE id_competencia = " . $datos['id_competencia'] . " AND id_atleta = :id;";
       $existe = Validar::existe($this->database, $datos['id_atleta'], $consulta);
       if (!$existe) {
-         ExceptionHandler::throwException("El atleta o competencia no existe", 404, \InvalidArgumentException::class);
+         ExceptionHandler::throwException("El atleta o competencia no existe", \InvalidArgumentException::class, 404);
       }
       $consulta = "UPDATE resultado_competencia 
                      SET arranque = :arranque, 
@@ -459,7 +459,7 @@ class Eventos
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
-         ExceptionHandler::throwException("Ocurrió un error al registrar el resultado", 500, \Exception::class);
+         ExceptionHandler::throwException("Ocurrió un error al registrar el resultado", \RuntimeException::class, 500);
       }
       $this->database->commit();
       $respuesta["mensaje"] = "El resultado se registró exitosamente";

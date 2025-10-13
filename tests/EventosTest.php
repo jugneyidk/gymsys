@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\Feature;
 
 use Gymsys\Core\Database;
@@ -7,31 +8,43 @@ use Gymsys\Model\Eventos;
 use Gymsys\Model\Categorias;
 use Gymsys\Model\Subs;
 use Gymsys\Model\TipoCompetencia;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class EventosTest extends TestCase
 {
-    private function enc(string $v): string { return Cipher::aesEncrypt($v); }
-protected function setUp(): void
-{
-    // Clave de 32 chars para AES-256
-    $key = '0123456789abcdef0123456789abcdef';
-    $_ENV['AES_KEY'] = $key;
-    putenv('AES_KEY='.$key);
+    private Eventos $eventos;
+    private Categorias $categorias;
+    private Subs $subs;
+    private TipoCompetencia $tipoCompetencia;
+    private Database|MockObject $db;
 
-    $_ENV['SECURE_DB'] = 'secure';
-    putenv('SECURE_DB=secure');
-
-    $this->db = $this->createMock(\Gymsys\Core\Database::class);
-    $this->eventos = new \Gymsys\Model\Eventos($this->db);
-}
-
-    public function testIncluirEventoExitoso(): void
+    private function enc(string $v): string
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $m = new Eventos($db);
-        $r = $m->incluirEvento([
+        return Cipher::aesEncrypt($v);
+    }
+
+    protected function setUp(): void
+    {
+        // Clave de 32 chars para AES-256
+        $key = '0123456789abcdef0123456789abcdef';
+        $_ENV['AES_KEY'] = $key;
+        putenv('AES_KEY=' . $key);
+
+        $_ENV['SECURE_DB'] = 'secure';
+        putenv('SECURE_DB=secure');
+
+        $this->db = $this->createMock(Database::class);
+        $this->eventos = new Eventos($this->db);
+        $this->categorias = new Categorias($this->db);
+        $this->subs = new Subs($this->db);
+        $this->tipoCompetencia = new TipoCompetencia($this->db);
+    }
+
+    public function test_incluir_evento_exitoso(): void
+    {
+        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
+        $r = $this->eventos->incluirEvento([
             'nombre'=>'Campeonato Nacional',
             'lugar_competencia'=>'Ciudad Deportiva Lara',
             'fecha_inicio'=>'2024-12-01',
@@ -43,11 +56,11 @@ protected function setUp(): void
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testIncluirEventoNoValido(): void
+    public function test_incluir_evento_no_valido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->incluirEvento([
+        $this->eventos->incluirEvento([
             'nombre'=>'Campeonato.',
             'lugar_competencia'=>'CD Lara',
             'fecha_inicio'=>'',
@@ -58,13 +71,11 @@ protected function setUp(): void
         ]);
     }
 
-    public function testIncluirEventoYaExiste(): void
+    public function test_incluir_evento_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn(['id_competencia'=>11]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn(['id_competencia'=>11]);
         $this->expectException(\Throwable::class);
-        $m->incluirEvento([
+        $this->eventos->incluirEvento([
             'nombre'=>'Campeonato Nacional',
             'lugar_competencia'=>'Ciudad Deportiva Lara',
             'fecha_inicio'=>'2024-12-01',
@@ -75,12 +86,10 @@ protected function setUp(): void
         ]);
     }
 
-    public function testModificarEventoExitoso(): void
+    public function test_modificar_evento_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], [], true);
-        $m = new Eventos($db);
-        $r = $m->modificarEvento([
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], [], true);
+        $r = $this->eventos->modificarEvento([
             'id_competencia'=>$this->enc('11'),
             'nombre'=>'Campeonato Nacional',
             'lugar_competencia'=>'Ciudad Deportiva Lara',
@@ -93,11 +102,11 @@ protected function setUp(): void
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testModificarEventoNoValido(): void
+    public function test_modificar_evento_no_valido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->modificarEvento([
+        $this->eventos->modificarEvento([
             'id_competencia'=>$this->enc('11'),
             'nombre'=>'Campeonato Nacional',
             'lugar_competencia'=>'',
@@ -109,13 +118,11 @@ protected function setUp(): void
         ]);
     }
 
-    public function testModificarEventoNoExiste(): void
+    public function test_modificar_evento_no_exsite(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->modificarEvento([
+        $this->eventos->modificarEvento([
             'id_competencia'=>$this->enc('11'),
             'nombre'=>'Campeonato Nacional',
             'lugar_competencia'=>'Ciudad Deportiva Lara',
@@ -127,125 +134,105 @@ protected function setUp(): void
         ]);
     }
 
-    public function testObtenerCompetenciaExitoso(): void
+    public function test_obtener_competencia_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
             ['id_competencia'=>11],
             ['id_competencia'=>11,'subs'=>6,'categoria'=>6,'tipo_competicion'=>9,'nombre'=>'Campeonato','lugar_competencia'=>'CDL','fecha_inicio'=>'2024-12-01','fecha_fin'=>'2024-12-05']
         );
-        $m = new Eventos($db);
-        $r = $m->obtenerCompetencia(['id'=>$this->enc('11')]);
+        $r = $this->eventos->obtenerCompetencia(['id'=>$this->enc('11')]);
         $this->assertArrayHasKey('competencia', $r);
     }
 
-    public function testObtenerCompetenciaNoValido(): void
+    public function test_obtener_competencia_no_valido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->obtenerCompetencia(['id'=>$this->enc('1e1')]);
+        $this->eventos->obtenerCompetencia(['id'=>$this->enc('1e1')]);
     }
 
-    public function testObtenerCompetenciaNoExiste(): void
+    public function test_obtener_competencia_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->obtenerCompetencia(['id'=>$this->enc('11')]);
+        $this->eventos->obtenerCompetencia(['id'=>$this->enc('11')]);
     }
 
-    public function testListadoEventosExitoso(): void
+    public function test_listado_eventos_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([['id_competencia'=>11,'subs'=>6,'categoria'=>6,'tipo_competicion'=>9]]);
-        $m = new Eventos($db);
-        $r = $m->listadoEventos();
+        $this->db->method('query')->willReturn([['id_competencia'=>11,'subs'=>6,'categoria'=>6,'tipo_competicion'=>9]]);
+        $r = $this->eventos->listadoEventos();
         $this->assertArrayHasKey('eventos', $r);
     }
 
-    public function testCerrarEventoExitoso(): void
+    public function test_cerrar_evento_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
-        $m = new Eventos($db);
-        $r = $m->cerrarEvento(['id_competencia'=>$this->enc('11')]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
+        $r = $this->eventos->cerrarEvento(['id_competencia'=>$this->enc('11')]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testCerrarEventoNoValido(): void
+    public function test_cerrar_evento_no_valido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->cerrarEvento(['id_competencia'=>$this->enc('abc')]);
+        $this->eventos->cerrarEvento(['id_competencia'=>$this->enc('abc')]);
     }
 
-    public function testCerrarEventoNoExiste(): void
+    public function test_cerrar_evento_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->cerrarEvento(['id_competencia'=>$this->enc('11')]);
+        $this->eventos->cerrarEvento(['id_competencia'=>$this->enc('11')]);
     }
 
-    public function testListadoAtletasInscritosExitoso(): void
+    public function test_listado_atletas_inscritos_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], [['id_atleta'=>5560233,'nombre'=>'Leo','apellido'=>'H']]);
-        $m = new Eventos($db);
-        $r = $m->listadoAtletasInscritos(['id_competencia'=>$this->enc('11')]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], [['id_atleta'=>5560233,'nombre'=>'Leo','apellido'=>'H']]);
+        $r = $this->eventos->listadoAtletasInscritos(['id_competencia'=>$this->enc('11')]);
         $this->assertArrayHasKey('atletas', $r);
     }
 
-    public function testListadoAtletasInscritosNoValido(): void
+    public function test_listado_atletas_inscritos_no_valido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->listadoAtletasInscritos(['id_competencia'=>$this->enc('competencia')]);
+        $this->eventos->listadoAtletasInscritos(['id_competencia'=>$this->enc('competencia')]);
     }
 
-    public function testListadoAtletasInscritosNoExiste(): void
+    public function test_listado_atletas_inscritos_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->listadoAtletasInscritos(['id_competencia'=>$this->enc('100')]);
+        $this->eventos->listadoAtletasInscritos(['id_competencia'=>$this->enc('100')]);
     }
 
-    public function testInscribirAtletasExitoso(): void
+    public function test_inscribir_atletas_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
         $lista = json_encode([$this->enc('5560233')]);
-        $r = $m->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>$lista]);
+        $r = $this->eventos->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>$lista]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testInscribirAtletasFormatoInvalido(): void
+    public function test_inscribir_atletas_formato_invalido(): void
     {
-        $m = new Eventos($this->createMock(Database::class));
+        $this->eventos;
         $this->expectException(\Throwable::class);
-        $m->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>['no-json']]);
+        $this->eventos->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>['no-json']]);
     }
 
-    public function testInscribirAtletasCompetenciaNoExiste(): void
+    public function test_inscribir_atletas_competencia_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>json_encode([$this->enc('5560233')])]);
+        $this->eventos->inscribirAtletas(['id_competencia'=>$this->enc('11'),'atletas'=>json_encode([$this->enc('5560233')])]);
     }
 
-    public function testRegistrarResultadosExitoso(): void
+    public function test_registrar_resultados_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
-        $m = new Eventos($db);
-        $r = $m->registrarResultados([
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
+        $r = $this->eventos->registrarResultados([
             'id_competencia'=>$this->enc('11'),
             'id_atleta'=>$this->enc('5560233'),
             'arranque'=>100.5,
@@ -258,13 +245,11 @@ protected function setUp(): void
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testRegistrarResultadosNoExiste(): void
+    public function test_registrar_resultados_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->registrarResultados([
+        $this->eventos->registrarResultados([
             'id_competencia'=>$this->enc('11'),
             'id_atleta'=>$this->enc('5560233'),
             'arranque'=>100.5,
@@ -276,12 +261,10 @@ protected function setUp(): void
         ]);
     }
 
-    public function testModificarResultadosExitoso(): void
+    public function test_modificar_resultados_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
-        $m = new Eventos($db);
-        $r = $m->modificarResultados([
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia'=>11], true);
+        $r = $this->eventos->modificarResultados([
             'id_competencia'=>$this->enc('11'),
             'id_atleta'=>$this->enc('5560233'),
             'arranque'=>101.0,
@@ -294,13 +277,11 @@ protected function setUp(): void
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testModificarResultadosNoExiste(): void
+    public function test_modificar_resultados_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Eventos($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->modificarResultados([
+        $this->eventos->modificarResultados([
             'id_competencia'=>$this->enc('11'),
             'id_atleta'=>$this->enc('5560233'),
             'arranque'=>101.0,
@@ -312,295 +293,245 @@ protected function setUp(): void
         ]);
     }
 
-    public function testListadoEventosAnterioresExitoso(): void
+    public function test_listado_eventos_anteriores_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([['id_competencia'=>7,'subs'=>6,'categoria'=>6,'tipo_competicion'=>9]]);
-        $m = new Eventos($db);
-        $r = $m->listadoEventosAnteriores();
+        $this->db->method('query')->willReturn([['id_competencia'=>7,'subs'=>6,'categoria'=>6,'tipo_competicion'=>9]]);
+        $r = $this->eventos->listadoEventosAnteriores();
         $this->assertArrayHasKey('eventos', $r);
     }
 
-    public function testListadoAtletasDisponiblesExitoso(): void
+    public function test_listado_atletas_disponibles_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(
+        $this->db->method('query')->willReturnOnConsecutiveCalls(
             ['peso_minimo'=>60,'peso_maximo'=>90,'edad_minima'=>15,'edad_maxima'=>30],
             [['id_atleta'=>5560233,'nombre'=>'Leo','apellido'=>'H','peso'=>75,'fecha_nacimiento'=>'2000-01-01']]
         );
-        $m = new Eventos($db);
-        $r = $m->listadoAtletasDisponibles(['id'=>$this->enc('11')]);
+        $r = $this->eventos->listadoAtletasDisponibles(['id'=>$this->enc('11')]);
         $this->assertArrayHasKey('atletas', $r);
     }
 
-    public function testCategoriasListadoExitoso(): void
+    public function test_categorias_listado_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([['id_categoria'=>8,'nombre'=>'81M','peso_minimo'=>73,'peso_maximo'=>81.99]]);
-        $m = new Categorias($db);
-        $r = $m->listadoCategorias();
+        $this->db->method('query')->willReturn([['id_categoria'=>8,'nombre'=>'81M','peso_minimo'=>73,'peso_maximo'=>81.99]]);
+        $r = $this->categorias->listadoCategorias();
         $this->assertArrayHasKey('categorias', $r);
     }
 
-    public function testIncluirCategoriaExitoso(): void
+    public function test_incluir_categoria_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $m = new Categorias($db);
-        $r = $m->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>73,'pesoMaximo'=>81.99]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
+        $r = $this->categorias->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>73,'pesoMaximo'=>81.99]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testIncluirCategoriaNoValido(): void
+    public function test_incluir_categoria_no_valido(): void
     {
-        $m = new Categorias($this->createMock(Database::class));
+        $this->categorias;
         $this->expectException(\Throwable::class);
-        $m->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>85,'pesoMaximo'=>81.99]);
+        $this->eventos->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>85,'pesoMaximo'=>81.99]);
     }
 
-    public function testIncluirCategoriaYaExiste(): void
+    public function test_incluir_categoria_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn(['id_categoria'=>8]);
-        $m = new Categorias($db);
+        $this->db->method('query')->willReturn(['id_categoria'=>8]);
         $this->expectException(\Throwable::class);
-        $m->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>75,'pesoMaximo'=>81.99]);
+        $this->eventos->incluirCategoria(['nombre'=>'81M','pesoMinimo'=>75,'pesoMaximo'=>81.99]);
     }
 
-    public function testModificarCategoriaExitoso(): void
+    public function test_modificar_categoria_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_categoria'=>8], [], true);
-        $m = new Categorias($db);
-        $r = $m->modificarCategoria(['id_categoria'=>$this->enc('8'),'nombre'=>'81F','pesoMinimo'=>75,'pesoMaximo'=>81.99]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_categoria'=>8], [], true);
+        $r = $this->categorias->modificarCategoria(['id_categoria'=>$this->enc('8'),'nombre'=>'81F','pesoMinimo'=>75,'pesoMaximo'=>81.99]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testModificarCategoriaNoValido(): void
+    public function test_modificar_categoria_no_valido(): void
     {
-        $m = new Categorias($this->createMock(Database::class));
+        $this->categorias;
         $this->expectException(\Throwable::class);
-        $m->modificarCategoria(['id_categoria'=>$this->enc('8'),'nombre'=>'','pesoMinimo'=>75,'pesoMaximo'=>'']);
+        $this->eventos->modificarCategoria(['id_categoria'=>$this->enc('8'),'nombre'=>'','pesoMinimo'=>75,'pesoMaximo'=>'']);
     }
 
-    public function testModificarCategoriaNoExiste(): void
+    public function test_modificar_categoria_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Categorias($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->modificarCategoria(['id_categoria'=>$this->enc('82'),'nombre'=>'81M','pesoMinimo'=>75,'pesoMaximo'=>80.99]);
+        $this->eventos->modificarCategoria(['id_categoria'=>$this->enc('82'),'nombre'=>'81M','pesoMinimo'=>75,'pesoMaximo'=>80.99]);
     }
 
-    public function testEliminarCategoriaExitoso(): void
+    public function test_eliminar_categoria_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_categoria'=>8], true);
-        $m = new Categorias($db);
-        $r = $m->eliminarCategoria(['id_categoria'=>$this->enc('8')]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_categoria'=>8], true);
+        $r = $this->categorias->eliminarCategoria(['id_categoria'=>$this->enc('8')]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testEliminarCategoriaNoValido(): void
+    public function test_eliminar_categoria_no_valido(): void
     {
-        $m = new Categorias($this->createMock(Database::class));
+        $this->categorias;
         $this->expectException(\Throwable::class);
-        $m->eliminarCategoria(['id_categoria'=>$this->enc('Categoria')]);
+        $this->eventos->eliminarCategoria(['id_categoria'=>$this->enc('Categoria')]);
     }
 
-    public function testEliminarCategoriaNoExiste(): void
+    public function test_eliminar_categoria_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Categorias($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->eliminarCategoria(['id_categoria'=>$this->enc('333')]);
+        $this->categorias->eliminarCategoria(['id_categoria'=>$this->enc('333')]);
     }
 
-    public function testListadoSubsExitoso(): void
+    public function test_listado_subs_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([['id_sub'=>8,'nombre'=>'U20','edad_minima'=>15,'edad_maxima'=>20]]);
-        $m = new Subs($db);
-        $r = $m->listadoSubs();
+        $this->db->method('query')->willReturn([['id_sub'=>8,'nombre'=>'U20','edad_minima'=>15,'edad_maxima'=>20]]);
+        $r = $this->subs->listadoSubs();
         $this->assertArrayHasKey('subs', $r);
     }
 
-    public function testIncluirSubExitoso(): void
+    public function test_incluir_sub_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $m = new Subs($db);
-        $r = $m->incluirSub(['nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
+        $r = $this->subs->incluirSub(['nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testIncluirSubNoValido(): void
+    public function test_incluir_sub_no_valido(): void
     {
-        $m = new Subs($this->createMock(Database::class));
+        $this->subs;
         $this->expectException(\Throwable::class);
-        $m->incluirSub(['nombre'=>'U20','edadMinima'=>'','edadMaxima'=>20]);
+        $this->eventos->incluirSub(['nombre'=>'U20','edadMinima'=>'','edadMaxima'=>20]);
     }
 
-    public function testIncluirSubYaExiste(): void
+    public function test_incluir_sub_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn(['id_sub'=>8]);
-        $m = new Subs($db);
+        $this->db->method('query')->willReturn(['id_sub'=>8]);
         $this->expectException(\Throwable::class);
-        $m->incluirSub(['nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
+        $this->eventos->incluirSub(['nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
     }
 
-    public function testModificarSubExitoso(): void
+    public function test_modificar_sub_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], [], true);
-        $m = new Subs($db);
-        $r = $m->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U20','edadMinima'=>16,'edadMaxima'=>20]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], [], true);
+        $r = $this->subs->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U20','edadMinima'=>16,'edadMaxima'=>20]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testModificarSubNoValido(): void
+    public function test_modificar_sub_no_valido(): void
     {
-        $m = new Subs($this->createMock(Database::class));
+        $this->subs;
         $this->expectException(\Throwable::class);
-        $m->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U20','edadMinima'=>'menor','edadMaxima'=>20]);
+        $this->eventos->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U20','edadMinima'=>'menor','edadMaxima'=>20]);
     }
 
-    public function testModificarSubNoExiste(): void
+    public function test_modificar_sub_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Subs($db);
-        the:
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->modificarSub(['id_sub'=>$this->enc('83'),'nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
+        $this->eventos->modificarSub(['id_sub'=>$this->enc('83'),'nombre'=>'U20','edadMinima'=>15,'edadMaxima'=>20]);
     }
 
-    public function testModificarSubYaExiste(): void
+    public function test_modificar_sub_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], ['id_sub'=>9]);
-        $m = new Subs($db);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], ['id_sub'=>9]);
         $this->expectException(\Throwable::class);
-        $m->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U15','edadMinima'=>15,'edadMaxima'=>20]);
+        $this->eventos->modificarSub(['id_sub'=>$this->enc('8'),'nombre'=>'U15','edadMinima'=>15,'edadMaxima'=>20]);
     }
 
-    public function testEliminarSubExitoso(): void
+    public function test_eliminar_sub_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], true);
-        $m = new Subs($db);
-        $r = $m->eliminarSub(['id_sub'=>$this->enc('8')]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub'=>8], true);
+        $r = $this->subs->eliminarSub(['id_sub'=>$this->enc('8')]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testEliminarSubNoValido(): void
+    public function test_eliminar_sub_no_valido(): void
     {
-        $m = new Subs($this->createMock(Database::class));
+        $this->subs;
         $this->expectException(\Throwable::class);
-        $m->eliminarSub(['id_sub'=>$this->enc('categoria')]);
+        $this->eventos->eliminarSub(['id_sub'=>$this->enc('categoria')]);
     }
 
-    public function testEliminarSubNoExiste(): void
+    public function test_eliminar_sub_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new Subs($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->eliminarSub(['id_sub'=>$this->enc('100')]);
+        $this->eventos->eliminarSub(['id_sub'=>$this->enc('100')]);
     }
 
-    public function testListadoTipoExitoso(): void
+    public function test_listado_tipo_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([['id_tipo_competencia'=>13,'nombre'=>'Senior']]);
-        $m = new TipoCompetencia($db);
-        $r = $m->listadoTipos();
+        $this->db->method('query')->willReturn([['id_tipo_competencia'=>13,'nombre'=>'Senior']]);
+        $r = $this->tipoCompetencia->listadoTipos();
         $this->assertArrayHasKey('tipos', $r);
     }
 
-    public function testIncluirTipoExitoso(): void
+    public function test_incluir_tipo_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $m = new TipoCompetencia($db);
-        $r = $m->incluirTipo(['nombre'=>'Sub23']);
+        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
+        $r = $this->tipoCompetencia->incluirTipo(['nombre'=>'Sub23']);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testIncluirTipoNoValido(): void
+    public function test_incluir_tipo_no_valido(): void
     {
-        $m = new TipoCompetencia($this->createMock(Database::class));
+        $this->tipoCompetencia;
         $this->expectException(\Throwable::class);
-        $m->incluirTipo(['nombre'=>'']);
+        $this->eventos->incluirTipo(['nombre'=>'']);
     }
 
-    public function testIncluirTipoYaExiste(): void
+    public function test_incluir_tipo_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn(['id_tipo_competencia'=>13]);
-        $m = new TipoCompetencia($db);
+        $this->db->method('query')->willReturn(['id_tipo_competencia'=>13]);
         $this->expectException(\Throwable::class);
-        $m->incluirTipo(['nombre'=>'Sub23']);
+        $this->eventos->incluirTipo(['nombre'=>'Sub23']);
     }
 
-    public function testModificarTipoExitoso(): void
+    public function test_modificar_tipo_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], [], true);
-        $m = new TipoCompetencia($db);
-        $r = $m->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'Sub24']);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], [], true);
+        $r = $this->tipoCompetencia->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'Sub24']);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testModificarTipoNoValido(): void
+    public function test_modificar_tipo_no_valido(): void
     {
-        $m = new TipoCompetencia($this->createMock(Database::class));
+        $this->tipoCompetencia;
         $this->expectException(\Throwable::class);
-        $m->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'']);
+        $this->eventos->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'']);
     }
 
-    public function testModificarTipoYaExiste(): void
+    public function test_modificar_tipo_ya_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], ['id_tipo_competencia'=>99]);
-        $m = new TipoCompetencia($db);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], ['id_tipo_competencia'=>99]);
         $this->expectException(\Throwable::class);
-        $m->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'Senior']);
+        $this->eventos->modificarTipo(['id_tipo'=>$this->enc('13'),'nombre'=>'Senior']);
     }
 
-    public function testModificarTipoNoExiste(): void
+    public function test_modificar_tipo_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new TipoCompetencia($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->modificarTipo(['id_tipo'=>$this->enc('123'),'nombre'=>'Sub25']);
+        $this->eventos->modificarTipo(['id_tipo'=>$this->enc('123'),'nombre'=>'Sub25']);
     }
 
-    public function testEliminarTipoExitoso(): void
+    public function test_eliminar_tipo_exitoso(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], true);
-        $m = new TipoCompetencia($db);
-        $r = $m->eliminarTipo(['id_tipo'=>$this->enc('13')]);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia'=>13], true);
+        $r = $this->tipoCompetencia->eliminarTipo(['id_tipo'=>$this->enc('13')]);
         $this->assertArrayHasKey('mensaje', $r);
     }
 
-    public function testEliminarTipoNoValido(): void
+    public function test_eliminar_tipo_no_valido(): void
     {
-        $m = new TipoCompetencia($this->createMock(Database::class));
+        $this->tipoCompetencia;
         $this->expectException(\Throwable::class);
-        $m->eliminarTipo(['id_tipo'=>$this->enc('1/3')]);
+        $this->eventos->eliminarTipo(['id_tipo'=>$this->enc('1/3')]);
     }
 
-    public function testEliminarTipoNoExiste(): void
+    public function test_eliminar_tipo_no_existe(): void
     {
-        $db = $this->createMock(Database::class);
-        $db->method('query')->willReturn([]);
-        $m = new TipoCompetencia($db);
+        $this->db->method('query')->willReturn([]);
         $this->expectException(\Throwable::class);
-        $m->eliminarTipo(['id_tipo'=>$this->enc('13')]);
+        $this->eventos->eliminarTipo(['id_tipo'=>$this->enc('13')]);
     }
 }
+

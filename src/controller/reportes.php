@@ -21,7 +21,7 @@ class Reportes extends BaseController
       $this->model = new $modelClass((object) $database);
       $this->permisos = Rolespermisos::obtenerPermisosModulo("Reportes", $this->database);
       if (empty($this->permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \InvalidArgumentException::class);
       }
    }
 

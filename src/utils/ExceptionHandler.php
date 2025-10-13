@@ -27,7 +27,7 @@ class ExceptionHandler extends Exception
     * thrown. If provided, it will be used as the error code for the exception. If not provided, the
     * default value of 0 will be used.
     */
-   public static function throwException(string $message, int $httpCode = 400, string $exceptionType, int $exceptionCode = 0)
+   public static function throwException(string $message, string $exceptionType, int $httpCode = 400, int $exceptionCode = 0)
    {
       if (class_exists($exceptionType)) {
          throw new $exceptionType(json_encode(["error" => $message, "code" => $httpCode]), $exceptionCode);
