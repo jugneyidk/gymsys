@@ -1,29 +1,29 @@
 <?php
+
 namespace Tests\Feature;
 
 use Gymsys\Model\Wada;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class WadaTest extends TestCase
 {
     private Wada $model;
-    private Database $db;
-    private string $enc42342344;
-    private string $enc99389012;
+    private Database|MockObject $db;
+    private string $atleta;
 
     protected function setUp(): void
     {
         $this->db = $this->createMock(Database::class);
         $this->model = new Wada($this->db);
-        $this->enc42342344 = Cipher::aesEncrypt('42342344');
-        $this->enc99389012 = Cipher::aesEncrypt('99389012');
+        $this->atleta = Cipher::aesEncrypt('42342344');
     }
 
     private function normalize(string $sql): string
     {
-        $s = strtolower(str_replace('`','',$sql));
+        $s = strtolower(str_replace('`', '', $sql));
         $s = preg_replace('/\s+/', ' ', $s);
         return trim($s);
     }
@@ -51,7 +51,7 @@ final class WadaTest extends TestCase
         });
 
         $resp = $this->model->incluirWada([
-            'atleta' => $this->enc42342344,
+            'atleta' => $this->atleta,
             'status' => true,
             'inscrito' => '2024-07-12',
             'ultima_actualizacion' => '2024-07-12',
@@ -59,6 +59,7 @@ final class WadaTest extends TestCase
         ]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("La WADA se registró exitosamente", $resp['mensaje']);
     }
 
     public function test_incluir_wada_duplicada(): void
@@ -77,10 +78,11 @@ final class WadaTest extends TestCase
             return true;
         });
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La WADA para este atleta ya existe","code":400}');
         $this->model->incluirWada([
-            'atleta' => $this->enc42342344,
-            'status' => false,
+            'atleta' => $this->atleta,
+            'status' => 0,
             'inscrito' => '2024-07-12',
             'ultima_actualizacion' => '2024-07-12',
             'vencimiento' => '2024-10-12'
@@ -89,7 +91,8 @@ final class WadaTest extends TestCase
 
     public function test_incluir_wada_invalida(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"status\"]","code":400}');
         $this->model->incluirWada([
             'atleta' => 'enc:BAD',
             'status' => '',
@@ -118,9 +121,33 @@ final class WadaTest extends TestCase
             return [];
         });
 
-        $resp = $this->model->obtenerWada(['id' => $this->enc42342344]);
+        $resp = $this->model->obtenerWada(['id' => $this->atleta]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('wada', $resp);
+    }
+
+    public function test_obtener_wada_no_existe(): void
+    {
+        $this->db->method('query')->willReturnCallback(function ($sql) {
+            $s = $this->normalize((string)$sql);
+            if (str_contains($s, 'select id_atleta from wada')) {
+                return false;
+            }
+            return [];
+        });
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La WADA de este atleta no existe","code":400}');
+
+        $this->model->obtenerWada(['id' => $this->atleta]);
+    }
+
+    public function test_obtener_wada_invalida(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $atleta = Cipher::aesEncrypt("prueba123");
+        $this->model->obtenerWada(['id' => $atleta]);
     }
 
     public function test_modificar_wada_exitoso(): void
@@ -146,14 +173,15 @@ final class WadaTest extends TestCase
         });
 
         $resp = $this->model->modificarWada([
-            'atleta' => $this->enc42342344,
-            'status' => true,
+            'atleta' => $this->atleta,
+            'status' => 1,
             'inscrito' => '2024-07-12',
             'ultima_actualizacion' => '2024-08-12',
             'vencimiento' => '2024-11-12'
         ]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals('La WADA se modificó exitosamente', $resp["mensaje"]);
     }
 
     public function test_modificar_wada_no_existe(): void
@@ -172,10 +200,11 @@ final class WadaTest extends TestCase
             return true;
         });
 
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La WADA del atleta introducido no existe","code":404}');
         $this->model->modificarWada([
-            'atleta' => $this->enc99389012,
-            'status' => false,
+            'atleta' => $this->atleta,
+            'status' => 1,
             'inscrito' => '2024-07-12',
             'ultima_actualizacion' => '2024-07-12',
             'vencimiento' => '2024-11-12'
@@ -184,7 +213,8 @@ final class WadaTest extends TestCase
 
     public function test_modificar_wada_invalida(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"status\",\"inscrito\"]","code":400}');
         $this->model->modificarWada([
             'atleta' => 'enc:342343324',
             'status' => '',
@@ -210,9 +240,10 @@ final class WadaTest extends TestCase
             return true;
         });
 
-        $resp = $this->model->eliminarWada(['cedula' => $this->enc42342344]);
+        $resp = $this->model->eliminarWada(['cedula' => $this->atleta]);
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals('La WADA se eliminó exitosamente', $resp["mensaje"]);
     }
 
     public function test_eliminar_wada_no_existe(): void
@@ -225,8 +256,17 @@ final class WadaTest extends TestCase
             return true;
         });
 
-        $this->expectException(\Throwable::class);
-        $this->model->eliminarWada(['cedula' => $this->enc42342344]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La WADA del atleta introducido no existe","code":404}');
+        $this->model->eliminarWada(['cedula' => $this->atleta]);
+    }
+
+    public function test_eliminar_wada_invalida(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $atleta = Cipher::aesEncrypt("prueba123");
+        $this->model->eliminarWada(['cedula' => $atleta]);
     }
 
     public function test_listado_wada(): void
@@ -235,6 +275,7 @@ final class WadaTest extends TestCase
         $resp = $this->model->listadoWada();
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('wada', $resp);
+        $this->assertIsArray($resp['wada']);
     }
 
     public function test_listado_por_vencer(): void
@@ -243,5 +284,6 @@ final class WadaTest extends TestCase
         $resp = $this->model->listadoPorVencer();
         $this->assertIsArray($resp);
         $this->assertArrayHasKey('wadas', $resp);
+        $this->assertIsArray($resp['wadas']);
     }
 }
