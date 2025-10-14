@@ -5,11 +5,12 @@ use Gymsys\Core\Database;
 use Gymsys\Model\Bitacora;
 use Gymsys\Utils\Cipher;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\MockObject;
 
 final class BitacoraTest extends TestCase
 {
     private Bitacora $model;
-    private Database $db;
+    private Database|MockObject $db;
 
     public static function setUpBeforeClass(): void
     {
