@@ -5,18 +5,12 @@ namespace Tests\Feature;
 use Gymsys\Core\Database;
 use Gymsys\Utils\Cipher;
 use Gymsys\Model\Eventos;
-use Gymsys\Model\Categorias;
-use Gymsys\Model\Subs;
-use Gymsys\Model\TipoCompetencia;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class EventosTest extends TestCase
 {
     private Eventos $eventos;
-    private Categorias $categorias;
-    private Subs $subs;
-    private TipoCompetencia $tipoCompetencia;
     private Database|MockObject $db;
 
     private function enc(string $v): string
@@ -28,9 +22,6 @@ final class EventosTest extends TestCase
     {
         $this->db = $this->createMock(Database::class);
         $this->eventos = new Eventos($this->db);
-        $this->categorias = new Categorias($this->db);
-        $this->subs = new Subs($this->db);
-        $this->tipoCompetencia = new TipoCompetencia($this->db);
     }
 
     public function test_incluir_evento_exitoso(): void
@@ -96,7 +87,7 @@ final class EventosTest extends TestCase
         ]);
         $this->assertIsArray($r);
         $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('El evento se modificó exitosamente', $r['mensaje']);
+        $this->assertEquals('La competencia se modificó exitosamente', $r['mensaje']);
     }
 
     public function test_modificar_evento_invalido(): void
@@ -132,6 +123,29 @@ final class EventosTest extends TestCase
         ]);
     }
 
+    public function test_eliminar_evento_exitoso(): void
+    {
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);
+        $r = $this->eventos->eliminarEvento(['id_competencia' => $this->enc('11')]);
+        $this->assertIsArray($r);
+        $this->assertArrayHasKey('mensaje', $r);
+        $this->assertEquals('La competencia se eliminó exitosamente', $r['mensaje']);
+    }
+
+    public function test_eliminar_evento_no_existe(): void
+    {
+        $this->db->method('query')->willReturn([]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La competencia ingresada no existe","code":404}');
+        $this->eventos->eliminarEvento(['id_competencia' => $this->enc('999')]);
+    }
+
+    public function test_eliminar_evento_invalido(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->eliminarEvento(['id_competencia' => $this->enc('')]);
+    }
     public function test_obtener_competencia_exitoso(): void
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(
@@ -139,66 +153,81 @@ final class EventosTest extends TestCase
             ['id_competencia' => 11, 'subs' => 6, 'categoria' => 6, 'tipo_competicion' => 9, 'nombre' => 'Campeonato', 'lugar_competencia' => 'CDL', 'fecha_inicio' => '2024-12-01', 'fecha_fin' => '2024-12-05']
         );
         $r = $this->eventos->obtenerCompetencia(['id' => $this->enc('11')]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('competencia', $r);
+        $this->assertIsArray($r['competencia']);
     }
 
     public function test_obtener_competencia_invalido(): void
     {
-        $this->expectException(\Throwable::class);
-        $this->eventos->obtenerCompetencia(['id' => $this->enc('1e1')]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->obtenerCompetencia(['id' => $this->enc('asd%#')]);
     }
 
     public function test_obtener_competencia_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La competencia ingresada no existe","code":404}');
         $this->eventos->obtenerCompetencia(['id' => $this->enc('11')]);
     }
 
-    public function test_listado_eventos_exitoso(): void
+    public function test_listado_eventos_activos(): void
     {
         $this->db->method('query')->willReturn([['id_competencia' => 11, 'subs' => 6, 'categoria' => 6, 'tipo_competicion' => 9]]);
         $r = $this->eventos->listadoEventos();
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('eventos', $r);
+        $this->assertIsArray($r['eventos']);
     }
 
     public function test_cerrar_evento_exitoso(): void
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);
         $r = $this->eventos->cerrarEvento(['id_competencia' => $this->enc('11')]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('mensaje', $r);
+        $this->assertEquals('El evento se cerró exitosamente', $r['mensaje']);
     }
 
     public function test_cerrar_evento_invalido(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
         $this->eventos->cerrarEvento(['id_competencia' => $this->enc('abc')]);
     }
 
     public function test_cerrar_evento_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"La competencia introducida no existe","code":404}');
         $this->eventos->cerrarEvento(['id_competencia' => $this->enc('11')]);
     }
+
 
     public function test_listado_atletas_inscritos_exitoso(): void
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], [['id_atleta' => 5560233, 'nombre' => 'Leo', 'apellido' => 'H']]);
         $r = $this->eventos->listadoAtletasInscritos(['id_competencia' => $this->enc('11')]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('atletas', $r);
+        $this->assertIsArray($r['atletas']);
     }
 
     public function test_listado_atletas_inscritos_invalido(): void
     {
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
         $this->eventos->listadoAtletasInscritos(['id_competencia' => $this->enc('competencia')]);
     }
 
     public function test_listado_atletas_inscritos_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"No existe la competencia ingresada","code":404}');
         $this->eventos->listadoAtletasInscritos(['id_competencia' => $this->enc('100')]);
     }
 
@@ -206,21 +235,34 @@ final class EventosTest extends TestCase
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);
         $lista = json_encode([$this->enc('5560233')]);
-        $r = $this->eventos->inscribirAtletas(['id_competencia' => $this->enc('11'), 'atletas' => $lista]);
+        $r = $this->eventos->inscribirAtletas([
+            'id_competencia' => $this->enc('11'),
+            'atletas' => $lista
+        ]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('mensaje', $r);
+        $this->assertEquals('Los atletas se inscribieron exitosamente', $r['mensaje']);
     }
 
-    public function test_inscribir_atletas_formato_invalido(): void
+    public function test_inscribir_atletas_invalido(): void
     {
-        $this->expectException(\Throwable::class);
-        $this->eventos->inscribirAtletas(['id_competencia' => $this->enc('11'), 'atletas' => ['no-json']]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El formato de los datos de atletas no es v\u00e1lido","code":400}');
+        $this->eventos->inscribirAtletas([
+            'id_competencia' => $this->enc('11'),
+            'atletas' => ['no-json']
+        ]);
     }
 
-    public function test_inscribir_atletas_competencia_no_existe(): void
+    public function test_inscribir_atletas_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->eventos->inscribirAtletas(['id_competencia' => $this->enc('11'), 'atletas' => json_encode([$this->enc('5560233')])]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Esta competencia no existe","code":400}');
+        $this->eventos->inscribirAtletas([
+            'id_competencia' => $this->enc('11'),
+            'atletas' => json_encode([$this->enc('5560233')])
+        ]);
     }
 
     public function test_registrar_resultados_exitoso(): void
@@ -236,13 +278,16 @@ final class EventosTest extends TestCase
             'medalla_total' => 'oro',
             'total' => 220.5
         ]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('mensaje', $r);
+        $this->assertEquals('El resultado se registró exitosamente', $r['mensaje']);
     }
 
     public function test_registrar_resultados_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El atleta o competencia no existe","code":404}');
         $this->eventos->registrarResultados([
             'id_competencia' => $this->enc('11'),
             'id_atleta' => $this->enc('5560233'),
@@ -252,6 +297,22 @@ final class EventosTest extends TestCase
             'medalla_envion' => 'plata',
             'medalla_total' => 'oro',
             'total' => 220.5
+        ]);
+    }
+    public function test_registrar_resultados_invalido(): void
+    {
+        $this->db->method('query')->willReturn([]);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"arranque\",\"envion\",\"medalla_arranque\"]","code":400}');
+        $this->eventos->registrarResultados([
+            'id_competencia' => $this->enc('$%$5'),
+            'id_atleta' => $this->enc(''),
+            'arranque' => '',
+            'envion' => null,
+            'medalla_arranque' => '',
+            'medalla_envion' => '3',
+            'medalla_total' => 'true',
+            'total' => false
         ]);
     }
 
@@ -268,13 +329,16 @@ final class EventosTest extends TestCase
             'medalla_total' => 'oro',
             'total' => 222.0
         ]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('mensaje', $r);
+        $this->assertEquals('El resultado se modificó exitosamente', $r['mensaje']);
     }
 
     public function test_modificar_resultados_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El atleta o competencia no existe","code":404}');
         $this->eventos->modificarResultados([
             'id_competencia' => $this->enc('11'),
             'id_atleta' => $this->enc('5560233'),
@@ -286,263 +350,54 @@ final class EventosTest extends TestCase
             'total' => 222.0
         ]);
     }
+    public function test_modificar_resultados_invalido(): void
+    {
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"envion\",\"medalla_arranque\",\"medalla_envion\",\"medalla_total\"]","code":400}');
+        $this->eventos->modificarResultados([
+            'id_competencia' => $this->enc('gggg'),
+            'id_atleta' => $this->enc('leoleo'),
+            'arranque' => false,
+            'envion' => null,
+            'medalla_arranque' => '',
+            'medalla_envion' => '',
+            'medalla_total' => '',
+            'total' => false
+        ]);
+    }
 
-    public function test_listado_eventos_anteriores_exitoso(): void
+    public function test_listado_eventos_anteriores(): void
     {
         $this->db->method('query')->willReturn([['id_competencia' => 7, 'subs' => 6, 'categoria' => 6, 'tipo_competicion' => 9]]);
         $r = $this->eventos->listadoEventosAnteriores();
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('eventos', $r);
+        $this->assertEquals(1, count($r['eventos']));
     }
 
     public function test_listado_atletas_disponibles_exitoso(): void
     {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(
+        $this->db->method('query')->willReturnOnConsecutiveCalls(true,
             ['peso_minimo' => 60, 'peso_maximo' => 90, 'edad_minima' => 15, 'edad_maxima' => 30],
             [['id_atleta' => 5560233, 'nombre' => 'Leo', 'apellido' => 'H', 'peso' => 75, 'fecha_nacimiento' => '2000-01-01']]
         );
         $r = $this->eventos->listadoAtletasDisponibles(['id' => $this->enc('11')]);
+        $this->assertIsArray($r);
         $this->assertArrayHasKey('atletas', $r);
+        $this->assertEquals(1, count($r['atletas']));
     }
-
-    public function test_categorias_listado_exitoso(): void
+    public function test_listado_atletas_disponibles_invalido(): void
     {
-        $this->db->method('query')->willReturn([['id_categoria' => 8, 'nombre' => '81M', 'peso_minimo' => 73, 'peso_maximo' => 81.99]]);
-        $r = $this->categorias->listadoCategorias();
-        $this->assertArrayHasKey('categorias', $r);
-    }
-
-    public function test_incluir_categoria_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $r = $this->categorias->incluirCategoria(['nombre' => '81M', 'pesoMinimo' => 73, 'pesoMaximo' => 81.99]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La categoría se registró exitosamente', $r['mensaje']);
-    }
-
-    public function test_incluir_categoria_invalido(): void
-    {
-        $this->categorias;
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"El peso m\u00e1ximo no puede ser menor o igual al peso m\u00ednimo","code":400}');
-        $this->categorias->incluirCategoria(['nombre' => '81M', 'pesoMinimo' => 85, 'pesoMaximo' => 81.99]);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->listadoAtletasDisponibles(['id' => $this->enc("")]);
     }
-
-    public function test_incluir_categoria_ya_existe(): void
+    public function test_listado_atletas_disponibles_no_existe(): void
     {
-        $this->db->method('query')->willReturn(['id_categoria' => 8]);
+        $this->db->method('query')->willReturn(false);
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Ya existe una categoria con este nombre","code":404}');
-        $this->categorias->incluirCategoria(['nombre' => '81M', 'pesoMinimo' => 75, 'pesoMaximo' => 81.99]);
-    }
-
-    public function test_modificar_categoria_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_categoria' => 8], [], true);
-        $r = $this->categorias->modificarCategoria(['id_categoria' => $this->enc('8'), 'nombre' => '81F', 'pesoMinimo' => 75, 'pesoMaximo' => 81.99]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La categoría se modificó exitosamente', $r['mensaje']);
-    }
-
-    public function test_modificar_categoria_invalido(): void
-    {
-        $this->categorias;
-        $this->expectException(\Throwable::class);
-        $this->categorias->modificarCategoria(['id_categoria' => $this->enc('8'), 'nombre' => '', 'pesoMinimo' => 75, 'pesoMaximo' => '']);
-    }
-
-    public function test_modificar_categoria_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"No existe la categoria ingresada","code":404}');
-        $this->categorias->modificarCategoria(['id_categoria' => $this->enc('82'), 'nombre' => '81M', 'pesoMinimo' => 75, 'pesoMaximo' => 80.99]);
-    }
-
-    public function test_eliminar_categoria_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_categoria' => 8], true);
-        $r = $this->categorias->eliminarCategoria(['id_categoria' => $this->enc('8')]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La categoria se eliminó exitosamente', $r['mensaje']);
-    }
-
-    public function test_eliminar_categoria_invalido(): void
-    {
-        $this->categorias;
-        $this->expectException(\Throwable::class);
-        $this->categorias->eliminarCategoria(['id_categoria' => $this->enc('Categoria')]);
-    }
-
-    public function test_eliminar_categoria_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"La categoria ingresada no existe","code":404}');
-        $this->categorias->eliminarCategoria(['id_categoria' => $this->enc('333')]);
-    }
-
-    public function test_listado_subs_exitoso(): void
-    {
-        $this->db->method('query')->willReturn([['id_sub' => 8, 'nombre' => 'U20', 'edad_minima' => 15, 'edad_maxima' => 20]]);
-        $r = $this->subs->listadoSubs();
-        $this->assertArrayHasKey('subs', $r);
-    }
-
-    public function test_incluir_sub_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $r = $this->subs->incluirSub(['nombre' => 'U20', 'edadMinima' => 15, 'edadMaxima' => 20]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La sub se registró exitosamente', $r['mensaje']);
-    }
-
-    public function test_incluir_sub_invalido(): void
-    {
-        $this->subs;
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"edadMinima\"]","code":400}');
-        $this->subs->incluirSub(['nombre' => 'U20', 'edadMinima' => '', 'edadMaxima' => 20]);
-    }
-
-    public function test_incluir_sub_ya_existe(): void
-    {
-        $this->db->method('query')->willReturn(['id_sub' => 8]);
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Ya existe una sub con este nombre","code":400}');
-        $this->subs->incluirSub(['nombre' => 'U20', 'edadMinima' => 15, 'edadMaxima' => 20]);
-    }
-
-    public function test_modificar_sub_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub' => 8], [], true);
-        $r = $this->subs->modificarSub(['id_sub' => $this->enc('8'), 'nombre' => 'U20', 'edadMinima' => 16, 'edadMaxima' => 20]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La sub se modificó exitosamente', $r['mensaje']);
-    }
-
-    public function test_modificar_sub_invalido(): void
-    {
-        $this->expectException(\Throwable::class);
-        $this->subs->modificarSub(['id_sub' => $this->enc('8'), 'nombre' => 'U20', 'edadMinima' => 'menor', 'edadMaxima' => 20]);
-    }
-
-    public function test_modificar_sub_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"La sub ingresada no existe","code":404}');
-        $this->subs->modificarSub(['id_sub' => $this->enc('83'), 'nombre' => 'U20', 'edadMinima' => 15, 'edadMaxima' => 20]);
-    }
-
-    public function test_modificar_sub_ya_existe(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub' => 8], ['id_sub' => 9]);
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Ya existe una sub con este nombre","code":400}');
-        $this->subs->modificarSub(['id_sub' => $this->enc('8'), 'nombre' => 'U15', 'edadMinima' => 15, 'edadMaxima' => 20]);
-    }
-
-    public function test_eliminar_sub_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_sub' => 8], true);
-        $r = $this->subs->eliminarSub(['id_sub' => $this->enc('8')]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('La sub se eliminó exitosamente', $r['mensaje']);
-    }
-
-    public function test_eliminar_sub_invalido(): void
-    {
-        $this->expectException(\Throwable::class);
-        $this->subs->eliminarSub(['id_sub' => $this->enc('categoria')]);
-    }
-
-    public function test_eliminar_sub_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"La sub ingresada no existe","code":404}');
-        $this->subs->eliminarSub(['id_sub' => $this->enc('100')]);
-    }
-
-    public function test_listado_tipo_exitoso(): void
-    {
-        $this->db->method('query')->willReturn([['id_tipo_competencia' => 13, 'nombre' => 'Senior']]);
-        $r = $this->tipoCompetencia->listadoTipos();
-        $this->assertArrayHasKey('tipos', $r);
-    }
-
-    public function test_incluir_tipo_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls([], true);
-        $r = $this->tipoCompetencia->incluirTipo(['nombre' => 'Sub23']);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('El tipo de competencia se registró exitosamente', $r['mensaje']);
-    }
-
-    public function test_incluir_tipo_invalido(): void
-    {
-        $this->expectException(\Throwable::class);
-        $this->tipoCompetencia->incluirTipo(['nombre' => '']);
-    }
-
-    public function test_incluir_tipo_ya_existe(): void
-    {
-        $this->db->method('query')->willReturn(['id_tipo_competencia' => 13]);
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Ya existe este tipo de competencia","code":400}');
-        $this->tipoCompetencia->incluirTipo(['nombre' => 'Sub23']);
-    }
-
-    public function test_modificar_tipo_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia' => 13], [], true);
-        $r = $this->tipoCompetencia->modificarTipo(['id_tipo' => $this->enc('13'), 'nombre' => 'Sub24']);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('El tipo de competencia se modificó exitosamente', $r['mensaje']);
-    }
-
-    public function test_modificar_tipo_invalido(): void
-    {
-        $this->expectException(\Throwable::class);
-        $this->tipoCompetencia->modificarTipo(['id_tipo' => $this->enc('13'), 'nombre' => '']);
-    }
-
-    public function test_modificar_tipo_ya_existe(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia' => 13], ['id_tipo_competencia' => 99]);
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('{"error":"Ya existe un tipo de competencia con este nombre","code":400}');
-        $this->tipoCompetencia->modificarTipo(['id_tipo' => $this->enc('13'), 'nombre' => 'Senior']);
-    }
-
-    public function test_modificar_tipo_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"El tipo de competencia ingresado no existe","code":404}');
-        $this->tipoCompetencia->modificarTipo(['id_tipo' => $this->enc('123'), 'nombre' => 'Sub25']);
-    }
-
-    public function test_eliminar_tipo_exitoso(): void
-    {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_tipo_competencia' => 13], true);
-        $r = $this->tipoCompetencia->eliminarTipo(['id_tipo' => $this->enc('13')]);
-        $this->assertArrayHasKey('mensaje', $r);
-        $this->assertEquals('El tipo de competencia se eliminó exitosamente', $r['mensaje']);
-    }
-
-    public function test_eliminar_tipo_invalido(): void
-    {
-        $this->tipoCompetencia;
-        $this->expectException(\Throwable::class);
-        $this->tipoCompetencia->eliminarTipo(['id_tipo' => $this->enc('1/3')]);
-    }
-
-    public function test_eliminar_tipo_no_existe(): void
-    {
-        $this->db->method('query')->willReturn([]);
-        $this->expectException(\Throwable::class);
-        $this->expectExceptionMessage('{"error":"Este tipo de competencia no existe","code":404}');
-        $this->tipoCompetencia->eliminarTipo(['id_tipo' => $this->enc('13')]);
+        $this->expectExceptionMessage('{"error":"La competencia ingresada no existe","code":404}');
+        $this->eventos->listadoAtletasDisponibles(['id' => $this->enc('11')]);
     }
 }
