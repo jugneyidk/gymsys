@@ -475,7 +475,7 @@ class Eventos
    }
    private function _listadoAtletasDisponibles(int $idCompetencia): array
    {
-      $existe = Validar::existe($this->database, $idCompetencia, "SELECT id_competencia FROM competencia WHERE id_competencia = :id_competencia");
+      $existe = Validar::existe($this->database, $idCompetencia, "SELECT id_competencia FROM competencia WHERE id_competencia = :id");
       if (!$existe) {
          ExceptionHandler::throwException("La competencia ingresada no existe", \InvalidArgumentException::class, 404);
       }
