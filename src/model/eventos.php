@@ -417,7 +417,7 @@ class Eventos
    }
    public function registrarResultados(array $datos): array
    {
-      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
+      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
       $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
@@ -429,7 +429,6 @@ class Eventos
       Validar::validar("medalla", $arrayFiltrado['medalla_arranque']);
       Validar::validar("medalla", $arrayFiltrado['medalla_envion']);
       Validar::validar("medalla", $arrayFiltrado['medalla_total']);
-      Validar::sanitizarYValidar($arrayFiltrado['total'], 'float');
       return $this->_registrarResultados($arrayFiltrado);
    }
    private function _registrarResultados(array $datos): array
@@ -455,7 +454,7 @@ class Eventos
          ':medalla_arranque' => $datos['medalla_arranque'],
          ':medalla_envion' => $datos['medalla_envion'],
          ':medalla_total' => $datos['medalla_total'],
-         ':total' => $datos['total']
+         ':total' => $datos['envion'] + $datos['arranque']
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
