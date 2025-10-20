@@ -189,9 +189,7 @@ class Atletas
       $consulta = "SELECT cedula FROM atleta WHERE cedula = :id;";
       $existe = Validar::existe($this->database, $datos['cedula'], $consulta);
       if (!$existe) {
-         $resultado["ok"] = false;
-         $resultado["mensaje"] = "No existe ningun atleta con esta cedula";
-         return $resultado;
+         ExceptionHandler::throwException("No existe ningun atleta con esta cedula", \InvalidArgumentException::class, 404);
       }
       if (!empty($datos['cedula_representante'])) {
          $representante = [

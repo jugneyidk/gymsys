@@ -151,7 +151,8 @@ final class AtletasTest extends TestCase
     public function test_modificar_atleta_no_existe(): void
     {
         $this->db->method('query')->willReturn(false);
-
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"No existe ningun atleta con esta cedula","code":404}');
         $resp = $this->model->modificarAtleta([
             'cedula' => '13285427',
             'nombres' => 'Leoleo',
@@ -169,11 +170,6 @@ final class AtletasTest extends TestCase
             'modificar_contraseña' => '1',
             'password' => 'Password123$'
         ]);
-
-        $this->assertIsArray($resp);
-        $this->assertArrayHasKey('ok', $resp);
-        $this->assertFalse($resp['ok']);
-        $this->assertEquals("No existe ningun atleta con esta cedula", $resp["mensaje"]);
     }
 
     public function test_modificar_atleta_invalido(): void
