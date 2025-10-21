@@ -39,7 +39,7 @@ abstract class BaseController
    {
       $class = "Gymsys\Controller\\" . ucwords($page);
       if (!class_exists($class)) {
-         ExceptionHandler::throwException("No existe el controlador con este nombre", 400, \BadFunctionCallException::class);
+         ExceptionHandler::throwException("No existe el controlador con este nombre", \BadFunctionCallException::class);
       }
       return $class;
    }
@@ -47,14 +47,14 @@ abstract class BaseController
    {
       $class = "Gymsys\Model\\" . ucwords($page);
       if (!class_exists($class)) {
-         ExceptionHandler::throwException("No existe el modelo con este nombre", 400, \BadFunctionCallException::class);
+         ExceptionHandler::throwException("No existe el modelo con este nombre", \BadFunctionCallException::class);
       }
       return $class;
    }
    public function validarMetodoRequest(string $metodo): void
    {
       if ($_SERVER['REQUEST_METHOD'] !== $metodo) {
-         ExceptionHandler::throwException("Método no permitido", 405, \BadMethodCallException::class);
+         ExceptionHandler::throwException("Método no permitido", \BadMethodCallException::class, 405);
       }
       return;
    }
@@ -97,18 +97,7 @@ abstract class BaseController
       return '<input type="hidden" name="_csrf_token" value="' . htmlspecialchars($token) . '">';
    }
 
-   /*protected function requireCsrf(): void
-   {
-      if (!$this->verifyCsrfToken()) {
-         ExceptionHandler::throwException(
-            'Token CSRF inválido',
-            403,
-            \Exception::class
-         );
-      }
-   }*/
-
-        protected function requireCsrf(): void
+   protected function requireCsrf(): void
    {
       // MODO TESTING: Desactivar CSRF temporalmente
       $config = require dirname(__DIR__) . '/config.php';
@@ -116,33 +105,33 @@ abstract class BaseController
          error_log("ADVERTENCIA: Validación CSRF desactivada - Modo Testing");
          return;
       }
-      
+
       // Validación normal de CSRF
       if (!$this->verifyCsrfToken()) {
          ExceptionHandler::throwException(
             'Token CSRF inválido',
-            403,
-            \Exception::class
+            \Exception::class,
+            403
          );
       }
    }
-public function accionCsrfGlobal(): array
-{
-    return [ 'csrf_token' => $this->generateCsrfToken() ];
-}
+   public function accionCsrfGlobal(): array
+   {
+      return ['csrf_token' => $this->generateCsrfToken()];
+   }
 
    protected function obtenerPermisos(string $modulo, Database $database): array
    {
       $permisos = Rolespermisos::obtenerPermisosModulo($modulo, $database);
       if (empty($permisos)) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \Exception::class, 403);
       }
       return $permisos;
    }
    protected function validarPermisos(array $permisos, string $permiso): void
    {
       if (empty($permisos[$permiso])) {
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \Exception::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \Exception::class, 403);
       }
    }
    public function accionCsrfNuevo(): array

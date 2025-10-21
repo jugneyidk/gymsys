@@ -233,7 +233,7 @@ final class EventosTest extends TestCase
 
     public function test_inscribir_atletas_exitoso(): void
     {
-        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);
+        $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true, true);
         $lista = json_encode([$this->enc('5560233')]);
         $r = $this->eventos->inscribirAtletas([
             'id_competencia' => $this->enc('11'),

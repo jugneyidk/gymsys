@@ -142,7 +142,7 @@ class Eventos
    }
    public function modificarResultados(array $datos): array
    {
-      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total', 'total'];
+      $keys = ['id_competencia', 'id_atleta', 'arranque', 'envion', 'medalla_arranque', 'medalla_envion', 'medalla_total'];
       $arrayFiltrado = Validar::validarArray($datos, $keys);
       $arrayFiltrado['id_competencia'] = Cipher::aesDecrypt($arrayFiltrado['id_competencia']);
       Validar::sanitizarYValidar($arrayFiltrado['id_competencia'], 'int');
@@ -154,7 +154,6 @@ class Eventos
       Validar::validar("medalla", $arrayFiltrado['medalla_arranque']);
       Validar::validar("medalla", $arrayFiltrado['medalla_envion']);
       Validar::validar("medalla", $arrayFiltrado['medalla_total']);
-      Validar::sanitizarYValidar($arrayFiltrado['total'], 'float');
       return $this->_modificarResultados($arrayFiltrado);
    }
    public function _modificarResultados(array $datos): array
@@ -181,7 +180,7 @@ class Eventos
          ':medalla_arranque' => $datos['medalla_arranque'],
          ':medalla_envion' => $datos['medalla_envion'],
          ':medalla_total' => $datos['medalla_total'],
-         ':total' => $datos['total']
+         ':total' => $datos['arranque'] + $datos['envion']
       ];
       $response = $this->database->query($consulta, $valores);
       if (empty($response)) {
@@ -275,6 +274,21 @@ class Eventos
       if (!$existe) {
          ExceptionHandler::throwException("Esta competencia no existe", \InvalidArgumentException::class);
       }
+
+      // Verificar que todos los atletas existen
+      $atletasNoExistentes = [];
+      foreach ($atletas as $idAtleta) {
+         $consultaAtleta = "SELECT cedula FROM atleta WHERE cedula = :id";
+         $atletaExiste = Validar::existe($this->database, $idAtleta, $consultaAtleta);
+         if (!$atletaExiste) {
+            $atletasNoExistentes[] = $idAtleta;
+         }
+      }
+
+      if (!empty($atletasNoExistentes)) {
+         ExceptionHandler::throwException("Los siguientes atletas no están registrados en el sistema: " . implode(', ', $atletasNoExistentes) . ". Por favor, registre primero a estos atletas antes de inscribirlos en la competencia.", \InvalidArgumentException::class);
+      }
+
       $this->database->beginTransaction();
       $consulta = "INSERT INTO resultado_competencia (id_competencia, id_atleta) VALUES (:id_competencia, :id_atleta)";
       foreach ($atletas as $id_atleta) {

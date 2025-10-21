@@ -21,7 +21,7 @@ class RedirectMiddleware
             header("Location: ?p=error404");
             exit;
          }
-         ExceptionHandler::throwException("Ruta no encontrada", 404, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("Ruta no encontrada", \UnexpectedValueException::class, 404);
       }
 
       // Determinar si la ruta es pública
@@ -69,7 +69,7 @@ class RedirectMiddleware
             header("Location: ?p=login");
             exit;
          }
-         ExceptionHandler::throwException("Acceso no autorizado", 403, \UnexpectedValueException::class);
+         ExceptionHandler::throwException("Acceso no autorizado", \UnexpectedValueException::class, 403);
       }
 
       if (!empty(ID_USUARIO) && $page === 'landing') {

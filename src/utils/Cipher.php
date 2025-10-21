@@ -2,6 +2,8 @@
 
 namespace Gymsys\Utils;
 
+use Gymsys\Utils\ExceptionHandler;
+
 class Cipher
 {
    private const CIPHER = "AES-256-CTR";
@@ -38,12 +40,17 @@ class Cipher
     * Descifra una cadena con el algoritmo configurado. La cadena cifrada y el IV se
     * esperan codificados en base64 y concatenados en un solo string.
     *
-    * @param string $encryptedData  Cadena cifrada y codificada en base64.
+    * @param string|null $encryptedData  Cadena cifrada y codificada en base64, o null.
     * @param bool $ivFijo            Determina si se usa un IV aleatorio.
     * @return string|bool            Cadena descifrada o false en caso de error.
     */
-   public static function aesDecrypt(string $encryptedData, bool $ivFijo = false): bool|string
+   public static function aesDecrypt(?string $encryptedData, bool $ivFijo = false): bool|string
    {
+      // Validar que los datos cifrados no sean nulos o vacíos
+      if ($encryptedData === null || $encryptedData === '') {
+         ExceptionHandler::throwException("Los datos cifrados son requeridos para realizar la desencriptación", \InvalidArgumentException::class, 400);
+      }
+
       self::init();
       try {
          if (!$ivFijo) {
@@ -95,6 +102,10 @@ class Cipher
          $sufijo = "_encriptado";
       }
       foreach ($datos as $index => $row) {
+         // Validar que el valor no sea nulo antes de encriptar
+         if (!isset($row[$nombreCampo]) || $row[$nombreCampo] === null || $row[$nombreCampo] === '') {
+            ExceptionHandler::throwException("El campo '{$nombreCampo}' contiene datos nulos que no se pueden encriptar", \InvalidArgumentException::class, 400);
+         }
          $datos[$index]["$nombreCampo$sufijo"] = self::aesEncrypt($row[$nombreCampo]);
       }
       return true;
@@ -103,7 +114,11 @@ class Cipher
    {
       self::init();
       foreach ($datos as $index => $row) {
-         $datos[$index][$nombreCampo] = self::aesdecrypt($row[$nombreCampo]);
+         // Validar que el valor no sea nulo antes de desencriptar
+         if (!isset($row[$nombreCampo]) || $row[$nombreCampo] === null || $row[$nombreCampo] === '') {
+            ExceptionHandler::throwException("El campo '{$nombreCampo}' contiene datos nulos que no se pueden desencriptar", \InvalidArgumentException::class, 400);
+         }
+         $datos[$index][$nombreCampo] = self::aesDecrypt($row[$nombreCampo]);
       }
       return true;
    }
