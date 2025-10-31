@@ -11,7 +11,8 @@ use PHPUnit\Framework\TestCase;
 final class WadaTest extends TestCase
 {
     private Wada $model;
-    private Database|MockObject $db;
+    /** @var Database&MockObject */
+    private $db;
     private string $atleta;
 
     protected function setUp(): void
@@ -267,6 +268,45 @@ final class WadaTest extends TestCase
         $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
         $atleta = Cipher::aesEncrypt("prueba123");
         $this->model->eliminarWada(['cedula' => $atleta]);
+    }
+    public function test_incluir_wada_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"status\",\"inscrito\",\"ultima_actualizacion\",\"vencimiento\"]","code":400}');
+        $this->model->incluirWada([
+            'atleta' => Cipher::aesEncrypt(''),
+            'status' => '',
+            'inscrito' => '',
+            'ultima_actualizacion' => '',
+            'vencimiento' => ''
+        ]);
+    }
+
+    public function test_obtener_wada_vacio(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $this->model->obtenerWada(['id' => Cipher::aesEncrypt('')]);
+    }
+
+    public function test_modificar_wada_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"status\",\"inscrito\",\"ultima_actualizacion\",\"vencimiento\"]","code":400}');
+        $this->model->modificarWada([
+            'atleta' => Cipher::aesEncrypt(''),
+            'status' => '',
+            'inscrito' => '',
+            'ultima_actualizacion' => '',
+            'vencimiento' => ''
+        ]);
+    }
+
+    public function test_eliminar_wada_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"cedula\"]","code":400}');
+        $this->model->eliminarWada(['id' => Cipher::aesEncrypt('')]);
     }
 
     public function test_listado_wada(): void

@@ -179,4 +179,36 @@ final class CategoriaTest extends TestCase
         $this->assertIsArray($r['categorias']);
         $this->assertCount(1, $r['categorias']);
     }
+
+    public function test_incluir_categoria_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombre\",\"pesoMinimo\",\"pesoMaximo\"]","code":400}');
+        $this->categorias->incluirCategoria([
+            'nombre' => '',
+            'pesoMinimo' => '',
+            'pesoMaximo' => ''
+        ]);
+    }
+
+    public function test_modificar_categoria_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_categoria\",\"nombre\",\"pesoMinimo\",\"pesoMaximo\"]","code":400}');
+        $this->categorias->modificarCategoria([
+            'id_categoria' => '',
+            'nombre' => '',
+            'pesoMinimo' => '',
+            'pesoMaximo' => ''
+        ]);
+    }
+
+    public function test_eliminar_categoria_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->categorias->eliminarCategoria([
+            'id_categoria' => $this->enc('')
+        ]);
+    }
 }

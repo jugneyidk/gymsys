@@ -185,6 +185,58 @@ final class EntrenadoresTest extends TestCase
             'grado_instruccion' => 'Licenciatura'
         ]);
     }
+    public function test_incluir_entrenador_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombres\",\"apellidos\",\"cedula\",\"genero\",\"fecha_nacimiento\",\"lugar_nacimiento\",\"estado_civil\",\"telefono\",\"correo_electronico\",\"grado_instruccion\",\"password\"]","code":400}');
+        $this->model->incluirEntrenador([
+            'cedula' => '',
+            'nombres' => '',
+            'apellidos' => '',
+            'genero' => '',
+            'fecha_nacimiento' => '',
+            'lugar_nacimiento' => '',
+            'estado_civil' => '',
+            'telefono' => '',
+            'correo_electronico' => '',
+            'grado_instruccion' => '',
+            'password' => ''
+        ]);
+    }
+
+    public function test_modificar_entrenador_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombres\",\"apellidos\",\"cedula\",\"cedula_original\",\"genero\",\"fecha_nacimiento\",\"lugar_nacimiento\",\"estado_civil\",\"telefono\",\"correo_electronico\",\"grado_instruccion\"]","code":400}');
+        $this->model->modificarEntrenador([
+            'cedula_original' => '',
+            'cedula' => '',
+            'nombres' => '',
+            'apellidos' => '',
+            'genero' => '',
+            'fecha_nacimiento' => '',
+            'lugar_nacimiento' => '',
+            'estado_civil' => '',
+            'telefono' => '',
+            'correo_electronico' => '',
+            'grado_instruccion' => ''
+        ]);
+    }
+
+    public function test_obtener_entrenador_vacio(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $this->model->obtenerEntrenador(['id' => Cipher::aesEncrypt('')]);
+    }
+
+    public function test_eliminar_entrenador_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"cedula\"]","code":400}');
+        $this->model->eliminarEntrenador(['id' => Cipher::aesEncrypt('')]);
+    }
+
     public function test_modificar_entrenador_invalido(): void
     {
         $cedOrigEnc = Cipher::aesEncrypt('9999999');
@@ -195,7 +247,7 @@ final class EntrenadoresTest extends TestCase
             'cedula_original' => $cedOrigEnc,
             'cedula' => '9999999',
             'nombres' => '',
-            'apellidos' => '$%$%',
+            'apellidos' => '\$%\$%',
             'genero' => 'Masculinos',
             'fecha_nacimiento' => '19902-01-01',
             'lugar_nacimiento' => 'Ciudad',

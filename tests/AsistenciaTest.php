@@ -106,4 +106,28 @@ final class AsistenciaTest extends TestCase
         $this->expectExceptionMessage('{"error":"La fecha introducida no es v\u00e1lida","code":400}');
         $this->model->eliminarAsistencias(['fecha' => '2024-32-144']);
     }
+
+    public function test_guardar_asistencias_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"fecha\",\"asistencias\"]","code":400}');
+        $this->model->guardarAsistencias([
+            'fecha' => '',
+            'asistencias' => ''
+        ]);
+    }
+
+    public function test_obtener_asistencias_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"fecha\"]","code":400}');
+        $this->model->obtenerAsistencias(['fecha' => '']);
+    }
+
+    public function test_eliminar_asistencias_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"fecha\"]","code":400}');
+        $this->model->eliminarAsistencias(['fecha' => '']);
+    }
 }

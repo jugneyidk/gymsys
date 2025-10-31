@@ -164,4 +164,34 @@ final class SubsTest extends TestCase
         $this->assertIsArray($r['subs']);
         $this->assertCount(1, $r['subs']);
     }
+
+    public function test_incluir_sub_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombre\",\"edadMinima\",\"edadMaxima\"]","code":400}');
+        $this->subs->incluirSub([
+            'nombre' => '',
+            'edadMinima' => '',
+            'edadMaxima' => ''
+        ]);
+    }
+
+    public function test_modificar_sub_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_sub\",\"nombre\",\"edadMinima\",\"edadMaxima\"]","code":400}');
+        $this->subs->modificarSub([
+            'id_sub' => '',
+            'nombre' => '',
+            'edadMinima' => '',
+            'edadMaxima' => ''
+        ]);
+    }
+
+    public function test_eliminar_sub_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->subs->eliminarSub(['id_sub' => $this->enc('')]);
+    }
 }

@@ -95,6 +95,27 @@ final class AtletasTest extends TestCase
         ]);
     }
 
+    public function test_incluir_atleta_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombres\",\"apellidos\",\"cedula\",\"genero\",\"fecha_nacimiento\",\"lugar_nacimiento\",\"peso\",\"altura\",\"tipo_atleta\",\"estado_civil\",\"telefono\",\"correo_electronico\",\"entrenador_asignado\",\"password\"]","code":400}');
+        $this->model->incluirAtleta([
+            'cedula' => '',
+            'nombres' => '',
+            'apellidos' => '',
+            'genero' => '',
+            'fecha_nacimiento' => '',
+            'lugar_nacimiento' => '',
+            'estado_civil' => '',
+            'telefono' => '',
+            'correo_electronico' => '',
+            'peso' => '',
+            'altura' => '',
+            'entrenador_asignado' => '',
+            'tipo_atleta' => '',
+            'password' => ''
+        ]);
+    }
     public function test_obtener_atleta_exitoso(): void
     {
         $enc = Cipher::aesEncrypt('1328547');
@@ -147,7 +168,40 @@ final class AtletasTest extends TestCase
         $this->model->obtenerAtleta(['id' => $enc]);
     }
 
+    public function test_obtener_atleta_vacio(): void
+    {
+        $enc = Cipher::aesEncrypt('');
+        $this->db->method('query')->willReturn(false);
 
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $this->model->obtenerAtleta(['id' => $enc]);
+    }
+
+    public function test_modificar_atleta_exitoso(): void
+    {
+        $this->db->method('query')->willReturn(true);
+        $resp = $this->model->modificarAtleta([
+            'cedula' => '13285427',
+            'nombres' => 'Leoleo',
+            'apellidos' => 'Herrera',
+            'genero' => 'Masculino',
+            'fecha_nacimiento' => '1990-01-01',
+            'lugar_nacimiento' => 'Ciudad',
+            'estado_civil' => 'Soltero',
+            'telefono' => '04265538456',
+            'correo_electronico' => 'leoleole@example.com',
+            'peso' => '62',
+            'altura' => '178',
+            'entrenador_asignado' => Cipher::aesEncrypt('22222222'),
+            'tipo_atleta' => Cipher::aesEncrypt('1'),
+            'modificar_contraseña' => '1',
+            'password' => 'Password123$'
+        ]);
+        $this->assertIsArray($resp);
+        $this->assertArrayHasKey('mensaje', $resp);
+        $this->assertEquals("El atleta se ha modificado exitosamente", $resp["mensaje"]);
+    }
     public function test_modificar_atleta_no_existe(): void
     {
         $this->db->method('query')->willReturn(false);
@@ -194,6 +248,29 @@ final class AtletasTest extends TestCase
         ]);
     }
 
+    public function test_modificar_atleta_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombres\",\"cedula\",\"genero\",\"fecha_nacimiento\",\"lugar_nacimiento\",\"peso\",\"altura\",\"estado_civil\",\"telefono\",\"correo_electronico\"]","code":400}');
+        $this->model->modificarAtleta([
+            'cedula' => '',
+            'nombres' => '',
+            'apellidos' => '.',
+            'genero' => '',
+            'fecha_nacimiento' => '',
+            'lugar_nacimiento' => '',
+            'estado_civil' => '',
+            'telefono' => '',
+            'correo_electronico' => '',
+            'peso' => '',
+            'altura' => '',
+            'entrenador_asignado' => Cipher::aesEncrypt(''),
+            'tipo_atleta' => Cipher::aesEncrypt(''),
+            'modificar_contraseña' => '',
+            'password' => ''
+        ]);
+    }
+
     public function test_eliminar_atleta_exitoso(): void
     {
         $enc = Cipher::aesEncrypt('5560233');
@@ -231,6 +308,15 @@ final class AtletasTest extends TestCase
         $this->model->eliminarAtleta(['cedula' => $enc]);
     }
 
+    public function test_eliminar_atleta_vacio(): void
+    {
+        $enc = Cipher::aesEncrypt('');
+        $this->db->method('query')->willReturn(false);
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $this->model->eliminarAtleta(['cedula' => $enc]);
+    }
     public function test_listado_atletas(): void
     {
         $this->db->method('query')->willReturn([]);

@@ -137,4 +137,32 @@ final class TipoCompetenciaTest extends TestCase
         $this->assertIsArray($r['tipos']);
         $this->assertCount(1, $r['tipos']);
     }
+
+    public function test_incluir_tipo_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombre\"]","code":400}');
+        $this->tipoCompetencia->incluirTipo([
+            'nombre' => ''
+        ]);
+    }
+
+    public function test_modificar_tipo_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombre\"]","code":400}');
+        $this->tipoCompetencia->modificarTipo([
+            'id_tipo' => $this->enc(''),
+            'nombre' => ''
+        ]);
+    }
+
+    public function test_eliminar_tipo_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->tipoCompetencia->eliminarTipo([
+            'id_tipo' => $this->enc('')
+        ]);
+    }
 }

@@ -198,6 +198,51 @@ final class EventosTest extends TestCase
         $this->eventos->cerrarEvento(['id_competencia' => $this->enc('abc')]);
     }
 
+    public function test_incluir_evento_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"nombre\",\"lugar_competencia\",\"fecha_inicio\",\"fecha_fin\",\"categoria\",\"subs\",\"tipo_competencia\"]","code":400}');
+        $this->eventos->incluirEvento([
+            'nombre' => '',
+            'lugar_competencia' => '',
+            'fecha_inicio' => '',
+            'fecha_fin' => '',
+            'categoria' => '',
+            'subs' => '',
+            'tipo_competencia' => ''
+        ]);
+    }
+
+    public function test_modificar_evento_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_competencia\",\"nombre\",\"lugar_competencia\",\"fecha_inicio\",\"fecha_fin\",\"categoria\",\"subs\",\"tipo_competencia\"]","code":400}');
+        $this->eventos->modificarEvento([
+            'id_competencia' => '',
+            'nombre' => '',
+            'lugar_competencia' => '',
+            'fecha_inicio' => '',
+            'fecha_fin' => '',
+            'categoria' => '',
+            'subs' => '',
+            'tipo_competencia' => ''
+        ]);
+    }
+
+    public function test_obtener_competencia_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->obtenerCompetencia(['id' => $this->enc('')]);
+    }
+
+    public function test_cerrar_evento_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->cerrarEvento(['id_competencia' => $this->enc('')]);
+    }
+
     public function test_cerrar_evento_no_existe(): void
     {
         $this->db->method('query')->willReturn([]);
@@ -262,6 +307,23 @@ final class EventosTest extends TestCase
         $this->eventos->inscribirAtletas([
             'id_competencia' => $this->enc('11'),
             'atletas' => json_encode([$this->enc('5560233')])
+        ]);
+    }
+
+    public function test_listado_atletas_inscritos_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->eventos->listadoAtletasInscritos(['id_competencia' => $this->enc('')]);
+    }
+
+    public function test_inscribir_atletas_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_competencia\",\"atletas\"]","code":400}');
+        $this->eventos->inscribirAtletas([
+            'id_competencia' => '',
+            'atletas' => ''
         ]);
     }
 
@@ -350,6 +412,38 @@ final class EventosTest extends TestCase
             'total' => 222.0
         ]);
     }
+    public function test_registrar_resultados_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_competencia\",\"id_atleta\",\"arranque\",\"envion\",\"medalla_arranque\",\"medalla_envion\",\"medalla_total\"]","code":400}');
+        $this->eventos->registrarResultados([
+            'id_competencia' => '',
+            'id_atleta' => '',
+            'arranque' => '',
+            'envion' => '',
+            'medalla_arranque' => '',
+            'medalla_envion' => '',
+            'medalla_total' => '',
+            'total' => ''
+        ]);
+    }
+
+    public function test_modificar_resultados_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_competencia\",\"id_atleta\",\"arranque\",\"envion\",\"medalla_arranque\",\"medalla_envion\",\"medalla_total\"]","code":400}');
+        $this->eventos->modificarResultados([
+            'id_competencia' => '',
+            'id_atleta' => '',
+            'arranque' => '',
+            'envion' => '',
+            'medalla_arranque' => '',
+            'medalla_envion' => '',
+            'medalla_total' => '',
+            'total' => ''
+        ]);
+    }
+
     public function test_modificar_resultados_invalido(): void
     {
         $this->db->method('query')->willReturnOnConsecutiveCalls(['id_competencia' => 11], true);

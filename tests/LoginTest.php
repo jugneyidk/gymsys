@@ -71,4 +71,10 @@ final class LoginTest extends TestCase
         $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
         $this->model->authUsuario('22223', '-die go12..3');
     }
+    public function test_login_vacio(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"La c\u00e9dula debe tener al menos 7 n\u00fameros","code":400}');
+        $this->model->authUsuario('', '');
+    }
 }

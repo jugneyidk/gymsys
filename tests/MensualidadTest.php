@@ -99,8 +99,28 @@ final class MensualidadTest extends TestCase
     public function test_eliminar_mensualidad_invalida(): void
     {
         $bad = Cipher::aesEncrypt('mensualidad');
-        $this->expectException(\Throwable::class);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
         $this->model->eliminarMensualidad(['id' => $bad]);
+    }
+
+    public function test_incluir_mensualidad_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"Los siguientes campos faltan: [\"id_atleta\",\"fecha\",\"monto\"]","code":400}');
+        $this->model->incluirMensualidad([
+            'id_atleta' => '',
+            'monto' => '',
+            'fecha' => '',
+            'detalles' => ''
+        ]);
+    }
+
+    public function test_eliminar_mensualidad_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->model->eliminarMensualidad(['id' => Cipher::aesEncrypt('')]);
     }
 
     public function test_listado_mensualidades(): void
