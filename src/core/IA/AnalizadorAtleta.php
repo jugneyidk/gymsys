@@ -977,8 +977,10 @@ class AnalizadorAtleta
 
         foreach ($campos as $campo) {
             $valor = $testPostural[$campo] ?? 'ninguna';
-            if ($valor === 'moderada' || $valor === 'severa') {
-                $problemas++;
+            if ($valor === 'severa') {
+                $problemas += 2;
+            } elseif ($valor === 'moderada') {
+                $problemas += 1;
             }
         }
 

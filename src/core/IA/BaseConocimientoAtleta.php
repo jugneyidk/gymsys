@@ -94,11 +94,11 @@ class BaseConocimientoAtleta
             [
                 'id' => 'R10_POSTURAL_SEVERO',
                 'categoria' => 'lesion',
-                'descripcion' => 'Múltiples alteraciones posturales severas (≥5)',
+                'descripcion' => 'Múltiples alteraciones posturales severas (≥4 ponderado)',
                 'condicion' => [
                     'campo' => 'problemas_moderados_severos',
                     'operador' => '>=',
-                    'valor' => 5
+                    'valor' => 4
                 ],
                 'riesgo_puntos' => 30,
                 'factor_mensaje' => 'La evaluación postural revela {count} alteraciones moderadas o severas en diferentes segmentos corporales. Este patrón de múltiples desalineaciones estructurales genera cadenas de compensación biomecánicas complejas que redistribuyen las cargas de manera no fisiológica, incrementando drásticamente el riesgo de lesión por sobreuso en articulaciones y tejidos blandos.',
@@ -113,13 +113,13 @@ class BaseConocimientoAtleta
             [
                 'id' => 'R11_POSTURAL_MODERADO',
                 'categoria' => 'tecnica',
-                'descripcion' => 'Varias alteraciones posturales (3-4)',
+                'descripcion' => 'Varias alteraciones posturales (2-3 ponderado)',
                 'condicion' => [
                     'campo' => 'problemas_moderados_severos',
                     'operador' => 'BETWEEN',
-                    'valor' => [3, 4]
+                    'valor' => [2, 3]
                 ],
-                'riesgo_puntos' => 20,
+                'riesgo_puntos' => 28,
                 'factor_mensaje' => 'Se identifican {count} alteraciones posturales que, aunque permiten el entrenamiento, requieren atención correctiva para prevenir cronificación de patrones compensatorios. Estas desalineaciones pueden generar distribuciones asímetricas de carga durante ejercicios bilaterales y restricciones en rangos de movimiento óptimos.',
                 'recomendaciones' => [
                     '🧘 Incorporar trabajo postural específico al inicio de cada sesión de entrenamiento (10-12 minutos), enfocándose en las zonas identificadas con alteraciones moderadas o severas.',
@@ -132,11 +132,11 @@ class BaseConocimientoAtleta
             [
                 'id' => 'R12_POSTURAL_LEVE',
                 'categoria' => 'planificacion',
-                'descripcion' => 'Pocas alteraciones posturales (1-2)',
+                'descripcion' => 'Pocas alteraciones posturales (1 ponderado)',
                 'condicion' => [
                     'campo' => 'problemas_moderados_severos',
-                    'operador' => 'BETWEEN',
-                    'valor' => [1, 2]
+                    'operador' => '==',
+                    'valor' => 1
                 ],
                 'riesgo_puntos' => 10,
                 'factor_mensaje' => 'Se observan alteraciones posturales menores que no representan contraindicación para el entrenamiento actual, pero conviene abordarlas preventivamente para evitar su progresión.',
@@ -329,8 +329,8 @@ class BaseConocimientoAtleta
     public static function obtenerPonderacionGravedadLesiones(): array
     {
         return [
-            'leve' => 5,
-            'moderada' => 8,
+            'leve' => 4,
+            'moderada' => 7,
             'severa' => 10,
             'grave' => 10
         ];
