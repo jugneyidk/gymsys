@@ -21,29 +21,16 @@ class AnalizadorAtleta
         
 
         $modulosDisponibles = [];
-        $pesoMaximoPosible = 0;
         
         $tieneFms = ($testFms && isset($testFms['puntuacion_total']));
         $tienePostural = ($testPostural !== null);
         $tieneLesiones = true;
         $tieneAsistencia = ($asistencias && isset($asistencias['porcentaje_asistencia']) && $asistencias['total_sesiones'] > 0);
         
-        if ($tieneFms) {
-            $modulosDisponibles[] = 'fms';
-            $pesoMaximoPosible += $ponderaciones['fms'];
-        }
-        if ($tienePostural) {
-            $modulosDisponibles[] = 'postural';
-            $pesoMaximoPosible += $ponderaciones['postural'];
-        }
-        if ($tieneLesiones) {
-            $modulosDisponibles[] = 'lesiones';
-            $pesoMaximoPosible += $ponderaciones['lesiones'];
-        }
-        if ($tieneAsistencia) {
-            $modulosDisponibles[] = 'asistencia';
-            $pesoMaximoPosible += $ponderaciones['asistencia'];
-        }
+        if ($tieneFms) $modulosDisponibles[] = 'fms';
+        if ($tienePostural) $modulosDisponibles[] = 'postural';
+        if ($tieneLesiones) $modulosDisponibles[] = 'lesiones';
+        if ($tieneAsistencia) $modulosDisponibles[] = 'asistencia';
 
 
         $riesgoFms = $tieneFms ? $this->calcularRiesgoFMS($testFms) : 0;
@@ -52,15 +39,18 @@ class AnalizadorAtleta
         $riesgoAsistencia = $tieneAsistencia ? $this->calcularRiesgoAsistencia($asistencias) : 0;
 
 
-        $riesgoTotalBruto = $riesgoFms + $riesgoPostural + $riesgoLesiones + $riesgoAsistencia;
+        $riesgoScore = $this->calcularScoreFinal(
+            $riesgoFms, 
+            $riesgoPostural, 
+            $riesgoLesiones, 
+            $riesgoAsistencia,
+            $tieneFms,
+            $tienePostural,
+            $tieneAsistencia
+        );
         
 
-        $riesgoScore = 0;
-        if ($pesoMaximoPosible > 0) {
-
-            $riesgoScore = round(($riesgoTotalBruto / $pesoMaximoPosible) * 100);
-            $riesgoScore = min(100, max(0, $riesgoScore));
-        }
+        $pesoMaximoPosible = 100;
 
 
         $riesgoNivel = $this->clasificarRiesgo($riesgoScore);
@@ -1016,6 +1006,51 @@ class AnalizadorAtleta
         }
 
         return $problemas;
+    }
+
+    
+    private function calcularScoreFinal(
+        int $riesgoFms,
+        int $riesgoPostural,
+        int $riesgoLesiones,
+        int $riesgoAsistencia,
+        bool $tieneFms,
+        bool $tienePostural,
+        bool $tieneAsistencia
+    ): int {
+        $modulosCriticos = ($tieneFms ? 1 : 0) + ($tienePostural ? 1 : 0);
+        
+        if ($modulosCriticos === 0) {
+            $fmsAsumido = 10;
+            $posturalAsumido = 10;
+        } elseif ($modulosCriticos === 1) {
+            $fmsAsumido = !$tieneFms ? 8 : 0;
+            $posturalAsumido = !$tienePostural ? 8 : 0;
+        } else {
+            $fmsAsumido = 0;
+            $posturalAsumido = 0;
+        }
+        
+        $riesgoFmsFinal = $tieneFms ? $riesgoFms : $fmsAsumido;
+        $riesgoPosturalFinal = $tienePostural ? $riesgoPostural : $posturalAsumido;
+        $riesgoAsistenciaFinal = $tieneAsistencia ? $riesgoAsistencia : 3;
+        
+        $sumaTotal = $riesgoFmsFinal + $riesgoPosturalFinal + $riesgoLesiones + $riesgoAsistenciaFinal;
+        
+        $hayRiesgoAlto = ($riesgoFmsFinal >= 20 || $riesgoPosturalFinal >= 25 || $riesgoLesiones >= 20);
+        
+        if ($hayRiesgoAlto && $modulosCriticos === 2) {
+            $sumaTotal = $sumaTotal * 1.25;
+        } elseif ($hayRiesgoAlto && $modulosCriticos === 1) {
+            $sumaTotal = $sumaTotal * 1.18;
+        }
+        
+        $denominadorBase = 90;
+        
+        $riesgoScore = round(($sumaTotal / $denominadorBase) * 100);
+        $riesgoScore = min(100, max(0, $riesgoScore));
+        
+        return $riesgoScore;
     }
 
     
