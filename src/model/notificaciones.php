@@ -340,4 +340,139 @@ class Notificaciones
 
       return $created_notifications; // Retorna el array de notificaciones creadas
    }
+
+   /**
+    * Crea y envía notificación de riesgo IA para un atleta
+    * Se dispara cuando el análisis IA detecta riesgo MEDIO/ALTO
+    * 
+    * @param array $datos Datos del atleta y análisis IA:
+    *   - cedula_atleta: Cédula del atleta
+    *   - nombre_atleta: Nombre completo del atleta
+    *   - riesgo_nivel: 'alto'|'medio'|'bajo'
+    *   - riesgo_score: Score numérico 0-100
+    *   - primer_factor: Primer factor de riesgo identificado
+    * @return bool True si se creó y envió la notificación, false si no fue necesario
+    */
+   public function crearNotificacionRiesgoIA(array $datos): bool
+   {
+      try {
+         // Validar datos requeridos
+         if (empty($datos['cedula_atleta']) || empty($datos['nombre_atleta']) || 
+             empty($datos['riesgo_nivel']) || !isset($datos['riesgo_score'])) {
+            error_log('[Notificaciones IA] Datos incompletos para notificación de riesgo IA');
+            return false;
+         }
+
+         $cedulaAtleta = $datos['cedula_atleta'];
+         $nombreAtleta = $datos['nombre_atleta'];
+         $riesgoNivel = strtolower($datos['riesgo_nivel']);
+         $riesgoScore = (int)$datos['riesgo_score'];
+         $primerFactor = $datos['primer_factor'] ?? 'No especificado';
+
+         // Evaluar si debe notificarse
+         $debeNotificar = false;
+         if ($riesgoNivel === 'alto') {
+            $debeNotificar = true;
+         } elseif ($riesgoNivel === 'medio' && $riesgoScore >= 60) {
+            $debeNotificar = true;
+         }
+
+         if (!$debeNotificar) {
+            return false;
+         }
+
+         // Obtener el entrenador del atleta
+         $consultaEntrenador = "SELECT entrenador FROM atleta WHERE cedula = :cedula";
+         $resultadoEntrenador = $this->database->query($consultaEntrenador, [':cedula' => $cedulaAtleta], true);
+         
+         if (empty($resultadoEntrenador) || empty($resultadoEntrenador['entrenador'])) {
+            error_log('[Notificaciones IA] No se encontró entrenador para atleta ' . $cedulaAtleta);
+            return false;
+         }
+
+         $cedulaEntrenador = $resultadoEntrenador['entrenador'];
+
+         // Construir mensaje según nivel
+         $iconoRiesgo = $riesgoNivel === 'alto' ? '🔴' : '🟡';
+         $nivelTexto = strtoupper($riesgoNivel);
+         
+         $titulo = "{$iconoRiesgo} Riesgo {$nivelTexto} de lesión - {$nombreAtleta}";
+         
+         // Truncar factor si es muy largo
+         $factorCorto = strlen($primerFactor) > 150 
+            ? substr($primerFactor, 0, 150) . '...' 
+            : $primerFactor;
+         
+         $mensaje = "La IA detectó riesgo {$nivelTexto} ({$riesgoScore}/100) para el atleta {$nombreAtleta}. " .
+                    "Factor principal: {$factorCorto}. Ver tarjeta del atleta para recomendaciones detalladas.";
+
+         // Verificar si ya existe una notificación similar reciente (últimas 24h)
+         $mensajeBusqueda = "La IA detectó riesgo {$nivelTexto} ({$riesgoScore}/100) para el atleta {$nombreAtleta}%";
+         if ($this->notificacionExiste($mensajeBusqueda, $cedulaEntrenador, "riesgo_ia")) {
+            error_log('[Notificaciones IA] Ya existe notificación similar para ' . $nombreAtleta);
+            return false;
+         }
+
+         // Crear notificación en BD
+         $this->database->beginTransaction();
+         
+         $nuevaNotificacion = $this->crearNotificacion([
+            ':id_usuario' => $cedulaEntrenador,
+            ':titulo' => $titulo,
+            ':mensaje' => $mensaje,
+            ':objetivo' => "atletas?cedula={$cedulaAtleta}"
+         ]);
+
+         $this->database->commit();
+
+         // Guardar en caché para WebSocket
+         $this->guardarNotificacionEnCache($cedulaEntrenador, $nuevaNotificacion);
+
+         error_log('[Notificaciones IA] Notificación de riesgo ' . $nivelTexto . ' creada para atleta ' . $nombreAtleta);
+         
+         return true;
+      } catch (\Exception $e) {
+         if ($this->database->inTransaction()) {
+            $this->database->rollBack();
+         }
+         error_log('[Notificaciones IA] Error creando notificación de riesgo IA: ' . $e->getMessage());
+         return false;
+      }
+   }
+
+   /**
+    * Guarda una notificación en caché para ser enviada por WebSocket
+    * 
+    * @param string $userId Cédula del usuario que recibirá la notificación
+    * @param array $notificacion Datos de la notificación
+    */
+   private function guardarNotificacionEnCache(string $userId, array $notificacion): void
+   {
+      try {
+         $cacheDir = dirname(__DIR__, 2) . '/cache/notificaciones/';
+         
+         // Asegurarse de que el directorio existe
+         if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0777, true);
+         }
+
+         $timestamp = (new \DateTime())->format('YmdHis');
+         $filename = $cacheDir . "notif_{$userId}_{$timestamp}.json";
+
+         // Remover id_usuario del array de notificación para el caché
+         $notificacionParaCache = $notificacion;
+         unset($notificacionParaCache['id_usuario']);
+
+         $cacheContent = [
+            "user_id" => $userId,
+            "notifications" => [$notificacionParaCache]
+         ];
+
+         file_put_contents($filename, json_encode($cacheContent, JSON_PRETTY_PRINT));
+         
+         error_log('[Notificaciones IA] Notificación guardada en caché: ' . $filename);
+      } catch (\Exception $e) {
+         error_log('[Notificaciones IA] Error guardando notificación en caché: ' . $e->getMessage());
+      }
+   }
 }

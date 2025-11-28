@@ -333,6 +333,19 @@
                            </tbody>
                         </table>
                      </div>
+                     
+                     <!-- Leyenda de indicadores de riesgo IA -->
+                     <div class="alert alert-warning alert-dismissible fade show mt-2" role="alert">
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <small>
+                           <strong><i class="bi bi-info-circle-fill"></i> Indicadores de Riesgo IA:</strong>
+                           <span class="badge bg-danger ms-2">ALTO</span> <i class="bi bi-exclamation-diamond-fill text-danger"></i> = Mayor riesgo de lesión detectado por análisis de IA.
+                           <span class="badge bg-warning text-dark ms-2">MEDIO</span> <i class="bi bi-exclamation-triangle-fill text-warning"></i> = Riesgo moderado, requiere atención.
+                           <span class="badge bg-success-subtle text-success ms-2">BAJO</span> = Riesgo bajo según evaluaciones.
+                           <br>
+                           <em class="text-muted">La inscripción no se bloquea, solo se muestra advertencia informativa.</em>
+                        </small>
+                     </div>
                   </div>
                </div>
                <form id="formInscribirAtletas">

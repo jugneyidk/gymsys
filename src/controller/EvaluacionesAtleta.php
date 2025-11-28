@@ -105,6 +105,21 @@ class EvaluacionesAtleta extends BaseController
    }
 
    /**
+    * Endpoint ligero para obtener SOLO el análisis de riesgo IA de un atleta
+    * Usado en el módulo de Eventos para mostrar advertencias visuales
+    * 
+    * @param array $datos Debe contener 'id_atleta' cifrado
+    * @return array Análisis de riesgo IA o null si no hay datos
+    */
+   public function obtenerRiesgoAtleta(array $datos): array
+   {
+      $this->validarPermisos($this->permisos, "leer");
+      $this->validarMetodoRequest("GET");
+      
+      return $this->model->obtenerRiesgoAtleta($datos);
+   }
+
+   /**
     * Actualiza un test postural existente
     * 
     * @param array $datos Datos del test postural a actualizar

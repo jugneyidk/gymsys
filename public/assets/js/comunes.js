@@ -268,6 +268,10 @@ function actualizarInterfazNotificaciones(respuesta) {
   var leidas = true;
   var dominio = window.location.hostname + window.location.pathname;
   respuesta.notificaciones.forEach((notificacion) => {
+    // Detectar si es notificación de riesgo IA
+    const esRiesgoIA = notificacion.objetivo && notificacion.objetivo.includes('riesgo_ia');
+    const iconoIA = esRiesgoIA ? '<i class="bi bi-robot me-2 text-primary"></i>' : '';
+    
     contenido += `
         <li class="list-group-item${
           !notificacion.leida ? " list-group-item-warning" : ""
@@ -275,7 +279,7 @@ function actualizarInterfazNotificaciones(respuesta) {
       notificacion.objetivo
     }" role="button" data-id="${notificacion.id}">
           <div class="d-flex w-100 justify-content-between">
-              <span class="mb-1 h6 text-nowrap">${notificacion.titulo}</span>
+              <span class="mb-1 h6 text-nowrap">${iconoIA}${notificacion.titulo}</span>
               <small class="text-muted ms-3 text-nowrap" title="${notificacion.fecha_creacion}">${calcularTiempoNotificacion(
                 notificacion.fecha_creacion
               )}</small>
@@ -521,6 +525,10 @@ export function obtenerNotificaciones() {
         var contenido = ``;
         var dominio = window.location.hostname + window.location.pathname;
         respuesta.notificaciones.forEach((notificacion) => {
+          // Detectar si es notificación de riesgo IA
+          const esRiesgoIA = notificacion.objetivo && notificacion.objetivo.includes('riesgo_ia');
+          const iconoIA = esRiesgoIA ? '<i class="bi bi-robot me-2 text-primary"></i>' : '';
+          
           contenido += `
             <li class="list-group-item${
               !notificacion.leida ? " list-group-item-warning" : ""
@@ -528,7 +536,7 @@ export function obtenerNotificaciones() {
             notificacion.objetivo
           }" role="button" data-id="${notificacion.id}">
               <div class="d-flex w-100 justify-content-between">
-                  <span class="mb-1 h6 text-nowrap">${
+                  <span class="mb-1 h6 text-nowrap">${iconoIA}${
                     notificacion.titulo
                   }</span>
                   <small class="text-muted ms-3 text-nowrap">${calcularTiempoNotificacion(

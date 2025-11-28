@@ -519,9 +519,116 @@ class Eventos
       ];
       $response = $this->database->query($consulta, $valores);
       $resultado['atletas'] = $response ?: [];
+      
+      // ========================================
+      // INTEGRACIÓN IA: Agregar riesgo de lesión para cada atleta
+      // ========================================
       if (!empty($resultado['atletas'])) {
+         foreach ($resultado['atletas'] as &$atleta) {
+            // Obtener análisis de riesgo IA para este atleta
+            $atleta['riesgo_ia'] = $this->obtenerRiesgoIAAtleta($atleta['id_atleta']);
+         }
+         unset($atleta); // Liberar referencia
+         
+         // Cifrar IDs después de obtener el riesgo
          Cipher::encriptarCampoArray($resultado['atletas'], 'id_atleta');
       }
       return $resultado;
+   }
+
+   /**
+    * Obtiene el análisis de riesgo IA para un atleta específico
+    * Usado en listado de eventos para mostrar advertencias visuales
+    * 
+    * @param string $cedulaAtleta Cédula del atleta (sin cifrar)
+    * @return array|null Datos de riesgo IA o null si no hay análisis
+    */
+   private function obtenerRiesgoIAAtleta(string $cedulaAtleta): ?array
+   {
+      try {
+         // Consultas ligeras solo para datos necesarios para IA
+         $consultaUltimoFms = "SELECT puntuacion_total FROM test_fms 
+            WHERE id_atleta = :id_atleta 
+            ORDER BY fecha_evaluacion DESC, fecha_registro DESC 
+            LIMIT 1";
+         $ultimoFmsRaw = $this->database->query($consultaUltimoFms, [':id_atleta' => $cedulaAtleta]);
+         
+         $consultaUltimoPostural = "SELECT * FROM test_postural 
+            WHERE id_atleta = :id_atleta 
+            ORDER BY fecha_evaluacion DESC, fecha_registro DESC 
+            LIMIT 1";
+         $ultimoPosturalRaw = $this->database->query($consultaUltimoPostural, [':id_atleta' => $cedulaAtleta]);
+         
+         $consultaLesiones = "SELECT 
+            *,
+            CASE 
+               WHEN fecha_recuperacion IS NULL THEN 'Activa'
+               ELSE 'Recuperada'
+            END as estado_lesion
+         FROM lesiones 
+         WHERE id_atleta = :id_atleta 
+         ORDER BY fecha_lesion DESC
+         LIMIT 10";
+         $lesionesRaw = $this->database->query($consultaLesiones, [':id_atleta' => $cedulaAtleta]);
+         
+         $consultaResumenLesiones = "SELECT 
+            COUNT(*) as total_lesiones,
+            SUM(CASE WHEN fecha_recuperacion IS NULL THEN 1 ELSE 0 END) as lesiones_activas
+         FROM lesiones 
+         WHERE id_atleta = :id_atleta";
+         $resumenLesionesRaw = $this->database->query($consultaResumenLesiones, [':id_atleta' => $cedulaAtleta]);
+         
+         $consultaAsistencias = "SELECT 
+            COUNT(*) as total_sesiones,
+            SUM(CASE WHEN estado_asistencia = 'presente' THEN 1 ELSE 0 END) as presentes
+         FROM asistencias 
+         WHERE id_atleta = :id_atleta 
+         AND fecha >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+         $asistenciasRaw = $this->database->query($consultaAsistencias, [':id_atleta' => $cedulaAtleta]);
+         
+         $ultimoFms = is_array($ultimoFmsRaw) ? $ultimoFmsRaw : [];
+         $ultimoPostural = is_array($ultimoPosturalRaw) ? $ultimoPosturalRaw : [];
+         $lesiones = is_array($lesionesRaw) ? $lesionesRaw : [];
+         $resumenLesiones = is_array($resumenLesionesRaw) ? $resumenLesionesRaw : [];
+         $asistencias = is_array($asistenciasRaw) ? $asistenciasRaw : [];
+         
+         $totalSesiones = $asistencias[0]['total_sesiones'] ?? 0;
+         $presentes = $asistencias[0]['presentes'] ?? 0;
+         $porcentajeAsistencia = $totalSesiones > 0 ? round(($presentes / $totalSesiones) * 100, 2) : 0;
+         
+         // Mini-tarjeta para IA
+         $miniTarjeta = [
+            'atleta' => [],
+            'ultimo_test_postural' => $ultimoPostural[0] ?? null,
+            'ultimo_test_fms' => $ultimoFms[0] ?? null,
+            'lesiones_recientes' => $lesiones,
+            'resumen_lesiones' => [
+               'total_lesiones' => (int)($resumenLesiones[0]['total_lesiones'] ?? 0),
+               'lesiones_activas' => (int)($resumenLesiones[0]['lesiones_activas'] ?? 0)
+            ],
+            'asistencias_30_dias' => [
+               'total_sesiones' => (int)$totalSesiones,
+               'presentes' => (int)$presentes,
+               'porcentaje_asistencia' => (float)$porcentajeAsistencia
+            ]
+         ];
+         
+         // Ejecutar análisis IA
+         if (class_exists('Gymsys\Core\IA\AnalizadorAtleta')) {
+            $analizador = new \Gymsys\Core\IA\AnalizadorAtleta();
+            $analisisCompleto = $analizador->analizarAtleta($miniTarjeta);
+            
+            // Devolver solo lo necesario para el frontend
+            return [
+               'riesgo_nivel' => $analisisCompleto['riesgo_nivel'] ?? 'bajo',
+               'riesgo_score' => $analisisCompleto['riesgo_score'] ?? 0,
+               'primer_factor' => $analisisCompleto['factores_clave'][0] ?? null
+            ];
+         }
+      } catch (\Exception $e) {
+         error_log('[Eventos] Error obteniendo riesgo IA para atleta ' . $cedulaAtleta . ': ' . $e->getMessage());
+      }
+      
+      return null;
    }
 }

@@ -2,39 +2,13 @@
 
 namespace Gymsys\Core\IA;
 
-/**
- * Motor de Inteligencia Artificial para Análisis de Atletas
- * 
- * Sistema experto basado en reglas y ponderaciones para calcular
- * el riesgo de lesión y generar recomendaciones personalizadas.
- * 
- * Arquitectura:
- * - Motor de Inferencia: AnalizadorAtleta (este archivo)
- * - Base de Conocimiento: ModoBaseConocimiento (switch BD ↔ archivo)
- * - Hechos: Datos del atleta
- * 
- * FASE 3 - Mejoras avanzadas:
- * - Base de conocimiento en BD independiente (gymsys_kb)
- * - Switch automático BD ↔ archivo con fallback
- * - Reglas compuestas avanzadas
- * - Reglas de tendencia temporal
- * - Reglas por perfil de atleta
- * - Recomendaciones súper-detalladas por categoría
- * 
- * @author GymSys Development Team
- * @version 3.0
- */
+
 class AnalizadorAtleta
 {
-    /**
-     * Analiza la tarjeta completa de un atleta y calcula su riesgo de lesión
-     * 
-     * @param array $tarjetaAtleta Datos completos del atleta (tests, lesiones, asistencias)
-     * @return array Resultado del análisis con score, nivel, factores y recomendaciones
-     */
+    
     public function analizarAtleta(array $tarjetaAtleta): array
     {
-        // Extraer componentes del análisis
+
         $datosAtleta = $tarjetaAtleta['atleta'] ?? [];
         $testFms = $tarjetaAtleta['ultimo_test_fms'] ?? null;
         $testPostural = $tarjetaAtleta['ultimo_test_postural'] ?? null;
@@ -42,16 +16,16 @@ class AnalizadorAtleta
         $resumenLesiones = $tarjetaAtleta['resumen_lesiones'] ?? [];
         $asistencias = $tarjetaAtleta['asistencias_30_dias'] ?? null;
 
-        // Obtener ponderaciones de la base de conocimiento (switch automático)
+
         $ponderaciones = ModoBaseConocimiento::obtenerPonderaciones();
         
-        // Determinar qué módulos tienen datos disponibles
+
         $modulosDisponibles = [];
         $pesoMaximoPosible = 0;
         
         $tieneFms = ($testFms && isset($testFms['puntuacion_total']));
         $tienePostural = ($testPostural !== null);
-        $tieneLesiones = true; // Siempre evaluamos lesiones (puede ser 0)
+        $tieneLesiones = true;
         $tieneAsistencia = ($asistencias && isset($asistencias['porcentaje_asistencia']) && $asistencias['total_sesiones'] > 0);
         
         if ($tieneFms) {
@@ -71,27 +45,32 @@ class AnalizadorAtleta
             $pesoMaximoPosible += $ponderaciones['asistencia'];
         }
 
-        // Calcular riesgos por categoría
+
         $riesgoFms = $tieneFms ? $this->calcularRiesgoFMS($testFms) : 0;
         $riesgoPostural = $tienePostural ? $this->calcularRiesgoPostural($testPostural) : 0;
         $riesgoLesiones = $this->calcularRiesgoLesiones($lesiones, $resumenLesiones);
         $riesgoAsistencia = $tieneAsistencia ? $this->calcularRiesgoAsistencia($asistencias) : 0;
 
-        // Score total SIN reescalar
+
         $riesgoTotalBruto = $riesgoFms + $riesgoPostural + $riesgoLesiones + $riesgoAsistencia;
         
-        // REESCALADO: Ajustar score a 0-100 según módulos disponibles
+
         $riesgoScore = 0;
         if ($pesoMaximoPosible > 0) {
-            // Proporción del riesgo obtenido respecto al máximo posible
+
             $riesgoScore = round(($riesgoTotalBruto / $pesoMaximoPosible) * 100);
             $riesgoScore = min(100, max(0, $riesgoScore));
         }
 
-        // Clasificar nivel de riesgo
+
         $riesgoNivel = $this->clasificarRiesgo($riesgoScore);
 
-        // Evaluar reglas de la base de conocimiento
+
+        if ($this->aplicarReglaCombinadadaCritica($testFms, $lesiones, $tieneFms)) {
+            $riesgoNivel = 'alto';
+        }
+
+
         $factoresClave = $this->identificarFactoresClave(
             $testFms, 
             $testPostural, 
@@ -115,7 +94,7 @@ class AnalizadorAtleta
             $tieneAsistencia
         );
 
-        // Retornar análisis completo
+
         return [
             'riesgo_score' => $riesgoScore,
             'riesgo_nivel' => $riesgoNivel,
@@ -132,23 +111,17 @@ class AnalizadorAtleta
         ];
     }
 
-    /**
-     * Calcula el riesgo basado en el Test FMS
-     * Ponderación: 0-30 puntos
-     * 
-     * @param array|null $testFms Último test FMS del atleta
-     * @return int Puntos de riesgo (0-30)
-     */
+    
     private function calcularRiesgoFMS($testFms): int
     {
         if (!$testFms || !isset($testFms['puntuacion_total'])) {
-            return 0; // Sin datos = sin riesgo
+            return 0;
         }
 
         $puntuacion = (int) $testFms['puntuacion_total'];
         $reglas = ModoBaseConocimiento::obtenerReglasFMS();
 
-        // Evaluar reglas FMS desde la base de conocimiento
+
         foreach ($reglas as $regla) {
             $condicion = $regla['condicion'];
             
@@ -163,26 +136,20 @@ class AnalizadorAtleta
             }
         }
 
-        return 0; // FMS óptimo (≥18)
+        return 0;
     }
 
-    /**
-     * Calcula el riesgo basado en el Test Postural
-     * Ponderación: 0-30 puntos
-     * 
-     * @param array|null $testPostural Último test postural del atleta
-     * @return int Puntos de riesgo (0-30)
-     */
+    
     private function calcularRiesgoPostural($testPostural): int
     {
         if (!$testPostural) {
-            return 0; // Sin datos = sin riesgo
+            return 0;
         }
 
         $problemas = $this->contarProblemasPosturales($testPostural);
         $reglas = ModoBaseConocimiento::obtenerReglasPostural();
 
-        // Evaluar reglas posturales desde la base de conocimiento
+
         foreach ($reglas as $regla) {
             $condicion = $regla['condicion'];
             
@@ -197,23 +164,16 @@ class AnalizadorAtleta
             }
         }
 
-        return 0; // Sin problemas posturales
+        return 0;
     }
 
-    /**
-     * Calcula el riesgo basado en lesiones
-     * Ponderación: 0-30 puntos
-     * 
-     * @param array $lesiones Lista de lesiones recientes
-     * @param array $resumenLesiones Resumen estadístico de lesiones
-     * @return int Puntos de riesgo (0-30)
-     */
+    
     private function calcularRiesgoLesiones(array $lesiones, array $resumenLesiones): int
     {
         $riesgo = 0;
         $ponderacionGravedad = ModoBaseConocimiento::obtenerPonderacionGravedadLesiones();
 
-        // Contar lesiones activas por gravedad
+
         $lesionesActivas = array_filter($lesiones, function($lesion) {
             return $lesion['estado_lesion'] === 'Activa';
         });
@@ -223,10 +183,10 @@ class AnalizadorAtleta
             $riesgo += $ponderacionGravedad[$gravedad] ?? 5;
         }
 
-        // Capar el riesgo por lesiones activas a 30
+
         $riesgo = min(30, $riesgo);
 
-        // Bonus: Si hubo lesión en los últimos 30 días (solo si no hay lesiones activas o riesgo <30)
+
         $hayLesionReciente = $this->hayLesionEnUltimos30Dias($lesiones);
         if ($hayLesionReciente && $riesgo < 30) {
             $riesgo = min(30, $riesgo + 10);
@@ -235,23 +195,17 @@ class AnalizadorAtleta
         return $riesgo;
     }
 
-    /**
-     * Calcula el riesgo basado en asistencias
-     * Ponderación: 0-10 puntos
-     * 
-     * @param array|null $asistencias Datos de asistencia de últimos 30 días
-     * @return int Puntos de riesgo (0-10)
-     */
+    
     private function calcularRiesgoAsistencia($asistencias): int
     {
         if (!$asistencias || !isset($asistencias['porcentaje_asistencia'])) {
-            return 0; // Sin datos = sin riesgo
+            return 0;
         }
 
         $porcentaje = (float) $asistencias['porcentaje_asistencia'];
         $reglas = ModoBaseConocimiento::obtenerReglasAsistencia();
 
-        // Evaluar reglas de asistencia desde la base de conocimiento
+
         foreach ($reglas as $regla) {
             $condicion = $regla['condicion'];
             
@@ -266,15 +220,10 @@ class AnalizadorAtleta
             }
         }
 
-        return 0; // Asistencia excelente (≥80%)
+        return 0;
     }
 
-    /**
-     * Verifica si hay alguna lesión en los últimos 30 días
-     * 
-     * @param array $lesiones Lista de lesiones
-     * @return bool True si hay lesión reciente
-     */
+    
     private function hayLesionEnUltimos30Dias(array $lesiones): bool
     {
         $hace30Dias = new \DateTime('-30 days');
@@ -289,12 +238,7 @@ class AnalizadorAtleta
         return false;
     }
 
-    /**
-     * Clasifica el nivel de riesgo según el score
-     * 
-     * @param int $score Score de riesgo (0-100)
-     * @return string Nivel: 'bajo', 'medio' o 'alto'
-     */
+    
     private function clasificarRiesgo(int $score): string
     {
         $umbrales = ModoBaseConocimiento::obtenerUmbralesRiesgo();
@@ -305,23 +249,10 @@ class AnalizadorAtleta
             }
         }
         
-        return 'medio'; // Fallback
+        return 'medio';
     }
 
-    /**
-     * BASE DE CONOCIMIENTO: Identifica factores clave de riesgo
-     * Aplica reglas expertas para determinar qué está incrementando el riesgo
-     * 
-     * @param array|null $testFms Test FMS
-     * @param array|null $testPostural Test Postural
-     * @param array $lesiones Lesiones
-     * @param array $resumenLesiones Resumen de lesiones
-     * @param array|null $asistencias Asistencias
-     * @param bool $tieneFms Indica si hay datos FMS
-     * @param bool $tienePostural Indica si hay datos posturales
-     * @param bool $tieneAsistencia Indica si hay datos de asistencia
-     * @return array Lista de factores clave identificados
-     */
+    
     private function identificarFactoresClave(
         $testFms, 
         $testPostural, 
@@ -335,11 +266,9 @@ class AnalizadorAtleta
         $factores = [];
         $reglasFaltantes = ModoBaseConocimiento::obtenerReglasAusenciaDatos();
 
-        // ========================================
-        // VERIFICAR DATOS FALTANTES PRIMERO
-        // ========================================
+
         
-        // Verificar si falta FMS
+
         if (!$tieneFms) {
             foreach ($reglasFaltantes as $regla) {
                 if ($regla['modulo'] === 'fms') {
@@ -349,7 +278,7 @@ class AnalizadorAtleta
             }
         }
         
-        // Verificar si falta Postural
+
         if (!$tienePostural) {
             foreach ($reglasFaltantes as $regla) {
                 if ($regla['modulo'] === 'postural') {
@@ -359,7 +288,7 @@ class AnalizadorAtleta
             }
         }
         
-        // Verificar si falta Asistencia
+
         if (!$tieneAsistencia) {
             foreach ($reglasFaltantes as $regla) {
                 if ($regla['modulo'] === 'asistencia') {
@@ -369,11 +298,9 @@ class AnalizadorAtleta
             }
         }
 
-        // ========================================
-        // EVALUAR REGLAS DE RIESGO (DATOS EXISTENTES)
-        // ========================================
+
         
-        // REGLA FMS: Usar base de conocimiento
+
         if ($tieneFms) {
             $puntuacionFms = (int) $testFms['puntuacion_total'];
             $reglasFms = ModoBaseConocimiento::obtenerReglasFMS();
@@ -393,13 +320,13 @@ class AnalizadorAtleta
                     
                     if ($cumple && $mensaje) {
                         $factores[] = $mensaje;
-                        break; // Solo el primer match
+                        break;
                     }
                 }
             }
         }
 
-        // REGLA POSTURAL: Usar base de conocimiento
+
         if ($tienePostural) {
             $problemas = $this->contarProblemasPosturales($testPostural);
             $reglasPostural = ModoBaseConocimiento::obtenerReglasPostural();
@@ -425,7 +352,7 @@ class AnalizadorAtleta
             }
         }
 
-        // REGLA LESIONES: Usar base de conocimiento
+
         $lesionesActivas = array_filter($lesiones, function($lesion) {
             return $lesion['estado_lesion'] === 'Activa';
         });
@@ -456,11 +383,11 @@ class AnalizadorAtleta
             
             if ($cumple && $mensaje) {
                 $factores[] = $mensaje;
-                if ($regla['id'] !== 'R23_HISTORIAL_LESIONES') break; // Historial no es excluyente
+                if ($regla['id'] !== 'R23_HISTORIAL_LESIONES') break;
             }
         }
 
-        // REGLA ASISTENCIA: Usar base de conocimiento
+
         if ($tieneAsistencia) {
             $porcentaje = (float) $asistencias['porcentaje_asistencia'];
             $reglasAsistencia = ModoBaseConocimiento::obtenerReglasAsistencia();
@@ -484,9 +411,28 @@ class AnalizadorAtleta
             }
         }
 
-        // ========================================
-        // EVALUAR REGLAS COMBINADAS (INTERACCIONES ENTRE MÓDULOS)
-        // ========================================
+
+        
+
+        if ($tieneFms && $testFms) {
+            $puntuacionFms = (int) $testFms['puntuacion_total'];
+            
+            if ($puntuacionFms <= 12) {
+
+                foreach ($lesionesActivas as $lesion) {
+                    $gravedad = ucfirst(strtolower($lesion['gravedad'] ?? 'desconocida'));
+                    $zona = $lesion['zona_afectada'] ?? 'no especificada';
+                    
+                    if ($gravedad === 'Moderada' || $gravedad === 'Severa' || $gravedad === 'Grave') {
+
+                        $factorCritico = "Combinación crítica: FMS muy bajo ({$puntuacionFms}/21) junto con lesión activa de gravedad {$gravedad} en {$zona}. Esto incrementa significativamente el riesgo de recaída o nueva lesión debido a la debilidad en patrones fundamentales de movimiento.";
+                        array_unshift($factores, $factorCritico);
+                        break;
+                    }
+                }
+            }
+        }
+        
         $reglasCombinadas = ModoBaseConocimiento::obtenerReglasCombinadas();
         
         foreach ($reglasCombinadas as $reglaCombinada) {
@@ -495,7 +441,7 @@ class AnalizadorAtleta
             foreach ($reglaCombinada['condiciones'] as $condicion) {
                 $moduloCumple = false;
                 
-                // Evaluar cada condición según el módulo
+
                 if ($condicion['modulo'] === 'fms' && $tieneFms) {
                     $valor = (int) $testFms[$condicion['campo']];
                     $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
@@ -512,7 +458,7 @@ class AnalizadorAtleta
                         $valor = $resumenLesiones['total_lesiones'] ?? 0;
                         $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
                     } elseif ($condicion['campo'] === 'lesion_zona_lumbar') {
-                        // Verificar si hay lesión lumbar activa o reciente
+
                         $hayLesionLumbar = false;
                         foreach ($lesiones as $lesion) {
                             $zona = strtolower($lesion['zona_afectada'] ?? '');
@@ -535,13 +481,13 @@ class AnalizadorAtleta
                 }
             }
             
-            // Si todas las condiciones se cumplen, agregar el factor combinado
+
             if ($todasCondicionesCumplen) {
                 $factores[] = $reglaCombinada['factor_mensaje'];
             }
         }
 
-        // Si no se identificaron factores críticos
+
         if (empty($factores)) {
             $factores[] = "Perfil de riesgo general dentro de parámetros normales. Mantener seguimiento preventivo.";
         }
@@ -549,14 +495,7 @@ class AnalizadorAtleta
         return $factores;
     }
 
-    /**
-     * Evalúa una condición genérica
-     * 
-     * @param mixed $valor Valor a evaluar
-     * @param string $operador Operador de comparación
-     * @param mixed $valorComparacion Valor de referencia
-     * @return bool True si la condición se cumple
-     */
+    
     private function evaluarCondicion($valor, string $operador, $valorComparacion): bool
     {
         switch ($operador) {
@@ -575,12 +514,7 @@ class AnalizadorAtleta
         }
     }
 
-    /**
-     * Verifica si una lesión es reciente (últimos 30 días)
-     * 
-     * @param array $lesion Datos de la lesión
-     * @return bool True si es reciente
-     */
+    
     private function esLesionReciente(array $lesion): bool
     {
         $hace30Dias = new \DateTime('-30 days');
@@ -588,20 +522,7 @@ class AnalizadorAtleta
         return $fechaLesion >= $hace30Dias;
     }
 
-    /**
-     * BASE DE CONOCIMIENTO: Genera recomendaciones personalizadas
-     * 
-     * @param array|null $testFms Test FMS
-     * @param array|null $testPostural Test Postural
-     * @param array $lesiones Lesiones
-     * @param array $resumenLesiones Resumen de lesiones
-     * @param array|null $asistencias Asistencias
-     * @param string $nivelRiesgo Nivel de riesgo calculado
-     * @param bool $tieneFms Indica si hay datos FMS
-     * @param bool $tienePostural Indica si hay datos posturales
-     * @param bool $tieneAsistencia Indica si hay datos de asistencia
-     * @return array Lista de recomendaciones
-     */
+    
     private function generarRecomendaciones(
         $testFms, 
         $testPostural, 
@@ -613,141 +534,56 @@ class AnalizadorAtleta
         bool $tienePostural,
         bool $tieneAsistencia
     ): array {
-        $recomendaciones = [];
+
+        $recomendacionesEstructuradas = [];
+        
         $recomendacionesPorNivel = ModoBaseConocimiento::obtenerRecomendacionesPorNivel();
         $reglasFaltantes = ModoBaseConocimiento::obtenerReglasAusenciaDatos();
 
-        // ========================================
-        // RECOMENDACIONES POR DATOS FALTANTES
-        // ========================================
-        if (!$tieneFms) {
-            foreach ($reglasFaltantes as $regla) {
-                if ($regla['modulo'] === 'fms') {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
-        
-        if (!$tienePostural) {
-            foreach ($reglasFaltantes as $regla) {
-                if ($regla['modulo'] === 'postural') {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
-        
-        if (!$tieneAsistencia) {
-            foreach ($reglasFaltantes as $regla) {
-                if ($regla['modulo'] === 'asistencia') {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
 
-        // ========================================
-        // RECOMENDACIONES SEGÚN NIVEL DE RIESGO
-        // ========================================
-        if (isset($recomendacionesPorNivel[$nivelRiesgo])) {
-            $recomendaciones = array_merge($recomendaciones, $recomendacionesPorNivel[$nivelRiesgo]);
-        }
-
-        // ========================================
-        // RECOMENDACIONES ESPECÍFICAS POR MÓDULO
-        // ========================================
+        $lesionesActivas = array_filter($lesiones, fn($l) => $l['estado_lesion'] === 'Activa');
         
-        // FMS
-        if ($tieneFms) {
+        if ($tieneFms && $testFms) {
             $puntuacionFms = (int) $testFms['puntuacion_total'];
-            $reglasFms = ModoBaseConocimiento::obtenerReglasFMS();
             
-            foreach ($reglasFms as $regla) {
-                $condicion = $regla['condicion'];
-                $cumple = false;
-                
-                if ($condicion['operador'] === '<=') {
-                    $cumple = $puntuacionFms <= $condicion['valor'];
-                } elseif ($condicion['operador'] === 'BETWEEN') {
-                    $cumple = $puntuacionFms >= $condicion['valor'][0] && $puntuacionFms <= $condicion['valor'][1];
-                }
-                
-                if ($cumple && !empty($regla['recomendaciones'])) {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
+            if ($puntuacionFms <= 12 && !empty($lesionesActivas)) {
+                foreach ($lesionesActivas as $lesion) {
+                    $gravedad = strtolower($lesion['gravedad'] ?? '');
+                    $zona = $lesion['zona_afectada'] ?? 'no especificada';
                     
-                    // Agregar pruebas deficientes
-                    if ($puntuacionFms <= 14) {
+                    if ($gravedad === 'moderada' || $gravedad === 'severa' || $gravedad === 'grave') {
+
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => "🔴 PRIORIDAD ALTA: Ajustar temporalmente la carga de entrenamiento (volumen e intensidad), priorizando ejercicios que no agraven la lesión en {$zona}. Evitar movimientos explosivos o con impacto directo sobre la zona afectada.",
+                            'prioridad' => 1,
+                            'tipo' => 'especifica',
+                            'origen' => 'combinacion_critica'
+                        ];
+                        
                         $pruebasBajas = $this->identificarPruebasFmsDeficientes($testFms);
                         if (!empty($pruebasBajas)) {
-                            $recomendaciones[] = "Foco en: " . implode(', ', $pruebasBajas) . ".";
+                            $pruebasTexto = implode(', ', $pruebasBajas);
+                            $recomendacionesEstructuradas[] = [
+                                'texto' => "Reforzar el trabajo de movilidad y estabilidad en los patrones donde el FMS salió más bajo ({$pruebasTexto}), utilizando progresiones controladas y supervisadas antes de aumentar cargas.",
+                                'prioridad' => 1,
+                                'tipo' => 'especifica',
+                                'origen' => 'combinacion_critica'
+                            ];
                         }
+                        
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => "Implementar un programa de rehabilitación funcional que integre ejercicios correctivos para mejorar los patrones de movimiento deficientes mientras la lesión en {$zona} se recupera completamente.",
+                            'prioridad' => 1,
+                            'tipo' => 'especifica',
+                            'origen' => 'combinacion_critica'
+                        ];
+                        break;
                     }
-                    break;
                 }
             }
         }
 
-        // POSTURAL
-        if ($tienePostural) {
-            $problemasEspecificos = $this->analizarProblemasPosturalesEspecificos($testPostural);
-            if (!empty($problemasEspecificos)) {
-                $recomendaciones[] = "Trabajo postural enfocado en: " . implode(', ', $problemasEspecificos) . ".";
-            }
-        }
 
-        // LESIONES
-        $lesionesActivas = array_filter($lesiones, function($lesion) {
-            return $lesion['estado_lesion'] === 'Activa';
-        });
-        
-        if (count($lesionesActivas) > 0) {
-            $reglasLesiones = ModoBaseConocimiento::obtenerReglasLesiones();
-            foreach ($reglasLesiones as $regla) {
-                if (($regla['id'] === 'R20_LESIONES_MULTIPLES_ACTIVAS' && count($lesionesActivas) > 1) ||
-                    ($regla['id'] === 'R21_LESION_ACTIVA_UNICA' && count($lesionesActivas) === 1)) {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
-        
-        // Lesión reciente
-        if ($this->hayLesionEnUltimos30Dias($lesiones) && count($lesionesActivas) === 0) {
-            $reglasLesiones = ModoBaseConocimiento::obtenerReglasLesiones();
-            foreach ($reglasLesiones as $regla) {
-                if ($regla['id'] === 'R22_LESION_RECIENTE') {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
-
-        // ASISTENCIA
-        if ($tieneAsistencia) {
-            $porcentaje = (float) $asistencias['porcentaje_asistencia'];
-            $reglasAsistencia = ModoBaseConocimiento::obtenerReglasAsistencia();
-            
-            foreach ($reglasAsistencia as $regla) {
-                $condicion = $regla['condicion'];
-                $cumple = false;
-                
-                if ($condicion['operador'] === '<') {
-                    $cumple = $porcentaje < $condicion['valor'];
-                } elseif ($condicion['operador'] === 'BETWEEN') {
-                    $cumple = $porcentaje >= $condicion['valor'][0] && $porcentaje <= $condicion['valor'][1];
-                }
-                
-                if ($cumple && !empty($regla['recomendaciones'])) {
-                    $recomendaciones = array_merge($recomendaciones, $regla['recomendaciones']);
-                    break;
-                }
-            }
-        }
-
-        // ========================================
-        // RECOMENDACIONES DE REGLAS COMBINADAS
-        // ========================================
         $reglasCombinadas = ModoBaseConocimiento::obtenerReglasCombinadas();
         
         foreach ($reglasCombinadas as $reglaCombinada) {
@@ -756,7 +592,6 @@ class AnalizadorAtleta
             foreach ($reglaCombinada['condiciones'] as $condicion) {
                 $moduloCumple = false;
                 
-                // Evaluar cada condición según el módulo
                 if ($condicion['modulo'] === 'fms' && $tieneFms) {
                     $valor = (int) $testFms[$condicion['campo']];
                     $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
@@ -767,7 +602,6 @@ class AnalizadorAtleta
                     }
                 } elseif ($condicion['modulo'] === 'lesiones') {
                     if ($condicion['campo'] === 'num_lesiones_activas') {
-                        $lesionesActivas = array_filter($lesiones, fn($l) => $l['estado_lesion'] === 'Activa');
                         $valor = count($lesionesActivas);
                         $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
                     } elseif ($condicion['campo'] === 'total_lesiones') {
@@ -796,25 +630,342 @@ class AnalizadorAtleta
                 }
             }
             
-            // Si todas las condiciones se cumplen, agregar las recomendaciones combinadas
             if ($todasCondicionesCumplen && !empty($reglaCombinada['recomendaciones'])) {
-                // Las recomendaciones combinadas tienen prioridad, agregarlas al principio
-                $recomendaciones = array_merge($reglaCombinada['recomendaciones'], $recomendaciones);
+                foreach ($reglaCombinada['recomendaciones'] as $rec) {
+                    $recomendacionesEstructuradas[] = [
+                        'texto' => $rec,
+                        'prioridad' => 1,
+                        'tipo' => 'especifica',
+                        'origen' => 'combinada'
+                    ];
+                }
             }
         }
 
-        // Eliminar duplicados manteniendo el orden (las combinadas primero)
-        $recomendaciones = array_values(array_unique($recomendaciones));
 
-        return $recomendaciones;
+        if (count($lesionesActivas) > 0) {
+            $reglasLesiones = ModoBaseConocimiento::obtenerReglasLesiones();
+            foreach ($reglasLesiones as $regla) {
+                if (($regla['id'] === 'R20_LESIONES_MULTIPLES_ACTIVAS' && count($lesionesActivas) > 1) ||
+                    ($regla['id'] === 'R21_LESION_ACTIVA_UNICA' && count($lesionesActivas) === 1)) {
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $esEspecifica = (strpos($rec, 'zona') !== false || strpos($rec, 'lesión') !== false);
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => $esEspecifica ? 1 : 2,
+                            'tipo' => $esEspecifica ? 'especifica' : 'media',
+                            'origen' => 'lesiones'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        if ($tieneFms) {
+            $puntuacionFms = (int) $testFms['puntuacion_total'];
+            $reglasFms = ModoBaseConocimiento::obtenerReglasFMS();
+            
+            foreach ($reglasFms as $regla) {
+                $condicion = $regla['condicion'];
+                $cumple = false;
+                
+                if ($condicion['operador'] === '<=') {
+                    $cumple = $puntuacionFms <= $condicion['valor'];
+                } elseif ($condicion['operador'] === 'BETWEEN') {
+                    $cumple = $puntuacionFms >= $condicion['valor'][0] && $puntuacionFms <= $condicion['valor'][1];
+                }
+                
+                if ($cumple && !empty($regla['recomendaciones'])) {
+                    $prioridadFms = ($puntuacionFms <= 12) ? 1 : 2;
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => $prioridadFms,
+                            'tipo' => 'especifica',
+                            'origen' => 'fms'
+                        ];
+                    }
+                    
+
+                    if ($puntuacionFms <= 14) {
+                        $pruebasBajas = $this->identificarPruebasFmsDeficientes($testFms);
+                        if (!empty($pruebasBajas)) {
+                            $recomendacionesEstructuradas[] = [
+                                'texto' => "Foco en: " . implode(', ', $pruebasBajas) . ".",
+                                'prioridad' => 1,
+                                'tipo' => 'especifica',
+                                'origen' => 'fms'
+                            ];
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        if ($tienePostural) {
+            $problemasEspecificos = $this->analizarProblemasPosturalesEspecificos($testPostural);
+            if (!empty($problemasEspecificos)) {
+                $recomendacionesEstructuradas[] = [
+                    'texto' => "Trabajo postural enfocado en: " . implode(', ', $problemasEspecificos) . ".",
+                    'prioridad' => 2,
+                    'tipo' => 'especifica',
+                    'origen' => 'postural'
+                ];
+            }
+        }
+
+
+        if ($this->hayLesionEnUltimos30Dias($lesiones) && count($lesionesActivas) === 0) {
+            $reglasLesiones = ModoBaseConocimiento::obtenerReglasLesiones();
+            foreach ($reglasLesiones as $regla) {
+                if ($regla['id'] === 'R22_LESION_RECIENTE') {
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => 2,
+                            'tipo' => 'media',
+                            'origen' => 'lesiones'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        if ($tieneAsistencia) {
+            $porcentaje = (float) $asistencias['porcentaje_asistencia'];
+            $reglasAsistencia = ModoBaseConocimiento::obtenerReglasAsistencia();
+            
+            foreach ($reglasAsistencia as $regla) {
+                $condicion = $regla['condicion'];
+                $cumple = false;
+                
+                if ($condicion['operador'] === '<') {
+                    $cumple = $porcentaje < $condicion['valor'];
+                } elseif ($condicion['operador'] === 'BETWEEN') {
+                    $cumple = $porcentaje >= $condicion['valor'][0] && $porcentaje <= $condicion['valor'][1];
+                }
+                
+                if ($cumple && !empty($regla['recomendaciones'])) {
+                    $prioridadAsist = ($porcentaje < 50) ? 2 : 3;
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => $prioridadAsist,
+                            'tipo' => 'generica',
+                            'origen' => 'asistencia'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        if (isset($recomendacionesPorNivel[$nivelRiesgo])) {
+            foreach ($recomendacionesPorNivel[$nivelRiesgo] as $rec) {
+                $recomendacionesEstructuradas[] = [
+                    'texto' => $rec,
+                    'prioridad' => 3,
+                    'tipo' => 'generica',
+                    'origen' => 'nivel_riesgo'
+                ];
+            }
+        }
+
+
+        if (!$tieneFms) {
+            foreach ($reglasFaltantes as $regla) {
+                if ($regla['modulo'] === 'fms') {
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => 3,
+                            'tipo' => 'generica',
+                            'origen' => 'datos_faltantes'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if (!$tienePostural) {
+            foreach ($reglasFaltantes as $regla) {
+                if ($regla['modulo'] === 'postural') {
+                    foreach ($regla['recomendaciones'] as $rec) {
+                        $recomendacionesEstructuradas[] = [
+                            'texto' => $rec,
+                            'prioridad' => 3,
+                            'tipo' => 'generica',
+                            'origen' => 'datos_faltantes'
+                        ];
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        return $this->optimizarRecomendaciones($recomendacionesEstructuradas, $nivelRiesgo, $lesionesActivas);
     }
 
-    /**
-     * Cuenta problemas posturales moderados o severos
-     * 
-     * @param array $testPostural Datos del test postural
-     * @return int Cantidad de problemas
-     */
+    
+    private function optimizarRecomendaciones(array $recomendacionesEstructuradas, string $nivelRiesgo, array $lesionesActivas): array
+    {
+
+        $textos = [];
+        $recomendacionesUnicas = [];
+        foreach ($recomendacionesEstructuradas as $rec) {
+            $textoLimpio = trim($rec['texto']);
+            if (!in_array($textoLimpio, $textos)) {
+                $textos[] = $textoLimpio;
+                $recomendacionesUnicas[] = $rec;
+            }
+        }
+
+
+        usort($recomendacionesUnicas, function($a, $b) {
+            if ($a['prioridad'] !== $b['prioridad']) {
+                return $a['prioridad'] - $b['prioridad'];
+            }
+
+            if ($a['tipo'] === 'especifica' && $b['tipo'] !== 'especifica') return -1;
+            if ($a['tipo'] !== 'especifica' && $b['tipo'] === 'especifica') return 1;
+            return 0;
+        });
+
+
+        $prioridad1 = array_filter($recomendacionesUnicas, fn($r) => $r['prioridad'] === 1);
+        $prioridad2 = array_filter($recomendacionesUnicas, fn($r) => $r['prioridad'] === 2);
+        $prioridad3 = array_filter($recomendacionesUnicas, fn($r) => $r['prioridad'] === 3);
+
+
+        $recomendacionesFinales = [];
+
+
+        foreach ($prioridad1 as $rec) {
+            $recomendacionesFinales[] = $rec['texto'];
+        }
+
+        $espacioRestante = 10 - count($recomendacionesFinales);
+
+
+        $maxPrioridad2 = min(3, $espacioRestante);
+        $contador = 0;
+        foreach ($prioridad2 as $rec) {
+            if ($contador >= $maxPrioridad2) break;
+            $recomendacionesFinales[] = $rec['texto'];
+            $contador++;
+        }
+
+        $espacioRestante = 10 - count($recomendacionesFinales);
+
+
+        if ($espacioRestante > 0 && count($prioridad3) > 0) {
+            $recomendacionesGlobales = $this->generarRecomendacionesGlobales(
+                $prioridad3, 
+                $nivelRiesgo, 
+                $lesionesActivas,
+                min(2, $espacioRestante)
+            );
+            
+            foreach ($recomendacionesGlobales as $recGlobal) {
+                $recomendacionesFinales[] = $recGlobal;
+            }
+        }
+
+
+        return array_slice($recomendacionesFinales, 0, 10);
+    }
+
+    
+    private function generarRecomendacionesGlobales(array $recomendacionesGenericas, string $nivelRiesgo, array $lesionesActivas, int $maxBloques): array
+    {
+        $bloques = [];
+        
+
+        $temasCarga = ['carga', 'volumen', 'intensidad', 'progresión', 'técnica', 'control'];
+        $temasAsistencia = ['asistencia', 'adherencia', 'horarios', 'sesiones', 'constancia'];
+        $temasMonitoreo = ['monitoreo', 'evaluación', 'seguimiento', 'reevaluar', 'control'];
+        
+        $recsProgresion = [];
+        $recsAsistencia = [];
+        $recsMonitoreo = [];
+        $recsOtras = [];
+        
+        foreach ($recomendacionesGenericas as $rec) {
+            $texto = strtolower($rec['texto']);
+            $clasificada = false;
+            
+            foreach ($temasCarga as $palabra) {
+                if (strpos($texto, $palabra) !== false) {
+                    $recsProgresion[] = $rec['texto'];
+                    $clasificada = true;
+                    break;
+                }
+            }
+            
+            if (!$clasificada) {
+                foreach ($temasAsistencia as $palabra) {
+                    if (strpos($texto, $palabra) !== false) {
+                        $recsAsistencia[] = $rec['texto'];
+                        $clasificada = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$clasificada) {
+                foreach ($temasMonitoreo as $palabra) {
+                    if (strpos($texto, $palabra) !== false) {
+                        $recsMonitoreo[] = $rec['texto'];
+                        $clasificada = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (!$clasificada) {
+                $recsOtras[] = $rec['texto'];
+            }
+        }
+        
+
+        if ((count($recsProgresion) > 0 || count($lesionesActivas) > 0) && $nivelRiesgo !== 'bajo') {
+            $zonaLesion = '';
+            if (!empty($lesionesActivas)) {
+                $zonaLesion = $lesionesActivas[0]['zona_afectada'] ?? '';
+                $zonaLesion = $zonaLesion ? " especialmente en ejercicios que involucren {$zonaLesion}" : '';
+            }
+            
+            $bloques[] = "Mantener un enfoque progresivo en la carga de entrenamiento, revisando técnica y controlando síntomas durante las próximas 4-6 semanas. Evitar aumentos bruscos de volumen e intensidad{$zonaLesion}, priorizando la calidad del movimiento sobre la cantidad de trabajo.";
+        }
+        
+
+        if (count($recsAsistencia) > 0 && count($bloques) < $maxBloques) {
+            $bloques[] = "Coordinar con el atleta ajustes realistas en horarios, metas de asistencia y disponibilidad, priorizando la adherencia sostenida al plan correctivo antes que la cantidad total de sesiones. Identificar y resolver barreras que dificulten la constancia.";
+        }
+        
+
+        if (count($recsMonitoreo) > 0 && count($bloques) < $maxBloques) {
+            $bloques[] = "Realizar evaluaciones funcionales periódicas (cada 4-6 semanas) para monitorear progreso en patrones de movimiento, rango articular y control neuromuscular. Ajustar el plan según la evolución observada y respuesta del atleta.";
+        }
+        
+
+        if (empty($bloques) && count($recomendacionesGenericas) > 0) {
+            $bloques[] = "Mantener una comunicación constante con el atleta sobre síntomas, molestias y progreso percibido. Ajustar el programa de entrenamiento de forma individualizada según la respuesta y necesidades específicas.";
+        }
+        
+        return $bloques;
+    }
+
+    
     private function contarProblemasPosturales(array $testPostural): int
     {
         $problemas = 0;
@@ -834,12 +985,7 @@ class AnalizadorAtleta
         return $problemas;
     }
 
-    /**
-     * Identifica pruebas FMS con scores deficientes (≤1)
-     * 
-     * @param array $testFms Datos del test FMS
-     * @return array Lista de pruebas deficientes
-     */
+    
     private function identificarPruebasFmsDeficientes(array $testFms): array
     {
         $deficientes = [];
@@ -854,12 +1000,7 @@ class AnalizadorAtleta
         return $deficientes;
     }
 
-    /**
-     * Analiza problemas posturales específicos para recomendaciones
-     * 
-     * @param array $testPostural Datos del test postural
-     * @return array Lista de áreas problemáticas
-     */
+    
     private function analizarProblemasPosturalesEspecificos(array $testPostural): array
     {
         $problemas = [];
@@ -873,5 +1014,33 @@ class AnalizadorAtleta
         }
 
         return $problemas;
+    }
+
+    
+    private function aplicarReglaCombinadadaCritica(?array $testFms, array $lesiones, bool $tieneFms): bool
+    {
+
+        if (!$tieneFms || empty($testFms)) {
+            return false;
+        }
+
+
+        $puntuacionFms = $testFms['puntuacion_total'] ?? 0;
+        if ($puntuacionFms > 12) {
+            return false;
+        }
+
+
+        foreach ($lesiones as $lesion) {
+            $esActiva = empty($lesion['fecha_recuperacion']);
+            $gravedad = strtolower($lesion['gravedad'] ?? '');
+            
+            if ($esActiva && ($gravedad === 'moderada' || $gravedad === 'severa' || $gravedad === 'grave')) {
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

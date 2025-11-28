@@ -415,26 +415,80 @@ $(document).ready(function () {
       });
    }
 
+   /**
+    * Genera el HTML para mostrar el indicador de riesgo IA de un atleta
+    * @param {object} riesgoIA - Objeto con datos de riesgo IA (riesgo_nivel, riesgo_score, primer_factor)
+    * @returns {string} HTML del badge e icono de riesgo
+    */
+   function generarIndicadorRiesgoIA(riesgoIA) {
+      if (!riesgoIA || !riesgoIA.riesgo_nivel) {
+         return '<span class="text-muted small">Sin análisis IA</span>';
+      }
+
+      const nivel = riesgoIA.riesgo_nivel.toLowerCase();
+      let badgeClass = 'bg-success';
+      let iconClass = '';
+      let textoNivel = nivel.toUpperCase();
+
+      if (nivel === 'medio') {
+         badgeClass = 'bg-warning text-dark';
+         iconClass = 'bi-exclamation-triangle-fill text-warning';
+      } else if (nivel === 'alto') {
+         badgeClass = 'bg-danger';
+         iconClass = 'bi-exclamation-diamond-fill text-danger';
+      } else {
+         // Riesgo bajo - mostrar discretamente
+         return '<span class="badge bg-success-subtle text-success small">BAJO</span>';
+      }
+
+      // Construir tooltip
+      let tooltip = `Riesgo IA: ${textoNivel} (Score: ${riesgoIA.riesgo_score}/100)`;
+      if (riesgoIA.primer_factor) {
+         // Truncar el factor si es muy largo
+         const factorCorto = riesgoIA.primer_factor.length > 100 
+            ? riesgoIA.primer_factor.substring(0, 100) + '...' 
+            : riesgoIA.primer_factor;
+         tooltip += ` – ${factorCorto}`;
+      }
+
+      return `
+         <span class="badge ${badgeClass} me-1" title="${tooltip}" data-bs-toggle="tooltip">
+            ${textoNivel}
+         </span>
+         <i class="bi ${iconClass}" title="${tooltip}" data-bs-toggle="tooltip"></i>
+      `;
+   }
+
    function actualizarTablaAtletasDisponibles(atletas) {
       let tabla = $("#tablaParticipantesInscripcion tbody");
       tabla.empty();
 
       if (atletas?.length > 0) {
          atletas.forEach((atleta, index) => {
+            // Generar indicador de riesgo IA
+            const indicadorRiesgo = generarIndicadorRiesgoIA(atleta.riesgo_ia);
+            
             tabla.append(`
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${atleta.nombre} ${atleta.apellido}</td>
+                        <td>
+                            ${atleta.nombre} ${atleta.apellido}
+                            <br>
+                            <small class="text-muted">${indicadorRiesgo}</small>
+                        </td>
                         <td>${atleta.id_atleta}</td>
                         <td>${atleta.peso} kg</td>
                         <td>${calcularEdad(atleta.fecha_nacimiento)}</td>
                         <td>
-                            <input type="checkbox" class="form-check-input" name="atletas" value="${atleta.id_atleta_encriptado
-               }">
+                            <input type="checkbox" class="form-check-input" name="atletas" value="${atleta.id_atleta}">
                         </td>
                     </tr>
                 `);
          });
+         
+         // Inicializar tooltips de Bootstrap después de agregar los elementos
+         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+         [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
       } else {
          tabla.append(
             "<tr><td colspan='6'>No se encontraron atletas que cumplan con los requisitos.</td></tr>"

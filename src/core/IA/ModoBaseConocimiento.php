@@ -2,36 +2,23 @@
 
 namespace Gymsys\Core\IA;
 
-/**
- * GESTOR DE MODO DE BASE DE CONOCIMIENTO - MOTOR IA v3.0
- * 
- * Clase que determina qué fuente de conocimiento usar:
- * - ARCHIVO: BaseConocimientoAtleta.php (Fase 2)
- * - BD: BaseConocimientoBD.php conectado a gymsys_kb (Fase 3)
- * 
- * @version 3.0
- * @author GymSys Development Team
- */
+
 class ModoBaseConocimiento
 {
-    /**
-     * Determina si se debe usar la base de conocimiento desde BD
-     * 
-     * @return bool True si se usa BD, False si se usa archivo
-     */
+    
     public static function usarBD(): bool
     {
-        // Verificar variable de entorno
+
         $modo = $_ENV['IA_KB_ORIGEN'] ?? 'bd';
         
-        // Si está configurado para BD, verificar que esté disponible
+
         if (strtolower($modo) === 'bd') {
-            // Intentar conectar
+
             if (BaseConocimientoBD::estaDisponible()) {
                 return true;
             }
             
-            // Si BD no está disponible, hacer fallback a archivo
+
             error_log('[MOTOR_IA] BD de conocimiento no disponible, usando fallback a archivo');
             return false;
         }
@@ -39,31 +26,19 @@ class ModoBaseConocimiento
         return false;
     }
     
-    /**
-     * Determina si se debe usar la base de conocimiento desde archivo
-     * 
-     * @return bool True si se usa archivo
-     */
+    
     public static function usarArchivo(): bool
     {
         return !self::usarBD();
     }
     
-    /**
-     * Obtiene la fuente activa de conocimiento
-     * 
-     * @return string 'bd' o 'archivo'
-     */
+    
     public static function obtenerFuenteActiva(): string
     {
         return self::usarBD() ? 'bd' : 'archivo';
     }
     
-    /**
-     * Obtiene ponderaciones desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerPonderaciones(): array
     {
         if (self::usarBD()) {
@@ -78,11 +53,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerPonderaciones();
     }
     
-    /**
-     * Obtiene umbrales desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerUmbralesRiesgo(): array
     {
         if (self::usarBD()) {
@@ -97,11 +68,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerUmbralesRiesgo();
     }
     
-    /**
-     * Obtiene reglas FMS desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasFMS(): array
     {
         if (self::usarBD()) {
@@ -116,11 +83,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasFMS();
     }
     
-    /**
-     * Obtiene reglas posturales desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasPostural(): array
     {
         if (self::usarBD()) {
@@ -135,11 +98,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasPostural();
     }
     
-    /**
-     * Obtiene reglas de lesiones desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasLesiones(): array
     {
         if (self::usarBD()) {
@@ -154,11 +113,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasLesiones();
     }
     
-    /**
-     * Obtiene reglas de asistencia desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasAsistencia(): array
     {
         if (self::usarBD()) {
@@ -173,11 +128,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasAsistencia();
     }
     
-    /**
-     * Obtiene reglas de ausencia de datos desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasAusenciaDatos(): array
     {
         if (self::usarBD()) {
@@ -192,12 +143,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasAusenciaDatos();
     }
     
-    /**
-     * Obtiene reglas compuestas desde la fuente activa
-     * Solo disponible desde BD
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasCompuestas(): array
     {
         if (self::usarBD()) {
@@ -208,15 +154,10 @@ class ModoBaseConocimiento
             }
         }
         
-        return []; // Las reglas compuestas solo existen en BD
+        return [];
     }
     
-    /**
-     * Obtiene reglas de tendencia desde la fuente activa
-     * Solo disponible desde BD
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasTendencia(): array
     {
         if (self::usarBD()) {
@@ -227,15 +168,10 @@ class ModoBaseConocimiento
             }
         }
         
-        return []; // Las reglas de tendencia solo existen en BD
+        return [];
     }
     
-    /**
-     * Obtiene reglas por perfil desde la fuente activa
-     * Solo disponible desde BD
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasPerfil(): array
     {
         if (self::usarBD()) {
@@ -246,15 +182,10 @@ class ModoBaseConocimiento
             }
         }
         
-        return []; // Las reglas de perfil solo existen en BD
+        return [];
     }
     
-    /**
-     * Obtiene perfiles de atleta desde la fuente activa
-     * Solo disponible desde BD
-     * 
-     * @return array
-     */
+    
     public static function obtenerPerfiles(): array
     {
         if (self::usarBD()) {
@@ -268,11 +199,7 @@ class ModoBaseConocimiento
         return [];
     }
     
-    /**
-     * Obtiene ponderación de gravedad de lesiones desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerPonderacionGravedadLesiones(): array
     {
         if (self::usarBD()) {
@@ -287,11 +214,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerPonderacionGravedadLesiones();
     }
     
-    /**
-     * Obtiene recomendaciones por nivel de riesgo desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerRecomendacionesPorNivel(): array
     {
         if (self::usarBD()) {
@@ -306,11 +229,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerRecomendacionesPorNivel();
     }
     
-    /**
-     * Obtiene mapa de problemas posturales desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerMapaProblemasPosturales(): array
     {
         if (self::usarBD()) {
@@ -325,11 +244,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerMapaProblemasPosturales();
     }
     
-    /**
-     * Obtiene mapa de pruebas FMS desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerMapaPruebasFMS(): array
     {
         if (self::usarBD()) {
@@ -344,11 +259,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerMapaPruebasFMS();
     }
     
-    /**
-     * Obtiene reglas combinadas (interacciones entre módulos) desde la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerReglasCombinadas(): array
     {
         if (self::usarBD()) {
@@ -363,11 +274,7 @@ class ModoBaseConocimiento
         return BaseConocimientoAtleta::obtenerReglasCombinadas();
     }
     
-    /**
-     * Obtiene información sobre la fuente activa
-     * 
-     * @return array
-     */
+    
     public static function obtenerInfoFuente(): array
     {
         $fuente = self::obtenerFuenteActiva();

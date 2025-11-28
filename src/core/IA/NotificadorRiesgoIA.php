@@ -5,45 +5,25 @@ namespace Gymsys\Core\IA;
 use Gymsys\Core\Database;
 use Gymsys\Model\Notificaciones;
 
-/**
- * NOTIFICADOR DE RIESGO IA - MOTOR IA v3.0
- * 
- * Integra el análisis de riesgo del Motor IA con el sistema 
- * de notificaciones existente de GymSys.
- * 
- * Genera notificaciones inteligentes cuando:
- * - Atleta presenta riesgo ALTO
- * - Atleta presenta riesgo MEDIO con patrones negativos
- * 
- * Evita spam mediante control de frecuencia.
- * 
- * @version 3.0
- * @author GymSys Development Team
- */
+
 class NotificadorRiesgoIA
 {
     private Database $database;
-    private const DIAS_COOLDOWN = 7; // Días entre notificaciones del mismo tipo para mismo atleta
+    private const DIAS_COOLDOWN = 7;
     
     public function __construct(Database $database)
     {
         $this->database = $database;
     }
     
-    /**
-     * Procesa el análisis IA y genera notificaciones si es necesario
-     * 
-     * @param array $datosAtleta Datos básicos del atleta (nombre, apellido, cedula, entrenador)
-     * @param array $analisisIA Resultado del análisis IA completo
-     * @return bool True si se generó notificación
-     */
+    
     public function procesarYNotificar(array $datosAtleta, array $analisisIA): bool
     {
         $nivelRiesgo = $analisisIA['riesgo_nivel'] ?? 'bajo';
         $score = $analisisIA['riesgo_score'] ?? 0;
         $factores = $analisisIA['factores_clave'] ?? [];
         
-        // Solo notificar si hay riesgo significativo
+
         if ($nivelRiesgo === 'bajo') {
             return false;
         }
@@ -55,12 +35,12 @@ class NotificadorRiesgoIA
             return false;
         }
         
-        // Verificar si ya existe notificación reciente (evitar spam)
+
         if ($this->existeNotificacionReciente($cedulaAtleta, $entrenador)) {
             return false;
         }
         
-        // Determinar si debe notificar según nivel y patrones
+
         $debeNotificar = false;
         $titulo = '';
         $mensaje = '';
@@ -71,7 +51,7 @@ class NotificadorRiesgoIA
             $mensaje = $this->construirMensajeRiesgoAlto($datosAtleta, $score, $factores);
             
         } elseif ($nivelRiesgo === 'medio') {
-            // Solo notificar riesgo medio si hay patrones específicos preocupantes
+
             $patronesPreocupantes = $this->detectarPatronesPreocupantes($factores, $analisisIA);
             if ($patronesPreocupantes) {
                 $debeNotificar = true;
@@ -87,13 +67,7 @@ class NotificadorRiesgoIA
         return false;
     }
     
-    /**
-     * Verifica si existe una notificación reciente de IA para este atleta
-     * 
-     * @param string $cedulaAtleta Cédula del atleta
-     * @param string $entrenador Cédula del entrenador
-     * @return bool
-     */
+    
     private function existeNotificacionReciente(string $cedulaAtleta, string $entrenador): bool
     {
         $consulta = "SELECT COUNT(*) as total 
@@ -114,28 +88,22 @@ class NotificadorRiesgoIA
         return ($resultado['total'] ?? 0) > 0;
     }
     
-    /**
-     * Detecta patrones preocupantes en riesgo medio
-     * 
-     * @param array $factores Factores de riesgo identificados
-     * @param array $analisisIA Análisis completo
-     * @return string|false Descripción del patrón o false si no hay
-     */
+    
     private function detectarPatronesPreocupantes(array $factores, array $analisisIA): string|false
     {
-        // Patrón 1: Múltiples factores combinados (≥3)
+
         if (count($factores) >= 3) {
             return 'múltiples factores de riesgo combinados';
         }
         
-        // Patrón 2: FMS crítico o muy bajo
+
         foreach ($factores as $factor) {
             if (stripos($factor, 'FMS crítica') !== false || stripos($factor, 'FMS baja') !== false) {
                 return 'deficiencias severas en patrones de movimiento';
             }
         }
         
-        // Patrón 3: Lesiones múltiples o recurrentes
+
         foreach ($factores as $factor) {
             if (stripos($factor, 'Múltiples lesiones activas') !== false || 
                 stripos($factor, 'recurrente') !== false) {
@@ -143,7 +111,7 @@ class NotificadorRiesgoIA
             }
         }
         
-        // Patrón 4: Problemas posturales severos
+
         foreach ($factores as $factor) {
             if (stripos($factor, 'alteraciones posturales severas') !== false ||
                 stripos($factor, 'Múltiples alteraciones posturales') !== false) {
@@ -151,7 +119,7 @@ class NotificadorRiesgoIA
             }
         }
         
-        // Patrón 5: Asistencia muy irregular con otros factores
+
         $tieneAsistenciaIrregular = false;
         foreach ($factores as $factor) {
             if (stripos($factor, 'Asistencia muy irregular') !== false) {
@@ -167,14 +135,7 @@ class NotificadorRiesgoIA
         return false;
     }
     
-    /**
-     * Construye mensaje detallado para riesgo alto
-     * 
-     * @param array $datosAtleta Datos del atleta
-     * @param int $score Score de riesgo
-     * @param array $factores Factores identificados
-     * @return string
-     */
+    
     private function construirMensajeRiesgoAlto(array $datosAtleta, int $score, array $factores): string
     {
         $nombre = trim(($datosAtleta['nombre'] ?? '') . ' ' . ($datosAtleta['apellido'] ?? ''));
@@ -184,7 +145,7 @@ class NotificadorRiesgoIA
         $mensaje .= "📊 Score de Riesgo: {$score}/100\n\n";
         $mensaje .= "⚠️ Factores Críticos Identificados:\n";
         
-        $numFactores = min(count($factores), 4); // Máximo 4 factores en notificación
+        $numFactores = min(count($factores), 4);
         for ($i = 0; $i < $numFactores; $i++) {
             $mensaje .= "• " . $factores[$i] . "\n";
         }
@@ -202,15 +163,7 @@ class NotificadorRiesgoIA
         return $mensaje;
     }
     
-    /**
-     * Construye mensaje para riesgo medio con patrones preocupantes
-     * 
-     * @param array $datosAtleta Datos del atleta
-     * @param int $score Score de riesgo
-     * @param array $factores Factores identificados
-     * @param string $patron Descripción del patrón preocupante
-     * @return string
-     */
+    
     private function construirMensajeRiesgoMedio(array $datosAtleta, int $score, array $factores, string $patron): string
     {
         $nombre = trim(($datosAtleta['nombre'] ?? '') . ' ' . ($datosAtleta['apellido'] ?? ''));
@@ -239,15 +192,7 @@ class NotificadorRiesgoIA
         return $mensaje;
     }
     
-    /**
-     * Crea la notificación en el sistema usando el modelo existente
-     * 
-     * @param string $idEntrenador Cédula del entrenador
-     * @param string $titulo Título de la notificación
-     * @param string $mensaje Mensaje completo
-     * @param string $cedulaAtleta Cédula del atleta (para referencia)
-     * @return bool
-     */
+    
     private function crearNotificacion(string $idEntrenador, string $titulo, string $mensaje, string $cedulaAtleta): bool
     {
         try {
@@ -275,12 +220,7 @@ class NotificadorRiesgoIA
         }
     }
     
-    /**
-     * Genera notificaciones masivas para todos los atletas con riesgo alto/medio preocupante
-     * Útil para ejecución programada (cron job)
-     * 
-     * @return array Estadísticas de notificaciones generadas
-     */
+    
     public static function generarNotificacionesMasivas(Database $database): array
     {
         $notificador = new self($database);
@@ -295,7 +235,7 @@ class NotificadorRiesgoIA
         ];
         
         try {
-            // Obtener todos los atletas activos con sus entrenadores
+
             $consulta = "SELECT DISTINCT 
                             a.cedula,
                             u.nombre,
@@ -315,21 +255,9 @@ class NotificadorRiesgoIA
                 try {
                     $estadisticas['procesados']++;
                     
-                    // Obtener tarjeta del atleta (necesitaríamos acceso al modelo)
-                    // Por ahora, esto debe ser llamado desde un controlador que tenga acceso al modelo
-                    // Este es un placeholder
+
                     
-                    // $tarjeta = $modeloEvaluaciones->obtenerTarjetaAtleta(['id_atleta' => $datosAtleta['cedula']]);
-                    // $analisis = $analizador->analizarAtleta($tarjeta);
-                    // 
-                    // if ($notificador->procesarYNotificar($datosAtleta, $analisis)) {
-                    //     $estadisticas['notificaciones_generadas']++;
-                    //     if ($analisis['riesgo_nivel'] === 'alto') {
-                    //         $estadisticas['riesgo_alto']++;
-                    //     } else {
-                    //         $estadisticas['riesgo_medio']++;
-                    //     }
-                    // }
+
                     
                 } catch (\Exception $e) {
                     $estadisticas['errores']++;

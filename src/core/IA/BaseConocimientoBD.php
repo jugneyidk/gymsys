@@ -5,26 +5,13 @@ namespace Gymsys\Core\IA;
 use PDO;
 use PDOException;
 
-/**
- * BASE DE CONOCIMIENTO DESDE BD - MOTOR IA v3.0
- * 
- * Clase que conecta a la BD gymsys_kb y proporciona acceso
- * a todas las reglas, umbrales, ponderaciones y perfiles
- * del sistema experto.
- * 
- * @version 3.0
- * @author GymSys Development Team
- */
+
 class BaseConocimientoBD
 {
     private static ?PDO $conexion = null;
     private static array $cache = [];
     
-    /**
-     * Obtiene la conexión a la BD de conocimiento
-     * 
-     * @return PDO
-     */
+    
     private static function obtenerConexion(): PDO
     {
         if (self::$conexion === null) {
@@ -46,7 +33,7 @@ class BaseConocimientoBD
                     $opciones
                 );
             } catch (PDOException $e) {
-                // Si falla conexión a BD, lanzar excepción para fallback
+
                 throw new \RuntimeException("Error conectando a BD de conocimiento: " . $e->getMessage());
             }
         }
@@ -54,19 +41,13 @@ class BaseConocimientoBD
         return self::$conexion;
     }
     
-    /**
-     * Limpia el cache (útil para testing o recargas)
-     */
+    
     public static function limpiarCache(): void
     {
         self::$cache = [];
     }
     
-    /**
-     * Obtiene ponderaciones de módulos desde BD
-     * 
-     * @return array Ponderaciones por módulo
-     */
+    
     public static function obtenerPonderaciones(): array
     {
         if (isset(self::$cache['ponderaciones'])) {
@@ -87,7 +68,7 @@ class BaseConocimientoBD
             return $ponderaciones;
             
         } catch (\Exception $e) {
-            // Fallback a valores por defecto
+
             return [
                 'fms' => 30,
                 'postural' => 30,
@@ -97,11 +78,7 @@ class BaseConocimientoBD
         }
     }
     
-    /**
-     * Obtiene umbrales de riesgo desde BD
-     * 
-     * @return array Umbrales por nivel
-     */
+    
     public static function obtenerUmbralesRiesgo(): array
     {
         if (isset(self::$cache['umbrales'])) {
@@ -125,7 +102,7 @@ class BaseConocimientoBD
             return $umbrales;
             
         } catch (\Exception $e) {
-            // Fallback
+
             return [
                 'bajo' => ['min' => 0, 'max' => 33],
                 'medio' => ['min' => 34, 'max' => 66],
@@ -134,51 +111,31 @@ class BaseConocimientoBD
         }
     }
     
-    /**
-     * Obtiene reglas FMS desde BD
-     * 
-     * @return array Reglas FMS
-     */
+    
     public static function obtenerReglasFMS(): array
     {
         return self::obtenerReglasPorModulo('FMS');
     }
     
-    /**
-     * Obtiene reglas posturales desde BD
-     * 
-     * @return array Reglas posturales
-     */
+    
     public static function obtenerReglasPostural(): array
     {
         return self::obtenerReglasPorModulo('POSTURAL');
     }
     
-    /**
-     * Obtiene reglas de lesiones desde BD
-     * 
-     * @return array Reglas de lesiones
-     */
+    
     public static function obtenerReglasLesiones(): array
     {
         return self::obtenerReglasPorModulo('LESIONES');
     }
     
-    /**
-     * Obtiene reglas de asistencia desde BD
-     * 
-     * @return array Reglas de asistencia
-     */
+    
     public static function obtenerReglasAsistencia(): array
     {
         return self::obtenerReglasPorModulo('ASISTENCIA');
     }
     
-    /**
-     * Obtiene reglas de ausencia de datos desde BD
-     * 
-     * @return array Reglas de ausencia de datos
-     */
+    
     public static function obtenerReglasAusenciaDatos(): array
     {
         $cacheKey = 'reglas_ausencia_datos';
@@ -200,13 +157,13 @@ class BaseConocimientoBD
             foreach ($resultado as $row) {
                 $recomendacionesDetalladas = json_decode($row['recomendaciones_detalladas_json'], true) ?? [];
                 
-                // Extraer recomendaciones de todas las categorías
+
                 $recomendaciones = [];
                 foreach ($recomendacionesDetalladas as $categoria => $recs) {
                     $recomendaciones = array_merge($recomendaciones, $recs);
                 }
                 
-                // Determinar módulo afectado
+
                 $modulo = 'general';
                 if (strpos($row['codigo'], 'SIN_FMS') !== false) {
                     $modulo = 'fms';
@@ -228,47 +185,30 @@ class BaseConocimientoBD
             return $reglas;
             
         } catch (\Exception $e) {
-            // Fallback
+
             return BaseConocimientoAtleta::obtenerReglasAusenciaDatos();
         }
     }
     
-    /**
-     * Obtiene reglas compuestas activas desde BD
-     * 
-     * @return array Reglas compuestas
-     */
+    
     public static function obtenerReglasCompuestas(): array
     {
         return self::obtenerReglasPorModulo('COMPUESTA');
     }
     
-    /**
-     * Obtiene reglas de tendencia desde BD
-     * 
-     * @return array Reglas de tendencia
-     */
+    
     public static function obtenerReglasTendencia(): array
     {
         return self::obtenerReglasPorModulo('TENDENCIA');
     }
     
-    /**
-     * Obtiene reglas por perfil desde BD
-     * 
-     * @return array Reglas por perfil
-     */
+    
     public static function obtenerReglasPerfil(): array
     {
         return self::obtenerReglasPorModulo('PERFIL');
     }
     
-    /**
-     * Obtiene todas las reglas de un módulo específico
-     * 
-     * @param string $modulo Nombre del módulo
-     * @return array Reglas del módulo
-     */
+    
     private static function obtenerReglasPorModulo(string $modulo): array
     {
         $cacheKey = 'reglas_' . strtolower($modulo);
@@ -298,10 +238,10 @@ class BaseConocimientoBD
                     'recomendacion_base' => $row['recomendacion_base']
                 ];
                 
-                // Condiciones
+
                 if (!empty($row['campo'])) {
                     $valor = $row['valor'];
-                    // Si el operador es BETWEEN, convertir valor a array
+
                     if ($row['operador'] === 'BETWEEN' && strpos($valor, ',') !== false) {
                         $valor = array_map('intval', explode(',', $valor));
                     } elseif (is_numeric($valor)) {
@@ -315,23 +255,23 @@ class BaseConocimientoBD
                     ];
                 }
                 
-                // Condiciones complejas (JSON)
+
                 if (!empty($row['condiciones_json'])) {
                     $regla['condiciones_json'] = json_decode($row['condiciones_json'], true);
                 }
                 
-                // Recomendaciones detalladas
+
                 $recomendacionesDetalladas = json_decode($row['recomendaciones_detalladas_json'], true) ?? [];
                 $regla['recomendaciones_detalladas'] = $recomendacionesDetalladas;
                 
-                // Extraer recomendaciones en formato plano para compatibilidad
+
                 $recomendaciones = [];
                 foreach ($recomendacionesDetalladas as $categoria => $recs) {
                     $recomendaciones = array_merge($recomendaciones, $recs);
                 }
                 $regla['recomendaciones'] = $recomendaciones;
                 
-                // Perfil asociado
+
                 if (!empty($row['id_perfil'])) {
                     $regla['id_perfil'] = (int) $row['id_perfil'];
                 }
@@ -343,7 +283,7 @@ class BaseConocimientoBD
             return $reglas;
             
         } catch (\Exception $e) {
-            // Fallback a BaseConocimientoAtleta
+
             $metodo = 'obtenerReglas' . ucfirst(strtolower($modulo));
             if (method_exists(BaseConocimientoAtleta::class, $metodo)) {
                 return BaseConocimientoAtleta::$metodo();
@@ -352,14 +292,10 @@ class BaseConocimientoBD
         }
     }
     
-    /**
-     * Obtiene ponderación de gravedad de lesiones
-     * 
-     * @return array Ponderaciones por gravedad
-     */
+    
     public static function obtenerPonderacionGravedadLesiones(): array
     {
-        // Este dato es más estático, mantenerlo en código es aceptable
+
         return [
             'leve' => 5,
             'moderada' => 8,
@@ -368,11 +304,7 @@ class BaseConocimientoBD
         ];
     }
     
-    /**
-     * Obtiene recomendaciones generales por nivel de riesgo
-     * 
-     * @return array Recomendaciones por nivel
-     */
+    
     public static function obtenerRecomendacionesPorNivel(): array
     {
         return [
@@ -391,11 +323,7 @@ class BaseConocimientoBD
         ];
     }
     
-    /**
-     * Obtiene mapa de problemas posturales
-     * 
-     * @return array Mapa de campos posturales
-     */
+    
     public static function obtenerMapaProblemasPosturales(): array
     {
         return [
@@ -410,11 +338,7 @@ class BaseConocimientoBD
         ];
     }
     
-    /**
-     * Obtiene mapa de pruebas FMS
-     * 
-     * @return array Mapa de pruebas FMS
-     */
+    
     public static function obtenerMapaPruebasFMS(): array
     {
         return [
@@ -428,24 +352,14 @@ class BaseConocimientoBD
         ];
     }
     
-    /**
-     * Obtiene reglas combinadas (interacciones entre módulos)
-     * Por ahora hace fallback al archivo mientras se migran a BD
-     * 
-     * @return array Reglas combinadas
-     */
+    
     public static function obtenerReglasCombinadas(): array
     {
-        // Las reglas combinadas aún no están en BD, usar fallback a archivo
-        // TODO: Migrar a tabla kb_reglas_combinadas cuando se implemente
+
         return BaseConocimientoAtleta::obtenerReglasCombinadas();
     }
     
-    /**
-     * Obtiene todos los perfiles disponibles
-     * 
-     * @return array Perfiles de atleta
-     */
+    
     public static function obtenerPerfiles(): array
     {
         if (isset(self::$cache['perfiles'])) {
@@ -476,11 +390,7 @@ class BaseConocimientoBD
         }
     }
     
-    /**
-     * Obtiene versión actual de la base de conocimiento
-     * 
-     * @return string Versión
-     */
+    
     public static function obtenerVersion(): string
     {
         try {
@@ -494,11 +404,7 @@ class BaseConocimientoBD
         }
     }
     
-    /**
-     * Verifica si la conexión a la BD está disponible
-     * 
-     * @return bool
-     */
+    
     public static function estaDisponible(): bool
     {
         try {

@@ -2,28 +2,10 @@
 
 namespace Gymsys\Core\IA;
 
-/**
- * Base de Conocimiento del Sistema Experto de Análisis de Atletas
- * 
- * Contiene las reglas clínicas y de experto que el motor de inferencia
- * utiliza para identificar factores de riesgo y generar recomendaciones.
- * 
- * Arquitectura:
- * - Motor de Inferencia: AnalizadorAtleta.php
- * - Base de Conocimiento: BaseConocimientoAtleta.php (este archivo)
- * - Hechos: Datos del atleta (tests, lesiones, asistencias)
- * 
- * @author GymSys Development Team
- * @version 2.0
- */
+
 class BaseConocimientoAtleta
 {
-    /**
-     * Ponderaciones base para cada módulo del análisis
-     * Total: 100 puntos distribuidos según importancia clínica
-     * 
-     * @return array Pesos por módulo
-     */
+    
     public static function obtenerPonderaciones(): array
     {
         return [
@@ -34,25 +16,17 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Umbrales de clasificación de riesgo
-     * 
-     * @return array Rangos de score para cada nivel
-     */
+    
     public static function obtenerUmbralesRiesgo(): array
     {
         return [
-            'bajo' => ['min' => 0, 'max' => 33],
-            'medio' => ['min' => 34, 'max' => 66],
-            'alto' => ['min' => 67, 'max' => 100]
+            'bajo' => ['min' => 0, 'max' => 40],
+            'medio' => ['min' => 41, 'max' => 60],
+            'alto' => ['min' => 61, 'max' => 100]
         ];
     }
 
-    /**
-     * Reglas de inferencia para el Test FMS
-     * 
-     * @return array Reglas estructuradas
-     */
+    
     public static function obtenerReglasFMS(): array
     {
         return [
@@ -113,11 +87,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Reglas de inferencia para Test Postural
-     * 
-     * @return array Reglas estructuradas
-     */
+    
     public static function obtenerReglasPostural(): array
     {
         return [
@@ -179,11 +149,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Reglas de inferencia para Lesiones
-     * 
-     * @return array Reglas estructuradas
-     */
+    
     public static function obtenerReglasLesiones(): array
     {
         return [
@@ -267,11 +233,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Reglas de inferencia para Asistencias
-     * 
-     * @return array Reglas estructuradas
-     */
+    
     public static function obtenerReglasAsistencia(): array
     {
         return [
@@ -317,11 +279,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Reglas de datos faltantes
-     * 
-     * @return array Reglas para manejar ausencia de datos
-     */
+    
     public static function obtenerReglasAusenciaDatos(): array
     {
         return [
@@ -367,11 +325,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Ponderación de gravedad de lesiones
-     * 
-     * @return array Puntos por tipo de gravedad
-     */
+    
     public static function obtenerPonderacionGravedadLesiones(): array
     {
         return [
@@ -382,11 +336,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Recomendaciones generales por nivel de riesgo
-     * 
-     * @return array Recomendaciones según clasificación
-     */
+    
     public static function obtenerRecomendacionesPorNivel(): array
     {
         return [
@@ -403,11 +353,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Mapeo de campos posturales a descripciones
-     * 
-     * @return array Mapa campo => descripción
-     */
+    
     public static function obtenerMapaProblemasPosturales(): array
     {
         return [
@@ -422,11 +368,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Mapeo de pruebas FMS a nombres descriptivos
-     * 
-     * @return array Mapa campo => nombre
-     */
+    
     public static function obtenerMapaPruebasFMS(): array
     {
         return [
@@ -440,12 +382,7 @@ class BaseConocimientoAtleta
         ];
     }
 
-    /**
-     * Reglas combinadas: Interacciones entre módulos
-     * Estas reglas se activan cuando se cumplen condiciones en múltiples módulos simultáneamente
-     * 
-     * @return array Reglas de interacción entre módulos
-     */
+    
     public static function obtenerReglasCombinadas(): array
     {
         return [
