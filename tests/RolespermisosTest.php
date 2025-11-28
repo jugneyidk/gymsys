@@ -195,6 +195,36 @@ final class RolespermisosTest extends TestCase
         $this->model->eliminarRol(['id_rol' => Cipher::aesEncrypt('sdad')]);
     }
 
+    public function test_obtener_rol_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El ID de rol ingresado no es v\u00e1lido","code":400}');
+        $this->model->obtenerRol(['id' => Cipher::aesEncrypt('')]);
+    }
+
+    public function test_incluir_rol_vacio(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"Solo letras y espacios (3-50 caracteres)","code":400}');
+        $data = ['nombre_rol' => ''] + array_fill_keys(array_keys($this->permisosBase()), '');
+        $this->model->incluirRol($data);
+    }
+
+    public function test_modificar_rol_vacio(): void
+    {
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessage('{"error":"Solo letras y espacios (3-50 caracteres)","code":400}');
+        $data = ['id_rol' => Cipher::aesEncrypt(''), 'nombre_rol' => ''] + array_fill_keys(array_keys($this->permisosBase()), '');
+        $this->model->modificarRol($data);
+    }
+
+    public function test_eliminar_rol_vacio(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('{"error":"El valor ingresado no es un n\u00famero entero v\u00e1lido","code":400}');
+        $this->model->eliminarRol(['id_rol' => Cipher::aesEncrypt('')]);
+    }
+
     public function test_listado_roles(): void
     {
         $this->db->method('query')->willReturn([
