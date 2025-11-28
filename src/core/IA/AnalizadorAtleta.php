@@ -484,12 +484,108 @@ class AnalizadorAtleta
             }
         }
 
+        // ========================================
+        // EVALUAR REGLAS COMBINADAS (INTERACCIONES ENTRE MÓDULOS)
+        // ========================================
+        $reglasCombinadas = ModoBaseConocimiento::obtenerReglasCombinadas();
+        
+        foreach ($reglasCombinadas as $reglaCombinada) {
+            $todasCondicionesCumplen = true;
+            
+            foreach ($reglaCombinada['condiciones'] as $condicion) {
+                $moduloCumple = false;
+                
+                // Evaluar cada condición según el módulo
+                if ($condicion['modulo'] === 'fms' && $tieneFms) {
+                    $valor = (int) $testFms[$condicion['campo']];
+                    $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                } elseif ($condicion['modulo'] === 'postural' && $tienePostural) {
+                    if ($condicion['campo'] === 'problemas_moderados_severos') {
+                        $valor = $this->contarProblemasPosturales($testPostural);
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    }
+                } elseif ($condicion['modulo'] === 'lesiones') {
+                    if ($condicion['campo'] === 'num_lesiones_activas') {
+                        $valor = count(array_filter($lesiones, fn($l) => $l['estado_lesion'] === 'Activa'));
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    } elseif ($condicion['campo'] === 'total_lesiones') {
+                        $valor = $resumenLesiones['total_lesiones'] ?? 0;
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    } elseif ($condicion['campo'] === 'lesion_zona_lumbar') {
+                        // Verificar si hay lesión lumbar activa o reciente
+                        $hayLesionLumbar = false;
+                        foreach ($lesiones as $lesion) {
+                            $zona = strtolower($lesion['zona_afectada'] ?? '');
+                            if (($lesion['estado_lesion'] === 'Activa' || $this->esLesionReciente($lesion)) && 
+                                (strpos($zona, 'lumbar') !== false || strpos($zona, 'espalda baja') !== false)) {
+                                $hayLesionLumbar = true;
+                                break;
+                            }
+                        }
+                        $moduloCumple = $hayLesionLumbar;
+                    }
+                } elseif ($condicion['modulo'] === 'asistencia' && $tieneAsistencia) {
+                    $valor = (float) $asistencias['porcentaje_asistencia'];
+                    $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                }
+                
+                if (!$moduloCumple) {
+                    $todasCondicionesCumplen = false;
+                    break;
+                }
+            }
+            
+            // Si todas las condiciones se cumplen, agregar el factor combinado
+            if ($todasCondicionesCumplen) {
+                $factores[] = $reglaCombinada['factor_mensaje'];
+            }
+        }
+
         // Si no se identificaron factores críticos
         if (empty($factores)) {
             $factores[] = "Perfil de riesgo general dentro de parámetros normales. Mantener seguimiento preventivo.";
         }
 
         return $factores;
+    }
+
+    /**
+     * Evalúa una condición genérica
+     * 
+     * @param mixed $valor Valor a evaluar
+     * @param string $operador Operador de comparación
+     * @param mixed $valorComparacion Valor de referencia
+     * @return bool True si la condición se cumple
+     */
+    private function evaluarCondicion($valor, string $operador, $valorComparacion): bool
+    {
+        switch ($operador) {
+            case '<=':
+                return $valor <= $valorComparacion;
+            case '<':
+                return $valor < $valorComparacion;
+            case '>=':
+                return $valor >= $valorComparacion;
+            case '>':
+                return $valor > $valorComparacion;
+            case '==':
+                return $valor == $valorComparacion;
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Verifica si una lesión es reciente (últimos 30 días)
+     * 
+     * @param array $lesion Datos de la lesión
+     * @return bool True si es reciente
+     */
+    private function esLesionReciente(array $lesion): bool
+    {
+        $hace30Dias = new \DateTime('-30 days');
+        $fechaLesion = new \DateTime($lesion['fecha_lesion']);
+        return $fechaLesion >= $hace30Dias;
     }
 
     /**
@@ -649,8 +745,66 @@ class AnalizadorAtleta
             }
         }
 
-        // Eliminar duplicados
-        $recomendaciones = array_unique($recomendaciones);
+        // ========================================
+        // RECOMENDACIONES DE REGLAS COMBINADAS
+        // ========================================
+        $reglasCombinadas = ModoBaseConocimiento::obtenerReglasCombinadas();
+        
+        foreach ($reglasCombinadas as $reglaCombinada) {
+            $todasCondicionesCumplen = true;
+            
+            foreach ($reglaCombinada['condiciones'] as $condicion) {
+                $moduloCumple = false;
+                
+                // Evaluar cada condición según el módulo
+                if ($condicion['modulo'] === 'fms' && $tieneFms) {
+                    $valor = (int) $testFms[$condicion['campo']];
+                    $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                } elseif ($condicion['modulo'] === 'postural' && $tienePostural) {
+                    if ($condicion['campo'] === 'problemas_moderados_severos') {
+                        $valor = $this->contarProblemasPosturales($testPostural);
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    }
+                } elseif ($condicion['modulo'] === 'lesiones') {
+                    if ($condicion['campo'] === 'num_lesiones_activas') {
+                        $lesionesActivas = array_filter($lesiones, fn($l) => $l['estado_lesion'] === 'Activa');
+                        $valor = count($lesionesActivas);
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    } elseif ($condicion['campo'] === 'total_lesiones') {
+                        $valor = $resumenLesiones['total_lesiones'] ?? 0;
+                        $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                    } elseif ($condicion['campo'] === 'lesion_zona_lumbar') {
+                        $hayLesionLumbar = false;
+                        foreach ($lesiones as $lesion) {
+                            $zona = strtolower($lesion['zona_afectada'] ?? '');
+                            if (($lesion['estado_lesion'] === 'Activa' || $this->esLesionReciente($lesion)) && 
+                                (strpos($zona, 'lumbar') !== false || strpos($zona, 'espalda baja') !== false)) {
+                                $hayLesionLumbar = true;
+                                break;
+                            }
+                        }
+                        $moduloCumple = $hayLesionLumbar;
+                    }
+                } elseif ($condicion['modulo'] === 'asistencia' && $tieneAsistencia) {
+                    $valor = (float) $asistencias['porcentaje_asistencia'];
+                    $moduloCumple = $this->evaluarCondicion($valor, $condicion['operador'], $condicion['valor']);
+                }
+                
+                if (!$moduloCumple) {
+                    $todasCondicionesCumplen = false;
+                    break;
+                }
+            }
+            
+            // Si todas las condiciones se cumplen, agregar las recomendaciones combinadas
+            if ($todasCondicionesCumplen && !empty($reglaCombinada['recomendaciones'])) {
+                // Las recomendaciones combinadas tienen prioridad, agregarlas al principio
+                $recomendaciones = array_merge($reglaCombinada['recomendaciones'], $recomendaciones);
+            }
+        }
+
+        // Eliminar duplicados manteniendo el orden (las combinadas primero)
+        $recomendaciones = array_values(array_unique($recomendaciones));
 
         return $recomendaciones;
     }

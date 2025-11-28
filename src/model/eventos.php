@@ -275,7 +275,6 @@ class Eventos
          ExceptionHandler::throwException("Esta competencia no existe", \InvalidArgumentException::class);
       }
 
-      // Verificar que todos los atletas existen
       $atletasNoExistentes = [];
       foreach ($atletas as $idAtleta) {
          $consultaAtleta = "SELECT cedula FROM atleta WHERE cedula = :id";

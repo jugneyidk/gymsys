@@ -429,6 +429,19 @@ class BaseConocimientoBD
     }
     
     /**
+     * Obtiene reglas combinadas (interacciones entre módulos)
+     * Por ahora hace fallback al archivo mientras se migran a BD
+     * 
+     * @return array Reglas combinadas
+     */
+    public static function obtenerReglasCombinadas(): array
+    {
+        // Las reglas combinadas aún no están en BD, usar fallback a archivo
+        // TODO: Migrar a tabla kb_reglas_combinadas cuando se implemente
+        return BaseConocimientoAtleta::obtenerReglasCombinadas();
+    }
+    
+    /**
      * Obtiene todos los perfiles disponibles
      * 
      * @return array Perfiles de atleta

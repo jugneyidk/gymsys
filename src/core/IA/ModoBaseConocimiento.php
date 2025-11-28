@@ -345,6 +345,25 @@ class ModoBaseConocimiento
     }
     
     /**
+     * Obtiene reglas combinadas (interacciones entre módulos) desde la fuente activa
+     * 
+     * @return array
+     */
+    public static function obtenerReglasCombinadas(): array
+    {
+        if (self::usarBD()) {
+            try {
+                return BaseConocimientoBD::obtenerReglasCombinadas();
+            } catch (\Exception $e) {
+                error_log('[MOTOR_IA] Error obteniendo reglas combinadas desde BD: ' . $e->getMessage());
+                return BaseConocimientoAtleta::obtenerReglasCombinadas();
+            }
+        }
+        
+        return BaseConocimientoAtleta::obtenerReglasCombinadas();
+    }
+    
+    /**
      * Obtiene información sobre la fuente activa
      * 
      * @return array
