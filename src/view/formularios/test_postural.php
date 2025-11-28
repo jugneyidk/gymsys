@@ -134,16 +134,10 @@
                <div class="anatomia-view">
                   <div class="anatomia-view-label">Vista Frontal</div>
                   <div class="anatomia-placeholder">
-                     <i class="bi bi-person-standing anatomia-icon-overlay"></i>
+                    <img src="public/assets/img/postura.jpeg" style="width: auto; height: 100%;" alt="">
                   </div>
                </div>
-               <!-- Vista Lateral -->
-               <div class="anatomia-view">
-                  <div class="anatomia-view-label">Vista Lateral</div>
-                  <div class="anatomia-placeholder">
-                     <i class="bi bi-person anatomia-icon-overlay"></i>
-                  </div>
-               </div>
+              
             </div>
          </div>
       </div>
