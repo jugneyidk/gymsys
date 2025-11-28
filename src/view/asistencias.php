@@ -10,6 +10,7 @@
    <title>Asistencias Diarias - Sistema</title>
    <?php require_once "comunes/linkcss.php"; ?>
    <link rel="stylesheet" href="datatables/datatables.min.css">
+   <link rel="stylesheet" href="assets/css/asistencias.css">
 </head>
 
 <body class="bg-body">
@@ -24,13 +25,13 @@
          <div class="col">
             <div class="card shadow">
                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                  <h2 class="mb-0">Asistencias Diarias</h2>
+                  <h2 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Asistencias Diarias</h2>
                   <div>
                      <?php
                      if ($permisosModulo["eliminar"] === 1):
                      ?>
                         <button type="button" class="btn btn-danger" id="btnEliminarAsistencias">
-                           Eliminar asistencias del dia
+                           <i class="bi bi-trash me-1"></i> Eliminar asistencias del día
                         </button>
                      <?php
                      endif;
@@ -46,14 +47,23 @@
                         </div>
                      </div>
                      <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="tablaAsistencias">
-                           <thead>
+                        <table class="table table-striped table-hover table-sm" id="tablaAsistencias">
+                           <thead class="table-dark">
                               <tr>
                                  <th>Cédula</th>
                                  <th>Nombre</th>
                                  <th class="d-none d-md-table-cell">Apellidos</th>
-                                 <th>Asistió</th>
-                                 <th>Comentario</th>
+                                 <th>Estado</th>
+                                 <th>Hora Entrada</th>
+                                 <th>Hora Salida</th>
+                                 <th>
+                                    <span data-bs-toggle="tooltip" data-bs-placement="top" 
+                                          title="Rating of Perceived Exertion (Escala de Borg): 1-2 Muy suave | 3-4 Moderado | 5-6 Duro | 7-8 Muy duro | 9-10 Extremo/Máximo">
+                                       RPE <i class="bi bi-info-circle-fill"></i>
+                                    </span>
+                                 </th>
+                                 <th>Tipo Sesión</th>
+                                 <th>Observaciones</th>
                               </tr>
                            </thead>
                            <tbody id="listadoAsistencias"></tbody>
@@ -62,8 +72,8 @@
                      <?php
                      if ($permisosModulo["crear"] === 1 && $permisosModulo["actualizar"]):
                      ?>
-                        <button type="button" class="btn btn-primary mt-3" id="btnGuardarAsistencias">Guardar
-                           Asistencias
+                        <button type="button" class="btn btn-primary mt-3" id="btnGuardarAsistencias">
+                           <i class="bi bi-save me-1"></i> Guardar Asistencias
                         </button>
                      <?php
                      endif;

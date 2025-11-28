@@ -165,16 +165,14 @@ class Notificaciones
       $consulta = "INSERT INTO {$_ENV['SECURE_DB']}.notificaciones(id_usuario, titulo, mensaje, objetivo)
                      VALUES (:id_usuario, :titulo, :mensaje, :objetivo)";
       $this->database->query($consulta, $datos);
-      $id = $this->database->lastInsertId(); // Obtener el último ID insertado
+      $id = $this->database->lastInsertId();
 
-      // Obtener la notificación completa para incluir la fecha de creación y otros campos
       $consulta = "SELECT id, titulo, mensaje, objetivo, fecha_creacion, id_usuario FROM {$_ENV['SECURE_DB']}.notificaciones WHERE id = :id";
       $notification = $this->database->query($consulta, [':id' => $id], true);
 
       return $notification;
    }
 
-   // Métodos estáticos
    /**
     * Crea notificaciones de WADA y mensualidades pendientes.
     *
@@ -190,21 +188,17 @@ class Notificaciones
       try {
          $database->beginTransaction();
 
-         // Obtener notificaciones de WADA y mensualidades
          $notificaciones_wada = $notificador->crearNotificacionesWada();
          $notificaciones_mensualidad = $notificador->crearNotificacionesMensualidad();
 
-         // Combinar todas las notificaciones creadas
          $all_created_notifications = array_merge($notificaciones_wada, $notificaciones_mensualidad);
 
-         // Agrupar notificaciones por ID de usuario
          $grouped_notifications = [];
          foreach ($all_created_notifications as $notification) {
             $userId = $notification['id_usuario'];
             if (!isset($grouped_notifications[$userId])) {
                $grouped_notifications[$userId] = [];
             }
-            // Eliminar 'id_usuario' del objeto de notificación ya que es la clave del grupo
             unset($notification['id_usuario']);
             $grouped_notifications[$userId][] = $notification;
          }
@@ -214,7 +208,7 @@ class Notificaciones
          return [
             "ok" => true,
             "notificaciones_creadas" => count($all_created_notifications),
-            "grouped_notifications" => $grouped_notifications // Notificaciones agrupadas por usuario
+            "grouped_notifications" => $grouped_notifications
          ];
       } catch (\Exception $e) {
          $database->rollBack();
@@ -327,7 +321,6 @@ class Notificaciones
          $cantidad_deudores > 1 ? "n" : ""
       );
 
-      // Obtener entrenadores activos
       $consulta = "SELECT cedula FROM entrenador;";
       $entrenadores = $this->database->query($consulta);
 

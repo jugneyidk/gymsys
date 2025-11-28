@@ -11,6 +11,8 @@
       content="Gestion de atletas en el sistema de gestión para el Gimnasio de Halterofilia 'Eddie Suarez' de la Universidad Politécnica Territorial Andrés Eloy Blanco (UPTAEB).">
    <title>Inscripción de Atletas - Sistema</title>
    <?php require_once "comunes/linkcss.php"; ?>
+   <link rel="stylesheet" href="assets/css/evaluaciones.css">
+   <link rel="stylesheet" href="assets/css/tarjeta_atleta.css">
 </head>
 
 <body class="bg-body">
@@ -19,6 +21,7 @@
    <script>
       var actualizar = <?= $permisosModulo["actualizar"] ?? 0 ?>;
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;
+      var esAdministrador = <?= (in_array('Administrador', $_SESSION['roles'] ?? []) || in_array('Superusuario', $_SESSION['roles'] ?? [])) ? 'true' : 'false' ?>;
    </script>
    <?php require_once "comunes/menu.php"; ?>
    <main class="container-md my-3 my-md-5">
@@ -63,6 +66,13 @@
    <?php require_once "comunes/modal_tipos_atletas.php"; ?>
    <?php require_once "comunes/modal.php"; ?>
    <?php require_once "comunes/modal_representantes.php"; ?>
+   
+   <!-- Modales de Evaluaciones del Atleta -->
+   <?php require_once "comunes/modal_tarjeta_atleta.php"; ?>
+   <?php require_once "comunes/modal_evaluaciones.php"; ?>
+   <?php require_once "comunes/modal_historial_evaluaciones.php"; ?>
+   <?php require_once "comunes/modal_ver_test_postural.php"; ?>
+   <?php require_once "comunes/modal_ver_test_fms.php"; ?>
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/atletas.js"></script>

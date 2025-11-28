@@ -22,11 +22,9 @@ class Login
       LoginAttempts::checkAttempts();
       try {
          $response = $this->_autenticarUsuario($id_usuario, $password);
-         // Si la autenticación es exitosa, limpiar los intentos fallidos
          LoginAttempts::clearAttempts();
          return $response;
       } catch (\Exception $e) {
-         // Registrar intento fallido
          LoginAttempts::recordFailedAttempt();
          ExceptionHandler::throwException($e->getMessage(), get_class($e));
       }

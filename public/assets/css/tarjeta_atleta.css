@@ -1,0 +1,139 @@
+/* =======================
+   TARJETA DEL ATLETA - DISEÑO PROFESIONAL
+   ======================= */
+
+/* Modal Header */
+#modalTarjetaAtleta .modal-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-bottom: none;
+}
+
+/* Modal Body */
+#modalTarjetaAtleta .modal-body {
+    background-color: #f8f9fa;
+}
+
+/* Cards profesionales */
+#modalTarjetaAtleta .card {
+    transition: all 0.2s ease;
+    border-radius: 0.5rem;
+}
+
+#modalTarjetaAtleta .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+/* Accordion items */
+#modalTarjetaAtleta .accordion-item {
+    background: #ffffff;
+    border-radius: 0.5rem !important;
+    overflow: hidden;
+}
+
+#modalTarjetaAtleta .accordion-button {
+    font-size: 0.95rem;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+#modalTarjetaAtleta .accordion-button:not(.collapsed) {
+    background-color: #e9ecef;
+    color: #212529;
+    box-shadow: none;
+}
+
+#modalTarjetaAtleta .accordion-button:focus {
+    box-shadow: none;
+    border: none;
+}
+
+#modalTarjetaAtleta .accordion-button:hover {
+    background-color: #f8f9fa;
+}
+
+#modalTarjetaAtleta .accordion-button::after {
+    filter: brightness(0.5);
+}
+
+/* Datos básicos del atleta */
+#tarjeta-datos-basicos {
+    font-size: 0.9rem;
+}
+
+#tarjeta-datos-basicos .badge {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    font-weight: 500;
+}
+
+/* Resumen de riesgo */
+#tarjeta-resumen-riesgo {
+    border-left: 4px solid #6c757d;
+}
+
+#tarjeta-resumen-riesgo.riesgo-bajo {
+    border-left-color: #28a745;
+    background: linear-gradient(to right, rgba(40, 167, 69, 0.05), transparent);
+}
+
+#tarjeta-resumen-riesgo.riesgo-medio {
+    border-left-color: #ffc107;
+    background: linear-gradient(to right, rgba(255, 193, 7, 0.05), transparent);
+}
+
+#tarjeta-resumen-riesgo.riesgo-alto {
+    border-left-color: #dc3545;
+    background: linear-gradient(to right, rgba(220, 53, 69, 0.05), transparent);
+}
+
+/* Tablas dentro de la tarjeta */
+#modalTarjetaAtleta .table {
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+#modalTarjetaAtleta .table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 600;
+    padding: 0.6rem;
+}
+
+#modalTarjetaAtleta .table td {
+    padding: 0.6rem;
+    vertical-align: middle;
+}
+
+/* Badges y etiquetas */
+#modalTarjetaAtleta .badge {
+    font-weight: 500;
+    padding: 0.35rem 0.65rem;
+}
+
+/* Iconos */
+#modalTarjetaAtleta .bi,
+#modalTarjetaAtleta .fas {
+    font-size: 1.1rem;
+}
+
+/* Footer */
+#modalTarjetaAtleta .modal-footer {
+    background-color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #modalTarjetaAtleta .modal-body {
+        padding: 1rem !important;
+    }
+    
+    #modalTarjetaAtleta .card-body {
+        padding: 1rem !important;
+    }
+}
+
+/* Animaciones suaves */
+#modalTarjetaAtleta .accordion-collapse {
+    transition: height 0.25s ease;
+}

@@ -70,14 +70,22 @@ class Validar
          ExceptionHandler::throwException("Las asistencias no son validas", \InvalidArgumentException::class);
       }
       foreach ($asistencias as $asistencia => $valor) {
+         // Validar cédula del atleta
          if (!preg_match(self::$regex["cedula"]["regex"], $valor["id_atleta"])) {
             ExceptionHandler::throwException("La cedula del atleta '{$valor["id_atleta"]}' es invalida", \InvalidArgumentException::class);
          }
-         if (gettype($valor["asistio"]) !== "integer" || $valor["asistio"] < 0 || $valor["asistio"] > 1) {
-            ExceptionHandler::throwException("El valor de asistencia del atleta '{$valor["id_atleta"]}' es invalido", \InvalidArgumentException::class);
+         
+         // Validar estado_asistencia (debe ser presente, ausente o justificado)
+         $estadosValidos = ['presente', 'ausente', 'justificado'];
+         if (isset($valor["estado_asistencia"]) && !in_array($valor["estado_asistencia"], $estadosValidos)) {
+            ExceptionHandler::throwException("El estado de asistencia del atleta '{$valor["id_atleta"]}' es invalido", \InvalidArgumentException::class);
          }
-         if (!preg_match(self::$regex["detalles"]["regex"], $valor["comentario"])) {
-            ExceptionHandler::throwException("El comentario del atleta '{$valor["id_atleta"]}' es invalido", \InvalidArgumentException::class);
+         
+         // Validar observaciones (opcional, si viene debe ser válido)
+         if (isset($valor["observaciones"]) && !empty($valor["observaciones"])) {
+            if (!preg_match(self::$regex["detalles"]["regex"], $valor["observaciones"])) {
+               ExceptionHandler::throwException("Las observaciones del atleta '{$valor["id_atleta"]}' son invalidas", \InvalidArgumentException::class);
+            }
          }
       }
       return true;

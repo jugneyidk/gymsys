@@ -85,7 +85,6 @@ class Atletas
          ExceptionHandler::throwException("No se encontró el atleta con la cédula especificada", \InvalidArgumentException::class, 404);
       }
 
-      // Si el atleta existe, obtenemos su información detallada
       $consulta = "SELECT 
                      u.nombre, 
                      u.apellido,
@@ -112,7 +111,6 @@ class Atletas
    {
       $estadisticas = [];
 
-      // Estadísticas de asistencias
       if (in_array('asistencias', $filtros)) {
          $consultaAsistencias = "SELECT 
             COUNT(*) as total_asistencias,
@@ -126,7 +124,6 @@ class Atletas
          $estadisticas['asistencias'] = $database->query($consultaAsistencias, [':cedula' => $cedula], true);
       }
 
-      // Estadísticas de competencias
       if (in_array('campeonatos', $filtros)) {
          $consultaCompetencias = "SELECT 
             COUNT(DISTINCT rc.id_competencia) as total_competencias,
@@ -144,7 +141,6 @@ class Atletas
          $estadisticas['competencias'] = $database->query($consultaCompetencias, [':cedula' => $cedula], true);
       }
 
-      // Estadísticas de mensualidades
       if (in_array('mensualidades', $filtros)) {
          $consultaMensualidades = "SELECT 
             COUNT(*) as total_pagos,
@@ -157,7 +153,6 @@ class Atletas
          $estadisticas['mensualidades'] = $database->query($consultaMensualidades, [':cedula' => $cedula], true);
       }
 
-      // Estadísticas WADA
       if (in_array('wada', $filtros)) {
          $consultaWADA = "SELECT 
             inscrito,

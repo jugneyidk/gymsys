@@ -1,0 +1,180 @@
+/* Estilos personalizados para el módulo de Asistencias */
+
+/* Contenedor del RPE slider */
+.rpe-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 120px;
+    padding: 0.25rem;
+}
+
+/* Slider RPE */
+.rpe-slider {
+    cursor: pointer;
+    width: 100%;
+}
+
+/* Display del valor RPE */
+.rpe-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.rpe-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.rpe-label {
+    font-size: 0.75rem;
+    white-space: nowrap;
+    font-weight: 500;
+}
+
+/* Colores para text-orange que no existe en Bootstrap */
+.text-orange {
+    color: #fd7e14 !important;
+}
+
+/* Mejorar el aspecto visual de la tabla */
+#tablaAsistencias thead th {
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+#tablaAsistencias tbody td {
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+/* Hacer los selects más compactos */
+.form-select-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Mejorar inputs de hora */
+input[type="time"].form-control-sm {
+    max-width: 110px;
+}
+
+/* Estilos para estado de asistencia */
+.estado-asistencia {
+    min-width: 110px;
+}
+
+.estado-asistencia option[value="presente"] {
+    color: #198754;
+    font-weight: 500;
+}
+
+.estado-asistencia option[value="ausente"] {
+    color: #6c757d;
+}
+
+.estado-asistencia option[value="justificado"] {
+    color: #0dcaf0;
+    font-weight: 500;
+}
+
+/* Badge visual para estados */
+.badge-presente {
+    background-color: #198754;
+}
+
+.badge-ausente {
+    background-color: #6c757d;
+}
+
+.badge-justificado {
+    background-color: #0dcaf0;
+}
+
+/* Animación suave al mover el slider */
+.rpe-slider::-webkit-slider-thumb {
+    transition: all 0.2s ease;
+}
+
+.rpe-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.rpe-slider::-moz-range-thumb {
+    transition: all 0.2s ease;
+}
+
+.rpe-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .rpe-container {
+        min-width: 100px;
+    }
+    
+    #tablaAsistencias thead th {
+        font-size: 0.75rem;
+    }
+}
+
+/* Mejorar el card principal */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+    padding: 1rem 1.5rem;
+}
+
+/* Mejorar botones */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Input de fecha mejorado */
+#fechaAsistencia {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    transition: all 0.2s ease;
+}
+
+#fechaAsistencia:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+/* Tooltips personalizados para RPE */
+.rpe-tooltip {
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.rpe-tooltip.show {
+    opacity: 1;
+}

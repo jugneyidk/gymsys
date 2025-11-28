@@ -1048,3 +1048,4 @@ $(document).ready(function () {
       $("#contenedorTablaCategorias").show();
    });
 });
+      

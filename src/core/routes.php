@@ -8,6 +8,7 @@ return [
    "dashboard" => ["enabled" => true, "public" => false, "hasView" => true],
    "entrenadores" => ["enabled" => true, "public" => false, "hasView" => true],
    "error404" => ["enabled" => true, "public" => true, "hasView" => true],
+   "evaluacionesatleta" => ["enabled" => true, "public" => false, "hasView" => false],
    "eventos" => ["enabled" => true, "public" => false, "hasView" => true],
    "faq" => ["enabled" => true, "public" => true, "hasView" => true],
    "landing" => ["enabled" => true, "public" => true, "hasView" => true],

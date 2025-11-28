@@ -99,7 +99,6 @@ class Rolespermisos
 
    public static function obtenerPermisosModulo(string $modulo, Database $database): array
    {
-      // Normalizar el nombre del módulo a minúsculas
       $modulo = strtolower($modulo);
       
       self::$routes = require dirname(__DIR__) . "/core/routes.php";
@@ -126,10 +125,7 @@ class Rolespermisos
          );
       }
       
-      // Obtener todos los permisos del rol desde la caché o la base de datos
       $permisosRol = self::obtenerTodosLosPermisosRol($idRol, $database);
-      
-      // Devolver solo los permisos del módulo solicitado
       return $permisosRol[$modulo] ?? ['leer' => 0];
    }
    
@@ -142,7 +138,6 @@ class Rolespermisos
          return $cached;
       }
       
-      // Si no está en caché, obtener todos los permisos del rol de la base de datos
       $sql = "SELECT
                   m.nombre as modulo,
                   p.crear,
@@ -155,7 +150,6 @@ class Rolespermisos
       
       $permisos = $database->query($sql, [':id_rol' => $idRol]);
       
-      // Organizar los permisos por módulo
       $permisosOrganizados = [];
       foreach ($permisos as $permiso) {
          $modulo = strtolower($permiso['modulo']);
@@ -163,7 +157,6 @@ class Rolespermisos
          $permisosOrganizados[$modulo] = $permiso;
       }
       
-      // Guardar en caché todos los permisos del rol
       self::guardarPermisosCache($cacheKey, $permisosOrganizados);
       
       return $permisosOrganizados;
@@ -181,7 +174,6 @@ class Rolespermisos
          return $cached;
       }
       
-      // Obtener el ID del rol del usuario
       $consultaRol = "SELECT ur.id_rol, r.nombre as nombre_rol 
                      FROM {$_ENV['SECURE_DB']}.usuarios_roles ur
                      JOIN {$_ENV['SECURE_DB']}.roles r ON r.id_rol = ur.id_rol
@@ -195,10 +187,8 @@ class Rolespermisos
       
       $idRol = $rolInfo['id_rol'];
       
-      // Obtener todos los permisos del rol (usará la caché si está disponible)
       $permisosRol = self::obtenerTodosLosPermisosRol($idRol, $database);
       
-      // Formatear los permisos para la navegación
       $permisosNav = [];
       foreach ($permisosRol as $modulo => $permiso) {
          $permisosNav[] = [
@@ -207,7 +197,6 @@ class Rolespermisos
          ];
       }
       
-      // Obtener información del usuario
       $consultaUsuario = "SELECT CONCAT(nombre, ' ', apellido) as nombre 
                          FROM {$_ENV['SECURE_DB']}.usuarios 
                          WHERE cedula = :id_usuario;";
@@ -222,7 +211,6 @@ class Rolespermisos
          ]
       ];
       
-      // Guardar en caché
       self::guardarPermisosCache($cacheKey, $resultado);
       
       return $resultado;
@@ -481,14 +469,11 @@ class Rolespermisos
       foreach ($this->modulos as $nombre => $numeroModulo) {
          $valoresPermisos[":modulo$nombre"] = $numeroModulo;
          if ($nombre === 'reportes') {
-            // Reportes solo se ve o se crea
             $valoresPermisos[":creportes"] = (isset($datos["c$nombre"]) && $datos["c$nombre"] == 1) ? 1 : 0;
             $valoresPermisos[":rreportes"] = (isset($datos["r$nombre"]) && $datos["r$nombre"] == 1) ? 1 : 0;
          } elseif ($nombre === 'bitacora') {
-            // Bitácora solo tiene 'rbitacora'
             $valoresPermisos[":rbitacora"] = (int) $datos['rbitacora'] == 1 ?: 0;
          } else {
-            // CRUD normal: create, read, update, delete
             $valoresPermisos[":c$nombre"] = (isset($datos["c$nombre"]) && $datos["c$nombre"] == 1) ? 1 : 0;
             $valoresPermisos[":r$nombre"] = (isset($datos["r$nombre"]) && $datos["r$nombre"] == 1) ? 1 : 0;
             $valoresPermisos[":u$nombre"] = (isset($datos["u$nombre"]) && $datos["u$nombre"] == 1) ? 1 : 0;

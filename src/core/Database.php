@@ -47,7 +47,8 @@ class Database
          if ($this->inTransaction) {
             $this->rollBack();
          }
-         if (ENVIRONMENT != 'DEVELOPMENT') {
+         $environment = defined('Gymsys\Utils\ENVIRONMENT') ? constant('Gymsys\Utils\ENVIRONMENT') : null;
+         if ($environment != 'DEVELOPMENT' && $environment != 'testing') {
             ExceptionHandler::throwException($this->mensajesDeError($e->getCode()), \RuntimeException::class, 500);
          }
          ExceptionHandler::throwException($e->getMessage(), \RuntimeException::class, 500);
