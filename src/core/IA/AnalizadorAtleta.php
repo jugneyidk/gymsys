@@ -5,6 +5,9 @@ namespace Gymsys\Core\IA;
 
 class AnalizadorAtleta
 {
+    private $lesionesTemp;
+    private $testPosturalTemp;
+    private $asistenciasTemp;
     
     public function analizarAtleta(array $tarjetaAtleta): array
     {
@@ -15,6 +18,10 @@ class AnalizadorAtleta
         $lesiones = $tarjetaAtleta['lesiones_recientes'] ?? [];
         $resumenLesiones = $tarjetaAtleta['resumen_lesiones'] ?? [];
         $asistencias = $tarjetaAtleta['asistencias_30_dias'] ?? null;
+        
+        $this->lesionesTemp = $lesiones;
+        $this->testPosturalTemp = $testPostural;
+        $this->asistenciasTemp = $asistencias;
 
 
         $ponderaciones = ModoBaseConocimiento::obtenerPonderaciones();
@@ -959,22 +966,28 @@ class AnalizadorAtleta
     private function contarProblemasPosturales(array $testPostural): int
     {
         $problemas = 0;
-        $campos = [
-            'cifosis_dorsal', 'lordosis_lumbar', 'escoliosis',
-            'inclinacion_pelvis', 'valgo_rodilla', 'varo_rodilla',
-            'rotacion_hombros', 'desnivel_escapulas'
+        
+        $pesosCriticos = [
+            'cifosis_dorsal' => ['severa' => 2.5, 'moderada' => 1.2],
+            'lordosis_lumbar' => ['severa' => 2.5, 'moderada' => 1.2],
+            'escoliosis' => ['severa' => 2.3, 'moderada' => 1.2],
+            'inclinacion_pelvis' => ['severa' => 2.0, 'moderada' => 1.0],
+            'valgo_rodilla' => ['severa' => 2.2, 'moderada' => 1.1],
+            'varo_rodilla' => ['severa' => 2.2, 'moderada' => 1.1],
+            'rotacion_hombros' => ['severa' => 1.8, 'moderada' => 0.9],
+            'desnivel_escapulas' => ['severa' => 1.8, 'moderada' => 0.9]
         ];
 
-        foreach ($campos as $campo) {
+        foreach ($pesosCriticos as $campo => $pesos) {
             $valor = $testPostural[$campo] ?? 'ninguna';
             if ($valor === 'severa') {
-                $problemas += 2;
+                $problemas += $pesos['severa'];
             } elseif ($valor === 'moderada') {
-                $problemas += 1;
+                $problemas += $pesos['moderada'];
             }
         }
 
-        return $problemas;
+        return (int) round($problemas);
     }
 
     
@@ -1018,6 +1031,9 @@ class AnalizadorAtleta
         bool $tienePostural,
         bool $tieneAsistencia
     ): int {
+        $lesiones = $this->lesionesTemp ?? [];
+        $testPostural = $this->testPosturalTemp ?? null;
+        $asistencias = $this->asistenciasTemp ?? null;
         $modulosCriticos = ($tieneFms ? 1 : 0) + ($tienePostural ? 1 : 0);
         
         if ($modulosCriticos === 0) {
@@ -1044,6 +1060,13 @@ class AnalizadorAtleta
         } elseif ($hayRiesgoCritico && $modulosCriticos === 1) {
             $sumaTotal = $sumaTotal * 1.12;
         }
+        
+        if ($this->hayCorrelacionPosturalLesion($testPostural, $lesiones)) {
+            $sumaTotal = $sumaTotal * 1.15;
+        }
+        
+        $factorAsistencia = $this->calcularFactorAsistencia($tieneAsistencia, $asistencias, $riesgoPosturalFinal, $riesgoFmsFinal);
+        $sumaTotal = $sumaTotal * $factorAsistencia;
         
         $denominadorBase = 90;
         
@@ -1079,5 +1102,68 @@ class AnalizadorAtleta
         }
 
         return false;
+    }
+
+    private function hayCorrelacionPosturalLesion($testPostural, array $lesiones): bool
+    {
+        if (!$testPostural || empty($lesiones)) {
+            return false;
+        }
+
+        $lesionesActivas = array_filter($lesiones, fn($l) => $l['estado_lesion'] === 'Activa');
+        if (empty($lesionesActivas)) {
+            return false;
+        }
+
+        $correlaciones = [
+            'cifosis_dorsal' => ['dorsal', 'cervical', 'cuello', 'hombro', 'espalda alta'],
+            'lordosis_lumbar' => ['lumbar', 'espalda baja', 'cadera'],
+            'escoliosis' => ['lumbar', 'dorsal', 'espalda'],
+            'inclinacion_pelvis' => ['lumbar', 'cadera', 'pelvis'],
+            'valgo_rodilla' => ['rodilla', 'menisco', 'ligamento'],
+            'varo_rodilla' => ['rodilla', 'menisco', 'ligamento'],
+            'rotacion_hombros' => ['hombro', 'manguito', 'deltoides'],
+            'desnivel_escapulas' => ['hombro', 'escapula', 'dorsal']
+        ];
+
+        foreach ($correlaciones as $campo => $zonasRelacionadas) {
+            $valor = $testPostural[$campo] ?? 'ninguna';
+            if ($valor === 'severa' || $valor === 'moderada') {
+                foreach ($lesionesActivas as $lesion) {
+                    $zona = strtolower($lesion['zona_afectada'] ?? '');
+                    foreach ($zonasRelacionadas as $palabraClave) {
+                        if (strpos($zona, $palabraClave) !== false) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function calcularFactorAsistencia($tieneAsistencia, $asistencias, int $riesgoPostural, int $riesgoFms): float
+    {
+        if (!$tieneAsistencia || !$asistencias) {
+            return 1.0;
+        }
+
+        $porcentaje = (float) ($asistencias['porcentaje_asistencia'] ?? 80);
+        $hayProblemas = ($riesgoPostural >= 20 || $riesgoFms >= 15);
+
+        if (!$hayProblemas) {
+            return 1.0;
+        }
+
+        if ($porcentaje < 50) {
+            return 1.15;
+        } elseif ($porcentaje < 70) {
+            return 1.08;
+        } elseif ($porcentaje >= 85) {
+            return 0.95;
+        }
+
+        return 1.0;
     }
 }
