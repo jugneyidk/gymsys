@@ -1037,12 +1037,12 @@ class AnalizadorAtleta
         
         $sumaTotal = $riesgoFmsFinal + $riesgoPosturalFinal + $riesgoLesiones + $riesgoAsistenciaFinal;
         
-        $hayRiesgoAlto = ($riesgoFmsFinal >= 20 || $riesgoPosturalFinal >= 25 || $riesgoLesiones >= 20);
+        $hayRiesgoCritico = ($riesgoFmsFinal >= 20 || $riesgoPosturalFinal >= 30 || $riesgoLesiones >= 20);
         
-        if ($hayRiesgoAlto && $modulosCriticos === 2) {
-            $sumaTotal = $sumaTotal * 1.25;
-        } elseif ($hayRiesgoAlto && $modulosCriticos === 1) {
-            $sumaTotal = $sumaTotal * 1.18;
+        if ($hayRiesgoCritico && $modulosCriticos === 2) {
+            $sumaTotal = $sumaTotal * 1.20;
+        } elseif ($hayRiesgoCritico && $modulosCriticos === 1) {
+            $sumaTotal = $sumaTotal * 1.12;
         }
         
         $denominadorBase = 90;
