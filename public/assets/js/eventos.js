@@ -121,35 +121,31 @@ $(document).ready(function () {
       let listadoEventos = "";
       eventos.forEach((evento) => {
          listadoEventos += `
-                <div class="col col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
-                    <div class="card border-primary position-relative flex-grow-1">
-                    ${eliminar == 1
-               ? `<button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 eliminarEvento" 
-                            data-id="${evento.id_competencia}" title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>`
+                <div class="col col-md-6 col-xl-4 mb-4 d-flex align-items-stretch">
+                    <article class="app-event-card flex-grow-1">
+                     ${eliminar == 1
+               ? `<button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 eliminarEvento"
+                             data-id="${evento.id_competencia}" title="Eliminar">
+                             <i class="fas fa-trash-alt"></i>
+                         </button>`
                : ""
             }
-                        <div class="card-header lead m-0 p-0 px-3 pb-1 bg-primary text-white">
-                            <small><strong>${evento.nombre}</strong></small>
-                        </div>
-                        <div class="card-body row g-0 p-0">
-                            <div class="col-md-1 bg-primary border-end border-primary">
-                            </div>
-                            <div class="col-md-11">
-                                <div class="p-3 ps-4">
-                                    <div class="card-title m-0 lead text-primary"><strong>${evento.nombre
-            }</strong></div>
-                                    <p class="card-text lead m-0 fs-6"><strong>Fecha: ${evento.fecha_inicio
-            } al ${evento.fecha_fin}</strong></p>
-                                    <p class="card-text lead m-0 fs-6"><strong>Cupos Disponibles: ${evento.cupos_disponibles
-            }</strong></p>
-                                    <p class="card-text lead m-0 fs-6"><strong>Participantes: ${evento.participantes
-            }</strong></p>
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-start justify-content-between gap-3 mb-4 pe-4">
+                                <div>
+                                    <p class="text-uppercase text-muted fw-bold small mb-2">Competencia activa</p>
+                                    <h3 class="event-card-title h5 mb-0">${evento.nombre}</h3>
                                 </div>
-                                ${actualizar == 1
-               ? `<div class="card-footer my-1 border-primary">
-                                    <div class="btn-group">
+                                <span class="badge rounded-pill text-bg-primary">Abierta</span>
+                            </div>
+                            <div class="app-event-meta mb-4">
+                                <span><i class="fa-regular fa-calendar me-2 text-primary"></i>${evento.fecha_inicio} al ${evento.fecha_fin}</span>
+                                <span><i class="fa-solid fa-ticket me-2 text-primary"></i>${evento.cupos_disponibles} cupos disponibles</span>
+                                <span><i class="fa-solid fa-users me-2 text-primary"></i>${evento.participantes} participantes</span>
+                            </div>
+                                 ${actualizar == 1
+               ? `<div class="border-top pt-3">
+                                    <div class="d-flex flex-wrap gap-2">
                                         <button class="btn btn-outline-primary btn-sm verDetallesEvento" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modalVerEventoActivo" 
@@ -185,13 +181,12 @@ $(document).ready(function () {
                                 </div>`
                : ""
             }
-                            </div>
                         </div>
-                    </div>
+                    </article>
                 </div>`;
       });
       if (listadoEventos == "") {
-         listadoEventos = `<div class="col-12 text-center lead">No hay eventos activos</div>`;
+         listadoEventos = `<div class="col-12"><div class="app-empty-state"><i class="fa-regular fa-calendar-check d-block fs-1 mb-3 text-primary"></i>No hay eventos activos por el momento</div></div>`;
       }
       $("#lista-eventos").html(listadoEventos);
    }

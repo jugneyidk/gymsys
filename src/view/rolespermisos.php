@@ -18,63 +18,63 @@
       var eliminar = <?= $permisosModulo["eliminar"] ?>;
    </script>
    <?php require_once "comunes/menu.php" ; ?>
-   <main class="container-md my-3 my-md-5">
-      <div class="row">
-         <div class="col">
-            <div class="card shadow">
-               <?= str_replace('name="_csrf_token"', 'id="csrf_token_global" name="_csrf_token"', $this->csrfField()); ?>
+    <main class="container-md my-3 my-md-5">
+       <div class="row">
+          <div class="col">
+             <div class="card shadow module-card">
+                <?= str_replace('name="_csrf_token"', 'id="csrf_token_global" name="_csrf_token"', $this->csrfField()); ?>
 
-               <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
-                  <h2 class="mb-0">Gestionar Roles y Permisos</h2>
-                  <div>
-                     <?php
-                     if ($permisosModulo["actualizar"] === 1):
-                        ?>
-                        <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
-                           data-bs-target="#modalAsignarRol" id="btnAsignarRol">
-                           Asignar Rol
-                        </button>
-                        <?php
-                     endif;
-                     ?>
-                     <?php
-                     if ($permisosModulo["crear"] === 1):
-                        ?>
-                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal"
-                           id="btnCrearRol">
-                           Crear Rol+
-                        </button>
-                        <?php
-                     endif;
-                     ?>
-                  </div>
-               </div>
-               <div class="card-body">
-                  <h3 class="text-center mb-2">Roles</h3>
-                  <div class="table-responsive">
-                     <table class="table table-striped table-hover" id="tablaroles">
-                        <thead>
-                           <tr>
-                              <th>Rol</th>
-                              <th>Acción</th>
-                           </tr>
-                        </thead>
-                        <tbody id="listado">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white module-header">
+                   <h2 class="mb-0">Gestionar Roles y Permisos</h2>
+                   <div>
+                      <?php
+                      if ($permisosModulo["actualizar"] === 1):
+                         ?>
+                         <button type="button" class="btn btn-outline-light" data-bs-toggle="modal"
+                            data-bs-target="#modalAsignarRol" id="btnAsignarRol">
+                            Asignar Rol
+                         </button>
+                         <?php
+                      endif;
+                      ?>
+                      <?php
+                      if ($permisosModulo["crear"] === 1):
+                         ?>
+                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal"
+                            id="btnCrearRol">
+                            Crear Rol+
+                         </button>
+                         <?php
+                      endif;
+                      ?>
+                   </div>
+                </div>
+                <div class="card-body">
+                   <h3 class="text-center mb-4 section-title">Roles</h3>
+                   <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="tablaroles">
+                         <thead>
+                            <tr>
+                               <th>Rol</th>
+                               <th>Acción</th>
+                            </tr>
+                         </thead>
+                         <tbody id="listado">
 
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
+                         </tbody>
+                      </table>
+                   </div>
+                </div>
 
-            </div>
-         </div>
-      </div>
-      <?php
-      if ($permisosModulo["actualizar"] === 1 || $permisosModulo["crear"] === 1) {
-         require_once "comunes/modal.php";
-         require_once "comunes/modal_asignar_rol.php";
-      } ?>
-   </main>
+             </div>
+          </div>
+       </div>
+       <?php
+       if ($permisosModulo["actualizar"] === 1 || $permisosModulo["crear"] === 1) {
+          require_once "comunes/modal.php";
+          require_once "comunes/modal_asignar_rol.php";
+       } ?>
+    </main>
    <br>
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>

@@ -44,6 +44,7 @@ class ApiController extends BaseController
             break;
          case 'GET':
             $this->handleGet($controller);
+            break;
          default:
             ExceptionHandler::throwException("Método no permitido", \UnexpectedValueException::class, 403);
       }

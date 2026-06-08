@@ -3,14 +3,13 @@ RewriteEngine On
 # Reenvía Authorization a PHP
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
+# Bloquea acceso a carpetas sensibles
+RewriteRule ^(src|config|model|core|docs|tests|vendor|cache) - [F,L,NC]
+
 # Redirige todo a /public
-RewriteCond %{REQUEST_URI} !^/public/
+RewriteCond %{REQUEST_URI} !^/gymsys/public/
 RewriteRule ^(.*)$ public/$1 [L]
 
-# Bloquea acceso a carpetas sensibles
-RewriteRule ^(src|config|model|core|docs|test|vendor|cache) - [F,L,NC]
-
 <FilesMatch "\.(env|log|sql|htaccess|gitignore|md)|composer\.(json|lock)$">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>

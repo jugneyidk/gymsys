@@ -21,11 +21,16 @@ export const crearGrafico = ({
    mostrarEjes = false,
    textoSinDatos = 'No hay datos disponibles'
 }) => {
+   const paletaProducto = ['#1d6ff2', '#38bdf8', '#18b981', '#f59e0b', '#e5484d', '#7c3aed'];
+   const colorTexto = '#5f6f83';
+   const colorLinea = 'rgba(216, 226, 239, 0.9)';
+   const sinDatos = !valores.length;
+
    // Si no hay datos, mostrar mensaje por defecto
-   if (!valores.length) {
+   if (sinDatos) {
       valores = [1];
       etiquetas = [textoSinDatos];
-      colores = ['#e0e0e0'];
+      colores = ['#d8e2ef'];
    }
 
    const configBase = {
@@ -34,25 +39,49 @@ export const crearGrafico = ({
          labels: etiquetas,
          datasets: [{
             data: valores,
-            backgroundColor: colores.length ? colores : 'rgba(75, 192, 192, 0.2)',
-            borderColor: tipo === 'line' ? '#42a5f5' : undefined,
-            borderWidth: tipo === 'bar' ? 1 : undefined,
+            backgroundColor: colores.length ? colores : paletaProducto,
+            borderColor: tipo === 'line' ? '#1d6ff2' : '#ffffff',
+            borderWidth: tipo === 'bar' ? 0 : 2,
             fill: tipo === 'line',
+            tension: tipo === 'line' ? 0.38 : undefined,
+            pointRadius: tipo === 'line' ? 4 : undefined,
+            pointHoverRadius: tipo === 'line' ? 6 : undefined,
+            pointBackgroundColor: tipo === 'line' ? '#ffffff' : undefined,
+            pointBorderColor: tipo === 'line' ? '#1d6ff2' : undefined,
             label: titulo
          }]
       },
       options: {
          responsive: true,
+         maintainAspectRatio: false,
          plugins: {
             legend: {
                display: tipo === 'pie',
-               position: "bottom"
+               position: "bottom",
+               labels: {
+                  boxWidth: 12,
+                  boxHeight: 12,
+                  color: colorTexto,
+                  font: {
+                     family: 'Inter, Segoe UI, Arial, sans-serif',
+                     weight: 700
+                  },
+                  padding: 18,
+                  usePointStyle: true
+               }
             },
             tooltip: {
                enabled: true,
+               backgroundColor: '#071827',
+               borderColor: 'rgba(255, 255, 255, 0.12)',
+               borderWidth: 1,
+               cornerRadius: 12,
+               padding: 12,
+               titleFont: { weight: 800 },
+               bodyFont: { weight: 700 },
                callbacks: {
                   label: function (context) {
-                     if (!valores.length || valores[0] === 1 && etiquetas[0] === textoSinDatos) {
+                     if (sinDatos || valores[0] === 1 && etiquetas[0] === textoSinDatos) {
                         return textoSinDatos;
                      }
                      return context.raw;
@@ -61,7 +90,15 @@ export const crearGrafico = ({
             }
          },
          scales: mostrarEjes ? {
-            y: { beginAtZero: true }
+            x: {
+               grid: { display: false },
+               ticks: { color: colorTexto, font: { weight: 700 } }
+            },
+            y: {
+               beginAtZero: true,
+               grid: { color: colorLinea },
+               ticks: { color: colorTexto, precision: 0 }
+            }
          } : undefined
       }
    };

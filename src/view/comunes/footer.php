@@ -1,54 +1,63 @@
-<div class="container-fluid mt-auto bg-dark">
+<footer class="site-footer mt-auto">
    <div class="container">
-      <footer class="row row-cols-3 py-5">
-         <div class="col-12 col-md mb-3 mb-md-0">
-            <span class="text-white h5 mb-2 d-inline-block">Contacto</span>
-            <ul class="nav flex-column">
-               <li class="nav-item mb-2">
-                  <a href="mailto:jugneycontacto@gmail.com" class="nav-link p-0 text-white">
-                     <i class="fas fa-envelope"></i> correogimnasio@gmail.com
+      <div class="row py-5">
+         <div class="col-12 col-md-4 mb-4 mb-md-0">
+            <h5 class="footer-title">Contacto</h5>
+            <ul class="footer-nav">
+               <li>
+                  <a href="mailto:jugneycontacto@gmail.com" class="footer-link">
+                     <i class="fas fa-envelope"></i>
+                     <span>correogimnasio@gmail.com</span>
                   </a>
                </li>
-               <li class="nav-item mb-2">
-                  <a href="tel:+58 1234586" class="nav-link p-0 text-white">
-                     <i class="fas fa-phone"></i> +58 1234586
-                  </a>
-               </li>
-            </ul>
-         </div>
-         <div class="col-12 col-md mb-3 mb-md-0">
-            <span class="text-white h5 mb-2 d-inline-block">Ayuda</span>
-            <ul class="nav flex-column">
-               <li class="nav-item mb-2">
-                  <a href="#" class="nav-link p-0 text-white">
-                     <i class="fas fa-question-circle"></i> Preguntas Frecuentes
-                  </a>
-               </li>
-               <li class="nav-item mb-2">
-                  <a href="./?p=manual" class="nav-link p-0 text-white">
-                     <i class="fas fa-life-ring"></i> Manual de ayuda
+               <li>
+                  <a href="tel:+58 1234586" class="footer-link">
+                     <i class="fas fa-phone"></i>
+                     <span>+58 1234586</span>
                   </a>
                </li>
             </ul>
          </div>
-         <div class="col-12 col-md mb-3 mb-md-0">
-            <span class="text-white h5 mb-2 d-inline-block">Más</span>
-            <ul class="nav flex-column">
-               <li class="nav-item mb-2">
-                  <a href="#" class="nav-link p-0 text-white">
-                     <i class="fas fa-file-alt"></i> Términos de Uso
+         <div class="col-12 col-md-4 mb-4 mb-md-0">
+            <h5 class="footer-title">Ayuda</h5>
+            <ul class="footer-nav">
+               <li>
+                  <a href="#" class="footer-link">
+                     <i class="fas fa-question-circle"></i>
+                     <span>Preguntas Frecuentes</span>
                   </a>
                </li>
-               <li class="nav-item mb-2">
-                  <a href="#" class="nav-link p-0 text-white">
-                     <i class="fas fa-shield-alt"></i> Privacidad
+               <li>
+                  <a href="./?p=manual" class="footer-link">
+                     <i class="fas fa-life-ring"></i>
+                     <span>Manual de ayuda</span>
                   </a>
                </li>
             </ul>
          </div>
-      </footer>
+         <div class="col-12 col-md-4">
+            <h5 class="footer-title">Más</h5>
+            <ul class="footer-nav">
+               <li>
+                  <a href="#" class="footer-link">
+                     <i class="fas fa-file-alt"></i>
+                     <span>Términos de Uso</span>
+                  </a>
+               </li>
+               <li>
+                  <a href="#" class="footer-link">
+                     <i class="fas fa-shield-alt"></i>
+                     <span>Privacidad</span>
+                  </a>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <div class="footer-bottom">
+         <p class="mb-0">&copy; <?= date('Y') ?> Gimnasio Eddie Suárez UPTAEB. Todos los derechos reservados.</p>
+      </div>
    </div>
-</div>
+</footer>
 <script src="assets/js/popper.min.js"></script>
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/bootstrap.min.js"></script>

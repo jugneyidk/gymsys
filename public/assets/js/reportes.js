@@ -186,7 +186,7 @@ $(document).ready(() => {
          const datosProcesados = (respuesta.estadisticas || []).reduce((acc, d) => {
             acc.etiquetas.push(d.genero);
             acc.valores.push(d.cantidad);
-            acc.colores.push(d.genero.toLowerCase() === 'masculino' ? '#36a2eb' : '#ff6384');
+            acc.colores.push(d.genero.toLowerCase() === 'masculino' ? '#1d6ff2' : '#7c3aed');
             return acc;
          }, { etiquetas: [], valores: [], colores: [] });
 
@@ -234,7 +234,7 @@ $(document).ready(() => {
             ctx,
             etiquetas,
             valores,
-            colores: ["#4caf50", "#f44336", "#ff9800"], // Verde (vigentes), Rojo (vencidas), Naranja (por vencer)
+            colores: ["#18b981", "#e5484d", "#f59e0b"],
             titulo: `Estado WADA (Total: ${data.total_atletas})`,
             textoSinDatos: "No hay datos WADA disponibles"
          });

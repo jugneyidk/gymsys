@@ -20,44 +20,44 @@
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;
    </script>
    <?php require_once "comunes/menu.php"; ?>
-   <main class="container-md my-3 my-md-5">
-      <div class="row">
-         <div class="col">
-            <div class="card shadow">
-               <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
-                  <h2 class="mb-0">Gestionar Entrenadores</h2>
-                  <?php
-                  if (!empty($permisosModulo["crear"])):
-                     ?>
-                     <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
-                        Registrar <i class="fa-solid fa-plus"></i>
-                     </button>
-                     <?php
-                  endif;
-                  ?>
-               </div>
-               <div class="card-body">
-                  <h3 class="text-center mb-2">Entrenadores Inscritos</h3>
-                  <div class="table-responsive">
-                     <table class="table table-striped table-hover" id="tablaentrenador">
-                        <thead>
-                           <tr>
-                              <th>Cédula</th>
-                              <th>Nombre</th>
-                              <th class="d-none d-md-table-cell">Teléfono</th>
-                              <?= !empty($permisosModulo['actualizar']) || !empty($permisosModulo['eliminar']) ? "<th>Acción</th>" : null ?>
-                           </tr>
-                        </thead>
-                        <tbody id="listado">
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      <?php require "comunes/modal.php"; ?>
-   </main>
+    <main class="container-md my-3 my-md-5">
+       <div class="row">
+          <div class="col">
+             <div class="card shadow module-card">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white module-header">
+                   <h2 class="mb-0">Gestionar Entrenadores</h2>
+                   <?php
+                   if (!empty($permisosModulo["crear"])):
+                      ?>
+                      <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
+                         Registrar <i class="fa-solid fa-plus"></i>
+                      </button>
+                      <?php
+                   endif;
+                   ?>
+                </div>
+                <div class="card-body">
+                   <h3 class="text-center mb-4 section-title">Entrenadores Inscritos</h3>
+                   <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="tablaentrenador">
+                         <thead>
+                            <tr>
+                               <th>Cédula</th>
+                               <th>Nombre</th>
+                               <th class="d-none d-md-table-cell">Teléfono</th>
+                               <?= !empty($permisosModulo['actualizar']) || !empty($permisosModulo['eliminar']) ? "<th>Acción</th>" : null ?>
+                            </tr>
+                         </thead>
+                         <tbody id="listado">
+                         </tbody>
+                      </table>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+       <?php require "comunes/modal.php"; ?>
+    </main>
    <?php require_once "comunes/footer.php"; ?>
    <script type="text/javascript" src="assets/js/datatables/datatables.min.js"></script>
    <script type="module" src="assets/js/entrenadores.js"></script>

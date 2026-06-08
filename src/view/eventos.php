@@ -16,30 +16,35 @@
       var eliminar = <?= $permisosModulo["eliminar"] ?>;
    </script>
    <?php require_once "comunes/menu.php"; ?>
-   <main class="container-md my-3 my-md-5">
-      <div class="row">
-         <div class="col">
-            <div class="d-flex justify-content-between align-items-center bg-dark text-white shadow rounded p-3">
-               <h2 class="mb-0">Eventos</h2>
-               <div>
-                  <?php if ($permisosModulo["crear"] == 1): ?>
-                     <button class="btn btn-light" data-bs-toggle="modal"
-                        data-bs-target="#modalRegistrarEvento">Registrar</button>
-                  <?php endif; ?>
-                  <button class="btn btn-outline-light" data-bs-toggle="modal"
-                     data-bs-target="#modalEventoConsultaAnterior">Consultar
-                     Anteriores</button>
-               </div>
-            </div>
-         </div>
-      </div>
-      <div class="row">
-         <div class="col">
-            <p class="lead mt-3 text-body"><strong>Eventos activos</strong></p>
-            <div id="lista-eventos" class="row">
-            </div>
-         </div>
-      </div>
+    <main class="container-md my-3 my-md-5">
+       <div class="row mb-4">
+          <div class="col">
+             <div class="card shadow module-card">
+                <div class="d-flex justify-content-between align-items-center bg-dark text-white shadow rounded p-4 module-header">
+                   <h2 class="mb-0">Eventos</h2>
+                   <div class="d-flex gap-2">
+                      <?php if ($permisosModulo["crear"] == 1): ?>
+                         <button class="btn btn-light" data-bs-toggle="modal"
+                            data-bs-target="#modalRegistrarEvento">
+                            <i class="fas fa-plus me-2"></i>Registrar
+                         </button>
+                      <?php endif; ?>
+                      <button class="btn btn-outline-light" data-bs-toggle="modal"
+                         data-bs-target="#modalEventoConsultaAnterior">
+                         <i class="fas fa-history me-2"></i>Consultar Anteriores
+                      </button>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+       <div class="row">
+          <div class="col">
+             <h3 class="section-title mb-4">Eventos activos</h3>
+             <div id="lista-eventos" class="row g-4">
+             </div>
+          </div>
+       </div>
       <div class="modal fade" id="modalRegistrarEvento" aria-hidden="true" aria-labelledby="modalRegistrarEvento"
          tabindex="-1">
          <div class="modal-dialog modal-lg">

@@ -1,5 +1,5 @@
 <?php
-$p = $_GET["p"];
+$p = $_GET["p"] ?? "landing";
 if (!empty(ID_USUARIO)) {
    echo "<script>
     var idUsuario = " . ID_USUARIO . ";
@@ -9,7 +9,10 @@ if (!empty(ID_USUARIO)) {
 ?>
 <nav class="navbar navbar-expand-lg bg-primary sticky-top" data-bs-theme="dark">
    <div class="container-fluid">
-      <a class="navbar-brand" href="?p=landing">Gimnasio Eddie Suarez UPTAEB </a>
+      <a class="navbar-brand" href="?p=landing">
+         <img src="assets/img/uptaeb.png" alt="Logo UPTAEB" class="navbar-brand-logo">
+         <span>Gimnasio Eddie Suarez UPTAEB</span>
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
          aria-controls="navbarNav" aria-expanded="false" aria-label="Expandir menú de navegacion">
          <span class="navbar-toggler-icon"></span>
@@ -20,7 +23,7 @@ if (!empty(ID_USUARIO)) {
             if (!empty(ID_USUARIO)):
             ?>
                <li class="nav-item d-none d-lg-block">
-                  <a class="nav-link<?= $p == in_array($p, ["", "dashboard"]) ? " active" : "" ?>" href="?p=dashboard"
+                  <a class="nav-link<?= in_array($p, ["", "dashboard"]) ? " active" : "" ?>" href="?p=dashboard"
                      <?= in_array($p, ["", "dashboard"]) ? "aria-current='page'" : "" ?>><i class="fas fa-house"
                         aria-label="Página de inicio"></i></a>
                </li>

@@ -21,45 +21,45 @@
       var eliminar = <?= $permisosModulo["eliminar"] ?? 0 ?>;
    </script>
    <?php require_once "comunes/menu.php"; ?>
-   <main class="container-md my-3 my-md-5">
-      <div class="row">
-         <div class="col">
-            <div class="card shadow">
-               <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white">
-                  <h2 class="mb-0">Gestionar Atletas</h2>
-                  <?php if (!empty($permisosModulo["crear"])): ?>
-                     <div>
-                        <!-- <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalRepresentantes">
-                           Representantes
-                        </button> -->
+    <main class="container-md my-3 my-md-5">
+       <div class="row">
+          <div class="col">
+             <div class="card shadow module-card">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white module-header">
+                   <h2 class="mb-0">Gestionar Atletas</h2>
+                   <?php if (!empty($permisosModulo["crear"])): ?>
+                      <div>
+                         <!-- <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#modalRepresentantes">
+                            Representantes
+                         </button> -->
 
-                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
-                           Registrar <i class="fa-solid fa-plus"></i>
-                        </button>
-                     </div>
-                  <?php endif; ?>
-               </div>
-               <div class="card-body">
-                  <h3 class="text-center mb-2">Atletas Inscritos</h3>
-                  <div class="table-responsive">
-                     <table class="table table-striped table-hover" id="tablaatleta">
-                        <thead>
-                           <tr>
-                              <th>Cédula</th>
-                              <th>Nombre</th>
-                              <?= !empty($permisosModulo['actualizar']) || !empty($permisosModulo['eliminar']) ? "<th>Acción</th>" : null ?>
-                           </tr>
-                        </thead>
-                        <tbody id="listado">
+                         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#modal">
+                            Registrar <i class="fa-solid fa-plus"></i>
+                         </button>
+                      </div>
+                   <?php endif; ?>
+                </div>
+                <div class="card-body">
+                   <h3 class="text-center mb-4 section-title">Atletas Inscritos</h3>
+                   <div class="table-responsive">
+                      <table class="table table-striped table-hover" id="tablaatleta">
+                         <thead>
+                            <tr>
+                               <th>Cédula</th>
+                               <th>Nombre</th>
+                               <?= !empty($permisosModulo['actualizar']) || !empty($permisosModulo['eliminar']) ? "<th>Acción</th>" : null ?>
+                            </tr>
+                         </thead>
+                         <tbody id="listado">
 
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </main>
+                         </tbody>
+                      </table>
+                   </div>
+                </div>
+             </div>
+          </div>
+       </div>
+    </main>
    <?php require_once "comunes/modal_tipos_atletas.php"; ?>
    <?php require_once "comunes/modal.php"; ?>
    <?php require_once "comunes/modal_representantes.php"; ?>
